@@ -53,7 +53,7 @@ function Shell({ children }: { children: React.ReactNode }) {
 function Splash({ children }: { children: React.ReactNode }) {
   return (
     <Shell>
-      <XStack flex={1} alignItems="center" justifyContent="center" backgroundColor="$color12">
+      <XStack flex={1} alignItems="center" justifyContent="center" backgroundColor="$background">
         <SizableText color="$color8" fontSize="$3">
           {children}
         </SizableText>

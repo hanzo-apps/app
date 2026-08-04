@@ -86,7 +86,7 @@ export function BuildTranscript({ build }: { build: Build }) {
         <YStack paddingHorizontal="$4" paddingTop={36} $md={{ paddingHorizontal: "$6", paddingTop: "$9" }}>
           <YStack alignSelf="center" maxWidth={896}>
             <nav aria-label="Breadcrumb">
-              <SizableText flexWrap="wrap" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.24} color="$color11" display="flex" flexDirection="row">
+              <SizableText flexWrap="wrap" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} color="$color11" display="flex" flexDirection="row">
                 <li>
                   <Link href="/builds"><SizableText hoverStyle={{ color: "$color" }}>
                     Builds
@@ -112,20 +112,20 @@ export function BuildTranscript({ build }: { build: Build }) {
                 {build.agent}
               </SizableText>
               {build.model ? (
-                <SizableText alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11">
+                <SizableText alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color11">
                   {build.model}
                 </SizableText>
               ) : null}
-              <SizableText alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11">
+              <SizableText alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color11">
                 {build.turns.length} turns
               </SizableText>
-              <SizableText alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11">
+              <SizableText alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color11">
                 {bound} commits
               </SizableText>
             </XStack>
 
             {/* The claim and how to check it, side by side. */}
-            <YStack marginTop="$6" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4">
+            <YStack marginTop="$6" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$4">
               <Paragraph className={`${EYEBROW}`}>Verify</Paragraph>
               <Paragraph marginTop="$2" fontSize="$3" lineHeight="1.625" color="$color11">
                 Every commit below is bound to its turn by a git trailer or note on the
@@ -169,7 +169,7 @@ export function BuildTranscript({ build }: { build: Build }) {
                     </SizableText>
 
                     <XStack flexWrap="wrap" alignItems="baseline" gap="$2">
-                      <SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.24} color="$color11">
+                      <SizableText fontFamily="$mono" fontSize={11} color="$color11">
                         Turn {t.turn}
                       </SizableText>
                       {t.actor ? (
@@ -185,7 +185,7 @@ export function BuildTranscript({ build }: { build: Build }) {
                     </YStack>
 
                     {t.commit ? (
-                      <YStack marginTop="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$3">
+                      <YStack marginTop="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$3">
                         <XStack flexWrap="wrap" alignItems="center" gap="$2">
                           <GitCommit size={14} />
                           <SizableText fontFamily="$mono" fontSize={11} color="$color">

@@ -170,7 +170,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
 
       {/* Provider Selection */}
       <div>
-        <Label htmlFor="provider" fontSize="$1" fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">Provider</Label>
+        <Label htmlFor="provider" fontSize="$1" fontWeight="500" color="$color11">Provider</Label>
         <Select value={selectedProvider} onValueChange={handleProviderChange}>
           <SelectTrigger id="provider" marginTop="$2" height="fit-content" width="100%">
             <SelectValue placeholder="Select a provider">
@@ -366,7 +366,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
 
       {/* Code Model */}
       <div>
-        <Label fontSize="$1" fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">Code Model</Label>
+        <Label fontSize="$1" fontWeight="500" color="$color11">Code Model</Label>
         <YStack marginTop="$2">
           <ModelSelector
             provider={selectedProvider}
@@ -403,7 +403,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
       {/* Chat Model (conditional) — hidden in judge mode */}
       {!showJudgeModel && useSeparateChatModel && (
         <div>
-          <Label fontSize="$1" fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">Chat Model</Label>
+          <Label fontSize="$1" fontWeight="500" color="$color11">Chat Model</Label>
           <YStack marginTop="$2">
             <ModelSelector
               provider={selectedProvider}
@@ -424,7 +424,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
         <>
           <Separator borderColor="$borderColor" />
           <div>
-            <Label fontSize="$1" fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">
+            <Label fontSize="$1" fontWeight="500" color="$color11">
               Judge Model <SizableText textTransform="none" fontWeight="400">(optional)</SizableText>
             </Label>
             <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$2">

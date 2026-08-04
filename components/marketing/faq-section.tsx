@@ -35,7 +35,7 @@ export default function FaqSection({
         {(title || eyebrow) && (
           <Reveal marginBottom={40} alignItems="center">
             {eyebrow && (
-              <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11" textAlign="center">
+              <Paragraph fontFamily="$mono" fontSize={11} color="$color11" textAlign="center">
                 {eyebrow}
               </Paragraph>
             )}
@@ -54,6 +54,7 @@ export default function FaqSection({
               <div key={i} style={i > 0 ? { borderTop: "1px solid var(--border)" } : undefined}>
                 <Button
                   type="button"
+                  variant="ghost"
                   aria-expanded={isOpen}
                   onClick={() => setOpen(isOpen ? null : i)}
                   width="100%" alignItems="center" justifyContent="space-between" gap="$4" paddingVertical="$4.5"

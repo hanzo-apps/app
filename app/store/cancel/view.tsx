@@ -15,7 +15,7 @@ export default function StoreCancelPageView() {
         </Paragraph>
         <Link
           href="/store"
-        ><XStack alignItems="center" justifyContent="center" borderRadius="$3" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ backgroundColor: "$color12" }}>
+        ><XStack alignItems="center" justifyContent="center" borderRadius="$3" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ backgroundColor: "$color6" }}>
           <SizableText fontSize="$3" fontWeight="500" color="$background">Return to store</SizableText>
         </XStack></Link>
       </YStack>

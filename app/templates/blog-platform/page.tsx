@@ -103,6 +103,7 @@ export default function BlogPlatform() {
                     key={cat.name}
                     onClick={() => setSelectedCategory(cat.name)}
                     group
+                    variant="ghost"
                   >
                     <SizableText fontSize="$3" fontWeight="500" color={selectedCategory === cat.name ? "$color12" : "$color11"} $group-hover={{ color: "$color12" }}>
                       {cat.name}
@@ -165,7 +166,7 @@ export default function BlogPlatform() {
               </XStack>
 
               <XStack alignItems="center" gap="$4">
-                <Button backgroundColor="#171717" hoverStyle={{ backgroundColor: "#000000" }}>Read Article</Button>
+                <Button variant="outline">Read Article</Button>
                 <Button variant="ghost" size="icon">
                   <Bookmark size={16} />
                 </Button>

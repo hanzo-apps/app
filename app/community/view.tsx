@@ -42,12 +42,12 @@ export default function CommunityPageView() {
           <XStack marginTop="$6" flexWrap="wrap" alignItems="center" justifyContent="center" gap="$3">
             <Link
               href="/dev"
-            ><XStack height={44} alignItems="center" gap="$1.5" borderRadius="$6" backgroundColor="$color12" paddingHorizontal="$4.5" hoverStyle={{ backgroundColor: "$color12" }}>
-              <SizableText fontSize="$3" fontWeight="500" color="$background">Start building</SizableText> <ArrowUpRight size={16} />
+            ><XStack height={44} alignItems="center" gap="$1.5" borderRadius="$6" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$4.5" hoverStyle={{ backgroundColor: "$color6" }}>
+              <SizableText fontSize="$3" fontWeight="500" color="$color">Start building</SizableText> <ArrowUpRight size={16} />
             </XStack></Link>
             <Link
               href="/templates"
-            ><XStack height={44} alignItems="center" gap="$1.5" borderRadius="$6" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$4.5" hoverStyle={{ backgroundColor: "$background" }}>
+            ><XStack height={44} alignItems="center" gap="$1.5" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$4.5" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color005" }}>
               <SizableText fontSize="$3" fontWeight="500" color="$color">Browse templates</SizableText>
             </XStack></Link>
           </XStack>

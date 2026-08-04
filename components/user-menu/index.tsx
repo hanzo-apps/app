@@ -32,14 +32,14 @@ export const UserMenu = ({ className }: { className?: string }) => {
         <Button variant="ghost" className={`${className}`}>
           <Avatar width="$6" height="$6" marginRight="$1">
             <AvatarImage src={user?.avatarUrl} alt={displayName} />
-            <AvatarFallback>
+            <AvatarFallback backgroundColor="$color4">
               {userInitial}
             </AvatarFallback>
           </Avatar>
           <SizableText display="none" maxWidth="12rem" numberOfLines={1}>{displayName}</SizableText>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent width={224}>
+      <DropdownMenuContent width={224} className="frosted" borderWidth={1} borderColor="$borderColor">
         <DropdownMenuLabel>
           <YStack rowGap="$1">
             <Paragraph fontSize="$3" fontWeight="500" lineHeight="1">{displayName}</Paragraph>

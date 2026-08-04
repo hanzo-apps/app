@@ -144,7 +144,8 @@ export default function AppsPage() {
                   onClick={() => jumpTo(i)}
                   aria-pressed={on}
                   group
-                  borderRadius="$10" paddingHorizontal="$5" paddingVertical="$2" borderWidth={1} borderColor={on ? "$color" : "transparent"}
+                  variant="ghost"
+                  borderRadius="$10" paddingHorizontal="$5" paddingVertical="$2" borderWidth={1} borderColor={on ? "$color" : "transparent"} hoverStyle={{ backgroundColor: "$color005" }}
                 >
                   <SizableText fontSize="$6" color={on ? "$color" : "$color11"} $group-hover={{ color: "$color" }}>
                     {c.label}
@@ -174,7 +175,7 @@ export default function AppsPage() {
                 >
                   <YStack alignSelf="center" width="100%" maxWidth={1152}>
                     <XStack marginBottom="$2" alignItems="baseline" gap="$3">
-                      <SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.88} color="$color11">
+                      <SizableText fontFamily="$mono" fontSize={11} color="$color11">
                         {c.label}
                       </SizableText>
                       <SizableText fontFamily="$mono" fontSize={11} color="$color11">
@@ -200,7 +201,7 @@ export default function AppsPage() {
                 style={{ width: `${(active / Math.max(N - 1, 1)) * 100}%` }}
   />
             </YStack>
-            <SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.24} color="$color11">
+            <SizableText fontFamily="$mono" fontSize={11} color="$color11">
               Scroll →
             </SizableText>
           </XStack>
@@ -222,7 +223,7 @@ export default function AppsPage() {
           </Paragraph>
           <Link
             href="/dashboard"
-          ><SizableText marginTop="$5" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
+          ><SizableText marginTop="$5" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$color12" hoverStyle={{ backgroundColor: "$color6" }}>
             Get your key
             <ArrowRight size={16} aria-hidden />
           </SizableText></Link>

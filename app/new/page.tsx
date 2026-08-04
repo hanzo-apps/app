@@ -239,7 +239,7 @@ function NewProjectInner() {
         {/* ambient glow behind the composer */}
         <YStack
           aria-hidden
-          pointerEvents="none" position="absolute" left="$0" right="$0" top="$0" alignSelf="center" height={420} maxWidth={768} backgroundColor="radial-gradient(60% 60% at 50% 0%,rgba(255,255,255,0.08),transparent 70%)"
+          pointerEvents="none" position="absolute" left="$0" right="$0" top="$0" alignSelf="center" height={420} maxWidth={768} backgroundColor="$color005" filter="blur(130px)"
   />
 
         <YStack position="relative" paddingTop="$10" $sm={{ paddingTop: "$11" }}>
@@ -257,7 +257,7 @@ function NewProjectInner() {
               onDrop={onComposerDrop}
               onDragOver={onComposerDragOver}
               onDragLeave={onComposerDragLeave}
-              group position="relative" borderRadius="$8" borderWidth={1} padding="$2" elevation={6} focusStyle={{ borderColor: "$color" }} {...{ borderColor: dragActive ? "$color" : "$borderColor", backgroundColor: dragActive ? "$color3" : "$color3" }}
+              group position="relative" borderRadius="$8" borderWidth={1} padding="$2" elevation={6} focusStyle={{ borderColor: "$color" }} {...{ borderColor: dragActive ? "$color" : "$borderColor", backgroundColor: dragActive ? "$color3" : "$color005" }}
             >
               {dragActive && (
                 <XStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} zIndex={10} alignItems="center" justifyContent="center" borderRadius="$8" borderWidth={2} borderStyle="dashed" borderColor="$color" backgroundColor="$background" backdropFilter="blur(4px)">
@@ -388,7 +388,7 @@ function NewProjectInner() {
                       setValue(q.prompt);
                       taRef.current?.focus();
                     }}
-                    alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$1.5" hoverStyle={{ y: -1, borderColor: "$color", backgroundColor: "$color3" }}
+                    alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color005" paddingHorizontal="$3.5" paddingVertical="$1.5" hoverStyle={{ y: -1, borderColor: "$color06", backgroundColor: "$color3" }}
                   >
                     <Icon size={16} color="var(--muted-foreground)" />
                     <SizableText fontSize="$3" color="$color">{q.label}</SizableText>
@@ -408,7 +408,7 @@ function NewProjectInner() {
           <ImportGitPanel />
 
           {/* Clone Template */}
-          <YStack borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4.5" $sm={{ padding: "$5" }}>
+          <YStack borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$4.5" $sm={{ padding: "$5" }}>
             <XStack marginBottom="$4" alignItems="center" justifyContent="space-between" gap="$3">
               <XStack alignItems="center" gap="$2">
                 <Boxes size={18} />
@@ -448,9 +448,9 @@ function NewProjectInner() {
                       key={t.slug}
                       type="button"
                       onClick={() => handleTemplate(t.source)}
-                      group width="100%" alignItems="center" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$3" hoverStyle={{ y: -1, borderColor: "$color", backgroundColor: "$color3" }}
+                      group width="100%" alignItems="center" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$3" hoverStyle={{ y: -1, borderColor: "$color06", backgroundColor: "$color4" }}
                     >
-                      <XStack height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
+                      <XStack height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color4">
                         <FileCode2 size={18} />
                       </XStack>
                       <YStack minWidth={0} flex={1}>

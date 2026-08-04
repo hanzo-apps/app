@@ -177,7 +177,7 @@ export function Subscribe({ slug, label }: { slug: string; label?: string }) {
         goToCheckout({ amountUsd: plan.price / 100, plan: plan.slug, returnUrl })
       }
       title={`Billed to ${titleCase(org)}`}
-      width="100%" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
+      width="100%" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}
       size="sm"
     >
       <Sparkles size={16} />

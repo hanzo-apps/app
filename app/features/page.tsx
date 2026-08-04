@@ -160,9 +160,9 @@ export default function FeaturesPage() {
         {/* Hero Section */}
         <YStack paddingHorizontal="$4" paddingTop="$10" paddingBottom="$10" $md={{ paddingHorizontal: "$6", paddingTop: "$12", paddingBottom: "$11" }}>
           <YStack maxWidth={1024} alignSelf="center" alignItems="center">
-            <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" marginBottom="$5" backgroundColor="$purple9" borderWidth={1} borderColor="$purple9" borderRadius="$10" $md={{ marginBottom: "$6" }}>
+            <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" marginBottom="$5" backgroundColor="$color002" borderWidth={1} borderColor="$borderColor" borderRadius="$10" $md={{ marginBottom: "$6" }}>
               <Sparkles size={16} />
-              <SizableText fontSize="$3" color="$purple4">Powered by Advanced AI</SizableText>
+              <SizableText fontSize="$3" color="$color11">Powered by Advanced AI</SizableText>
             </XStack>
 
             <H1 fontSize="$11" fontWeight="500" marginBottom="$4" textAlign="center" $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13", marginBottom: "$5" }} lineHeight="1.1">
@@ -189,7 +189,7 @@ export default function FeaturesPage() {
               <Button
                 onClick={() => router.push('/docs')}
                 variant="outline"
-                borderColor="$borderColor" paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6" hoverStyle={{ backgroundColor: "$color3" }}
+                borderColor="$borderColor" paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color005" }}
               >
                 <SizableText color="$color" fontWeight="500" fontSize="$6">View Documentation</SizableText>
                 <ArrowRight size={20} />
@@ -202,7 +202,7 @@ export default function FeaturesPage() {
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
           <YStack maxWidth={1280} alignSelf="center">
             <YStack marginBottom="$10" alignItems="center">
-              <Badge className="mb-4 px-4 py-1.5">
+              <Badge variant="outline" className="mb-4 px-4 py-1.5">
                 <Settings size={16} />
                 Core Features
               </Badge>
@@ -214,7 +214,7 @@ export default function FeaturesPage() {
 
             <YStack gap="$6">
               {coreFeatures.map((feature, index) => (
-                <Card key={index} backgroundColor="$background" borderColor="$borderColor" hoverStyle={{ borderColor: "$purple9" }}>
+                <Card key={index} backgroundColor="$color002" borderColor="$borderColor" hoverStyle={{ borderColor: "$color06" }}>
                   <CardHeader>
                     <XStack alignItems="center" gap="$3" marginBottom="$2">
                       {feature.icon}
@@ -244,7 +244,7 @@ export default function FeaturesPage() {
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
           <YStack maxWidth={1280} alignSelf="center">
             <YStack marginBottom="$10" alignItems="center">
-              <Badge className="mb-4 px-4 py-1.5">
+              <Badge variant="outline" className="mb-4 px-4 py-1.5">
                 <Brain size={16} />
                 AI Capabilities
               </Badge>
@@ -258,7 +258,7 @@ export default function FeaturesPage() {
               {aiCapabilities.map((capability, index) => (
                 <XStack key={index} gap="$5">
                   <YStack flexShrink={0}>
-                    <YStack padding="$3" borderRadius="$6" borderWidth={1} borderColor="$purple9">
+                    <YStack padding="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002">
                       {capability.icon}
                     </YStack>
                   </YStack>
@@ -276,7 +276,7 @@ export default function FeaturesPage() {
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
           <YStack maxWidth={1280} alignSelf="center">
             <YStack marginBottom="$10" alignItems="center">
-              <Badge className="mb-4 px-4 py-1.5">
+              <Badge variant="outline" className="mb-4 px-4 py-1.5">
                 <Layers size={16} />
                 Technology Stack
               </Badge>
@@ -288,21 +288,21 @@ export default function FeaturesPage() {
 
             <YStack gap="$6">
               <YStack alignItems="center">
-                <XStack padding="$4" borderRadius="$8" borderWidth={1} borderColor="$blue9" marginBottom="$4">
+                <XStack padding="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" marginBottom="$4">
                   <Cloud size={32} />
                 </XStack>
                 <H3 fontSize="$7" fontWeight="500" marginBottom="$2" color="$color" textAlign="center">Cloud Infrastructure</H3>
                 <Paragraph color="$color11" textAlign="center">Global CDN, edge computing, and auto-scaling infrastructure</Paragraph>
               </YStack>
               <YStack alignItems="center">
-                <XStack padding="$4" borderRadius="$8" borderWidth={1} borderColor="$green9" marginBottom="$4">
+                <XStack padding="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" marginBottom="$4">
                   <Server size={32} />
                 </XStack>
                 <H3 fontSize="$7" fontWeight="500" marginBottom="$2" color="$color" textAlign="center">Database Solutions</H3>
                 <Paragraph color="$color11" textAlign="center">Hanzo Base (SQLite), Hanzo SQL, and Hanzo KV with auto-backups</Paragraph>
               </YStack>
               <YStack alignItems="center">
-                <XStack padding="$4" borderRadius="$8" borderWidth={1} borderColor="$purple9" marginBottom="$4">
+                <XStack padding="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" marginBottom="$4">
                   <Cpu size={32} />
                 </XStack>
                 <H3 fontSize="$7" fontWeight="500" marginBottom="$2" color="$color" textAlign="center">AI Processing</H3>
@@ -316,7 +316,7 @@ export default function FeaturesPage() {
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
           <YStack maxWidth={1280} alignSelf="center">
             <YStack marginBottom="$10" alignItems="center">
-              <Badge className="mb-4 px-4 py-1.5">
+              <Badge variant="outline" className="mb-4 px-4 py-1.5">
                 <BarChart size={16} />
                 Simple Pricing
               </Badge>
@@ -330,7 +330,7 @@ export default function FeaturesPage() {
               {pricingPlans.map((plan, index) => (
                 <Card
                   key={index}
-                  position="relative" backgroundColor="$background" {...{ borderColor: plan.popular ? "$purple9" : "$borderColor", scale: plan.popular ? 1.05 : undefined, hoverStyle: plan.popular ? undefined : {"borderColor":"$color"} }}
+                  position="relative" backgroundColor="$color002" {...{ borderColor: plan.popular ? "$color" : "$borderColor", scale: plan.popular ? 1.05 : undefined, hoverStyle: plan.popular ? undefined : {"borderColor":"$color06"} }}
                 >
                   {plan.popular && (
                     <YStack position="absolute" top="-3" left="50%" x="50%">
@@ -351,7 +351,7 @@ export default function FeaturesPage() {
                   </CardHeader>
                   <CardContent rowGap="$4">
                     <Button
-                      width="100%" {...{ color: plan.popular ? "$background" : "$color", backgroundColor: plan.popular ? undefined : "$color3", borderWidth: plan.popular ? undefined : 1, borderColor: plan.popular ? undefined : "$borderColor", hoverStyle: plan.popular ? undefined : {"borderColor":"$color"} }}
+                      width="100%" {...{ color: plan.popular ? "$background" : "$color", backgroundColor: plan.popular ? undefined : "$color002", borderWidth: plan.popular ? undefined : 1, borderColor: plan.popular ? undefined : "$borderColor", hoverStyle: plan.popular ? undefined : {"borderColor":"$color06","backgroundColor":"$color005"} }}
                       onClick={() => plan.name === 'Enterprise' ? router.push('/enterprise') : (user ? router.push('/dev') : openLoginWindow())}
                     >
                       {plan.cta}
@@ -377,7 +377,7 @@ export default function FeaturesPage() {
 
             <YStack marginTop="$8" alignItems="center">
               <Paragraph color="$color11" marginBottom="$4" textAlign="center">All plans include free SSL certificates and 99.9% uptime SLA</Paragraph>
-              <Link href="/pricing"><SizableText color="$purple8" fontSize="$3" fontWeight="500" textAlign="center" hoverStyle={{ color: "$purple4" }}>
+              <Link href="/pricing"><SizableText color="$color11" fontSize="$3" fontWeight="500" textAlign="center" hoverStyle={{ color: "$color" }}>
                 View detailed pricing comparison →
               </SizableText></Link>
             </YStack>
@@ -405,7 +405,7 @@ export default function FeaturesPage() {
               <Button
                 onClick={() => router.push('/community')}
                 variant="outline"
-                borderColor="$borderColor" paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6" hoverStyle={{ backgroundColor: "$color3" }}
+                borderColor="$borderColor" paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color005" }}
               >
                 <Users size={20} />
                 <SizableText color="$color" fontWeight="500" fontSize="$6">Explore Community</SizableText>

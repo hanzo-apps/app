@@ -8,7 +8,7 @@ import { Button, Textarea } from '@hanzo/ui';
 export const AskAi = () => {
   return (
     <>
-      <YStack backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" borderRadius="$8" group focusStyle={{ borderColor: "$borderColor" }}>
+      <YStack backgroundColor="$color005" borderWidth={1} borderColor="$borderColor" borderRadius="$8" group focusStyle={{ borderColor: "$color" }}>
         <Textarea
           rows={3}
           width="100%" backgroundColor="transparent" fontSize="$3" outlineWidth={0} color="$color" placeholderTextColor="$color11" padding="$4" marginBottom="$1"
@@ -21,15 +21,15 @@ export const AskAi = () => {
             <Button
               size="icon"
               variant="outline"
-              borderColor="$borderColor" hoverStyle={{ borderColor: "$color" }}
+              borderColor="$borderColor" hoverStyle={{ borderColor: "$color06" }}
             >
               <UserPlus size={16} />
             </Button>
           </XStack>
           <XStack alignItems="center" justifyContent="flex-end" gap="$2">
-            <Button backgroundColor="$color12" size="sm">
+            <Button variant="outline" size="sm">
               <Settings size={16} />
-              <SizableText color="$color4">Settings</SizableText>
+              <SizableText color="$color11">Settings</SizableText>
             </Button>
             <Button size="icon">
               <ArrowUp size={16} />

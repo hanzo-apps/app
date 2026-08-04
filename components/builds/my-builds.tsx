@@ -79,7 +79,7 @@ export function MyBuilds() {
           Could not load your builds ({state.message}).
         </Paragraph>
       ) : state.sessions.length === 0 ? (
-        <YStack marginTop="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4">
+        <YStack marginTop="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$4">
           <Paragraph fontSize="$3" color="$color11">
             No sessions yet. Publish the session that built a repo:
           </Paragraph>
@@ -103,7 +103,7 @@ export function MyBuilds() {
                     <Lock size={12} aria-label="private" />
                   )}
                 </XStack>
-                <SizableText marginTop="$1" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={1.92} color="$color11">
+                <SizableText marginTop="$1" fontFamily="$mono" fontSize={11} color="$color11">
                   {s.project ? `${s.project} · ` : ""}
                   {s.agent} · {s.events} turns · {s.status}
                 </SizableText>
@@ -112,7 +112,7 @@ export function MyBuilds() {
                 <Link
                   href={`/builds/${s.org}/${s.project}`}
                 ><XStack flexShrink={0} alignItems="center" gap="$1.5">
-                  <SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={1.92} color="$color11" hoverStyle={{ color: "$color" }}>Read</SizableText>
+                  <SizableText fontFamily="$mono" fontSize={11} color="$color11" hoverStyle={{ color: "$color" }}>Read</SizableText>
                   <ArrowUpRight size={12} />
                 </XStack></Link>
               ) : null}

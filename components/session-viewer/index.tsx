@@ -249,7 +249,7 @@ export function SessionViewer({ deploymentId }: SessionViewerProps) {
                   {selectedSession.pages.map((page, index) => (
                     <XStack key={index} alignItems="flex-start" gap="$3">
                       <YStack alignItems="center">
-                        <XStack width="$6" height="$6" borderRadius="$10" backgroundColor="$color12" alignItems="center" justifyContent="center">
+                        <XStack width="$6" height="$6" borderRadius="$10" backgroundColor="$color4" alignItems="center" justifyContent="center">
                           <SizableText color="$background" fontSize="$1" fontWeight="500">{index + 1}</SizableText>
                         </XStack>
                         {index < selectedSession.pages.length - 1 && (

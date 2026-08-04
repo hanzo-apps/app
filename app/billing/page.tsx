@@ -231,7 +231,7 @@ export default function BillingPage() {
           </div>
           <Button
             onClick={() => setActiveTab('add-credits')}
-            backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
+            backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}
           >
             <Plus size={16} />
             Add Credits
@@ -358,7 +358,7 @@ export default function BillingPage() {
               <CardContent gap="$3">
                 {CRYPTO_PAYMENTS_ENABLED && (
                   <Button
-                    backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
+                    backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}
                     onClick={() => { setPaymentMethod('crypto'); setCreditModalOpen(true); }}
                   >
                     <Wallet size={16} />

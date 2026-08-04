@@ -93,6 +93,7 @@ export function AppSwitcher({ currentApp = 'app' }: { currentApp?: string }) {
       <PopoverTrigger asChild>
         <Button
           type="button"
+          variant="ghost"
           aria-label="Open Hanzo apps"
           backgroundColor="transparent" height="auto" group flexShrink={0} alignItems="center" gap="$2" borderRadius="$5" paddingHorizontal="$1" paddingVertical="$1" outlineWidth={0} hoverStyle={{ backgroundColor: "$color3" }}
         >
@@ -107,7 +108,7 @@ export function AppSwitcher({ currentApp = 'app' }: { currentApp?: string }) {
         width={340} overflow="hidden" padding="$0"
       >
         <XStack alignItems="center" justifyContent="space-between" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$2.5">
-          <SizableText fontSize={11} fontWeight="600" textTransform="uppercase" letterSpacing={0.4} color="$color11">
+          <SizableText fontSize={11} fontWeight="600" letterSpacing={0.4} color="$color11">
             Hanzo Apps
           </SizableText>
           <Link
@@ -123,7 +124,7 @@ export function AppSwitcher({ currentApp = 'app' }: { currentApp?: string }) {
             if (apps.length === 0) return null;
             return (
               <YStack key={group} marginBottom="$1.5">
-                <SizableText paddingHorizontal="$2" paddingBottom="$1" paddingTop="$1.5" fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color11" display="flex" flexDirection="column">
+                <SizableText paddingHorizontal="$2" paddingBottom="$1" paddingTop="$1.5" fontSize={10} fontWeight="500" letterSpacing={0.4} color="$color11" display="flex" flexDirection="column">
                   {group}
                 </SizableText>
                 <YStack gap="$1">

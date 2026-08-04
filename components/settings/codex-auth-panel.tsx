@@ -111,17 +111,17 @@ export function CodexAuthPanel({ onAuthChange }: CodexAuthPanelProps) {
   };
 
   const warningBanner = (
-    <YStack padding="$2.5" borderWidth={1} borderColor="$yellow10" borderRadius="$3" backgroundColor="$yellow12" rowGap="$1">
+    <YStack padding="$2.5" borderWidth={1} borderColor="$yellow3" borderRadius="$3" backgroundColor="$yellow1" rowGap="$1">
       <XStack alignItems="flex-start" gap="$2">
         <TriangleAlert size={14} />
         <div>
-          <Paragraph fontSize="$1" color="$yellow3">
-            <SizableText fontWeight="500" color="$yellow8">Use at your own risk.</SizableText>{' '}
+          <Paragraph fontSize="$1" color="$yellow11">
+            <SizableText fontWeight="500" color="$yellow12">Use at your own risk.</SizableText>{' '}
             This routes requests through an unofficial backend using your ChatGPT session token. Your token is sent to ChatGPT servers but the usage is outside the intended Codex CLI.
           </Paragraph>
-          <Paragraph marginTop="$1" fontSize="$1" color="$yellow3">
+          <Paragraph marginTop="$1" fontSize="$1" color="$yellow11">
             OpenAI may restrict or revoke access to this endpoint at any time. For reliable, long-term use consider an{' '}
-            <Anchor href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" color="$yellow8" hoverStyle={{ textDecorationLine: "underline" }}>OpenAI API key</Anchor>{' '}
+            <Anchor href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" color="$yellow12" hoverStyle={{ textDecorationLine: "underline" }}>OpenAI API key</Anchor>{' '}
             instead.
           </Paragraph>
         </div>

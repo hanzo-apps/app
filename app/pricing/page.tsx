@@ -129,9 +129,9 @@ export default function PricingPage() {
 
           <YStack position="relative" alignSelf="center" maxWidth={768}>
             <Reveal>
-              <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5">
-                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" />
-                <SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.4} color="$color11">
+              <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$3" paddingVertical="$1.5">
+                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color5" />
+                <SizableText fontFamily="$mono" fontSize={11} color="$color11">
                   One plan · every Hanzo app
                 </SizableText>
               </XStack>
@@ -163,11 +163,11 @@ export default function PricingPage() {
             {plans.map((plan, i) => (
               <Reveal key={plan.id} delay={i * 80}>
                 <YStack
-                  position="relative" height="100%" borderRadius="$8" borderWidth={1} padding={28} {...{ borderColor: plan.highlighted ? "$color" : "$borderColor", backgroundColor: plan.highlighted ? "$color3" : "$color3", hoverStyle: plan.highlighted ? undefined : {"borderColor":"$color"} }}
+                  position="relative" height="100%" borderRadius="$8" borderWidth={1} padding={28} {...{ borderColor: plan.highlighted ? "$color" : "$borderColor", backgroundColor: plan.highlighted ? "$color2" : "$color002", hoverStyle: plan.highlighted ? undefined : {"borderColor":"$color06"} }}
                 >
                   {plan.badge && (
                     <YStack position="absolute" top="-3" left={28}>
-                      <SizableText borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$1" fontSize={11} fontWeight="500" color="$background">
+                      <SizableText borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$3" paddingVertical="$1" fontSize={11} fontWeight="500" color="$color12">
                         {plan.badge}
                       </SizableText>
                     </YStack>
@@ -196,7 +196,7 @@ export default function PricingPage() {
                     }
                     title={catalogError ?? undefined}
                     variant={plan.highlighted ? 'default' : 'outline'}
-                    marginTop="$5" width="100%" alignItems="center" justifyContent="center" gap="$2" borderRadius="$10" paddingHorizontal="$4.5" paddingVertical="$3" disabledStyle={{ opacity: 0.6 }} {...{ backgroundColor: plan.highlighted ? "$color12" : "$color3", hoverStyle: plan.highlighted ? {"backgroundColor":"$color12"} : {"borderColor":"$color","backgroundColor":"$color3"}, borderWidth: plan.highlighted ? undefined : 1, borderColor: plan.highlighted ? undefined : "$borderColor" }}
+                    marginTop="$5" width="100%" alignItems="center" justifyContent="center" gap="$2" borderRadius="$10" paddingHorizontal="$4.5" paddingVertical="$3" disabledStyle={{ opacity: 0.6 }} {...{ backgroundColor: plan.highlighted ? "$color12" : "$color002", hoverStyle: plan.highlighted ? {"backgroundColor":"$color12"} : {"borderColor":"$color06","backgroundColor":"$color005"}, borderWidth: plan.highlighted ? undefined : 1, borderColor: plan.highlighted ? undefined : "$borderColor" }}
                   >
                     <SizableText fontSize="$3" fontWeight="500">
                       {!isAuthenticated
@@ -227,7 +227,7 @@ export default function PricingPage() {
         {/* ── Free-to-start note ───────────────────────────────── */}
         <YStack paddingHorizontal="$4" $md={{ paddingHorizontal: "$6" }}>
           <Reveal alignSelf="center" width="100%" maxWidth={1152}>
-            <YStack alignItems="flex-start" justifyContent="space-between" gap="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: 28 }}>
+            <YStack alignItems="flex-start" justifyContent="space-between" gap="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$5" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: 28 }}>
               <div>
                 <H3 fontSize="$4" fontWeight="500" color="$color">
                   Start for free
@@ -240,7 +240,7 @@ export default function PricingPage() {
               </div>
               <Link
                 href="/dev"
-              ><XStack flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}>
+              ><XStack flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color4" }}>
                 <SizableText fontSize="$3" fontWeight="500" color="$color">Open the builder</SizableText>
                 <ArrowRight size={16} />
               </XStack></Link>
@@ -251,7 +251,7 @@ export default function PricingPage() {
         {/* ── Enterprise note ──────────────────────────────────── */}
         <YStack paddingHorizontal="$4" paddingTop="$6" $md={{ paddingHorizontal: "$6" }}>
           <Reveal alignSelf="center" width="100%" maxWidth={1152}>
-            <YStack alignItems="flex-start" justifyContent="space-between" gap="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: 28 }}>
+            <YStack alignItems="flex-start" justifyContent="space-between" gap="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$5" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: 28 }}>
               <div>
                 <H3 fontSize="$4" fontWeight="500" color="$color">
                   Need more than Max?
@@ -263,7 +263,7 @@ export default function PricingPage() {
               </div>
               <Link
                 href="/enterprise"
-              ><XStack flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}>
+              ><XStack flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color4" }}>
                 <SizableText fontSize="$3" fontWeight="500" color="$color">Talk to us</SizableText>
                 <ArrowRight size={16} />
               </XStack></Link>

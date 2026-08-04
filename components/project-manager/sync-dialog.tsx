@@ -105,7 +105,7 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
         <div>
           {/* Error Banner */}
           {error && (
-            <XStack alignItems="flex-start" gap="$3" padding="$3" backgroundColor="$red9" borderWidth={1} borderColor="$red9" borderRadius="$5">
+            <XStack alignItems="flex-start" gap="$3" padding="$3" backgroundColor="transparent" borderWidth={1} borderColor="$red9" borderRadius="$5">
               <AlertTriangle size={20} />
               <YStack>
                 <Paragraph fontWeight="500" color="$red10" $theme-dark={{ color: "$red8" }}>

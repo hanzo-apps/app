@@ -35,7 +35,7 @@ export default function HanzoModels() {
               href="https://hanzo.ai/enso"
               target="_blank"
               rel="noopener noreferrer"
-              group position="relative" height="100%" flexDirection="column" borderRadius="$8" borderWidth={1} borderColor="$color" backgroundColor="$color3" padding={28} hoverStyle={{ borderColor: "$color" }}
+              group position="relative" height="100%" flexDirection="column" borderRadius="$8" borderWidth={1} borderColor="$color02" backgroundColor="$color2" padding={28} hoverStyle={{ borderColor: "$color06" }}
              display="flex" textDecorationLine="none">
               <XStack alignItems="center" justifyContent="space-between">
                 <XStack height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
@@ -66,7 +66,7 @@ export default function HanzoModels() {
               href="https://hanzo.ai/zen"
               target="_blank"
               rel="noopener noreferrer"
-              group position="relative" height="100%" flexDirection="column" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding={28} hoverStyle={{ borderColor: "$color", backgroundColor: "$color" }}
+              group position="relative" height="100%" flexDirection="column" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding={28} hoverStyle={{ borderColor: "$color06" }}
              display="flex" textDecorationLine="none">
               <XStack alignItems="center" justifyContent="space-between">
                 <XStack height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">

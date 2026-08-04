@@ -115,7 +115,7 @@ export function Header({
         <Link
           href="/"
           aria-label="Hanzo home"
-        ><XStack marginRight="$0.5" width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}>
+        ><XStack marginRight="$0.5" width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}>
           <HanzoLogo size={20} />
         </XStack></Link>
         <YStack minWidth={0}>
@@ -130,7 +130,7 @@ export function Header({
             title={historyOpen ? "Back to chat" : "Version history"}
             aria-label={historyOpen ? "Back to chat" : "Version history"}
             aria-pressed={Boolean(historyOpen)}
-            display="none" width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: historyOpen ? "$color3" : undefined, hoverStyle: historyOpen ? undefined : { backgroundColor: "$color" } }}
+            display="none" width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: historyOpen ? "$color3" : undefined, hoverStyle: historyOpen ? undefined : { backgroundColor: "$color3" } }}
           >
             <History size={16} />
           </Button>
@@ -160,9 +160,11 @@ export function Header({
                 // device group beside it and every icon button. Padding + line-height
                 // computed to 32px of CONTENT, so the group rendered 36px and sat 4px
                 // taller than its own sibling. Set the height; never let padding decide it.
-                height={28} alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2.5" focusVisibleStyle={{ outlineWidth: 0 }} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, backgroundColor: active ? "$color3" : undefined, elevation: active ? 1 : undefined, hoverStyle: active ? undefined : { backgroundColor: "$color" } }}
+                height={28} alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2.5" focusVisibleStyle={{ outlineWidth: 0 }} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, backgroundColor: active ? "$color12" : undefined, elevation: active ? 1 : undefined, hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
               >
-                <item.icon size={16} />
+                <SizableText color={active ? "$background" : "$color11"}>
+                  <item.icon size={16} />
+                </SizableText>
                 <SizableText display="none">{item.label}</SizableText>
               </Button>
             );
@@ -187,9 +189,11 @@ export function Header({
                   aria-selected={active}
                   title={`${d.name[0].toUpperCase()}${d.name.slice(1)} preview`}
                   onClick={() => setDevice(d.name as "desktop" | "mobile")}
-                  width={28} height={28} alignItems="center" justifyContent="center" borderRadius="$3" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: active ? "$color3" : undefined, elevation: active ? 1 : undefined, hoverStyle: active ? undefined : { backgroundColor: "$color" } }}
+                  width={28} height={28} alignItems="center" justifyContent="center" borderRadius="$3" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: active ? "$color12" : undefined, elevation: active ? 1 : undefined, hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
                 >
-                  <d.icon size={16} />
+                  <SizableText color={active ? "$background" : "$color11"}>
+                    <d.icon size={16} />
+                  </SizableText>
                 </Button>
               );
             })}
@@ -198,7 +202,7 @@ export function Header({
             type="button"
             onClick={handleRefreshIframe}
             title="Refresh preview"
-            width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+            width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
           >
             <RefreshCcw size={14} />
           </Button>
@@ -244,7 +248,7 @@ export function Header({
             onClick={onOpenExternal}
             title="Open preview in a new tab"
             aria-label="Open preview in a new tab"
-            width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+            width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
           >
             <ExternalLink size={14} />
           </Button>

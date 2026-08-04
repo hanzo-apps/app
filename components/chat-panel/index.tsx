@@ -690,12 +690,12 @@ export function ChatPanel({
   const focusContextHint = focusContext ? (
     <YStack
       id="focus-context-hint"
-      borderRadius="$3" borderWidth={1} borderStyle="dashed" borderColor="$color12" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$2" elevation={1}
+      borderRadius="$3" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" backgroundColor="$color005" paddingHorizontal="$3" paddingVertical="$2" elevation={1}
     >
       <XStack flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$2">
         <XStack alignItems="center" gap="$2">
-          <SizableText fontWeight="500" fontSize="$1" textTransform="uppercase" letterSpacing={0.4} color="$color12">context</SizableText>
-          <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.4} color="$color11">included in next message</SizableText>
+          <SizableText fontWeight="500" fontSize="$1" letterSpacing={0.4} color="$color11">context</SizableText>
+          <SizableText fontSize={10} letterSpacing={0.4} color="$color11">included in next message</SizableText>
         </XStack>
         <Button
           size="sm"
@@ -716,7 +716,7 @@ export function ChatPanel({
           </YStack>
         )}
         {trimmedSnippet && (
-          <SizableText maxHeight="$12" overflow="scroll" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$1" fontSize={11} color="$color" lineHeight="1.625" fontFamily="$mono" whiteSpace="pre">
+          <SizableText maxHeight="$12" overflow="scroll" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$2" paddingVertical="$1" fontSize={11} color="$color" lineHeight="1.625" fontFamily="$mono" whiteSpace="pre">
             <code>{trimmedSnippet}</code>
           </SizableText>
         )}
@@ -727,7 +727,7 @@ export function ChatPanel({
   return (
     <YStack height="100%" backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$5" overflow="hidden" data-tour-id="assistant-panel">
       {/* Header */}
-      <XStack alignItems="center" justifyContent="space-between" padding="$3" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color3" flexShrink={0}>
+      <XStack alignItems="center" justifyContent="space-between" padding="$3" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color2" flexShrink={0}>
         <XStack alignItems="center" gap="$2">
           <MessageSquare size={16} style={{ color: 'var(--brand-accent)' }} />
           {onClose ? (
@@ -795,7 +795,7 @@ export function ChatPanel({
       <YStack padding="$3" rowGap="$2">
         {focusContextHint}
         <YStack
-          borderRadius="$5" elevation={1} overflow="hidden" {...{ borderColor: isDragging ? "$color12" : "$borderColor", borderWidth: isDragging ? 2 : 1, backgroundColor: isDragging ? "$color12" : "$background" }}
+          borderRadius="$5" elevation={1} overflow="hidden" {...{ borderColor: isDragging ? "$color" : "$borderColor", borderWidth: isDragging ? 2 : 1, backgroundColor: "$background" }}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -830,10 +830,10 @@ export function ChatPanel({
 
           {/* Drop overlay */}
           {isDragging && supportsVision && (
-            <XStack position="absolute" top={0} right={0} bottom={0} left={0} alignItems="center" justifyContent="center" backgroundColor="$color12" zIndex={10} pointerEvents="none">
+            <XStack position="absolute" top={0} right={0} bottom={0} left={0} alignItems="center" justifyContent="center" backgroundColor="$background" zIndex={10} pointerEvents="none">
               <XStack alignItems="center" gap="$2">
                 <ImageIcon size={20} />
-                <SizableText color="$color12" fontWeight="500">Drop image here</SizableText>
+                <SizableText color="$color" fontWeight="500">Drop image here</SizableText>
               </XStack>
             </XStack>
           )}
@@ -880,14 +880,14 @@ export function ChatPanel({
           </XStack>
 
           {/* Footer */}
-          <YStack borderTopWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2" paddingVertical="$2">
+          <YStack borderTopWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$2" paddingVertical="$2">
             <XStack alignItems="center" justifyContent="space-between" gap="$2">
               <Popover open={showMobileSettings} onOpenChange={setShowMobileSettings}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     size="sm"
-                    height={28} {...{ borderColor: !providerReady ? "$color12" : undefined }}
+                    height={28} {...{ borderColor: !providerReady ? "$color06" : undefined }}
                     data-tour-id="provider-settings-trigger"
                   >
                     <SizableText fontSize="$1">{providerReady ? getModelDisplayName(currentModel) : 'Select provider'}</SizableText>
@@ -1010,7 +1010,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
 
           case 'text':
             return (
-              <YStack key={item.id} backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$2">
+              <YStack key={item.id} paddingHorizontal="$3" paddingVertical="$2">
                 <MarkdownRenderer content={item.data} />
               </YStack>
             );
@@ -1020,7 +1020,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
               <YStack key={item.id} borderRadius="$3" {...{ backgroundColor: expandedItems.has(item.id) ? "$color3" : undefined, padding: expandedItems.has(item.id) ? "$2" : "$1.5" }}>
                 <Button
                   onClick={() => onToggleExpanded(item.id)}
-                  alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
+                  alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color4" }}
                 >
                   <ChevronRight size={12} />
                   <FileCode size={12} />
@@ -1028,7 +1028,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                 </Button>
                 {expandedItems.has(item.id) && (
                   <YStack marginTop="$2" paddingHorizontal="$2">
-                    <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" whiteSpace="pre" color="$color11" overflow="scroll" fontFamily="$mono">
+                    <SizableText fontSize="$1" backgroundColor="$color2" borderWidth={1} borderColor="$borderColor" padding="$2" borderRadius="$2" whiteSpace="pre" color="$color11" overflow="scroll" fontFamily="$mono">
                       {item.data}
                     </SizableText>
                   </YStack>
@@ -1038,8 +1038,8 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
 
           case 'user':
             return (
-              <YStack key={item.id} backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$2" borderWidth={1} borderColor="$color12">
-                <YStack marginBottom="$1"><SizableText fontWeight="500" color="$color12" fontSize="$1">User</SizableText></YStack>
+              <YStack key={item.id} backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor">
+                <YStack marginBottom="$1"><SizableText fontWeight="500" color="$color11" fontSize="$1">User</SizableText></YStack>
                 <UserMessageContent content={item.data} />
               </YStack>
             );
@@ -1059,7 +1059,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
 
           case 'error':
             return (
-              <YStack key={item.id} backgroundColor="$red9" borderWidth={1} borderColor="$red9" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$2">
+              <YStack key={item.id} backgroundColor="$red3" borderWidth={1} borderColor="$red7" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$2">
                 <XStack alignItems="flex-start" gap="$2">
                   <XCircle size={16} />
                   <YStack flex={1}>
@@ -1152,7 +1152,7 @@ function ToolDisplay({ itemId, tool, isExpanded, onToggle }: ToolDisplayProps) {
     >
       <Button
         onClick={onToggle}
-        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
+        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color4" }}
       >
         <XStack alignItems="center" gap="$1.5">
           {toolIcons[tool.name] || <ChevronRight size={12} />}
@@ -1185,11 +1185,11 @@ function ToolDisplay({ itemId, tool, isExpanded, onToggle }: ToolDisplayProps) {
           {tool.parameters && Object.keys(tool.parameters).length > 0 && (
             <YStack paddingHorizontal="$2">
               <YStack marginBottom="$1">
-                <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.8} color="$color11">
+                <SizableText fontSize={10} color="$color11">
                   Parameters
                 </SizableText>
               </YStack>
-              <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
+              <SizableText fontSize="$1" backgroundColor="$color2" borderWidth={1} borderColor="$borderColor" padding="$2" borderRadius="$2" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
                 {JSON.stringify(tool.parameters, null, 2)}
               </SizableText>
             </YStack>
@@ -1199,11 +1199,11 @@ function ToolDisplay({ itemId, tool, isExpanded, onToggle }: ToolDisplayProps) {
           {tool.result && (
             <YStack paddingHorizontal="$2">
               <YStack marginBottom="$1">
-                <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.8} color="$color11">
+                <SizableText fontSize={10} color="$color11">
                   Result
                 </SizableText>
               </YStack>
-              <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" maxHeight="$17" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
+              <SizableText fontSize="$1" backgroundColor="$color2" borderWidth={1} borderColor="$borderColor" padding="$2" borderRadius="$2" maxHeight="$17" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
                 {typeof tool.result === 'string' ? tool.result : JSON.stringify(tool.result, null, 2)}
               </SizableText>
             </YStack>
@@ -1213,11 +1213,11 @@ function ToolDisplay({ itemId, tool, isExpanded, onToggle }: ToolDisplayProps) {
           {tool.error && (
             <YStack paddingHorizontal="$2">
               <YStack marginBottom="$1">
-                <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.8} color="$red9">
+                <SizableText fontSize={10} color="$red9">
                   Error
                 </SizableText>
               </YStack>
-              <SizableText fontSize="$1" backgroundColor="$red9" color="$red9" padding="$2" borderRadius="$2" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
+              <SizableText fontSize="$1" backgroundColor="$red3" borderWidth={1} borderColor="$red7" color="$red9" padding="$2" borderRadius="$2" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
                 {tool.error}
               </SizableText>
             </YStack>
@@ -1237,10 +1237,10 @@ interface SyntheticErrorDisplayProps {
 
 function SyntheticErrorDisplay({ itemId, content, isExpanded, onToggle }: SyntheticErrorDisplayProps) {
   return (
-    <YStack backgroundColor="$yellow9" borderRadius="$3" {...{ padding: isExpanded ? "$2" : "$1.5" }}>
+    <YStack backgroundColor="$yellow3" borderRadius="$3" {...{ padding: isExpanded ? "$2" : "$1.5" }}>
       <Button
         onClick={onToggle}
-        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$yellow9" }}
+        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$yellow4" }}
       >
         <XStack alignItems="center" gap="$1.5">
           <RefreshCw size={12} />
@@ -1254,7 +1254,7 @@ function SyntheticErrorDisplay({ itemId, content, isExpanded, onToggle }: Synthe
       {/* Expanded view */}
       {isExpanded && (
         <YStack marginTop="$2" paddingHorizontal="$2">
-          <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" whiteSpace="pre" overflow="scroll" fontFamily="$mono">
+          <SizableText fontSize="$1" backgroundColor="$color2" borderWidth={1} borderColor="$borderColor" padding="$2" borderRadius="$2" whiteSpace="pre" overflow="scroll" fontFamily="$mono">
             {content}
           </SizableText>
         </YStack>
@@ -1277,10 +1277,10 @@ function ReasoningDisplay({ itemId, content, isExpanded, onToggle }: ReasoningDi
   const isStreaming = !content || content.length < 20; // Short content might still be streaming
 
   return (
-    <YStack backgroundColor="$purple9" borderRadius="$3" padding="$1.5" borderWidth={1} borderColor="$purple9">
+    <YStack backgroundColor="$purple3" borderRadius="$3" padding="$1.5" borderWidth={1} borderColor="$purple7">
       <Button
         onClick={onToggle}
-        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$purple9" }}
+        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$purple4" }}
       >
         <XStack alignItems="center" gap="$1.5">
           {isStreaming ? (
@@ -1300,7 +1300,7 @@ function ReasoningDisplay({ itemId, content, isExpanded, onToggle }: ReasoningDi
 
       {isExpanded && (
         <YStack marginTop="$2" paddingHorizontal="$2">
-          <YStack backgroundColor="$color3" padding="$2" borderRadius="$2" maxHeight={256} overflow="scroll">
+          <YStack backgroundColor="$color2" borderWidth={1} borderColor="$borderColor" padding="$2" borderRadius="$2" maxHeight={256} overflow="scroll">
             <MarkdownRenderer content={content || 'Thinking...'} />
           </YStack>
         </YStack>
@@ -1325,7 +1325,7 @@ function PlanDisplay({ itemId, content, isExpanded, onToggle }: PlanDisplayProps
     <YStack backgroundColor="$color3" borderRadius="$3" padding="$1.5">
       <Button
         onClick={onToggle}
-        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
+        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color4" }}
       >
         <XStack alignItems="center" gap="$1.5">
           <ClipboardList size={12} />
@@ -1341,7 +1341,7 @@ function PlanDisplay({ itemId, content, isExpanded, onToggle }: PlanDisplayProps
 
       {isExpanded && (
         <YStack marginTop="$2" paddingHorizontal="$2">
-          <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" whiteSpace="pre" overflow="scroll" fontFamily="$mono">
+          <SizableText fontSize="$1" backgroundColor="$color2" borderWidth={1} borderColor="$borderColor" padding="$2" borderRadius="$2" whiteSpace="pre" overflow="scroll" fontFamily="$mono">
             {content}
           </SizableText>
         </YStack>
@@ -1366,7 +1366,7 @@ function AgentDisplay({ itemId, content, isExpanded, onToggle }: AgentDisplayPro
     <YStack backgroundColor="$color3" borderRadius="$3" padding="$1.5">
       <Button
         onClick={onToggle}
-        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
+        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color4" }}
       >
         <XStack alignItems="center" gap="$1.5">
           <Bot size={12} />
@@ -1382,7 +1382,7 @@ function AgentDisplay({ itemId, content, isExpanded, onToggle }: AgentDisplayPro
 
       {isExpanded && (
         <YStack marginTop="$2" paddingHorizontal="$2">
-          <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" whiteSpace="pre" overflow="scroll" fontFamily="$mono">
+          <SizableText fontSize="$1" backgroundColor="$color2" borderWidth={1} borderColor="$borderColor" padding="$2" borderRadius="$2" whiteSpace="pre" overflow="scroll" fontFamily="$mono">
             {content}
           </SizableText>
         </YStack>
@@ -1407,7 +1407,7 @@ function ProgressDisplay({ itemId, content, isExpanded, onToggle }: ProgressDisp
     <YStack backgroundColor="$color3" borderRadius="$3" padding="$1.5">
       <Button
         onClick={onToggle}
-        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
+        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color4" }}
       >
         <XStack alignItems="center" gap="$1.5">
           {isCompleted ? (
@@ -1427,7 +1427,7 @@ function ProgressDisplay({ itemId, content, isExpanded, onToggle }: ProgressDisp
 
       {isExpanded && (
         <YStack marginTop="$2" paddingHorizontal="$2">
-          <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" whiteSpace="pre" overflow="scroll" fontFamily="$mono">
+          <SizableText fontSize="$1" backgroundColor="$color2" borderWidth={1} borderColor="$borderColor" padding="$2" borderRadius="$2" whiteSpace="pre" overflow="scroll" fontFamily="$mono">
             {content}
           </SizableText>
         </YStack>

@@ -173,15 +173,15 @@ export function RevisionDetails({
         </Button>
         <SizableText marginLeft="$1" numberOfLines={1} fontSize={13} fontWeight="500" color="$color">Details</SizableText>
         <XStack marginLeft="auto" alignItems="center" gap="$1.5">
-          <XStack alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="white" padding="$0.5">
+          <XStack alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color3" padding="$0.5">
             {(["timeline", "changes"] as const).map((v) => (
               <Button
                 key={v}
                 type="button"
                 onClick={() => setView(v)}
-                borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$1" {...{ backgroundColor: view === v ? "$color3" : undefined, elevation: view === v ? 1 : undefined, hoverStyle: view === v ? undefined : { backgroundColor: "white" } }}
+                borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$1" {...{ backgroundColor: view === v ? "$color12" : undefined, elevation: view === v ? 1 : undefined, hoverStyle: view === v ? undefined : { backgroundColor: "$color4" } }}
               >
-                <SizableText fontSize="$1" fontWeight="500" textTransform="capitalize" color={view === v ? "$color" : "$color11"}>{v}</SizableText>
+                <SizableText fontSize="$1" fontWeight="500" textTransform="capitalize" color={view === v ? "$background" : "$color11"}>{v}</SizableText>
               </Button>
             ))}
           </XStack>
@@ -252,7 +252,7 @@ function FileCard({
   const [open, setOpen] = useState(false);
   const stat = useMemo(() => diffStat(file.lines), [file.lines]);
   return (
-    <YStack overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="white">
+    <YStack overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2">
       <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$2">
         <Button
           type="button"
@@ -315,7 +315,7 @@ function DiffView({ lines }: { lines: DiffLine[] }) {
           {lines.map((l, i) => (
             <YStack
               key={i}
-              {...{ backgroundColor: l.type === "hunk" ? "white" : l.type === "del" ? "$red9" : l.type === "add" ? "$green9" : undefined }}
+              {...{ backgroundColor: l.type === "hunk" ? "$color3" : l.type === "del" ? "$red9" : l.type === "add" ? "$green9" : undefined }}
             >
               <SizableText userSelect="none" borderRightWidth={1} borderColor="$borderColor" paddingHorizontal="$2" textAlign="right" fontFamily="$mono" fontSize={11} color="$color11">
                 {l.oldNo ?? ""}
@@ -386,9 +386,9 @@ function Timeline({ rev, commit }: { rev: DetailsRev; commit: GitCommit | null }
         <div>
           <XStack marginBottom="$1" alignItems="center" gap="$1.5">
             <FileText size={12} />
-            <SizableText fontSize={11} textTransform="uppercase" letterSpacing={0.4} color="$color11">Message</SizableText>
+            <SizableText fontSize={11} letterSpacing={0.4} color="$color11">Message</SizableText>
           </XStack>
-          <SizableText whiteSpace="pre" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="white" padding="$3" fontFamily="$mono" fontSize={11} lineHeight="1.625" color="$color">
+          <SizableText whiteSpace="pre" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$3" fontFamily="$mono" fontSize={11} lineHeight="1.625" color="$color">
             {fullMessage}
           </SizableText>
         </div>
@@ -409,7 +409,7 @@ function StatusBadge({ status }: { status: GitCommitFile["status"] }) {
         : { borderColor: "$borderColor", color: "$color11" };
   return (
     <SizableText
-      flexShrink={0} borderRadius="$3" borderWidth={1} paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} {...tone}
+      flexShrink={0} borderRadius="$3" borderWidth={1} paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" letterSpacing={0.4} {...tone}
     >
       {STATUS_LABEL[status]}
     </SizableText>

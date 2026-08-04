@@ -125,7 +125,7 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
           {settings.cdnLinks.map((cdn) => (
             <XStack
               key={cdn.id}
-              alignItems="flex-start" gap="$4" padding="$4" borderWidth={1} borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
+              alignItems="flex-start" gap="$4" padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$5" hoverStyle={{ backgroundColor: "$color2", borderColor: "$color06" }}
             >
               <YStack flex={1} minWidth={0}>
                 <XStack alignItems="center" gap="$2" marginBottom="$2">

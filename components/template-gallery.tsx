@@ -43,7 +43,7 @@ function RailPill({
   return (
     <Button
       onClick={onClick}
-      group flexShrink={0} borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" {...{ backgroundColor: active ? "$color12" : "$color3", borderWidth: active ? undefined : 1, borderColor: active ? undefined : "$borderColor", hoverStyle: active ? undefined : {"borderColor":"$color"} }}
+      group flexShrink={0} borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" {...{ backgroundColor: active ? "$color12" : "$color002", borderWidth: active ? undefined : 1, borderColor: active ? undefined : "$borderColor", hoverStyle: active ? undefined : {"borderColor":"$color06"} }}
     >
       <SizableText whiteSpace="nowrap" fontSize="$1" fontWeight="500" color={active ? "$background" : "$color11"} $group-hover={active ? undefined : { color: "$color" }}>{label}</SizableText>
     </Button>
@@ -52,7 +52,7 @@ function RailPill({
 
 function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?: boolean }) {
   return (
-    <YStack group className="zoom-scope" position="relative" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ y: "-1", borderColor: "$color", backgroundColor: "$color3" }}>
+    <YStack group className="zoom-scope" position="relative" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" hoverStyle={{ y: "-1", borderColor: "$color06", backgroundColor: "$color2" }}>
       {/* Preview — image-first via TemplateThumb; on-brand tile when no real shot. */}
       <YStack position="relative" overflow="hidden" backgroundColor="$background">
         <TemplateThumb
@@ -66,12 +66,12 @@ function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?
             the live-demo slot. Every catalog template is published by Hanzo itself,
             and a reader must not have to infer that from the author handle. */}
         <XStack position="absolute" left="$3" top="$3" flexWrap="wrap" alignItems="center" gap="$1.5">
-          <SizableText borderRadius="$10" borderWidth={1} borderColor="white" backgroundColor="black" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="white" backdropFilter="blur(8px)">
+          <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color" backdropFilter="blur(8px)">
             {t.category}
           </SizableText>
           <SizableText
             data-official="true"
-            borderRadius="$10" borderWidth={1} borderColor="white" backgroundColor="black" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="white" backdropFilter="blur(8px)"
+            borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color" backdropFilter="blur(8px)"
           >
             {OFFICIAL_LABEL}
           </SizableText>
@@ -79,9 +79,9 @@ function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?
         {/* The grid keeps the (fast) screenshot — 105 iframes would be a page of
             them — but says which cards open on a template you can actually use. */}
         {t.demo && (
-          <XStack position="absolute" right="$3" top="$3" alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="white" backgroundColor="black" paddingHorizontal="$2.5" paddingVertical="$1" backdropFilter="blur(8px)">
-            <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="white" />
-            <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="white">Live</SizableText>
+          <XStack position="absolute" right="$3" top="$3" alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingVertical="$1" backdropFilter="blur(8px)">
+            <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" />
+            <SizableText fontFamily="$mono" fontSize={10} color="$color">Live</SizableText>
           </XStack>
         )}
       </YStack>
@@ -99,13 +99,13 @@ function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?
         </Paragraph>
 
         <XStack marginTop="auto" alignItems="center" justifyContent="space-between" gap="$3" paddingTop="$4">
-          <SizableText numberOfLines={1} fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11">
+          <SizableText numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color11">
             {showAuthor ? `by ${authorOf(t.slug)}` : t.framework}
           </SizableText>
           <Link
             href={t.fork}
-          ><XStack position="relative" zIndex={10} flexShrink={0} alignItems="center" gap="$1" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$3.5" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color12" }}>
-            <SizableText fontSize="$1" fontWeight="500" color="$background">Use template</SizableText>
+          ><XStack position="relative" zIndex={10} flexShrink={0} alignItems="center" gap="$1" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$3.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color005" }}>
+            <SizableText fontSize="$1" fontWeight="500" color="$color">Use template</SizableText>
             <ArrowRight size={14} strokeWidth={2} />
           </XStack></Link>
         </XStack>
@@ -158,7 +158,7 @@ export function TemplateGallery({
     <YStack alignSelf="center" width="100%" maxWidth={1280} paddingHorizontal="$4.5" paddingVertical="$7" $sm={{ paddingHorizontal: "$6", paddingVertical: "$9" }} className={`${className}`}>
       {/* Header — true-black monochrome, landing aesthetic. */}
       <YStack maxWidth={672}>
-        <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
+        <Paragraph fontFamily="$mono" fontSize={11} color="$color11">
           {eyebrow}
         </Paragraph>
         <H1 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} color="$color" $sm={{ fontSize: "$11" }} $md={{ fontSize: "2.75rem", lineHeight: "1.05" }}>
@@ -179,7 +179,7 @@ export function TemplateGallery({
   />
         ))}
       </XStack>
-      <Paragraph marginTop="$3" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.24} color="$color11">
+      <Paragraph marginTop="$3" fontFamily="$mono" fontSize={11} color="$color11">
         {shown.length} template{shown.length === 1 ? "" : "s"}
       </Paragraph>
 
@@ -197,7 +197,7 @@ export function TemplateGallery({
       )}
 
       {/* Footer CTA — the honest build path (no fabricated metrics). */}
-      <YStack marginTop="$9" alignItems="flex-start" gap="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5" $sm={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: "$6" }}>
+      <YStack marginTop="$9" alignItems="flex-start" gap="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$5" $sm={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: "$6" }}>
         <div>
           <H2 fontSize="$6" fontWeight="500" letterSpacing={-0.4} color="$color">
             Don&apos;t see the right fit?
@@ -208,7 +208,7 @@ export function TemplateGallery({
         </div>
         <Link
           href="/dev"
-        ><XStack flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ backgroundColor: "$color12" }}>
+        ><XStack flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ backgroundColor: "$color6" }}>
           <Sparkles size={16} strokeWidth={1.8} />
           <SizableText fontSize="$3" fontWeight="500" color="$background">Start building</SizableText>
         </XStack></Link>

@@ -340,12 +340,12 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
   const focusContextHint = focusContext ? (
     <YStack
       id="focus-context-hint"
-      borderRadius="$3" borderWidth={1} borderStyle="dashed" borderColor="$color12" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$2" elevation={1}
+      borderRadius="$3" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$2" elevation={1}
     >
         <XStack flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$2">
           <XStack alignItems="center" gap="$2">
-            <SizableText fontWeight="500" fontSize="$1" textTransform="uppercase" letterSpacing={0.4} color="$color12">context</SizableText>
-            <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.4} color="$color11">included in next message</SizableText>
+            <SizableText fontWeight="500" fontSize="$1" letterSpacing={0.4} color="$color11">context</SizableText>
+            <SizableText fontSize={10} letterSpacing={0.4} color="$color11">included in next message</SizableText>
           </XStack>
           <Button
             size="sm"
@@ -1249,7 +1249,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
         {/* Desktop Workspace */}
         <YStack display="none" flex={1} overflow="hidden" backgroundColor="$background">
           {/* Left sidebar for panel toggles */}
-          <YStack width="$7" backgroundColor="$color3" borderRightWidth={1} borderColor="$borderColor" alignItems="center" paddingVertical="$3" gap="$1.5">
+          <YStack width="$7" backgroundColor="$color2" borderRightWidth={1} borderColor="$borderColor" alignItems="center" paddingVertical="$3" gap="$1.5">
             <Tooltip placement="right">
               <TooltipTrigger asChild>
                 <Button
@@ -1343,9 +1343,10 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
             <Tooltip placement="right">
               <TooltipTrigger asChild>
                 <Button
-                  height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ backgroundColor: showDebugPanel ? "$color" : "transparent", elevation: showDebugPanel ? 1 : undefined, color: showDebugPanel ? undefined : "$color11", hoverStyle: showDebugPanel ? undefined : {"backgroundColor":"$color3"} }}
+                  height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showDebugPanel ? 1 : undefined, backgroundColor: showDebugPanel ? undefined : "transparent", color: showDebugPanel ? undefined : "$color11", hoverStyle: showDebugPanel ? undefined : {"backgroundColor":"$color3"} }}
                   style={{
-                    color: showDebugPanel ? 'var(--background)' : undefined
+                    backgroundColor: showDebugPanel ? 'var(--brand-accent)' : undefined,
+                    color: showDebugPanel ? 'var(--brand-accent-fg)' : undefined
                   }}
                   onClick={() => setShowDebugPanel(!showDebugPanel)}
                 >

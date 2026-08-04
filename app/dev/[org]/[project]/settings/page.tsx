@@ -116,7 +116,7 @@ export default function ProjectSettingsPage() {
             <Paragraph marginTop="$2" fontSize="$3" color="$color11">
               <SizableText fontFamily="$mono">{org}/{slug}</SizableText> isn’t available to your account.
             </Paragraph>
-            <Link href="/projects"><SizableText marginTop="$4" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
+            <Link href="/projects"><SizableText marginTop="$4" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$color12" hoverStyle={{ backgroundColor: "$color6" }}>
               Back to projects
             </SizableText></Link>
           </YStack>
@@ -148,7 +148,7 @@ export default function ProjectSettingsPage() {
                 </H1>
                 <XStack alignItems="center" gap="$1">
                   <Circle size={6} color={st.text} />
-                  <SizableText fontSize={11} textTransform="uppercase" letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
+                  <SizableText fontSize={11} letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
                 </XStack>
               </XStack>
               <Paragraph marginTop="$1" fontFamily="$mono" fontSize="$1" color="$color11">{org}/{slug}</Paragraph>
@@ -186,7 +186,7 @@ export default function ProjectSettingsPage() {
                   type="button"
                   onClick={save}
                   disabled={!dirty || saving}
-                  alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3" }}
+                  alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$4.5" paddingVertical="$2" hoverStyle={{ backgroundColor: "$color6" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3" }}
                 >
                   {saving && <Loader2 size={14} />}
                   Save changes

@@ -144,7 +144,7 @@ export default function VideoStreaming() {
                       <XStack position="absolute" top={0} right={0} bottom={0} left={0} backgroundColor="black" alignItems="center" justifyContent="center">
                         <Button
                           size="icon"
-                          height="$10" width="$10" borderRadius="$10" backgroundColor="#171717" hoverStyle={{ backgroundColor: "#000000" }}
+                          height="$10" width="$10" borderRadius="$10" backgroundColor="$color3" hoverStyle={{ backgroundColor: "$color4" }}
                           onClick={() => setIsPlaying(true)}
                         >
                           <Play size={32} />
@@ -157,7 +157,7 @@ export default function VideoStreaming() {
                   <YStack position="absolute" bottom="$0" left="$0" right="$0" padding="$4">
                     {/* Progress Bar */}
                     <YStack marginBottom="$4">
-                      <Progress value={progress} height="$1" backgroundColor="white" />
+                      <Progress value={progress} height="$1" backgroundColor="$color02" />
                       <XStack alignItems="center" justifyContent="space-between" marginTop="$1">
                         <SizableText fontSize="$1" color="white">5:32</SizableText>
                         <SizableText fontSize="$1" color="white">15:42</SizableText>
@@ -170,22 +170,22 @@ export default function VideoStreaming() {
                         <Button
                           size="icon"
                           variant="ghost"
-                          hoverStyle={{ backgroundColor: "white" }}
+                          hoverStyle={{ backgroundColor: "$color02" }}
                           onClick={() => setIsPlaying(!isPlaying)}
                         >
                           <SizableText color="white">{isPlaying ? <Pause size={20} /> : <Play size={20} />}</SizableText>
                         </Button>
-                        <Button size="icon" variant="ghost" hoverStyle={{ backgroundColor: "white" }}>
+                        <Button size="icon" variant="ghost" hoverStyle={{ backgroundColor: "$color02" }}>
                           <SizableText color="white"><SkipBack size={20} /></SizableText>
                         </Button>
-                        <Button size="icon" variant="ghost" hoverStyle={{ backgroundColor: "white" }}>
+                        <Button size="icon" variant="ghost" hoverStyle={{ backgroundColor: "$color02" }}>
                           <SizableText color="white"><SkipForward size={20} /></SizableText>
                         </Button>
-                        <Button size="icon" variant="ghost" hoverStyle={{ backgroundColor: "white" }}>
+                        <Button size="icon" variant="ghost" hoverStyle={{ backgroundColor: "$color02" }}>
                           <SizableText color="white"><Volume2 size={20} /></SizableText>
                         </Button>
                       </XStack>
-                      <Button size="icon" variant="ghost" hoverStyle={{ backgroundColor: "white" }}>
+                      <Button size="icon" variant="ghost" hoverStyle={{ backgroundColor: "$color02" }}>
                         <SizableText color="white"><Maximize size={20} /></SizableText>
                       </Button>
                     </XStack>
@@ -288,7 +288,7 @@ export default function VideoStreaming() {
   />
                     <XStack justifyContent="flex-end" gap="$2" marginTop="$2">
                       <Button variant="ghost" onClick={() => setComment("")}>Cancel</Button>
-                      <Button disabled={!comment.trim()} backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}>Comment</Button>
+                      <Button variant="outline" disabled={!comment.trim()}>Comment</Button>
                     </XStack>
                   </YStack>
                 </XStack>

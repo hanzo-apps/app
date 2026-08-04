@@ -198,7 +198,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
                     flex={1} backgroundColor="transparent" fontSize="$3" outlineWidth={0} placeholderTextColor="$color11"
   />
                 </XStack>
-                <Paragraph paddingHorizontal="$2" paddingVertical="$1" fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color11">
+                <Paragraph paddingHorizontal="$2" paddingVertical="$1" fontSize={10} fontWeight="500" letterSpacing={0.4} color="$color11">
                   Organizations · {allOrgs.length}
                 </Paragraph>
                 <YStack maxHeight={256} overflow="scroll">
@@ -318,7 +318,7 @@ function OnboardingPanel() {
         {busy === 'personal' ? <Loader2 size={16} /> : 'Continue with a personal workspace'}
       </Button>
 
-      <SizableText marginVertical="$4" textAlign="center" fontSize="$1" textTransform="uppercase" letterSpacing={0.4} color="$color11">or</SizableText>
+      <SizableText marginVertical="$4" textAlign="center" fontSize="$1" letterSpacing={0.4} color="$color11">or</SizableText>
 
       <Input
         value={name}

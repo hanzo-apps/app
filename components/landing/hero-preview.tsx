@@ -98,9 +98,9 @@ function VibeApp({ v, compact }: { v: number; compact?: boolean }): ReactElement
         {votes.map((o, i) => (
           <YStack
             key={o.label}
-            borderRadius="$5" borderWidth={1} {...{ paddingHorizontal: compact ? "$1" : "$2", paddingVertical: compact ? "$1.5" : "$2.5", borderColor: i === 0 ? "$color" : "$borderColor", backgroundColor: i === 0 ? "$color" : "$color" }}
+            borderRadius="$5" borderWidth={1} backgroundColor="$color3" {...{ paddingHorizontal: compact ? "$1" : "$2", paddingVertical: compact ? "$1.5" : "$2.5", borderColor: i === 0 ? "$color06" : "$borderColor" }}
           >
-            <SizableText textAlign="center" fontWeight="500" {...{ fontSize: compact ? 9 : 12, color: i === 0 ? "$color" : "$color" }}>
+            <SizableText textAlign="center" fontWeight="500" {...{ fontSize: compact ? 9 : 12, color: i === 0 ? "$color" : "$color11" }}>
               {o.label}
             </SizableText>
           </YStack>
@@ -251,15 +251,15 @@ export default function HeroPreview() {
       `}</style>
 
       {/* Soft floor glow to seat the frame. */}
-      <YStack pointerEvents="none" position="absolute" left="$0" right="$0" bottom="-7" top="$6" zIndex={10} borderRadius="2rem" backgroundColor="$color" opacity={0.05} style={{ filter: "blur(80px)" }} $sm={{ left: "-6", right: "-6" }} />
+      <YStack pointerEvents="none" position="absolute" left="$0" right="$0" bottom="-7" top="$6" zIndex={10} borderRadius="2rem" backgroundColor="$color005" filter="blur(80px)" $sm={{ left: "-6", right: "-6" }} />
 
       <YStack overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={6}>
         {/* ── Editor header — the real /dev chrome in miniature ── */}
         <XStack alignItems="center" gap="$3" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3.5" paddingVertical="$2.5">
           <XStack alignItems="center" gap="$1.5">
-            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
-            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
-            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
+            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color4" />
+            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color4" />
+            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color4" />
           </XStack>
           <HMark size={14} color="var(--foreground)" />
           <SizableText display="none" numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">
@@ -275,7 +275,7 @@ export default function HeroPreview() {
             ].map((tabItem, i) => (
               <XStack
                 key={tabItem.id}
-                height="$4.5" width="$5" alignItems="center" justifyContent="center" borderRadius="$2" {...{ backgroundColor: i < 2 ? "$color" : undefined }}
+                height="$4.5" width="$5" alignItems="center" justifyContent="center" borderRadius="$2" {...{ backgroundColor: i < 2 ? "$color4" : undefined }}
               >
                 <tabItem.icon size={12} />
               </XStack>
@@ -285,9 +285,10 @@ export default function HeroPreview() {
           <XStack marginLeft="auto" alignItems="center" gap="$1.5" $sm={{ marginLeft: "$0" }}>
             <Button
               type="button"
+              variant="ghost"
               aria-label="Replay the demo build"
               onClick={() => run()}
-              height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" focusVisibleStyle={{ outlineWidth: 0 }}
+              height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$color005" hoverStyle={{ borderColor: "$color06" }} focusVisibleStyle={{ outlineWidth: 0 }}
             >
               <SizableText color="$color"><RotateCcw size={12} /></SizableText>
             </Button>
@@ -297,19 +298,21 @@ export default function HeroPreview() {
             <XStack alignItems="center" borderRadius="$3" borderWidth={1} borderColor="$borderColor" padding="$0.5" $lg={{ display: "none" }}>
               <Button
                 type="button"
+                variant="ghost"
                 aria-label="Desktop preview"
                 aria-pressed={device === "desktop"}
                 onClick={() => setDevice("desktop")}
-                height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" {...{ backgroundColor: device === "desktop" ? "$color" : undefined, color: device === "desktop" ? "$color" : "$color" }}
+                height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" {...{ backgroundColor: device === "desktop" ? "$color4" : "transparent" }}
               >
                 <Monitor size={12} />
               </Button>
               <Button
                 type="button"
+                variant="ghost"
                 aria-label="Mobile preview"
                 aria-pressed={device === "mobile"}
                 onClick={() => setDevice("mobile")}
-                height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" {...{ backgroundColor: device === "mobile" ? "$color" : undefined, color: device === "mobile" ? "$color" : "$color" }}
+                height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" {...{ backgroundColor: device === "mobile" ? "$color4" : "transparent" }}
               >
                 <Smartphone size={12} />
               </Button>
@@ -339,7 +342,7 @@ export default function HeroPreview() {
           <YStack width="100%" flexShrink={0} borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" $md={{ width: 248, borderBottomWidth: 0, borderRightWidth: 1 }}>
             <XStack alignItems="center" gap="$2" paddingHorizontal="$3.5" paddingTop="$3">
               <Sparkles size={12} />
-              <SizableText fontFamily="$mono" fontSize={9} color="$color">
+              <SizableText fontFamily="$mono" fontSize={9} color="$color11">
                 Agent chat
               </SizableText>
             </XStack>
@@ -352,9 +355,9 @@ export default function HeroPreview() {
                 b.role === "user" ? (
                   <YStack
                     key={i}
-                    alignSelf="flex-end" borderRadius="$5" borderBottomRightRadius="$1" backgroundColor="$color12" paddingHorizontal="$2.5" paddingVertical="$1.5" className="line"
+                    alignSelf="flex-end" borderRadius="$5" borderBottomRightRadius="$1" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1.5" className="line"
                   >
-                    <SizableText fontSize={11} lineHeight="1.375" color="$background">{b.text}</SizableText>
+                    <SizableText fontSize={11} lineHeight="1.375" color="$color">{b.text}</SizableText>
                   </YStack>
                 ) : (
                   <XStack key={i} alignItems="center" gap="$1.5" className="line">
@@ -439,7 +442,7 @@ export default function HeroPreview() {
                   )}
                 </YStack>
               </YStack>
-              <SizableText marginTop="$2" textAlign="center" fontFamily="$mono" fontSize={8} color="$color">
+              <SizableText marginTop="$2" textAlign="center" fontFamily="$mono" fontSize={8} color="$color11">
                 Mobile
               </SizableText>
             </YStack>
@@ -472,7 +475,7 @@ export default function HeroPreview() {
       </YStack>
 
       {/* Honesty microcopy — a demo, simulated client-side. */}
-      <Paragraph marginTop="$4" textAlign="center" fontFamily="$mono" fontSize={10} color="$color">
+      <Paragraph marginTop="$4" textAlign="center" fontFamily="$mono" fontSize={10} color="$color11">
         Demo · watch the builder build, edit &amp; publish an app — desktop and mobile
       </Paragraph>
     </YStack>
@@ -483,7 +486,7 @@ function Generating(): ReactElement {
   return (
     <YStack height="100%" alignItems="center" justifyContent="center" gap="$2">
       <Loader2 size={16} />
-      <SizableText fontFamily="$mono" fontSize={9} textTransform="uppercase" letterSpacing={2.24}>Generating</SizableText>
+      <SizableText fontFamily="$mono" fontSize={9} color="$color11">Generating</SizableText>
     </YStack>
   );
 }

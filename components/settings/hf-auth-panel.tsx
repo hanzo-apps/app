@@ -186,7 +186,7 @@ export function HFAuthPanel({ onAuthChange }: HFAuthPanelProps) {
             <XStack position="absolute" top={0} right={0} bottom={0} left={0} alignItems="center">
               <SizableText width="100%" borderTopWidth={1} />
             </XStack>
-            <SizableText position="relative" justifyContent="center" fontSize="$1" textTransform="uppercase" display="flex" flexDirection="row">
+            <SizableText position="relative" justifyContent="center" fontSize="$1" display="flex" flexDirection="row">
               <SizableText backgroundColor="$background" paddingHorizontal="$2" color="$color11">
                 Or use an access token
               </SizableText>

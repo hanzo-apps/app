@@ -348,7 +348,7 @@ export function ImportGitPanel() {
                   </DropdownMenuItem>
                   {showProviders && (
                     <YStack gap="$1.5" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2">
-                      <SizableText paddingHorizontal="$1" fontSize={11} textTransform="uppercase" letterSpacing={0.4} color="$color11">
+                      <SizableText paddingHorizontal="$1" fontSize={11} letterSpacing={0.4} color="$color11">
                         Providers
                       </SizableText>
                       <Badge variant="outline" className="gap-1.5">

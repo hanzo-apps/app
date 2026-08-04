@@ -60,7 +60,7 @@ export function SyncItemRow({
             disabled={disabled || syncing}
             height={28}
           >
-            <SizableText fontSize="$1" color="$color12">Resolve</SizableText>
+            <SizableText fontSize="$1" color="$color">Resolve</SizableText>
           </Button>
         ) : (
           <>

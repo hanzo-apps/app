@@ -20,7 +20,7 @@ export default function BuildsIndexPageView({
       <Header />
       <YStack position="relative" zIndex={10} paddingHorizontal="$4" paddingTop={36} $md={{ paddingHorizontal: "$6", paddingTop: "$9" }}>
         <YStack alignSelf="center" maxWidth={896}>
-          <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
+          <Paragraph fontFamily="$mono" fontSize={11} color="$color11">
             Builds
           </Paragraph>
           <H1 marginTop="$4" fontSize="$10" fontWeight="500" lineHeight="1.08" letterSpacing={-0.4} $sm={{ fontSize: "$11" }}>
@@ -33,7 +33,7 @@ export default function BuildsIndexPageView({
           </Paragraph>
 
           {builds.length === 0 ? (
-            <YStack marginTop="$7" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5">
+            <YStack marginTop="$7" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$5">
               <Paragraph fontSize="$3" lineHeight="1.625" color="$color11">
                 No builds published yet. An author publishes one from the repo the
                 session ran in:
@@ -48,12 +48,12 @@ export default function BuildsIndexPageView({
                 <li key={`${b.org}/${b.project}`}>
                   <Link
                     href={`/builds/${b.org}/${b.project}`}
-                  ><XStack group flexWrap="wrap" alignItems="baseline" justifyContent="space-between" gap="$3" paddingVertical="$4.5" hoverStyle={{ backgroundColor: "$color3" }}>
+                  ><XStack group flexWrap="wrap" alignItems="baseline" justifyContent="space-between" gap="$3" paddingVertical="$4.5" hoverStyle={{ backgroundColor: "$color005" }}>
                     <YStack minWidth={0}>
                       <SizableText numberOfLines={1} fontSize="$4" fontWeight="500">
                         {b.title || `${b.org}/${b.project}`}
                       </SizableText>
-                      <SizableText marginTop="$1" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={1.92} color="$color11">
+                      <SizableText marginTop="$1" fontFamily="$mono" fontSize={11} color="$color11">
                         {b.org}/{b.project} · {b.agent} · {b.turns} turns
                       </SizableText>
                     </YStack>

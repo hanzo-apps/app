@@ -100,7 +100,7 @@ export default function AuthCallback() {
             </div>
             <Link
               href="/login"
-            ><XStack width="100%" alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ backgroundColor: "$color12" }}>
+            ><XStack width="100%" alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ backgroundColor: "$color6" }}>
               <SizableText fontSize="$3" fontWeight="500" color="$background">Back to sign in</SizableText>
             </XStack></Link>
           </YStack>

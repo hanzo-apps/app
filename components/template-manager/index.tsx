@@ -298,7 +298,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
     return (
       <XStack alignItems="center" justifyContent="center" height="100%">
         <SizableText textAlign="center" display="flex" flexDirection="column">
-          <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$color12" alignSelf="center"></YStack>
+          <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$color11" alignSelf="center"></YStack>
           <Paragraph marginTop="$4">{creating ? 'Setting up your project...' : 'Loading templates...'}</Paragraph>
         </SizableText>
       </XStack>
@@ -363,7 +363,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
           </Popover>
 
           {/* View Mode */}
-          <XStack borderWidth={1} borderRadius="$10">
+          <XStack borderWidth={1} borderColor="$borderColor" borderRadius="$10">
             <Button
               variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
               size="sm"

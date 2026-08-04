@@ -97,7 +97,7 @@ export function GuidedTourOverlay({ location }: GuidedTourOverlayProps) {
   const secondaryLabel = currentStep.secondaryLabel ?? 'Skip';
   return (
     <YStack position="fixed" top={0} right={0} bottom={0} left={0} zIndex={2000} pointerEvents="auto">
-      <YStack position="absolute" top={0} right={0} bottom={0} left={0} backgroundColor="$background" />
+      <YStack position="absolute" top={0} right={0} bottom={0} left={0} backgroundColor="$background" opacity={0.8} />
       {rect && (
         <YStack
           pointerEvents="none" position="fixed" borderRadius="$6" borderWidth={2} borderColor="$color12"

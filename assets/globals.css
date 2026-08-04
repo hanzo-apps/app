@@ -33,6 +33,14 @@ textarea {
   border: 0;
   padding: 0;
 }
+/* Chrome links are quiet — underline is an opt-in, not a default. Surfaces
+   that mean it (markdown prose, the linkMuted button variants) set their own
+   text-decoration via style props, whose atomic classes outrank this bare
+   element rule. */
+a {
+  color: inherit;
+  text-decoration: none;
+}
 
 /* Tests are not markup. A class name quoted in an assertion is evidence ABOUT the
    UI, not a request to style anything — and emitting it would silently repair the
@@ -1010,12 +1018,28 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   border-right-width: 0 !important;
 }
 
-/* Frosted toolbar — goes translucent only when the browser can actually blur
-   what's behind it; stays opaque otherwise. !important beats the gui atomic
-   background class. */
+/* The `group` prop exists in this app for STATE only ($group-hover/press/
+   focus), which compiles to descendant selectors. Tamagui's group ALSO emits
+   `container-type: inline-size` to power $group-<size> container queries —
+   and a container-query container cannot size itself from its contents, so
+   every group'd pill, chip and button collapsed to bare padding (26px wide,
+   text overflowing). No $group-<size> query exists here (grep-proven), so
+   the containment buys nothing and costs intrinsic width. One rule, every
+   collapse fixed. */
+.t_group_true {
+  container-type: normal !important;
+}
+
+/* Frosted material — the ONE glass. macOS-style vibrancy for FLOATING chrome
+   only (menus, dialogs, popovers, docked toolbars): translucent ground +
+   backdrop blur/saturate, only when the browser can actually blur what's
+   behind it; stays opaque otherwise. !important beats the gui atomic
+   background class. Pair with a hairline border at the call site. */
 @supports (backdrop-filter: blur(8px)) {
   .frosted {
-    background-color: color-mix(in oklab, var(--background) 60%, transparent) !important;
+    background-color: color-mix(in oklab, var(--background) 72%, transparent) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    backdrop-filter: blur(20px) saturate(1.8);
   }
 }
 

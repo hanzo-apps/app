@@ -561,7 +561,7 @@ export function VisualEditor({
         </DropdownMenuCheckboxItem>
 
         <DropdownMenuSeparator backgroundColor="$borderColor" />
-        <DropdownMenuLabel fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">
+        <DropdownMenuLabel fontSize={10} fontWeight="500" color="$color11">
           Theme
         </DropdownMenuLabel>
         <DropdownMenuRadioGroup

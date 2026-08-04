@@ -237,14 +237,14 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
             </XStack>
 
             {settings.compliance.mode === 'opt-in' && (
-              <YStack padding="$4" backgroundColor="$blue1" borderWidth={1} borderColor="$blue3" borderRadius="$5" $theme-dark={{ backgroundColor: "$blue12", borderColor: "$blue11" }}>
+              <YStack padding="$4" backgroundColor="$blue1" borderWidth={1} borderColor="$blue3" borderRadius="$5">
                 <XStack gap="$3">
                   <Shield size={20} />
                   <YStack rowGap="$1">
-                    <H4 fontWeight="500" color="$blue12" $theme-dark={{ color: "$blue2" }}>
+                    <H4 fontWeight="500" color="$blue12">
                       GDPR Compliance Mode
                     </H4>
-                    <Paragraph fontSize="$3" color="$blue11" $theme-dark={{ color: "$blue3" }}>
+                    <Paragraph fontSize="$3" color="$blue11">
                       In opt-in mode, cookies and tracking are blocked by default until
                       the user explicitly accepts. This is required for GDPR compliance.
                     </Paragraph>

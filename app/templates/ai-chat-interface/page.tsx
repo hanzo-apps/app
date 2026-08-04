@@ -97,8 +97,8 @@ The UI is built entirely with @hanzo/ui primitives like Card, Button, ScrollArea
           <CardHeader borderBottomWidth={1}>
             <XStack alignItems="center" justifyContent="space-between">
               <XStack alignItems="center" gap="$2">
-                <XStack width="$7" height="$7" borderRadius="$5" alignItems="center" justifyContent="center">
-                  <Sparkles size={24} color="white" />
+                <XStack width="$7" height="$7" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" alignItems="center" justifyContent="center">
+                  <Sparkles size={24} />
                 </XStack>
                 <div>
                   <CardTitle>AI Chat Interface</CardTitle>
@@ -129,9 +129,9 @@ The UI is built entirely with @hanzo/ui primitives like Card, Button, ScrollArea
                     </Avatar>
                   )}
 
-                  <Card maxWidth="70%" {...{ backgroundColor: message.role === "user" ? undefined : "$color3" }}>
+                  <Card maxWidth="70%" {...{ backgroundColor: message.role === "user" ? "$color3" : "transparent", borderColor: message.role === "user" ? "$borderColor" : "transparent" }}>
                     <CardContent padding="$3">
-                      <Paragraph whiteSpace="pre-wrap" color={message.role === "user" ? "white" : undefined}>
+                      <Paragraph whiteSpace="pre-wrap" color="$color">
                         {message.content}
                         {message.isStreaming && (
                           <SizableText width="$2" height="$4" marginLeft="$1" backgroundColor="$color" />

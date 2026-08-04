@@ -104,7 +104,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
         {/* LEFT — template identity + live preview thumbnail. */}
         <YStack borderBottomWidth={1} borderColor="$borderColor" padding="$5" $lg={{ borderBottomWidth: 0, borderRightWidth: 1, padding: "$6" }}>
           <XStack marginBottom="$4" width="max-content" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1">
-            <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={2.4} color="$color11">Start from this template</SizableText>
+            <SizableText fontFamily="$mono" fontSize={10} color="$color11">Start from this template</SizableText>
           </XStack>
           {meta?.screenshotUrl ? (
             <YStack marginBottom="$4.5" width="100%" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
@@ -146,7 +146,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
             are pinned (shrink-0) so they stay visible without scrolling; only the
             option list scrolls if the viewport is short. */}
         <YStack minHeight={0} padding="$5" $lg={{ maxHeight: "calc(100dvh-3rem)", padding: "$6" }}>
-          <H3 marginBottom="$2.5" flexShrink={0} fontSize="$1" fontWeight="500" textTransform="uppercase" letterSpacing={1.92} color="$color11">
+          <H3 marginBottom="$2.5" flexShrink={0} fontSize="$1" fontWeight="500" color="$color11">
             Choose how to start
           </H3>
           <YStack minHeight={0} flex={1} rowGap="$2" paddingRight="$1" overflow="scroll">
@@ -158,7 +158,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                   type="button"
                   onClick={() => setSelectedMode(opt.mode)}
                   aria-pressed={active}
-                  group width="100%" alignItems="flex-start" gap="$3.5" borderRadius="$6" borderWidth={1} padding="$3.5" {...{ borderColor: active ? "$color" : "$borderColor", backgroundColor: active ? "$color3" : "$color3", hoverStyle: active ? undefined : {"borderColor":"$color","backgroundColor":"$color3"} }}
+                  group width="100%" alignItems="flex-start" gap="$3.5" borderRadius="$6" borderWidth={1} padding="$3.5" {...{ borderColor: active ? "$color" : "$borderColor", backgroundColor: active ? "$color3" : "$color005", hoverStyle: active ? undefined : {"borderColor":"$color06"} }}
                 >
                   <XStack
                     height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} {...(opt.mode === "deploy"
@@ -173,9 +173,9 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                     <XStack alignItems="center" justifyContent="space-between" gap="$2">
                       <H4 fontSize="$3" fontWeight="500" color="$color">{opt.title}</H4>
                       <XStack
-                        height="$4" width="$4" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} {...{ borderColor: active ? "$color12" : "$color", backgroundColor: active ? "$color12" : undefined }}
+                        height="$4" width="$4" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} {...{ borderColor: active ? "$color12" : "$color06", backgroundColor: active ? "$color12" : undefined }}
                       >
-                        {active && <Check size={12} strokeWidth={3} />}
+                        {active && <SizableText color="$background" display="flex"><Check size={12} strokeWidth={3} /></SizableText>}
                       </XStack>
                     </XStack>
                     <Paragraph marginTop="$0.5" fontSize={13} lineHeight="1.375" color="$color11">{opt.desc}</Paragraph>
@@ -190,12 +190,12 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
           <YStack marginTop="$4.5" flexShrink={0}>
             <Label
               htmlFor="tpl-first-msg"
-              marginBottom="$2" fontSize="$1" fontWeight="500" textTransform="uppercase" letterSpacing={1.92} color="$color11"
+              marginBottom="$2" fontSize="$1" fontWeight="500" color="$color11"
             >
               What do you want to change?{" "}
               <SizableText textTransform="none" letterSpacing={0} color="$color11">(optional)</SizableText>
             </Label>
-            <YStack borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" focusStyle={{ borderColor: "$color" }}>
+            <YStack borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color005" focusStyle={{ borderColor: "$color" }}>
               <Textarea
                 id="tpl-first-msg"
                 value={firstMessage}
@@ -230,7 +230,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
             </Button>
             <Button
               onClick={handleProceed}
-              flex={2} backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
+              flex={2}
               disabled={loading}
             >
               {loading ? (

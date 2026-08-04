@@ -272,7 +272,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
           {shellOutput.length > 0 && (
             <YStack
               ref={shellOutputRef}
-              maxHeight="$14" padding="$2" backgroundColor="$color12" overflow="scroll"
+              maxHeight="$14" padding="$2" backgroundColor="$color2" overflow="scroll"
             >
               {shellOutput.map((entry, i) => (
                 <YStack key={i} marginBottom="$2">
@@ -286,7 +286,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
           )}
 
           {/* Command input */}
-          <XStack alignItems="center" gap="$2" padding="$2" backgroundColor="$color12">
+          <XStack alignItems="center" gap="$2" padding="$2" backgroundColor="$color2">
             <SizableText color="$green8" fontFamily="$mono" fontSize="$1">$</SizableText>
             <Input
               type="text"

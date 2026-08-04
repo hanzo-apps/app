@@ -352,10 +352,11 @@ export default function Comparison() {
               <XStack gap="$2">
                 <Button
                   type="button"
+                  variant="ghost"
                   onClick={() => slide(-1)}
                   aria-label="Previous criteria"
                   group
-                  height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ borderColor: "$color" }}
+                  height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ borderColor: "$color06" }}
                 >
                   <SizableText color="$color11" $group-hover={{ color: "$color" }}>
                     <svg width={16} height={16} viewBox="0 0 16 16" fill="none" aria-hidden>
@@ -365,10 +366,11 @@ export default function Comparison() {
                 </Button>
                 <Button
                   type="button"
+                  variant="ghost"
                   onClick={() => slide(1)}
                   aria-label="Next criteria"
                   group
-                  height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ borderColor: "$color" }}
+                  height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ borderColor: "$color06" }}
                 >
                   <SizableText color="$color11" $group-hover={{ color: "$color" }}>
                     <svg width={16} height={16} viewBox="0 0 16 16" fill="none" aria-hidden>
@@ -394,7 +396,7 @@ export default function Comparison() {
                       {COLS.map((c) => (
                         <SizableText
                           key={c.short}
-                          width={208} minWidth={208} paddingHorizontal="$4" paddingBottom="$4" verticalAlign="bottom" fontFamily="$mono" fontSize={10} fontWeight="400" lineHeight="1.25" letterSpacing={1.6} color="$color11"
+                          width={208} minWidth={208} paddingHorizontal="$4" paddingBottom="$4" verticalAlign="bottom" fontFamily="$mono" fontSize={10} fontWeight="400" lineHeight="1.25" color="$color11"
                         >
                           <YStack marginBottom="$2">
                             <c.icon size={16} color="var(--muted-foreground)" strokeWidth={1.5} aria-hidden />
@@ -464,7 +466,7 @@ export default function Comparison() {
               return (
                 <Reveal
                   key={r.name}
-                  borderRadius={16} borderWidth={1} borderColor="$color" backgroundColor="var(--muted)" padding="$4"
+                  borderRadius={16} borderWidth={1} borderColor="$color" backgroundColor="$color3" padding="$4"
                 >
                   <XStack marginBottom="$4" alignItems="center" gap="$2">
                     <H3 fontSize="$6" fontWeight="500" color="$color">{r.name}</H3>

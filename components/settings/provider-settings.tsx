@@ -312,12 +312,12 @@ export function ProviderSettings() {
       </Tabs>
 
       {/* Security Notice */}
-      <Card backgroundColor="$yellow9" borderColor="$yellow9">
+      <Card backgroundColor="$yellow1" borderColor="$yellow3">
         <CardContent paddingTop="$5">
           <XStack gap="$3">
             <Key size={20} />
             <YStack rowGap="$2">
-              <Paragraph fontWeight="500" fontSize="$3" color="$yellow10">Security Notice</Paragraph>
+              <Paragraph fontWeight="500" fontSize="$3" color="$yellow12">Security Notice</Paragraph>
               <YStack rowGap="$1">
                 <SizableText fontSize="$3" color="$color11">API keys are stored locally in your browser's localStorage</SizableText>
                 <SizableText fontSize="$3" color="$color11">Keys are never sent to Hanzo servers</SizableText>

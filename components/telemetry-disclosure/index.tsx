@@ -49,7 +49,7 @@ export function TelemetryDisclosure({ open, onDismiss }: TelemetryDisclosureProp
               <CollapsibleContent>
                 <YStack paddingHorizontal="$4" paddingBottom="$4" rowGap="$3">
                   <div>
-                    <Paragraph fontWeight="500" color="$color" marginBottom="$1.5">What will <SizableText color="$orange8" textTransform="uppercase">not</SizableText> be collected:</Paragraph>
+                    <Paragraph fontWeight="500" color="$color" marginBottom="$1.5">What will <SizableText color="$orange8">not</SizableText> be collected:</Paragraph>
                     <YStack paddingLeft="$4.5" rowGap="$0.5">
                       <li>Your prompts or messages</li>
                       <li>Code, file names, or file contents</li>

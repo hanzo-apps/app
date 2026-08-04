@@ -99,7 +99,7 @@ export default function CloudIntegration() {
                 href={c.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                group position="relative" height="100%" flexDirection="column" borderRadius="$8" borderWidth={1} padding="$5" {...{ borderColor: c.primary ? "$color02" : "$borderColor", backgroundColor: c.primary ? "$color3" : "$color3", hoverStyle: c.primary ? {"borderColor":"$color"} : {"borderColor":"$color","backgroundColor":"$color3"} }}
+                group position="relative" height="100%" flexDirection="column" borderRadius="$8" borderWidth={1} backgroundColor="$color2" {...{ borderColor: c.primary ? "$color02" : "$borderColor" }} padding="$5" hoverStyle={{ borderColor: "$color06" }}
                display="flex" textDecorationLine="none">
                 <XStack alignItems="center" justifyContent="space-between">
                   <XStack height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">

@@ -146,9 +146,9 @@ export function ModelSelector({
       </Select>
 
       {error && (
-        <XStack alignItems="flex-start" gap="$2" padding="$2" backgroundColor="$red9" borderRadius="$2">
+        <XStack alignItems="flex-start" gap="$2" padding="$2" backgroundColor="$red1" borderWidth={1} borderColor="$red3" borderRadius="$2">
           <Info size={12} />
-          <SizableText fontSize="$1" color="$red9">{error}</SizableText>
+          <SizableText fontSize="$1" color="$red11">{error}</SizableText>
         </XStack>
       )}
 

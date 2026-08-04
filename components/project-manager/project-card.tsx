@@ -178,7 +178,7 @@ export function ProjectCard({
   if (viewMode === 'list') {
     return (
       <YStack
-        group borderWidth={1} borderColor="$borderColor" borderRadius="$5" padding="$4" cursor="pointer" hoverStyle={{ elevation: 3, borderColor: "$color12" }}
+        group borderWidth={1} borderColor="$borderColor" borderRadius="$5" padding="$4" cursor="pointer" hoverStyle={{ elevation: 3, borderColor: "$color06" }}
         style={{ background: `linear-gradient(rgb(var(--tint) / 0.02), rgb(var(--tint) / 0.02)), var(--card)` }}
         onClick={() => onSelect(project)}
       >
@@ -393,7 +393,7 @@ export function ProjectCard({
   // Grid view (default)
   return (
     <YStack
-      borderWidth={1} borderColor="$borderColor" borderRadius="$5" overflow="hidden" cursor="pointer" group hoverStyle={{ elevation: 4, borderColor: "$color12" }}
+      borderWidth={1} borderColor="$borderColor" borderRadius="$5" overflow="hidden" cursor="pointer" group hoverStyle={{ elevation: 4, borderColor: "$color06" }}
       style={{ background: `linear-gradient(rgb(var(--tint) / 0.02), rgb(var(--tint) / 0.02)), var(--card)` }}
       onClick={() => onSelect(project)}
       data-tour-id="project-card"
@@ -566,7 +566,7 @@ export function ProjectCard({
 
         {/* Stats */}
         {loadingStats ? (
-          <YStack height="$5" backgroundColor="$color3" borderRadius="$2" />
+          <YStack height="$5" backgroundColor="$color4" borderRadius="$2" />
         ) : stats && (
           <>
             <XStack alignItems="center" gap="$3" paddingTop="$2" borderTopWidth={1}>

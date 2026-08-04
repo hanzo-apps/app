@@ -101,7 +101,7 @@ export default function LoginPage() {
                   href="https://github.com/hanzoai/app/releases/latest"
                   target="_blank"
                   rel="noopener noreferrer"
-                  alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" group hoverStyle={{ backgroundColor: "$color3" }}
+                  alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" group hoverStyle={{ borderColor: "$color06", backgroundColor: "$color4" }}
                 >
                   <Monitor size={16} />
                   <SizableText fontSize="$3" color="$color11" $group-hover={{ color: "$color" }}>Windows</SizableText>
@@ -111,7 +111,7 @@ export default function LoginPage() {
                   href="https://github.com/hanzoai/app/releases/latest"
                   target="_blank"
                   rel="noopener noreferrer"
-                  alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" group hoverStyle={{ backgroundColor: "$color3" }}
+                  alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" group hoverStyle={{ borderColor: "$color06", backgroundColor: "$color4" }}
                 >
                   <Apple size={16} />
                   <SizableText fontSize="$3" color="$color11" $group-hover={{ color: "$color" }}>macOS</SizableText>
@@ -121,7 +121,7 @@ export default function LoginPage() {
                   href="https://github.com/hanzoai/app/releases/latest"
                   target="_blank"
                   rel="noopener noreferrer"
-                  alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" group hoverStyle={{ backgroundColor: "$color3" }}
+                  alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" group hoverStyle={{ borderColor: "$color06", backgroundColor: "$color4" }}
                 >
                   <Terminal size={16} />
                   <SizableText fontSize="$3" color="$color11" $group-hover={{ color: "$color" }}>Linux</SizableText>
@@ -176,7 +176,7 @@ export default function LoginPage() {
               <XStack alignItems="flex-start" gap="$3">
                 <YStack width="$2" height="$2" backgroundColor="$color" borderRadius="$10" marginTop="$2" />
                 <YStack flex={1}>
-                  <Paragraph color="$color11" fontSize="$1" textTransform="uppercase" letterSpacing={0.8} marginBottom="$3">Try something like</Paragraph>
+                  <Paragraph color="$color11" fontSize="$1" marginBottom="$3">Try something like</Paragraph>
                   <YStack minHeight={60}>
                     <Paragraph
                       fontSize="$7" color="$color" fontWeight="300" {...{ opacity: isTyping ? 1 : 0 }}
@@ -190,7 +190,7 @@ export default function LoginPage() {
 
               <YStack marginTop="$5" paddingTop="$5" borderTopWidth={1} borderColor="$borderColor">
                 <XStack alignItems="center" justifyContent="flex-end">
-                  <XStack alignItems="center" gap="$2" paddingHorizontal="$4.5" paddingVertical="$2.5" backgroundColor="$color12" borderRadius="$6">
+                  <XStack alignItems="center" gap="$2" paddingHorizontal="$4.5" paddingVertical="$2.5" backgroundColor="$color5" borderWidth={1} borderColor="$color6" borderRadius="$6">
                     <Zap size={14} />
                     <SizableText color="$background" fontWeight="500" fontSize="$3">Generate</SizableText>
                   </XStack>

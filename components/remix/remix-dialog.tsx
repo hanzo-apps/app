@@ -86,7 +86,7 @@ export function RemixDialog({
           <Button
             onClick={confirm}
             disabled={!ack || !name.trim()}
-            backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ opacity: 0.4 }}
+            backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }} disabledStyle={{ opacity: 0.4 }}
           >
             Acknowledge and remix
           </Button>

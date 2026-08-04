@@ -47,7 +47,7 @@ export function FileTree({
   return (
     <YStack height="100%" width="$19" flexShrink={0} borderRightWidth={1} borderColor="$borderColor" backgroundColor="$background">
       <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingVertical="$2.5">
-        <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={2.24} color="$color11">
+        <SizableText fontFamily="$mono" fontSize={10} color="$color11">
           Files
         </SizableText>
         <Button
@@ -67,7 +67,7 @@ export function FileTree({
           return (
             <XStack
               key={page.path}
-              group alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" backgroundColor={active ? "$color3" : undefined} hoverStyle={active ? undefined : { backgroundColor: "white" }}
+              group alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" backgroundColor={active ? "$color3" : undefined} hoverStyle={active ? undefined : { backgroundColor: "$color3" }}
             >
               <FileCode2 size={14} />
               {isRenaming ? (

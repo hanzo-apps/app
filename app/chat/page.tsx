@@ -388,7 +388,7 @@ export default function ChatPage() {
                 {messages.map((m, i) =>
                   m.role === 'user' ? (
                     <XStack key={i} justifyContent="flex-end" data-testid="message-user">
-                      <Paragraph maxWidth="85%" whiteSpace="pre-wrap" borderRadius="$8" backgroundColor="$color3" paddingHorizontal="$4" paddingVertical="$2.5" fontSize="$3" color="$color">
+                      <Paragraph maxWidth="85%" whiteSpace="pre-wrap" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4" paddingVertical="$2.5" fontSize="$3" color="$color">
                         {m.content}
                       </Paragraph>
                     </XStack>
@@ -453,7 +453,7 @@ export default function ChatPage() {
                     onClick={stop}
                     size="sm"
                     aria-label="Stop generating"
-                    position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
+                    position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0"
                     data-testid="stop"
                   >
                     <Square size={14} />
@@ -464,7 +464,7 @@ export default function ChatPage() {
                     disabled={!input.trim()}
                     size="sm"
                     aria-label="Send"
-                    position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ opacity: 0.5 }}
+                    position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0" disabledStyle={{ opacity: 0.5 }}
                     data-testid="send"
                   >
                     <ArrowUp size={16} />

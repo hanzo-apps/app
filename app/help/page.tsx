@@ -99,9 +99,9 @@ export default function HelpPage() {
 
           <YStack position="relative" alignSelf="center" maxWidth={768}>
             <Reveal>
-              <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5">
-                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" />
-                <SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.4} color="$color11">
+              <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$3" paddingVertical="$1.5">
+                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color5" />
+                <SizableText fontFamily="$mono" fontSize={11} color="$color11">
                   Support
                 </SizableText>
               </XStack>
@@ -134,7 +134,7 @@ export default function HelpPage() {
           <YStack alignSelf="center" maxWidth={1152} gap="$4.5">
             {channels.map((c, i) => {
               const inner = (
-                <YStack group height="100%" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5" hoverStyle={{ borderColor: "$color", backgroundColor: "$color" }}>
+                <YStack group height="100%" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" padding="$5" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color005" }}>
                   <XStack alignItems="center" justifyContent="space-between">
                     <XStack height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                       {c.icon}
@@ -174,7 +174,7 @@ export default function HelpPage() {
         {/* ── Contact CTA ──────────────────────────────────────── */}
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
           <Reveal alignSelf="center" width="100%" maxWidth={1152}>
-            <YStack alignItems="flex-start" justifyContent="space-between" gap="$4.5" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$6" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: "$7" }}>
+            <YStack alignItems="flex-start" justifyContent="space-between" gap="$4.5" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$6" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: "$7" }}>
               <div>
                 <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$10" }} lineHeight="1.1">
                   Talk to a human.
@@ -186,7 +186,7 @@ export default function HelpPage() {
               </div>
               <Anchor
                 href="mailto:support@hanzo.ai"
-                flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
+                flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$color12" hoverStyle={{ backgroundColor: "$color6" }}
               >
                 <Mail size={16} />
                 Email support

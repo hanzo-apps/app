@@ -344,7 +344,7 @@ export function References({ project }: { project?: string | null }) {
               <YStack key={field} gap="$1">
                 <SizableText
                   fontSize={11}
-                  textTransform="uppercase"
+                 
                   letterSpacing={0.3}
                   color="$color11"
                 >

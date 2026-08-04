@@ -117,7 +117,7 @@ export default function LearnPage() {
             Free courses, tutorials, and resources to help you master AI development
           </Paragraph>
           <XStack alignItems="center" gap="$4" justifyContent="center">
-            <Button size="lg" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}>
+            <Button size="lg" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}>
               <PlayCircle size={20} />
               Start Learning
             </Button>
@@ -271,7 +271,7 @@ export default function LearnPage() {
           <Paragraph fontSize="$7" color="$color11" marginBottom="$6" textAlign="center" lineHeight="1.4">
             Join thousands of developers mastering AI development
           </Paragraph>
-          <Button size="lg" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}>
+          <Button size="lg" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}>
             Start Free Course
             <ArrowRight size={20} />
           </Button>

@@ -421,7 +421,7 @@ function SkillCard({ skill, isEnabled, globalEnabled, onToggle, onEdit, onDelete
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <YStack borderWidth={1} borderRadius="$5" {...{ borderColor: effectiveEnabled ? "$color12" : "$borderColor", backgroundColor: effectiveEnabled ? "$color12" : undefined }}>
+      <YStack borderWidth={1} borderRadius="$5" {...{ borderColor: effectiveEnabled ? "$color12" : "$borderColor" }}>
         <YStack padding="$4">
           <XStack alignItems="flex-start" justifyContent="space-between" gap="$4">
             <YStack flex={1} minWidth={0}>

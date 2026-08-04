@@ -234,7 +234,7 @@ export const DeployButtonContent = ({
             href={published.url}
             target="_blank"
             rel="noopener noreferrer"
-            width="100%" alignItems="center" justifyContent="center" gap="$1.5" borderRadius="$3" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
+            width="100%" alignItems="center" justifyContent="center" gap="$1.5" borderRadius="$3" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" fontWeight="500" color="$color12" hoverStyle={{ backgroundColor: "$color6" }}
           >
             Open site <ExternalLink size={16} />
           </Anchor>
@@ -283,7 +283,7 @@ export const DeployButtonContent = ({
           variant="default"
           size="sm"
           onClick={publish}
-          position="relative" width="100%" gap="$1.5" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
+          position="relative" width="100%" gap="$1.5" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}
           disabled={loading}
         >
           {loading ? (

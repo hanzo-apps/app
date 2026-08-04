@@ -100,7 +100,7 @@ export function CheckpointPanel({
               return (
                 <YStack
                   key={cp.id}
-                  borderRadius="$3" borderWidth={1} paddingHorizontal="$2.5" paddingVertical="$2" {...{ borderColor: isCurrent ? "$color12" : "$borderColor", backgroundColor: isCurrent ? "$color12" : "$background", hoverStyle: isCurrent ? undefined : {"backgroundColor":"$color3"} }}
+                  borderRadius="$3" borderWidth={1} paddingHorizontal="$2.5" paddingVertical="$2" {...{ borderColor: isCurrent ? "$color12" : "$borderColor", backgroundColor: isCurrent ? "$color3" : "$background", hoverStyle: isCurrent ? undefined : {"backgroundColor":"$color3"} }}
                 >
                   {/* Top row: badge + timestamp */}
                   <XStack alignItems="center" gap="$1.5" marginBottom="$1">

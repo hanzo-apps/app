@@ -425,7 +425,7 @@ export function LivePreview({
           <SizableText textAlign="center" color="$red9" rowGap="$2" display="flex" flexDirection="column">
             <Paragraph fontWeight="500">Error</Paragraph>
             <Paragraph fontSize="$3" marginTop="$2">{error}</Paragraph>
-            <Button onClick={handleRefresh} marginTop="$4" paddingHorizontal="$4" paddingVertical="$2" backgroundColor="$color12" borderRadius="$3">
+            <Button onClick={handleRefresh} marginTop="$4" paddingHorizontal="$4" paddingVertical="$2" backgroundColor="$color5" borderWidth={1} borderColor="$color6" borderRadius="$3">
               <SizableText color="$background">Try Again</SizableText>
             </Button>
           </SizableText>

@@ -54,9 +54,9 @@ export default function ModelsStrip() {
 
         <Reveal delay={100} borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$5">
           <XStack marginBottom="$4" alignItems="center" gap="$1.5">
-            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
-            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
-            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
+            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color4" />
+            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color4" />
+            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color4" />
           </XStack>
           <SizableText fontFamily="$mono" fontSize={12} lineHeight="1.625" color="$color" overflow="scroll" whiteSpace="pre">
 {`POST https://api.hanzo.ai/v1/chat/completions

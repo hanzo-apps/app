@@ -95,8 +95,8 @@ export default function AnalyticsDashboard() {
                 <CardTitle fontSize="$3" fontWeight="500">
                   {metric.title}
                 </CardTitle>
-                <XStack width="$6" height="$6" borderRadius="$10" backgroundColor="#171717]/1" alignItems="center" justifyContent="center">
-                  <SizableText color="#171717">{metric.icon}</SizableText>
+                <XStack width="$6" height="$6" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" alignItems="center" justifyContent="center">
+                  <SizableText color="$color">{metric.icon}</SizableText>
                 </XStack>
               </CardHeader>
               <CardContent>
@@ -151,8 +151,8 @@ export default function AnalyticsDashboard() {
                   <YStack rowGap="$4">
                     {recentSales.map((sale, i) => (
                       <XStack key={i} alignItems="center">
-                        <XStack width={36} height={36} borderRadius="$10" backgroundColor="#171717]/1" alignItems="center" justifyContent="center">
-                          <SizableText fontSize="$3" fontWeight="500" color="#171717">
+                        <XStack width={36} height={36} borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" alignItems="center" justifyContent="center">
+                          <SizableText fontSize="$3" fontWeight="500" color="$color">
                             {sale.name.split(" ").map(n => n[0]).join("")}
                           </SizableText>
                         </XStack>

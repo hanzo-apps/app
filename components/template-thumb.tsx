@@ -128,8 +128,8 @@ export function TemplateThumb({
   />
       {/* soft light bloom */}
       <YStack
-        position="absolute" height="$17" width="$17" borderRadius="$10" backgroundColor="$color" opacity={0.06}
-        style={{ filter: "blur(120px)", left: `${hx}%`, top: `${hy}%`, transform: "translate(-40%,-40%)" }}
+        position="absolute" height="$17" width="$17" borderRadius="$10" backgroundColor="$color005" filter="blur(120px)"
+        style={{ left: `${hx}%`, top: `${hy}%`, transform: "translate(-40%,-40%)" }}
   />
       {/* fine texture */}
       <YStack
@@ -159,7 +159,7 @@ export function TemplateThumb({
       </XStack>
       {showLabel && category ? (
         <YStack position="absolute" bottom="$2.5" left="$3">
-          <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={2.24} color="$color11">
+          <SizableText fontFamily="$mono" fontSize={10} color="$color11">
             {category}
           </SizableText>
         </YStack>

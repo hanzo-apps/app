@@ -167,7 +167,7 @@ export default function KanbanBoard() {
             </Button>
             <Dialog>
               <DialogTrigger asChild>
-                <Button backgroundColor="#171717" hoverStyle={{ backgroundColor: "#000000" }}>
+                <Button>
                   <Plus size={16} />
                   New Task
                 </Button>
@@ -207,7 +207,7 @@ export default function KanbanBoard() {
                     <Label fontSize="$3" fontWeight="500">Description</Label>
                     <Textarea placeholder="Task description (optional)" />
                   </div>
-                  <Button width="100%" backgroundColor="#171717" hoverStyle={{ backgroundColor: "#000000" }}>Create Task</Button>
+                  <Button width="100%">Create Task</Button>
                 </YStack>
               </DialogContent>
             </Dialog>

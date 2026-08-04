@@ -42,7 +42,7 @@ export class ErrorBoundary extends Component<Props, State> {
           </Paragraph>
           <Button
             onClick={() => this.setState({ hasError: false, error: null })}
-            paddingHorizontal="$4" paddingVertical="$2" backgroundColor="$color12" borderRadius="$3" hoverStyle={{ backgroundColor: "$color12" }}
+            paddingHorizontal="$4" paddingVertical="$2" backgroundColor="$color5" borderWidth={1} borderColor="$color6" borderRadius="$3" hoverStyle={{ backgroundColor: "$color6" }}
           >
             Try again
           </Button>

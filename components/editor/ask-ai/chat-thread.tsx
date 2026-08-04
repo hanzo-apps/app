@@ -74,7 +74,7 @@ export function ChatThread({
 function UserBubble({ text }: { text: string }) {
   return (
     <XStack justifyContent="flex-end">
-      <YStack maxWidth="85%" borderRadius="$5" borderBottomRightRadius="$1" backgroundColor="$color4" paddingHorizontal="$3" paddingVertical="$1.5">
+      <YStack maxWidth="85%" borderRadius="$5" borderBottomRightRadius="$1" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5">
         <SizableText whiteSpace="pre-wrap" fontSize={13} color="$color">
           {text}
         </SizableText>
@@ -110,7 +110,7 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
     }
     return (
       <XStack width="100%" justifyContent="flex-start">
-        <YStack maxWidth="95%" borderRadius="$5" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5">
+        <YStack maxWidth="95%" borderRadius="$5" paddingHorizontal="$3" paddingVertical="$1.5">
           {text ? (
             <XStack flexWrap="wrap" alignItems="flex-end">
               {/* Render the assistant reply as formatted markdown (headings, lists,
@@ -212,7 +212,7 @@ function CollapsibleSection({
       <Button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        width="100%" alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color3" }}
+        width="100%" alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color4" }}
       >
         <SizableText
           fontSize={13} fontWeight="500" {...{ color: live ? undefined : "$color11" }} className="thread-shimmer-text"

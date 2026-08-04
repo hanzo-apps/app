@@ -79,12 +79,12 @@ export function SplitLayout({
 
       {/* Resizer */}
       <YStack
-        position="relative" width="$1" cursor="col-resize" group hoverStyle={{ backgroundColor: "$color12" }} {...{ backgroundColor: isDragging ? "$color12" : "$borderColor" }}
+        position="relative" width="$1" cursor="col-resize" group hoverStyle={{ backgroundColor: "$color6" }} {...{ backgroundColor: isDragging ? "$color8" : "$borderColor" }}
         onMouseDown={handleMouseDown}
       >
         {/* Visual indicator */}
         <YStack position="absolute" top="$0" bottom="$0" left="50%" x="50%" width="$1" $group-hover={{ width: "$1.5" }}>
-          <YStack height="100%" width="100%" backgroundColor="transparent" $group-hover={{ backgroundColor: "$color12" }} />
+          <YStack height="100%" width="100%" backgroundColor="transparent" $group-hover={{ backgroundColor: "$color6" }} />
         </YStack>
       </YStack>
 

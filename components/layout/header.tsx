@@ -101,7 +101,7 @@ export default function Header() {
       </Button>
       <Button
         onClick={getStarted}
-        borderRadius="$6" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ backgroundColor: "$color12" }}
+        borderRadius="$6" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ backgroundColor: "$color6" }}
       >
         Get started
       </Button>
@@ -148,10 +148,11 @@ export default function Header() {
         {/* Mobile toggle */}
         <Button
           type="button"
+          variant="ghost"
           onClick={() => setMobileOpen((v) => !v)}
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileOpen}
-          height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$background" }} $lg={{ display: "none" }}
+          height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }} $lg={{ display: "none" }}
         >
           {mobileOpen ? <X size={20} /> : <Menu size={20} />}
         </Button>
@@ -185,7 +186,7 @@ export default function Header() {
                 </Button>
                 <Button
                   onClick={getStarted}
-                  borderRadius="$6" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
+                  borderRadius="$6" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}
                 >
                   Get started
                 </Button>

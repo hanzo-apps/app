@@ -139,7 +139,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                 onChangeText={(t) => setPrompt(t)}
   />
               <Button
-                width="100%" gap="$2" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
+                width="100%" gap="$2" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}
                 onClick={() => prompt && onComplete(prompt)}
                 disabled={!prompt.trim()}
               >

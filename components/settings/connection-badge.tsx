@@ -16,10 +16,10 @@ interface ConnectionBadgeProps {
 export function ConnectionBadge({ method, extra, info, onDisconnect, disconnecting }: ConnectionBadgeProps) {
   return (
     <div>
-      <XStack alignItems="center" justifyContent="space-between" padding="$2.5" borderRadius="$5" borderWidth={1} borderColor="$green10" backgroundColor="$green9">
+      <XStack alignItems="center" justifyContent="space-between" padding="$2.5" borderRadius="$5" borderWidth={1} borderColor="$green3" backgroundColor="$green1">
         <XStack alignItems="center" gap="$2">
           <YStack height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$green9" shadowColor="$shadowColor" />
-          <SizableText fontSize="$3" fontWeight="500" color="$green10" $theme-dark={{ color: "$green8" }}>Connected</SizableText>
+          <SizableText fontSize="$3" fontWeight="500" color="$green11">Connected</SizableText>
           {method && (
             <SizableText fontSize="$1" color="$color11">via {method}</SizableText>
           )}

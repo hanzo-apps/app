@@ -128,7 +128,7 @@ export function ErrorFallback({
               {!isPermanent && (
                 <Button
                   onClick={resetErrorBoundary}
-                  width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color12" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color12" }}
+                  width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color6" }}
                 >
                   <RefreshCw size={16} />
                   <SizableText color="$background" fontWeight="500">Try Again</SizableText>
@@ -138,7 +138,7 @@ export function ErrorFallback({
               {isPermanent && (
                 <Button
                   onClick={() => window.location.reload()}
-                  width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color12" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color12" }}
+                  width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color6" }}
                 >
                   <RefreshCw size={16} />
                   <SizableText color="$background" fontWeight="500">Refresh Page</SizableText>

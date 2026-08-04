@@ -38,6 +38,19 @@ reintroduce it, and do not add Radix or `tailwind-merge` back alongside it.
 migration.** A prop that looks like an HTML attribute may not be typed, and one
 that IS typed may not behave the way the DOM one does:
 
+- **`group` collapses content-sized elements.** The prop emits
+  `container-type: inline-size` (for `$group-<size>` container queries), and a
+  container-query container cannot size itself from its contents — so a group'd
+  pill/chip/button collapses to bare padding (~26px) with the text overflowing.
+  This app uses group for STATE only (`$group-hover/press/focus`, descendant
+  selectors), so `assets/globals.css` neutralizes the containment app-wide
+  (`.t_group_true { container-type: normal }`). If a `$group-<size>` query is
+  ever needed, scope it deliberately — don't delete that rule wholesale.
+- **Numeric `lineHeight` is pixels** (`lineHeight={1.5}` → `1.5px`, lines stack
+  on each other). Always the string form for multipliers: `lineHeight="1.5"`.
+- **`$color` is the foreground** (white in dark). Never a container background —
+  surfaces are `$color2/3/4`, alphas `$color005…$color06` for outline chrome.
+
 - The field emits **text**, not a change event: `onChangeText={(t) => …}`, never
   `onChange={(e) => e.target.value}`. The DOM spelling type-checked only while
   the package was declared `any`, and it never fired — six handlers in this app

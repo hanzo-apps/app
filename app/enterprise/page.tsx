@@ -62,7 +62,7 @@ export default function EnterprisePage() {
             Build, deploy, and scale AI applications with enterprise-grade security, compliance, and dedicated support
           </Paragraph>
           <YStack alignItems="center" gap="$4" justifyContent="center" $sm={{ flexDirection: "row" }}>
-            <Button size="lg" width="100%" backgroundColor="$color12" $sm={{ width: "auto" }} hoverStyle={{ backgroundColor: "$color12" }}>
+            <Button size="lg" width="100%" backgroundColor="$color5" borderWidth={1} borderColor="$color6" $sm={{ width: "auto" }} hoverStyle={{ backgroundColor: "$color6" }}>
               Schedule Demo
               <ArrowRight size={20} />
             </Button>
@@ -196,7 +196,7 @@ export default function EnterprisePage() {
           <Paragraph fontSize="$7" color="$color11" marginBottom="$6" lineHeight="1.4">
             Join leading companies using Hanzo to build the future
           </Paragraph>
-          <Button size="lg" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}>
+          <Button size="lg" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}>
             Schedule Enterprise Demo
             <ArrowRight size={20} />
           </Button>

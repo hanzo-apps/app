@@ -608,15 +608,15 @@ export function HistoryPanel({
         <RotateCcw size={16} />
         <SizableText fontSize={13} fontWeight="500" color="$color">History</SizableText>
         <XStack marginLeft="auto" alignItems="center" gap="$1.5">
-          <XStack alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="white" padding="$0.5">
+          <XStack alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color3" padding="$0.5">
             {(["all", "bookmarks"] as const).map((f) => (
               <Button
                 key={f}
                 type="button"
                 onClick={() => setFilter(f)}
-                group borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1" {...{ backgroundColor: filter === f ? "$color3" : "transparent", elevation: filter === f ? 1 : undefined, hoverStyle: filter === f ? undefined : { backgroundColor: "white" } }}
+                group borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1" {...{ backgroundColor: filter === f ? "$color12" : "transparent", elevation: filter === f ? 1 : undefined, hoverStyle: filter === f ? undefined : { backgroundColor: "$color4" } }}
               >
-                <SizableText fontSize={11} fontWeight="500" color={filter === f ? "$color" : "$color11"} $group-hover={filter === f ? undefined : { color: "$color" }}>{f === "all" ? "All" : "Bookmarks"}</SizableText>
+                <SizableText fontSize={11} fontWeight="500" color={filter === f ? "$background" : "$color11"} $group-hover={filter === f ? undefined : { color: "$color" }}>{f === "all" ? "All" : "Bookmarks"}</SizableText>
               </Button>
             ))}
           </XStack>
@@ -644,7 +644,7 @@ export function HistoryPanel({
           <Button
             type="button"
             onClick={exitPreview}
-            flexShrink={0} borderRadius="$3" backgroundColor="$color3" paddingHorizontal="$2" paddingVertical="$1" hoverStyle={{ backgroundColor: "white" }}
+            flexShrink={0} borderRadius="$3" backgroundColor="$color3" paddingHorizontal="$2" paddingVertical="$1" hoverStyle={{ backgroundColor: "$color4" }}
           >
             <SizableText fontWeight="500" color="$color">Back to working</SizableText>
           </Button>
@@ -752,15 +752,15 @@ function RevCard({
       borderRadius="$6" borderWidth={1} paddingHorizontal="$3" paddingVertical="$2.5" {...(isPreviewing
         ? { borderColor: "rgba(251,191,36,0.3)", backgroundColor: "rgba(251,191,36,0.04)" }
         : isActive
-          ? { borderColor: "$borderColor", backgroundColor: "rgba(255,255,255,0.05)" }
-          : { borderColor: "$borderColor", backgroundColor: "rgba(255,255,255,0.02)", hoverStyle: { backgroundColor: "rgba(255,255,255,0.04)" } })}
+          ? { borderColor: "$color02", backgroundColor: "$color005" }
+          : { borderColor: "$borderColor", backgroundColor: "$color002", hoverStyle: { borderColor: "$color02", backgroundColor: "$color005" } })}
     >
       <XStack alignItems="flex-start" gap="$2">
         {Icon ? (
           <Icon size={14} style={{ marginTop: 2, flexShrink: 0, color: "var(--muted-foreground)" }} />
         ) : (
           <SizableText
-            marginTop="$1" width="$1.5" height="$1.5" flexShrink={0} borderRadius="$10" {...{ backgroundColor: isActive ? "white" : "white" }}
+            marginTop="$1" width="$1.5" height="$1.5" flexShrink={0} borderRadius="$10" {...{ backgroundColor: isActive ? "$color12" : "$color5" }}
             aria-hidden
   />
         )}
@@ -777,7 +777,7 @@ function RevCard({
               </>
             )}
             {rev.kind === "checkpoint" && (
-              <SizableText textTransform="uppercase" letterSpacing={0.4} color="$color11">· {rev.cpKind === "manual" ? "save" : rev.cpKind}</SizableText>
+              <SizableText letterSpacing={0.4} color="$color11">· {rev.cpKind === "manual" ? "save" : rev.cpKind}</SizableText>
             )}
           </SizableText>
         </YStack>
@@ -882,7 +882,7 @@ function CardButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      group alignItems="center" gap="$1" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1" disabledStyle={{ opacity: 0.5 }} {...{ backgroundColor: active ? "$yellow8" : "white", hoverStyle: active ? undefined : { backgroundColor: "$color3" } }}
+      group alignItems="center" gap="$1" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1" disabledStyle={{ opacity: 0.5 }} {...{ backgroundColor: active ? "$yellow8" : "$color3", hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
     >
       <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1" fontSize={11} fontWeight="500" color={active ? "$yellow2" : "$color11"} $group-hover={active ? undefined : { color: "$color" }}>
         {children}
@@ -894,7 +894,7 @@ function CardButton({
 function GroupHeader({ label, hint, children }: { label: string; hint?: string; children?: ReactNode }) {
   return (
     <XStack alignItems="center" gap="$2" paddingHorizontal="$1" paddingBottom="$1.5" paddingTop="$1">
-      <SizableText fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color11">{label}</SizableText>
+      <SizableText fontSize={10} fontWeight="500" letterSpacing={0.4} color="$color11">{label}</SizableText>
       {hint && <SizableText fontFamily="$mono" fontSize={10} color="$color11">{hint}</SizableText>}
       {children && <SizableText marginLeft="auto">{children}</SizableText>}
     </XStack>
@@ -914,7 +914,7 @@ function MenuItem({ onSelect, children }: { onSelect: () => void; children: Reac
 
 function ConnectRepoCta() {
   return (
-    <YStack marginTop="$2" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="white" padding="$3.5">
+    <YStack marginTop="$2" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$3.5">
       <SizableText marginBottom="$1" alignItems="center" gap="$1.5" fontSize={13} fontWeight="500" color="$color" display="flex" flexDirection="row">
         <GitBranch size={14} />
         Keep full version history
@@ -925,7 +925,7 @@ function ConnectRepoCta() {
       <Button
         type="button"
         onClick={openGitSync}
-        marginTop="$2.5" alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color12" }}
+        marginTop="$2.5" alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$3" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color6" }}
       >
         <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1.5" fontSize="$1" fontWeight="500" color="$background">
           <UploadCloud size={14} />

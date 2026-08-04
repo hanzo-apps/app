@@ -99,7 +99,7 @@ export function AppHeader({
         <XStack alignItems="center" gap="$2" flex={1} justifyContent="center" $md={{ justifyContent: "flex-start", marginLeft: "$5" }}>
           {viewTabs && viewTabs.length > 0 ? (
             /* Show view tabs as pill toggle */
-            <XStack borderWidth={1} borderRadius="$10">
+            <XStack borderWidth={1} borderColor="$borderColor" borderRadius="$10">
               {viewTabs.map((tab, index) => (
                 <Button
                   key={tab.id}
@@ -215,7 +215,7 @@ export function AppHeader({
       
       {/* Mobile dropdown menu */}
       {mobileMenuOpen && (dropdownOnlyActions.length > 0 || mobileMenuContent) && (
-        <YStack borderTopWidth={1} backgroundColor="$color3" paddingHorizontal="$4" paddingVertical="$4" rowGap="$3" $md={{ display: "none" }}>
+        <YStack borderTopWidth={1} backgroundColor="$color2" paddingHorizontal="$4" paddingVertical="$4" rowGap="$3" $md={{ display: "none" }}>
           {/* Show subtitle on mobile if no leftText and no center title */}
           {!leftText && !title && subtitle && (
             <YStack paddingBottom="$2" borderBottomWidth={1} borderColor="$borderColor">

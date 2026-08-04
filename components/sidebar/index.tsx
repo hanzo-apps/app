@@ -258,7 +258,7 @@ function SidebarContent({
       <Button
         key={item.id}
         variant="ghost"
-        width="100%" gap="$2" {...{ justifyContent: collapsed ? "center" : "flex-start", paddingHorizontal: collapsed ? "$2" : undefined, backgroundColor: isActive ? "var(--brand-accent-soft)" : undefined, color: isActive ? "var(--brand-accent-muted)" : "$color11", hoverStyle: isActive ? {"backgroundColor":"var(--brand-accent-soft)"} : {"backgroundColor":"$color3"} }}
+        width="100%" gap="$2" {...{ justifyContent: collapsed ? "center" : "flex-start", paddingHorizontal: collapsed ? "$2" : undefined, backgroundColor: isActive ? "$color3" : "transparent", color: isActive ? "$color" : "$color11", hoverStyle: {"backgroundColor":"$color3"} }}
         onClick={() => handleItemAction(item)}
         title={collapsed ? item.label : undefined}
       >
@@ -363,7 +363,7 @@ function SidebarContent({
               <Divider />
             ) : (
               <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingBottom="$1" paddingTop="$3">
-                <SizableText fontSize={11} fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">
+                <SizableText fontSize={11} fontWeight="500" color="$color11">
                   Projects
                 </SizableText>
                 <DropdownMenu placement="bottom-end">
@@ -431,7 +431,7 @@ function SidebarContent({
               <>
                 {collapsed ? <Divider /> : (
                   <YStack paddingHorizontal="$3" paddingBottom="$1" paddingTop="$3">
-                    <SizableText fontSize={11} fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">
+                    <SizableText fontSize={11} fontWeight="500" color="$color11">
                       Recents
                     </SizableText>
                   </YStack>
@@ -457,7 +457,7 @@ function SidebarContent({
             {/* Secondary (kept reachable) */}
             {collapsed ? <Divider /> : (
               <YStack paddingHorizontal="$3" paddingBottom="$1" paddingTop="$3">
-                <SizableText fontSize={11} fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">
+                <SizableText fontSize={11} fontWeight="500" color="$color11">
                   More
                 </SizableText>
               </YStack>
@@ -478,7 +478,7 @@ function SidebarContent({
                     key={item.id}
                     variant="ghost"
                     size="sm"
-                    position="relative" width="100%" gap="$2" {...{ justifyContent: collapsed ? "center" : "flex-start", paddingHorizontal: collapsed ? "$2" : undefined, color: isLogout ? "$red9" : undefined, hoverStyle: isLogout ? {"backgroundColor":"$red9"} : undefined }}
+                    position="relative" width="100%" gap="$2" {...{ justifyContent: collapsed ? "center" : "flex-start", paddingHorizontal: collapsed ? "$2" : undefined, color: isLogout ? "$red9" : undefined, hoverStyle: isLogout ? {"backgroundColor":"$color3"} : undefined }}
                     onClick={() => handleItemAction(item)}
                     title={collapsed ? item.label : undefined}
                   >
@@ -522,7 +522,7 @@ function ShareCard() {
       <Button
         onClick={() => setOpen(true)}
         title="Share Hanzo, earn free weeks"
-        width="100%" alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1.5" {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }}
+        width="100%" alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color005" paddingHorizontal="$2.5" paddingVertical="$1.5" {...{ color: "$color11" }} hoverStyle={{ borderColor: "$color06" }}
       >
         <Share2 size={14} />
         <SizableText numberOfLines={1} fontWeight="500" fontSize="$1" color="$color11">Share app</SizableText>
@@ -619,7 +619,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
   />
           <Button
             onClick={copy}
-            flexShrink={0} alignItems="center" gap="$1.5" borderRadius="$3" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$1.5" {...{ color: "$background" }} hoverStyle={{ backgroundColor: "$color12" }}
+            flexShrink={0} alignItems="center" gap="$1.5" borderRadius="$3" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$3" paddingVertical="$1.5" {...{ color: "$background" }} hoverStyle={{ backgroundColor: "$color6" }}
           >
             {copied ? <Check size={14} /> : <Copy size={14} />}
             <SizableText fontSize="$1" fontWeight="500" color="$background">{copied ? 'Copied' : 'Copy'}</SizableText>
@@ -629,7 +629,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
         <XStack marginTop="$3" flexWrap="wrap" gap="$2">
           <Button
             onClick={nativeShare}
-            alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" {...{ color: "$color11" }} hoverStyle={{ borderColor: "$borderColor" }}
+            alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" {...{ color: "$color11" }} hoverStyle={{ borderColor: "$color06" }}
           >
             <Share2 size={14} /> <SizableText fontSize="$1" color="$color11">Share</SizableText>
           </Button>
@@ -637,7 +637,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
             href={`https://x.com/intent/post?text=${shareText}&url=${enc}`}
             target="_blank"
             rel="noopener noreferrer"
-            alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$borderColor", color: "$color" }}
+            alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$color06", color: "$color" }}
           >
             Post on X
           </Anchor>
@@ -645,7 +645,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
             href={`https://www.linkedin.com/sharing/share-offsite/?url=${enc}`}
             target="_blank"
             rel="noopener noreferrer"
-            alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$borderColor", color: "$color" }}
+            alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$color06", color: "$color" }}
           >
             Share on LinkedIn
           </Anchor>

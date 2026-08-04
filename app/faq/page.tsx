@@ -27,9 +27,9 @@ export default function FaqPage() {
 
           <YStack position="relative" alignSelf="center" maxWidth={768}>
             <Reveal>
-              <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5">
-                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" />
-                <SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.4} color="$color11">
+              <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$3" paddingVertical="$1.5">
+                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color5" />
+                <SizableText fontFamily="$mono" fontSize={11} color="$color11">
                   FAQ
                 </SizableText>
               </XStack>
@@ -87,13 +87,13 @@ export default function FaqPage() {
             <YStack marginTop="$6" alignItems="center" justifyContent="center" gap="$3" $sm={{ flexDirection: "row" }}>
               <Link
                 href="/dev"
-              ><XStack alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$5" paddingVertical="$3" hoverStyle={{ backgroundColor: "$color12" }}>
+              ><XStack alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$5" paddingVertical="$3" hoverStyle={{ backgroundColor: "$color6" }}>
                 <SizableText fontSize="$3" fontWeight="500" color="$background">Start building</SizableText>
                 <SizableText color="$background"><ArrowRight size={16} /></SizableText>
               </XStack></Link>
               <Link
                 href="/pricing"
-              ><SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}>
+              ><SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color005" }}>
                 See pricing
               </SizableText></Link>
             </YStack>

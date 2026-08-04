@@ -509,7 +509,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
     return (
       <XStack alignItems="center" justifyContent="center" height="100%">
         <YStack>
-          <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$color12" alignSelf="center"></YStack>
+          <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$color11" alignSelf="center"></YStack>
           <Paragraph marginTop="$4">Loading projects...</Paragraph>
         </YStack>
       </XStack>
@@ -563,7 +563,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                   </Popover>
 
                   {/* View Mode */}
-                  <XStack borderWidth={1} borderRadius="$10">
+                  <XStack borderWidth={1} borderColor="$borderColor" borderRadius="$10">
                     <Button
                       variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
                       size="sm"

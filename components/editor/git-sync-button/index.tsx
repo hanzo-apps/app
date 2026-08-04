@@ -352,7 +352,7 @@ export function GitSyncButton({
             <Button
               type="button"
               onClick={connect}
-              marginTop="$4.5" alignItems="center" gap="$2" borderRadius="$5" backgroundColor="$color12" paddingHorizontal="$4" paddingVertical="$2.5" hoverStyle={{ backgroundColor: "$color12" }}
+              marginTop="$4.5" alignItems="center" gap="$2" borderRadius="$5" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$4" paddingVertical="$2.5" hoverStyle={{ backgroundColor: "$color6" }}
             >
               <ProviderIcon size={16} />
               Connect {providerName}
@@ -455,7 +455,7 @@ export function GitSyncButton({
             <YStack borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$3.5">
               <XStack marginBottom="$1.5" alignItems="center" gap="$1.5">
                 <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$green8" />
-                <SizableText fontSize={11} textTransform="uppercase" letterSpacing={0.4} color="$color11">
+                <SizableText fontSize={11} letterSpacing={0.4} color="$color11">
                   Linked repository
                 </SizableText>
               </XStack>

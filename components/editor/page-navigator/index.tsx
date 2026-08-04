@@ -133,7 +133,7 @@ export function PagePanel({
               {group.folder && (
                 <XStack alignItems="center" gap="$1.5" paddingHorizontal="$2.5" paddingVertical="$1">
                   <SizableText color="$color11"><Folder size={12} /></SizableText>
-                  <SizableText numberOfLines={1} fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color11">{group.folder}</SizableText>
+                  <SizableText numberOfLines={1} fontSize={10} fontWeight="500" letterSpacing={0.4} color="$color11">{group.folder}</SizableText>
                 </XStack>
               )}
               {group.items.map((item) => {
@@ -144,14 +144,14 @@ export function PagePanel({
                     type="button"
                     onClick={() => select(item.path)}
                     title={item.path}
-                    width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$1.5" justifyContent="flex-start" focusStyle={{ outlineWidth: 0 }} {...{ paddingLeft: group.folder ? "$5" : undefined, backgroundColor: active ? "$color3" : undefined, hoverStyle: active ? undefined : {"backgroundColor":"white"} }}
+                    width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$1.5" justifyContent="flex-start" focusStyle={{ outlineWidth: 0 }} {...{ paddingLeft: group.folder ? "$5" : undefined, backgroundColor: active ? "$color3" : undefined, hoverStyle: active ? undefined : {"backgroundColor":"$color3"} }}
                   >
                     <FileCode size={14} />
                     <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
                       {item.name}
                     </SizableText>
                     {active && (
-                      <SizableText marginLeft="auto" width="$1.5" height="$1.5" flexShrink={0} borderRadius="$10" backgroundColor="white" />
+                      <SizableText marginLeft="auto" width="$1.5" height="$1.5" flexShrink={0} borderRadius="$10" backgroundColor="$color12" />
                     )}
                   </Button>
                 );

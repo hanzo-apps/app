@@ -204,7 +204,7 @@ export default function CryptoPortfolio() {
                     {holdings.map((coin) => (
                       <XStack key={coin.symbol} alignItems="center" justifyContent="space-between">
                         <XStack alignItems="center" gap="$3">
-                          <XStack width="$7" height="$7" borderRadius="$10" backgroundColor="$color12" alignItems="center" justifyContent="center">
+                          <XStack width="$7" height="$7" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" alignItems="center" justifyContent="center">
                             <SizableText fontWeight="500">{coin.icon}</SizableText>
                           </XStack>
                           <div>
@@ -288,9 +288,7 @@ export default function CryptoPortfolio() {
                   {recentTransactions.map((tx, i) => (
                     <XStack key={i} alignItems="center" justifyContent="space-between">
                       <XStack alignItems="center" gap="$3">
-                        <XStack width="$6" height="$6" borderRadius="$10" alignItems="center" justifyContent="center" {...{ backgroundColor: tx.type === "buy" ? "#dcfce7" : tx.type === "sell" ? "#fee2e2" :
-                          tx.type === "receive" ? "rgba(23,23,23,0.1)" :
-                          "#ffedd5" }}>
+                        <XStack width="$6" height="$6" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" alignItems="center" justifyContent="center">
                           {tx.type === "buy" || tx.type === "receive" ? (
                             <ArrowDownRight size={16} />
                           ) : (

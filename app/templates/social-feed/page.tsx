@@ -214,7 +214,7 @@ export default function SocialFeed() {
           <Card>
             <CardHeader>
               <CardTitle alignItems="center" gap="$2">
-                <TrendingUp size={20} color="#171717" />
+                <TrendingUp size={20} />
                 Trending Now
               </CardTitle>
             </CardHeader>
@@ -257,7 +257,7 @@ export default function SocialFeed() {
                         <Paragraph fontSize="$1" color="$color11">{user.username}</Paragraph>
                       </div>
                     </XStack>
-                    <Button size="sm" backgroundColor="#171717" hoverStyle={{ backgroundColor: "#000000" }}>Follow</Button>
+                    <Button variant="outline" size="sm">Follow</Button>
                   </XStack>
                 ))}
               </YStack>

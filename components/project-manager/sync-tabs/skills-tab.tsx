@@ -179,7 +179,7 @@ export function SkillsTab({
       <SummaryBar items={items} />
 
       {/* Item List - scrollable */}
-      <YStack marginTop="$3" borderWidth={1} borderRadius="$5" maxHeight={256} overflow="scroll">
+      <YStack marginTop="$3" borderWidth={1} borderColor="$borderColor" borderRadius="$5" maxHeight={256} overflow="scroll">
         {items.map((item) => (
           <SyncItemRow
             key={item.id}

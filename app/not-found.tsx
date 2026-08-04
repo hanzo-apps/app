@@ -28,7 +28,7 @@ export default function NotFound() {
         <XStack alignItems="center" justifyContent="center" gap="$4">
           <Link
             href="/"
-          ><SizableText paddingHorizontal="$4.5" paddingVertical="$2.5" backgroundColor="$color12" color="$background" borderRadius="$6" fontWeight="500" fontSize="$3" hoverStyle={{ backgroundColor: "$color12" }}>
+          ><SizableText paddingHorizontal="$4.5" paddingVertical="$2.5" backgroundColor="$color5" borderWidth={1} borderColor="$color6" color="$color12" borderRadius="$6" fontWeight="500" fontSize="$3" hoverStyle={{ backgroundColor: "$color6" }}>
             Back to Hanzo
           </SizableText></Link>
           <Link

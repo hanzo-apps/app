@@ -100,11 +100,11 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
           </YStack>
 
           {projectId !== originalProjectId && (
-            <XStack alignItems="flex-start" gap="$3" padding="$3" backgroundColor="$yellow1" borderWidth={1} borderColor="$yellow3" borderRadius="$5" $theme-dark={{ backgroundColor: "$yellow12", borderColor: "$yellow11" }}>
+            <XStack alignItems="flex-start" gap="$3" padding="$3" backgroundColor="$yellow1" borderWidth={1} borderColor="$yellow3" borderRadius="$5">
               <AlertTriangle size={16} />
               <YStack>
-                <Paragraph fontSize="$3" fontWeight="500" color="$yellow11" $theme-dark={{ color: "$yellow3" }}>Changing the source project may break the published deployment.</Paragraph>
-                <Paragraph fontSize="$3" marginTop="$1" color="$yellow11" $theme-dark={{ color: "$yellow4" }}>
+                <Paragraph fontSize="$3" fontWeight="500" color="$yellow12">Changing the source project may break the published deployment.</Paragraph>
+                <Paragraph fontSize="$3" marginTop="$1" color="$yellow11">
                   The new project may have different files and structure. You will need to republish after saving.
                 </Paragraph>
               </YStack>
@@ -201,7 +201,7 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
 
         {settings.lastPublishedVersion !== undefined &&
           settings.settingsVersion > settings.lastPublishedVersion && (
-            <YStack padding="$3" backgroundColor="$yellow1" borderWidth={1} borderColor="$yellow3" borderRadius="$5" $theme-dark={{ backgroundColor: "$yellow12", borderColor: "$yellow11" }}>
+            <YStack padding="$3" backgroundColor="$yellow1" borderWidth={1} borderColor="$yellow3" borderRadius="$5">
               <XStack alignItems="center" gap="$2">
                 <Badge variant="outline">
                   Pending Changes

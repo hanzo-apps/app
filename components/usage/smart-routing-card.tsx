@@ -62,7 +62,7 @@ export default function SmartRoutingCard() {
             marginTop="$1" flexShrink={0} borderRadius="$10" minWidth="$7" width="$7" height="$5" alignItems="center" padding="$1" {...{ cursor: toggleDisabled ? "not-allowed" : "pointer", opacity: toggleDisabled ? 0.4 : undefined, backgroundColor: on ? "$color12" : "$color3" }}
           >
             <SizableText
-              width="$4" height="$4" borderRadius="$10" elevation={3} {...{ x: on ? "$4" : undefined, backgroundColor: on ? "$background" : "$color" }}
+              width="$4" height="$4" borderRadius="$10" elevation={3} {...{ x: on ? "$4" : undefined, backgroundColor: on ? "$background" : "$color12" }}
   />
           </Button>
         </XStack>

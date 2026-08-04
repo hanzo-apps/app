@@ -940,7 +940,7 @@ export function AskAI({
                   </SizableText>
                   {index === 0 && (
                     <XStack alignItems="center" gap="$1">
-                      <YStack width="$1.5" height="$1.5" backgroundColor="$color" borderRadius="$10" />
+                      <YStack width="$1.5" height="$1.5" backgroundColor="$color5" borderRadius="$10" />
                       <SizableText fontSize="$1" color="$color11">Next in queue</SizableText>
                     </XStack>
                   )}

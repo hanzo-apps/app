@@ -172,8 +172,8 @@ export default function LandingPage() {
             <Reveal>
               <XStack alignSelf="center" marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color0025" paddingHorizontal="$3" paddingVertical="$1.5">
                 <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color06" />
-                <SizableText fontFamily="$mono" fontSize={11} letterSpacing={1.65} textTransform="uppercase" color="$color11">
-                  Sites, wired to real data &amp; AI
+                <SizableText fontFamily="$mono" fontSize={11} color="$color11">
+                  Apps, wired to real data &amp; AI
                 </SizableText>
               </XStack>
             </Reveal>
@@ -213,7 +213,7 @@ export default function LandingPage() {
                   <YStack marginTop="$5">
                     <XStack marginBottom="$3" alignItems="center" justifyContent="center" gap="$2.5">
                       <SizableText height={1} width="$5" backgroundColor="$borderColor" />
-                      <SizableText fontFamily="$mono" fontSize={11} letterSpacing={1.32} textTransform="uppercase" color="$color10">or start from a template</SizableText>
+                      <SizableText fontFamily="$mono" fontSize={11} color="$color10">or start from a template</SizableText>
                       <SizableText height={1} width="$5" backgroundColor="$borderColor" />
                     </XStack>
                     <YStack alignSelf="center" width="100%" $lg={{ maxWidth: 896 }}>
@@ -224,6 +224,7 @@ export default function LandingPage() {
                           <Button
                             key={t.slug}
                             type="button"
+                            variant="ghost"
                             onClick={() => startFromTemplate(t)}
                             width="calc(50% - 5px)" $sm={{ width: "calc(25% - 7.5px)" }} height="auto" padding={0} flexDirection="column" alignItems="stretch" group className="zoom-scope" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" hoverStyle={{ borderColor: "$color02", backgroundColor: "$color005" }}
                           >
@@ -250,7 +251,7 @@ export default function LandingPage() {
                     <YStack marginTop="$3" alignItems="center">
                       <Link
                         href="/gallery"
-                      ><SizableText fontSize="$1" color="$color" hoverStyle={{ color: "$color" }}>
+                      ><SizableText fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>
                         Browse all templates →
                       </SizableText></Link>
                     </YStack>
@@ -258,7 +259,7 @@ export default function LandingPage() {
                 )}
 
                 <YStack marginTop="$5" alignItems="center" gap="$2">
-                  <SizableText fontSize="$1" color="$color">
+                  <SizableText fontSize="$1" color="$color11">
                     Every app ships on Hanzo Cloud with database, auth, and AI
                     built in.
                   </SizableText>
@@ -266,7 +267,7 @@ export default function LandingPage() {
                     href="/new"
                   ><XStack alignItems="center" gap="$1.5">
                     <Github size={14} />
-                    <SizableText fontSize="$1" color="$color" hoverStyle={{ color: "$color" }}>or import an existing GitHub repo</SizableText>
+                    <SizableText fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>or import an existing GitHub repo</SizableText>
                   </XStack></Link>
                 </YStack>
               </YStack>
@@ -300,13 +301,13 @@ export default function LandingPage() {
                   <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$10" }} lineHeight="1.1">
                     Continue building
                   </H2>
-                  <Paragraph marginTop="$1.5" fontSize="$3" color="$color">
+                  <Paragraph marginTop="$1.5" fontSize="$3" color="$color11">
                     Jump back into your recent projects.
                   </Paragraph>
                 </div>
                 <Link
                   href="/projects"
-                ><SizableText fontSize="$3" color="$color" hoverStyle={{ color: "$color" }}>
+                ><SizableText fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
                   View all →
                 </SizableText></Link>
               </XStack>
@@ -315,6 +316,7 @@ export default function LandingPage() {
                 {projects.slice(0, 4).map((project) => (
                   <Button
                     key={project.slug}
+                    variant="ghost"
                     onClick={() => router.push(builderLink(project.slug, project.org))}
                     group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" hoverStyle={{ borderColor: "$color5", backgroundColor: "$color3" }}
                   >
@@ -323,12 +325,12 @@ export default function LandingPage() {
                       <H3 fontSize="$3" fontWeight="500" color="$color" $md={{ fontSize: "$4" }} lineHeight="1.15">
                         {project.name}
                       </H3>
-                      <Paragraph marginTop="$1" numberOfLines={2} fontSize="$1" color="$color" $md={{ fontSize: "$3" }} lineHeight="1.5">
+                      <Paragraph marginTop="$1" numberOfLines={2} fontSize="$1" color="$color11" $md={{ fontSize: "$3" }} lineHeight="1.5">
                         {project.status === "live" ? "Live" : "Draft"}
                       </Paragraph>
                       {project.updatedAtIso && (
                         <YStack marginTop="$3">
-                          <SizableText fontFamily="$mono" fontSize={11} color="$color">
+                          <SizableText fontFamily="$mono" fontSize={11} color="$color11">
                             {new Date(project.updatedAtIso).toLocaleDateString()}
                           </SizableText>
                         </YStack>
@@ -348,7 +350,7 @@ export default function LandingPage() {
               <H2 fontSize="$10" fontWeight="500" textAlign="center" letterSpacing={-0.4} $md={{ fontSize: "$12" }} lineHeight="1.1">
                 Ship your first app today.
               </H2>
-              <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" textAlign="center" color="$color" $md={{ fontSize: "$6" }} lineHeight="1.5">
+              <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" textAlign="center" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
                 Start with a sentence. Deploy to Hanzo Cloud in one click.
               </Paragraph>
             </YStack>

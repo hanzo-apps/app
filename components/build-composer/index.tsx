@@ -197,18 +197,20 @@ export function BuildComposer({
 
       {showPill && (
         <XStack marginBottom="$5" justifyContent="center">
-          <Anchor
-            href="https://cloud.hanzo.ai"
-            target="_blank"
-            rel="noopener noreferrer"
-            group alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$borderColor", color: "$color" }}
-          >
-            <SizableText borderRadius="$10" backgroundColor="$color3" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color">
-              New
-            </SizableText>
-            Hanzo apps now run in Hanzo Cloud
-            <SizableText $group-hover={{ x: "$0.5" }}>→</SizableText>
-          </Anchor>
+          {/* A text host (Anchor) cannot row-lay mixed children — it collapsed
+              to its padding. The XStack is the pill; the bare <a> only carries
+              the link (quiet by the global anchor reset). */}
+          <a href="https://cloud.hanzo.ai" target="_blank" rel="noopener noreferrer">
+            <XStack group alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color005" paddingHorizontal="$3" paddingVertical="$1.5" hoverStyle={{ borderColor: "$color06" }}>
+              <SizableText borderRadius="$10" backgroundColor="$color3" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" letterSpacing={0.4} color="$color">
+                New
+              </SizableText>
+              <SizableText whiteSpace="nowrap" fontSize="$1" color="$color11" $group-hover={{ color: "$color" }}>
+                Hanzo apps now run in Hanzo Cloud
+              </SizableText>
+              <SizableText color="$color11" $group-hover={{ x: "$0.5", color: "$color" }}>→</SizableText>
+            </XStack>
+          </a>
         </XStack>
       )}
 
@@ -239,7 +241,8 @@ export function BuildComposer({
                 <DropdownMenuTrigger asChild>
                   <Button
                     type="button"
-                    alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$borderColor" }}
+                    variant="ghost"
+                    alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color005" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$color06" }}
                   >
                     <XStack alignItems="center" gap="$1.5">
                       <CurrentMode.icon size={14} />
@@ -270,10 +273,11 @@ export function BuildComposer({
               {/* Base backend toggle — spawn a Hanzo Base for this app. */}
               <Button
                 type="button"
+                variant="ghost"
                 onClick={toggleBase}
                 aria-pressed={withBase}
                 title="Hanzo Base backend — database, auth, realtime for this app"
-                group alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} paddingHorizontal="$2.5" paddingVertical="$1.5" {...{ borderColor: withBase ? "$borderColor" : "$borderColor", backgroundColor: withBase ? "$color3" : undefined, hoverStyle: withBase ? undefined : {"borderColor":"$borderColor"} }}
+                group alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor={withBase ? "$color3" : "$color005"} paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$color06" }}
               >
                 <XStack alignItems="center" gap="$1.5">
                   <Database size={14} />

@@ -226,14 +226,14 @@ function DocsViewContent() {
           {loading && (
             <XStack alignItems="center" justifyContent="center" height="100%">
               <YStack alignItems="center">
-                <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$color12" alignSelf="center" />
+                <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$color11" alignSelf="center" />
                 <Paragraph marginTop="$4" color="$color11">Loading documentation...</Paragraph>
               </YStack>
             </XStack>
           )}
 
           {error && (
-            <XStack alignItems="center" gap="$3" padding="$4" backgroundColor="$red9" borderWidth={1} borderColor="$red9" borderRadius="$5">
+            <XStack alignItems="center" gap="$3" padding="$4" backgroundColor="transparent" borderWidth={1} borderColor="$red9" borderRadius="$5">
               <AlertCircle size={20} />
               <div>
                 <Paragraph fontWeight="500">Error loading document</Paragraph>
@@ -261,7 +261,7 @@ function DocsViewContent() {
 
         {/* Table of Contents Sidebar - independent scrollable column */}
         {showToc && (
-          <YStack display="none" height="100%" borderLeftWidth={1} borderColor="$borderColor" backgroundColor="$color3" overflow="scroll">
+          <YStack display="none" height="100%" borderLeftWidth={1} borderColor="$borderColor" backgroundColor="$color2" overflow="scroll">
             <YStack padding="$5" position="sticky" top="$0">
               <TableOfContents items={tocItems} activeId={activeId} visibleIds={visibleIds} onItemClick={handleTocClick} />
             </YStack>

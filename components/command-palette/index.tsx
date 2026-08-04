@@ -249,7 +249,7 @@ function StatusDot({ status, alignEnd = false }: { status: string; alignEnd?: bo
       {...(alignEnd ? { marginLeft: "auto" } : null)}
     >
       <Circle size={6} color={st.text} />
-      <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
+      <SizableText fontSize={10} letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
     </XStack>
   );
 }

@@ -346,7 +346,7 @@ export const Preview = ({
   />
       {!isAiWorking && hoveredElement && selectedElement && (
         <YStack
-          cursor="pointer" position="absolute" backgroundColor="white" borderColor="white" borderStyle="dashed" borderTopRightRadius="$5" borderBottomRightRadius="$5" borderBottomLeftRadius="$5" padding="$3" zIndex={10} pointerEvents="none"
+          cursor="pointer" position="absolute" backgroundColor="$color01" borderWidth={1} borderColor="$color" borderStyle="dashed" borderTopRightRadius="$5" borderBottomRightRadius="$5" borderBottomLeftRadius="$5" padding="$3" zIndex={10} pointerEvents="none"
           style={{
             top:
               selectedElement.getBoundingClientRect().top +
@@ -358,7 +358,7 @@ export const Preview = ({
             height: selectedElement.getBoundingClientRect().height,
           }}
         >
-          <SizableText backgroundColor="white" borderTopLeftRadius="$3" borderTopRightRadius="$3" fontSize="$3" color="$color12" paddingHorizontal="$2" paddingVertical="$0.5" y={-28} position="absolute" top="$0" left="$0">
+          <SizableText backgroundColor="$color5" borderWidth={1} borderColor="$color6" borderTopLeftRadius="$3" borderTopRightRadius="$3" fontSize="$3" color="$color12" paddingHorizontal="$2" paddingVertical="$0.5" y={-28} position="absolute" top="$0" left="$0">
             {htmlTagToText(selectedElement.tagName.toLowerCase())}
           </SizableText>
         </YStack>

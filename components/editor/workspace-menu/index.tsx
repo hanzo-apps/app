@@ -160,7 +160,7 @@ export function WorkspaceMenu({
           <Button
             type="button"
             title="Workspace"
-            minWidth={0} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$borderColor", backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+            minWidth={0} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$color02", backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
           >
             <OrgAvatar name={orgName} logo={activeOrg?.logo} />
             <SizableText maxWidth="9rem" numberOfLines={1} fontWeight="500" color="$color">
@@ -224,7 +224,7 @@ export function WorkspaceMenu({
                     <DropdownMenuItem
                       key={o.name}
                       onSelect={() => !isCurrent && switchOrg(o.name)}
-                      cursor="pointer" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$2" focusStyle={{ backgroundColor: "$color" }}
+                      cursor="pointer" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$2" focusStyle={{ backgroundColor: "$color3" }}
                     >
                       <OrgAvatar name={orgDisplayName(orgs, o.name)} logo={o.logo} />
                       <SizableText minWidth={0} flex={1} numberOfLines={1} fontSize="$3" color="$color">{orgDisplayName(orgs, o.name)}</SizableText>
@@ -252,7 +252,7 @@ export function WorkspaceMenu({
           <DropdownMenuItem asChild marginHorizontal="$0.5" marginTop="$1" borderRadius="$5" padding="$0" focusStyle={{ backgroundColor: "transparent" }}>
             <Link
               href="/billing"
-            ><YStack width="100%" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$2.5" hoverStyle={{ borderColor: "$borderColor", backgroundColor: "$color" }} focusVisibleStyle={{ borderColor: "$borderColor" }}>
+            ><YStack width="100%" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$2.5" hoverStyle={{ borderColor: "$color02", backgroundColor: "$color3" }} focusVisibleStyle={{ borderColor: "$color02" }}>
               <XStack alignItems="center" justifyContent="space-between">
                 <XStack alignItems="center" gap="$1.5">
                   <Wallet size={14} />
@@ -269,7 +269,7 @@ export function WorkspaceMenu({
                 height="$1.5" width="100%" overflow="hidden" borderRadius="$10" backgroundColor="$color3"
               >
                 <YStack
-                  height="100%" borderRadius="$10"
+                  height="100%" borderRadius="$10" backgroundColor="var(--brand-accent)"
                   style={{ width: `${pct}%` }}
   />
               </YStack>
@@ -361,7 +361,7 @@ export function WorkspaceMenu({
               size="sm"
               onClick={() => void submitRename()}
               disabled={renaming || !renameValue.trim()}
-              backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
+              backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}
             >
               {renaming ? "Saving…" : "Save"}
             </Button>

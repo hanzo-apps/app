@@ -400,7 +400,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                   {group.folder && (
                     <XStack alignItems="center" gap="$1.5" paddingHorizontal="$3" paddingVertical="$1">
                       <Folder size={12} />
-                      <SizableText numberOfLines={1} fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color11">{group.folder}</SizableText>
+                      <SizableText numberOfLines={1} fontSize={10} fontWeight="500" letterSpacing={0.4} color="$color11">{group.folder}</SizableText>
                     </XStack>
                   )}
                   {group.items.map((file) => (

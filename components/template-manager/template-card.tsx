@@ -114,7 +114,7 @@ export function TemplateCard({
                 <Badge className="text-xs px-1.5 py-0 h-auto" style={runtimeBadge.tone}>{runtimeBadge.label}</Badge>
               )}
               {hasBackendFeatures && (
-                <Badge className="text-xs px-1.5 py-0 h-auto bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800">
+                <Badge variant="outline" className="text-xs px-1.5 py-0 h-auto">
                   <Server size={12} />
                   Backend
                 </Badge>
@@ -327,7 +327,7 @@ export function TemplateCard({
                   href={customTemplate.metadata.authorUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  color="$color12" fontSize="$1" alignItems="center" gap="$1" hoverStyle={{ textDecorationLine: "underline" }}
+                  color="$color11" fontSize="$1" alignItems="center" gap="$1" hoverStyle={{ color: "$color", textDecorationLine: "underline" }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   by {customTemplate.metadata.author}
@@ -346,7 +346,7 @@ export function TemplateCard({
                 <Badge className="text-xs px-1.5 py-0.5" style={runtimeBadge.tone}>{runtimeBadge.label}</Badge>
               )}
               {hasBackendFeatures && (
-                <Badge className="text-xs px-1.5 py-0.5 bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800">
+                <Badge variant="outline" className="text-xs px-1.5 py-0.5">
                   <Server size={12} />
                   Backend
                 </Badge>
@@ -381,7 +381,7 @@ export function TemplateCard({
         </YStack>
 
         {/* Footer */}
-        <XStack paddingTop="$3" borderTopWidth={1} alignItems="center" justifyContent="space-between">
+        <XStack paddingTop="$3" borderTopWidth={1} borderColor="$borderColor" alignItems="center" justifyContent="space-between">
           <SizableText fontSize="$1" color="$color11">
             {formatDate(customTemplate?.updatedAt || template.updatedAt)}
           </SizableText>

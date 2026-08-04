@@ -231,7 +231,7 @@ Start writing your content above!
                 <Download size={16} />
                 Export
               </Button>
-              <Button size="sm" backgroundColor="#171717" hoverStyle={{ backgroundColor: "#000000" }}>
+              <Button size="sm">
                 <Save size={16} />
                 Save
               </Button>

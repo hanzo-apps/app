@@ -150,7 +150,7 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
       {/* Collections list */}
       <YStack width="$20" flexShrink={0} borderRightWidth={1} borderColor="$borderColor" padding="$2" overflow="scroll">
         <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$2" paddingVertical="$1.5">
-          <SizableText fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.4}>Collections</SizableText>
+          <SizableText fontSize="$1" fontWeight="500" color="$color11" letterSpacing={0.4}>Collections</SizableText>
           <Button onClick={loadSchema} title="Refresh">
             <RefreshCw size={14} />
           </Button>

@@ -1209,7 +1209,7 @@ export default function TestGenerationPage() {
                 {/* Track header */}
                 <XStack alignItems="center" gap="$3" marginBottom="$3">
                   <YStack height={1} flex={1} backgroundColor="$borderColor" />
-                  <H2 fontSize="$3" fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">
+                  <H2 fontSize="$3" fontWeight="500" color="$color11">
                     {track.name}
                   </H2>
                   <SizableText fontSize="$1" color="$color11">{track.description}</SizableText>
@@ -1506,7 +1506,7 @@ export default function TestGenerationPage() {
           <YStack marginTop="$6">
             <XStack alignItems="center" gap="$3" marginBottom="$3">
               <YStack height={1} flex={1} backgroundColor="$borderColor" />
-              <H2 fontSize="$3" fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">
+              <H2 fontSize="$3" fontWeight="500" color="$color11">
                 Aggregated Results ({roundHistory.length} Rounds)
               </H2>
               <YStack height={1} flex={1} backgroundColor="$borderColor" />

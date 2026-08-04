@@ -76,7 +76,7 @@ export function TemplateDetail({
             <nav aria-label="Breadcrumb">
               <XStack flexWrap="wrap" alignItems="center" gap="$1.5">
                 <li>
-                  <Link href="/templates"><SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.24} color="$color11" hoverStyle={{ color: "$color" }}>
+                  <Link href="/templates"><SizableText fontFamily="$mono" fontSize={11} color="$color11" hoverStyle={{ color: "$color" }}>
                     Templates
                   </SizableText></Link>
                 </li>
@@ -84,7 +84,7 @@ export function TemplateDetail({
                   <ChevronRight size={12} />
                 </li>
                 <li>
-                  <Link href={catHref}><SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.24} color="$color11" hoverStyle={{ color: "$color" }}>
+                  <Link href={catHref}><SizableText fontFamily="$mono" fontSize={11} color="$color11" hoverStyle={{ color: "$color" }}>
                     {t.category}
                   </SizableText></Link>
                 </li>
@@ -101,7 +101,7 @@ export function TemplateDetail({
                   {t.tags.map((tag) => (
                     <SizableText
                       key={tag}
-                      borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11"
+                      borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color11"
                     >
                       {tag}
                     </SizableText>
@@ -118,7 +118,7 @@ export function TemplateDetail({
                 <XStack marginTop="$6" flexWrap="wrap" alignItems="center" gap="$3">
                   <Link
                     href={t.fork}
-                  ><XStack alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$3" hoverStyle={{ backgroundColor: "$color12" }}>
+                  ><XStack alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$4.5" paddingVertical="$3" hoverStyle={{ backgroundColor: "$color6" }}>
                     <SizableText color="$background"><Code2 size={16} /></SizableText>
                     <SizableText fontSize="$3" fontWeight="500" color="$background">Use template</SizableText>
                   </XStack></Link>
@@ -126,7 +126,7 @@ export function TemplateDetail({
                     href={t.previewUrl}
                     target="_blank"
                     rel="noreferrer"
-                    alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4.5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", color: "$color" }}
+                    alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$4.5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color005" }}
                   >
                     {t.demo ? "Open live demo" : "View source"}
                     <ArrowUpRight size={16} />
@@ -139,7 +139,7 @@ export function TemplateDetail({
                 {build ? (
                   <Link
                     href={`/builds/${build.org}/${build.project}`}
-                  ><SizableText marginTop="$4.5" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.24} color="$color11" hoverStyle={{ color: "$color" }}>
+                  ><SizableText marginTop="$4.5" fontFamily="$mono" fontSize={11} color="$color11" hoverStyle={{ color: "$color" }}>
                     Read the build — {build.turns} turns, {build.agent}
                     <ArrowRight size={12} />
                   </SizableText></Link>
@@ -153,7 +153,7 @@ export function TemplateDetail({
                 <Link
                   href={t.fork}
                   aria-label={`Use the ${t.name} template`}
-                ><XStack group className="zoom-scope" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" elevation={6} hoverStyle={{ borderColor: "$color" }}>
+                ><XStack group className="zoom-scope" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" elevation={6} hoverStyle={{ borderColor: "$color06" }}>
                   <YStack position="relative" overflow="hidden" backgroundColor="$color3">
                     <ProjectThumb
                       name={t.name}
@@ -169,9 +169,9 @@ export function TemplateDetail({
                       }
   />
                     {t.demo && (
-                      <XStack position="absolute" left="$3" top="$3" alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="white" backgroundColor="black" paddingHorizontal="$2.5" paddingVertical="$1" backdropFilter="blur(8px)">
-                        <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="white" />
-                        <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="white">Live demo</SizableText>
+                      <XStack position="absolute" left="$3" top="$3" alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingVertical="$1" backdropFilter="blur(8px)">
+                        <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" />
+                        <SizableText fontFamily="$mono" fontSize={10} color="$color">Live demo</SizableText>
                       </XStack>
                     )}
                   </YStack>
@@ -202,7 +202,7 @@ export function TemplateDetail({
                   return (
                     <YStack
                       key={h.title}
-                      backgroundColor="$background" padding={28} hoverStyle={{ backgroundColor: "$color3" }} $md={{ padding: "$6" }}
+                      backgroundColor="$background" padding={28} hoverStyle={{ backgroundColor: "$color2" }} $md={{ padding: "$6" }}
                     >
                       <XStack height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                         <Icon size={16} color="var(--foreground)" strokeWidth={1.5} />
@@ -231,7 +231,7 @@ export function TemplateDetail({
 
             {t.perfectFor.length > 0 && (
               <Reveal delay={80}>
-                <YStack borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding={28} $md={{ padding: "$6" }}>
+                <YStack borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding={28} $md={{ padding: "$6" }}>
                   <Paragraph {...EYEBROW}>Perfect for</Paragraph>
                   <YStack marginTop="$4.5" rowGap="$3.5">
                     {t.perfectFor.map((p) => (
@@ -272,7 +272,7 @@ export function TemplateDetail({
                   <Link
                     key={r.slug}
                     href={`/templates/${r.slug}`}
-                  ><YStack group className="zoom-scope" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ y: "-0.5", borderColor: "$color", backgroundColor: "$color3" }}>
+                  ><YStack group className="zoom-scope" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" hoverStyle={{ y: "-0.5", borderColor: "$color06", backgroundColor: "$color2" }}>
                     <YStack position="relative" overflow="hidden" backgroundColor="$color3">
                       <TemplateThumb
                         name={r.name}
@@ -307,13 +307,13 @@ export function TemplateDetail({
             <XStack marginTop="$6" flexWrap="wrap" alignItems="center" justifyContent="center" gap="$3">
               <Link
                 href={t.fork}
-              ><XStack alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$5" paddingVertical="$3" hoverStyle={{ backgroundColor: "$color12" }}>
+              ><XStack alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$5" paddingVertical="$3" hoverStyle={{ backgroundColor: "$color6" }}>
                 <SizableText fontSize="$3" fontWeight="500" color="$background">Use this template</SizableText>
                 <SizableText color="$background"><ArrowRight size={16} /></SizableText>
               </XStack></Link>
               <Link
                 href="/templates"
-              ><SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", color: "$color" }}>
+              ><SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color005" }}>
                 Browse all templates
               </SizableText></Link>
             </XStack>

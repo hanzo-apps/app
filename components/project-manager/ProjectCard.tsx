@@ -26,7 +26,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
   const visitUrl = liveUrlOf(project);
 
   return (
-    <YStack group borderWidth={1} borderColor="$borderColor" borderRadius="$5" backgroundColor="$background" hoverStyle={{ elevation: 4, borderColor: "$color12" }}>
+    <YStack group borderWidth={1} borderColor="$borderColor" borderRadius="$5" backgroundColor="$background" hoverStyle={{ elevation: 4, borderColor: "$color06" }}>
       <YStack padding="$4" paddingBottom="$3">
         <XStack alignItems="flex-start" justifyContent="space-between" gap="$2">
           <XStack alignItems="center" gap="$2" minWidth={0} flex={1}>

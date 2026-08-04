@@ -268,7 +268,8 @@ function ConnectorsInner() {
               <Button
                 key={c}
                 onClick={() => setCategory(c)}
-                borderRadius="$10" paddingHorizontal="$3" paddingVertical="$1" backgroundColor={category === c ? "$color" : undefined} hoverStyle={category === c ? undefined : { backgroundColor: "$color3" }}
+                variant="ghost"
+                borderRadius="$10" paddingHorizontal="$3" paddingVertical="$1" backgroundColor={category === c ? "$color12" : undefined} hoverStyle={category === c ? undefined : { backgroundColor: "$color3" }}
               >
                 <SizableText fontSize="$1" textTransform="capitalize" color={category === c ? "$background" : "$color11"}>{c}</SizableText>
               </Button>
@@ -327,7 +328,7 @@ function Section({
   if (rows.length === 0) return null;
   return (
     <section>
-      <H2 marginBottom="$3" fontSize="$1" fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">
+      <H2 marginBottom="$3" fontSize="$1" fontWeight="500" color="$color11">
         {title}
       </H2>
       <YStack rowGap="$3">
@@ -408,6 +409,7 @@ function ConnectorRow({
           </Button>
         ) : p.available ? (
           <Button
+            variant="outline"
             size="sm"
             gap="$1.5"
             disabled={busy || disabled}

@@ -26,9 +26,10 @@ export function HeaderSearch({ className }: { className?: string }) {
     <>
       <Button
         type="button"
+        variant="ghost"
         onClick={() => setOpen(true)}
         aria-label="Search (Command-K)"
-        group height={36} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" outlineWidth={0} hoverStyle={{ borderColor: "$color" }} className={`${className}`}
+        group height={36} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" outlineWidth={0} hoverStyle={{ borderColor: "$color06" }} className={`${className}`}
       >
         <XStack alignItems="center" gap="$2">
           <SizableText color="$color11" $group-hover={{ color: "$color" }}>

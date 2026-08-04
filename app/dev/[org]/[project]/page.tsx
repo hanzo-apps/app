@@ -169,7 +169,7 @@ export default function ProjectDevPage() {
           <XStack marginTop="$5" alignItems="center" justifyContent="center" gap="$3">
             <Link
               href="/dashboard"
-            ><SizableText borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
+            ><SizableText borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$color12" hoverStyle={{ backgroundColor: "$color6" }}>
               Go to your dashboard
             </SizableText></Link>
             <Link

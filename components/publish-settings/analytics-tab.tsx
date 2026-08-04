@@ -203,14 +203,14 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
 
                   {/* Warning about data volume */}
                   {(settings.analytics.features?.heatmaps || settings.analytics.features?.sessionRecording) && (
-                    <YStack padding="$4" backgroundColor="$orange1" borderWidth={1} borderColor="$orange3" borderRadius="$5" $theme-dark={{ backgroundColor: "$orange12", borderColor: "$orange11" }}>
+                    <YStack padding="$4" backgroundColor="$orange1" borderWidth={1} borderColor="$orange3" borderRadius="$5">
                       <XStack gap="$3">
                         <Info size={20} />
                         <YStack rowGap="$1">
-                          <H4 fontWeight="500" color="$orange12" $theme-dark={{ color: "$orange2" }}>
+                          <H4 fontWeight="500" color="$orange12">
                             High Data Volume Features Enabled
                           </H4>
-                          <Paragraph fontSize="$3" color="$orange11" $theme-dark={{ color: "$orange3" }}>
+                          <Paragraph fontSize="$3" color="$orange11">
                             Heatmaps and session recording generate significantly more data. Consider using shorter retention periods to manage storage costs.
                           </Paragraph>
                         </YStack>
@@ -374,14 +374,14 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
             </XStack>
 
             {settings.analytics.privacyMode && (
-              <YStack padding="$4" backgroundColor="$green1" borderWidth={1} borderColor="$green3" borderRadius="$5" $theme-dark={{ backgroundColor: "$green12", borderColor: "$green11" }}>
+              <YStack padding="$4" backgroundColor="$green1" borderWidth={1} borderColor="$green3" borderRadius="$5">
                 <XStack gap="$3">
                   <Info size={20} />
                   <YStack rowGap="$1">
-                    <H4 fontWeight="500" color="$green12" $theme-dark={{ color: "$green2" }}>
+                    <H4 fontWeight="500" color="$green12">
                       Privacy Mode Enabled
                     </H4>
-                    <Paragraph fontSize="$3" color="$green11" $theme-dark={{ color: "$green3" }}>
+                    <Paragraph fontSize="$3" color="$green11">
                       Analytics will respect user privacy by anonymizing IP addresses and
                       avoiding cookies where possible. This helps with GDPR compliance.
                     </Paragraph>

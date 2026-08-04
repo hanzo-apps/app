@@ -98,7 +98,7 @@ export default function GameDetail() {
             </div>
             {playable && (
               <Button
-                gap="$2" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
+                gap="$2" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}
                 onClick={() => router.push(`/games/${game.id}/play`)}
                 data-testid="play-button"
               >
@@ -271,7 +271,7 @@ export default function GameDetail() {
 function Spec({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <YStack borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4">
-      <Paragraph marginBottom="$1.5" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={0.8} color="$color11">
+      <Paragraph marginBottom="$1.5" fontFamily="$mono" fontSize={10} color="$color11">
         {label}
       </Paragraph>
       {children}
