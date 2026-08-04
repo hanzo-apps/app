@@ -255,11 +255,11 @@ export default function HeroPreview() {
 
       <YStack overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={6}>
         {/* ── Editor header — the real /dev chrome in miniature ── */}
-        <XStack alignItems="center" gap="$3" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3.5" paddingVertical="$2.5">
+        <XStack alignItems="center" gap="$3" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$2">
           <XStack alignItems="center" gap="$1.5">
-            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color4" />
-            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color4" />
-            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color4" />
+            <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
+            <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
+            <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
           </XStack>
           <HMark size={14} color="var(--foreground)" />
           <SizableText display="none" numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">
