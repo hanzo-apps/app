@@ -855,9 +855,24 @@ export function AskAI({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prompt]);
 
+  /**
+   * Is there NOTHING built yet? A property of the PROJECT, not of one page.
+   *
+   * This asked `isTheSameHtml(currentPage.html)` — whether the SELECTED page
+   * still equals the starter document — and that answer chose between editing
+   * the project and regenerating it from scratch. In a multi-page build the
+   * selected page can be untouched while the rest of the site is finished, so
+   * one unedited page meant the whole thing was rebuilt. Every turn. That is
+   * the "it keeps starting over" report, and it survived fixing the page
+   * LOOKUP because the question itself was scoped wrong.
+   *
+   * Now: empty only when there is no page that differs from the starter. Any
+   * real page anywhere means this project exists and must be EDITED.
+   */
   const isSameHtml = useMemo(() => {
-    return isTheSameHtml(currentPage.html);
-  }, [currentPage.html]);
+    if (!pages.length) return isTheSameHtml(currentPage.html);
+    return pages.every((p) => isTheSameHtml(p.html));
+  }, [pages, currentPage.html]);
 
   // The working modes currently on. ONE list: it names the overflow control, it
   // fills its tooltip, and its length is what accents the trigger — so a mode
