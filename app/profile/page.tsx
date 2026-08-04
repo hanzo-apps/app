@@ -111,6 +111,27 @@ export default function ProfilePage() {
     }
   }, []);
 
+  /**
+   * The avatar IS the photo control — one gesture, from anywhere on the page.
+   *
+   * It used to be inert until you had first pressed "Edit Profile", which made
+   * changing your picture a two-step ritual whose first step looked like it had
+   * nothing to do with pictures. Editing is now something clicking the photo
+   * TURNS ON, not something you have to arrange beforehand.
+   *
+   * This is why the file input below renders unconditionally rather than inside
+   * the `isEditing` branch: `setIsEditing` only schedules a render, so an input
+   * mounted by that render does not exist yet on this tick and `ref.current`
+   * would still be null. Opening the picker also has to stay inside the user
+   * gesture — a browser discards a `.click()` made after an await — so it
+   * cannot wait for the state to land either. An always-mounted input satisfies
+   * both: the ref is live now, and the picker opens in the same gesture.
+   */
+  const choosePhoto = useCallback(() => {
+    setIsEditing(true);
+    fileInput.current?.click();
+  }, []);
+
   const handleSave = async () => {
     setBusy(true);
     try {
@@ -236,22 +257,18 @@ export default function ProfilePage() {
             <XStack alignItems="center" gap="$5">
               <YStack
                 position="relative"
-                {...(isEditing
-                  ? {
-                      role: "button" as const,
-                      tabIndex: 0,
-                      "aria-label": "Change profile photo",
-                      cursor: "pointer",
-                      group: true,
-                      onClick: () => fileInput.current?.click(),
-                      onKeyDown: (e: { key: string; preventDefault: () => void }) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          fileInput.current?.click();
-                        }
-                      },
-                    }
-                  : null)}
+                role="button"
+                tabIndex={0}
+                aria-label="Change profile photo"
+                cursor="pointer"
+                group
+                onClick={choosePhoto}
+                onKeyDown={(e: { key: string; preventDefault: () => void }) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    choosePhoto();
+                  }
+                }}
               >
                 <Avatar width="$12" height="$12" borderWidth={4} borderColor="$background">
                   {/* An `<img>` with src="" resolves to the PAGE url, loads HTML,
@@ -267,66 +284,64 @@ export default function ProfilePage() {
                     {initial}
                   </AvatarFallback>
                 </Avatar>
-                {isEditing && (
-                  <>
-                    {/* The whole avatar is the target; this veil says so on
-                        hover/focus without stealing the click. */}
-                    <XStack
-                      pointerEvents="none"
-                      position="absolute"
-                      top={4}
-                      right={4}
-                      bottom={4}
-                      left={4}
-                      alignItems="center"
-                      justifyContent="center"
-                      borderRadius="$10"
-                      backgroundColor="transparent"
-                      opacity={0}
-                      $group-hover={{ backgroundColor: "rgba(0,0,0,0.55)", opacity: 1 }}
-                      $group-focus={{ backgroundColor: "rgba(0,0,0,0.55)", opacity: 1 }}
-                    >
-                      <Camera size={20} color="#fff" />
-                    </XStack>
-                    {/* Visually hidden, still in the a11y tree — the `sr-only`
-                        class upstream used came from Tailwind, which this app no
-                        longer loads, so the class would leave a bare file input
-                        sitting next to the avatar. The camera button is the
-                        pointer affordance; this input is what it clicks. */}
-                    <input
-                      ref={fileInput}
-                      type="file"
-                      accept="image/png,image/jpeg,image/webp,image/gif"
-                      style={{
-                        position: "absolute",
-                        width: 1,
-                        height: 1,
-                        padding: 0,
-                        margin: -1,
-                        overflow: "hidden",
-                        clip: "rect(0,0,0,0)",
-                        whiteSpace: "nowrap",
-                        border: 0,
-                      }}
-                      onChange={(e) => {
-                        const f = e.target.files?.[0];
-                        if (f) void pickPhoto(f);
-                      }}
-                    />
-                    <Button
-                      onClick={(e: { stopPropagation: () => void }) => {
-                        e.stopPropagation();
-                        fileInput.current?.click();
-                      }}
-                      disabled={busy}
-                      aria-label="Change profile photo"
-                      title="Change profile photo"
-                      position="absolute" bottom="$0" right="$0" padding="$1.5" backgroundColor="$color5" borderWidth={1} borderColor="$color6" borderRadius="$10" hoverStyle={{ backgroundColor: "$color6" }} disabledStyle={{ opacity: 0.5 }}
-                    >
-                      <Camera size={16} />
-                    </Button>
-                  </>
-                )}
+                {/* The whole avatar is the target; this veil says so on
+                    hover/focus without stealing the click. */}
+                <XStack
+                  pointerEvents="none"
+                  position="absolute"
+                  top={4}
+                  right={4}
+                  bottom={4}
+                  left={4}
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="$10"
+                  backgroundColor="transparent"
+                  opacity={0}
+                  $group-hover={{ backgroundColor: "rgba(0,0,0,0.55)", opacity: 1 }}
+                  $group-focus={{ backgroundColor: "rgba(0,0,0,0.55)", opacity: 1 }}
+                >
+                  <Camera size={20} color="#fff" />
+                </XStack>
+                {/* Visually hidden, still in the a11y tree — the `sr-only`
+                    class upstream used came from Tailwind, which this app no
+                    longer loads, so the class would leave a bare file input
+                    sitting next to the avatar. The avatar is the control; this
+                    input is what it opens. */}
+                <input
+                  ref={fileInput}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  style={{
+                    position: "absolute",
+                    width: 1,
+                    height: 1,
+                    padding: 0,
+                    margin: -1,
+                    overflow: "hidden",
+                    clip: "rect(0,0,0,0)",
+                    whiteSpace: "nowrap",
+                    border: 0,
+                  }}
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) void pickPhoto(f);
+                  }}
+                />
+                {/* A MARKER, not a control. The veil only appears on hover, so
+                    at rest something has to say the photo is changeable — but
+                    this used to be a real Button, which put a button inside an
+                    element that is itself `role="button"`, and gave one action
+                    two handlers to keep in step. It is `pointerEvents="none"`,
+                    so the click it looks like it takes belongs to the avatar
+                    underneath, and there is exactly one control here. */}
+                <XStack
+                  pointerEvents="none"
+                  aria-hidden
+                  position="absolute" bottom="$0" right="$0" padding="$1.5" backgroundColor="$color5" borderWidth={1} borderColor="$color6" borderRadius="$10" opacity={busy ? 0.5 : 1} $group-hover={{ backgroundColor: "$color6" }}
+                >
+                  <Camera size={16} />
+                </XStack>
               </YStack>
 
               <YStack flex={1}>
@@ -337,7 +352,7 @@ export default function ProfilePage() {
                     onChange={(e) => set("displayName", e.target.value)}
                     placeholder={user?.fullname || "Your name"}
                     aria-label="Display name"
-                    fontSize="$10" fontWeight="500" backgroundColor="transparent" color="$color" borderBottomWidth={1} borderColor="$borderColor" outlineWidth={0} paddingBottom="$2" marginBottom="$2" focusStyle={{ borderColor: "$color06" }}
+                    fontSize="$10" fontWeight="500" backgroundColor="transparent" color="$color" borderWidth={0} borderBottomWidth={1} borderColor="$borderColor" outlineWidth={0} paddingBottom="$2" marginBottom="$2" focusStyle={{ borderColor: "$color06" }}
   />
                 ) : (
                   <H2 fontSize="$10" fontWeight="500" color="$color" marginBottom="$2">{shownName}</H2>
