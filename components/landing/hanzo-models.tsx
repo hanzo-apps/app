@@ -38,9 +38,9 @@ export default function HanzoModels() {
               group position="relative" height="100%" flexDirection="column" borderRadius="$8" borderWidth={1} borderColor="$color" backgroundColor="$color3" padding={28} hoverStyle={{ borderColor: "$color" }}
             >
               <XStack alignItems="center" justifyContent="space-between">
-                <SizableText height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
+                <XStack height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                   <Orbit size={20} color="$color" strokeWidth={1.5} />
-                </SizableText>
+                </XStack>
                 <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} color="$color11">
                   Proprietary
                 </SizableText>
@@ -54,7 +54,7 @@ export default function HanzoModels() {
                 cost down by sending each request to the cheapest model that can
                 do it well, so AI doesn&apos;t cost you an arm and a robot leg.
               </Paragraph>
-              <SizableText marginTop="$5" alignItems="center" gap="$1.5" fontSize="$3" fontWeight="500" color="$color" $group-hover={{ color: "$color" }}>
+              <SizableText marginTop="$5" fontSize="$3" fontWeight="500" color="$color" $group-hover={{ color: "$color" }}>
                 Learn more about Enso <span aria-hidden>→</span>
               </SizableText>
             </Anchor>
@@ -69,9 +69,9 @@ export default function HanzoModels() {
               group position="relative" height="100%" flexDirection="column" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding={28} hoverStyle={{ borderColor: "$color", backgroundColor: "$color" }}
             >
               <XStack alignItems="center" justifyContent="space-between">
-                <SizableText height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
+                <XStack height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                   <Boxes size={20} color="$color" strokeWidth={1.5} />
-                </SizableText>
+                </XStack>
                 <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} color="$color11">
                   Open source
                 </SizableText>
@@ -84,7 +84,7 @@ export default function HanzoModels() {
                 self-host anywhere. The same models behind the gateway, yours to
                 own with zero lock-in.
               </Paragraph>
-              <SizableText marginTop="$5" alignItems="center" gap="$1.5" fontSize="$3" fontWeight="500" color="$color" $group-hover={{ color: "$color" }}>
+              <SizableText marginTop="$5" fontSize="$3" fontWeight="500" color="$color" $group-hover={{ color: "$color" }}>
                 Explore Zen <span aria-hidden>→</span>
               </SizableText>
             </Anchor>

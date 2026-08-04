@@ -27,7 +27,7 @@
  * selecting a recent project opens it in the builder.
  */
 import { Button } from '@hanzo/ui';
-import { SizableText, YStack, XStack } from '@hanzo/gui';
+import { YStack, XStack } from '@hanzo/gui';
 import React, { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Menu, Search } from 'lucide-react';
@@ -59,7 +59,7 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
     // page rendered as {children} (Connectors, Settings, …) read the SAME context,
     // so a page that calls useOrg never crashes for lack of a provider ancestor.
     <OrgProvider>
-    <SizableText position="relative" height="100%" overflow="hidden" backgroundColor="$background" color="$color" display="flex" flexDirection="row">
+    <XStack position="relative" height="100%" overflow="hidden" backgroundColor="$background">
       <Sidebar
         currentView={currentView}
         onNavigate={() => {}}
@@ -100,7 +100,7 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
       </YStack>
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
-    </SizableText>
+    </XStack>
     </OrgProvider>
   );
 }

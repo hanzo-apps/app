@@ -271,20 +271,24 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                       setCostSettings(newCostSettings);
                     }}
   />
-                  <SizableText fontSize="$1" color="$color11" alignItems="center" gap="$1" whiteSpace="nowrap" fontFamily="$mono">
+                  <XStack alignItems="center" gap="$1">
                     <AlertTriangle size={12} />
-                    Warn at {costSettings.warningThreshold || 80}%
-                  </SizableText>
+                    <SizableText fontSize="$1" color="$color11" whiteSpace="nowrap" fontFamily="$mono">
+                      Warn at {costSettings.warningThreshold || 80}%
+                    </SizableText>
+                  </XStack>
                 </XStack>
               </div>
 
               {/* Lifetime Costs */}
               <XStack alignItems="center" justifyContent="space-between" backgroundColor="$color3" borderWidth={1} borderRadius="$5" padding="$3">
                 <div>
-                  <SizableText fontSize="$1" color="$color11" fontWeight="500" display="flex" flexDirection="column">Lifetime Total</SizableText>
-                  <SizableText fontSize="$6" fontWeight="700" fontFamily="$mono" letterSpacing={-0.4} marginTop="$0.5" display="flex" flexDirection="column">
-                    {CostCalculator.formatCost(configManager.getLifetimeCosts().total)}
-                  </SizableText>
+                  <YStack><SizableText fontSize="$1" color="$color11" fontWeight="500">Lifetime Total</SizableText></YStack>
+                  <YStack marginTop="$0.5">
+                    <SizableText fontSize="$6" fontWeight="700" fontFamily="$mono" letterSpacing={-0.4}>
+                      {CostCalculator.formatCost(configManager.getLifetimeCosts().total)}
+                    </SizableText>
+                  </YStack>
                 </div>
                 <Button
                   variant="outline"
@@ -327,10 +331,12 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
               <XStack alignItems="center" gap="$3" padding="$3" borderRadius="$5" borderWidth={1}>
                 <Download size={16} color="$color11" />
                 <YStack flex={1} minWidth={0}>
-                  <SizableText fontSize="$3" fontWeight="500" display="flex" flexDirection="column">Export All Data</SizableText>
-                  <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
-                    Download a backup of all projects and data
-                  </SizableText>
+                  <YStack><SizableText fontSize="$3" fontWeight="500">Export All Data</SizableText></YStack>
+                  <YStack>
+                    <SizableText fontSize="$1" color="$color11">
+                      Download a backup of all projects and data
+                    </SizableText>
+                  </YStack>
                 </YStack>
                 <Button
                   variant="outline"
@@ -346,10 +352,12 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
               <XStack alignItems="center" gap="$3" padding="$3" borderRadius="$5" borderWidth={1}>
                 <Upload size={16} color="$color11" />
                 <YStack flex={1} minWidth={0}>
-                  <SizableText fontSize="$3" fontWeight="500" display="flex" flexDirection="column">Import Data</SizableText>
-                  <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
-                    Restore from a Hanzo backup file
-                  </SizableText>
+                  <YStack><SizableText fontSize="$3" fontWeight="500">Import Data</SizableText></YStack>
+                  <YStack>
+                    <SizableText fontSize="$1" color="$color11">
+                      Restore from a Hanzo backup file
+                    </SizableText>
+                  </YStack>
                 </YStack>
                 <Button
                   variant="outline"
@@ -364,10 +372,10 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
               {/* Import Progress */}
               {isImporting && (
                 <YStack rowGap="$2">
-                  <SizableText justifyContent="space-between" fontSize="$1" display="flex" flexDirection="row">
-                    <span>{importMessage}</span>
-                    <span>{importProgress}%</span>
-                  </SizableText>
+                  <XStack justifyContent="space-between">
+                    <SizableText fontSize="$1">{importMessage}</SizableText>
+                    <SizableText fontSize="$1">{importProgress}%</SizableText>
+                  </XStack>
                   <YStack width="100%" backgroundColor="$color3" borderRadius="$10" height="$2">
                     <YStack
                       backgroundColor="$color12" height="$2" borderRadius="$10"
