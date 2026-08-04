@@ -3,7 +3,7 @@
 import { XStack, SizableText, Paragraph, YStack, H2 } from '@hanzo/gui';
 import { useState, useEffect, useCallback } from 'react';
 import { Button, Input } from '@hanzo/ui';
-import { Plus, Search, FolderOpen, Loader2 } from 'lucide-react';
+import { Plus, Search, FolderOpen } from 'lucide-react';
 import {
   fetchProjects,
   deleteProject as apiDeleteProject,
@@ -13,6 +13,7 @@ import { ProjectCard } from './ProjectCard';
 import { CreateProject } from './CreateProject';
 import { OrgSwitcher } from '@/components/org-switcher';
 import { useOrg } from '@/lib/org/client';
+import { Spinner } from '@/components/ui/spinner';
 
 /**
  * The org-scoped projects list — reads the ONE shared `/v1/projects` store
@@ -71,7 +72,7 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
     return (
       <XStack alignItems="center" justifyContent="center" paddingVertical="$12">
         <YStack alignItems="center">
-          <Loader2 size={40} />
+          <Spinner size={40} />
           <Paragraph marginTop="$4" fontSize="$3" color="$color11" textAlign="center">Loading projects…</Paragraph>
         </YStack>
       </XStack>

@@ -10,11 +10,11 @@ import {
   Github,
   Rocket,
   ArrowRight,
-  Loader2,
   Check,
   type LucideIcon,
 } from "lucide-react";
 import { resolveTemplateSeedMeta, type TemplateSeedMeta } from "@/lib/api/templates";
+import { Spinner } from "@/components/ui/spinner";
 
 type StartMode = "fork" | "edit" | "deploy";
 
@@ -235,7 +235,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
             >
               {loading ? (
                 <>
-                  <Loader2 size={16} />
+                  <Spinner size={16} />
                   Loading…
                 </>
               ) : (

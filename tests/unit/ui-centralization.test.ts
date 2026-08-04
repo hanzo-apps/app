@@ -249,3 +249,76 @@ describe("Chrome uniformity — the shell draws the header", () => {
     expect(offendersOf(/<Button[^>]*backgroundColor="\$color12"/)).toEqual([]);
   });
 });
+
+/**
+ * ONE screen.
+ *
+ * A state that stands alone — the loading gate, the 404, the crash screen, the
+ * OAuth callback, admin's sign-in, the store's receipt — has no `AppShell` above
+ * it, so it must measure the screen itself. Ten of them wrote `minHeight="100%"`
+ * beside `justifyContent="center"`, which is the shape that centers PERFECTLY
+ * inside nothing: the percentage resolves against the parent's computed height,
+ * every ancestor up to <body> is `height: auto` (globals.css gives body a
+ * min-height only) and gui's provider span is `display: contents`, so it fell
+ * back to auto, the stack shrink-wrapped its content, and the centering then
+ * happened inside the content box. Nothing in the source looked wrong and the
+ * flex properties were all correct — the box they centered in was 90px tall.
+ *
+ * Measured on /auth/callback: the brand mark at y=0 of a 903px viewport, 860px
+ * of black beneath it. `screen` (lib/chrome) is the one spelling.
+ */
+describe("Full-screen states measure the screen", () => {
+  it("`minHeight=\"100%\"` never carries the centering — that is `screen`", () => {
+    const CENTERED_PERCENT = new RegExp(
+      // one JSX opening tag holding both, in either order
+      '<[A-Z]\\w*[^>]*\\bminHeight="100%"[^>]*\\bjustifyContent="center"' +
+        '|<[A-Z]\\w*[^>]*\\bjustifyContent="center"[^>]*\\bminHeight="100%"',
+    );
+    expect(offendersOf(CENTERED_PERCENT)).toEqual([]);
+  });
+
+  it("the states that own the screen all reach for the same value", () => {
+    // A floor, not a ceiling: it fails if `screen` stops being what full-screen
+    // states use, which is how the ten hand-written copies accumulated.
+    expect(offendersOf(/\{\.\.\.screen\}/).length).toBeGreaterThanOrEqual(8);
+  });
+});
+
+/**
+ * ONE spinner.
+ *
+ * A spinner is an arc IN MOTION; lucide ships only the arc. The rotation lived
+ * in `.spin` (globals.css) as an OPT-IN, and an opt-in that 82 of 83 call sites
+ * decline is not a mechanism — it is a hazard with a comment on it. Every busy
+ * state in the app rendered a still three-quarter ring, which is what the owner
+ * saw on /auth/callback and correctly read as breakage.
+ *
+ * `components/ui/spinner` binds the rotation to the glyph, so reaching for the
+ * raw lucide loader is the thing to ban: there is no way to get the arc without
+ * the motion, and therefore no way to forget it.
+ */
+describe("Spinners spin", () => {
+  // NOT an exemption — a ratchet, in the shape TAILWIND_DEBT uses above. This
+  // file was held by another agent during the sweep. The two assertions let the
+  // set only SHRINK: a new raw loader fails because it is not listed, and
+  // converting this one fails until it is removed from here.
+  const RAW_LOADER_DEBT = ["components/settings/model-settings.tsx"];
+
+  it("no raw lucide loader glyph — the motion comes with it", () => {
+    // The one home renders the arc; everywhere else asks the home for it.
+    const offenders = offendersOf(/<Loader(?:2|Circle)\b/).filter(
+      (f) => f !== "components/ui/spinner.tsx",
+    );
+    expect(offenders.filter((f) => !RAW_LOADER_DEBT.includes(f))).toEqual([]);
+    expect(RAW_LOADER_DEBT.filter((f) => !offenders.includes(f))).toEqual([]);
+  });
+
+  it("the one spinner is the one that carries `.spin`", () => {
+    // `.spin` is not a class components decorate themselves with any more. The
+    // sole other holder is the sync badge, which spins an icon that is NOT a
+    // loader (it swaps glyph by status), so it states the motion itself.
+    expect(offendersOf(/className=(?:"spin"|'spin'|\{'spin'\})/)).toEqual([
+      "components/ui/spinner.tsx",
+    ]);
+  });
+});

@@ -3,10 +3,11 @@
 import { YStack, XStack, SizableText, H1, Paragraph } from '@hanzo/gui';
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Copy, Download, Settings, RefreshCw, Loader2, Split, Sparkles, Hash, Clock, DollarSign, Share2, History } from "lucide-react";
+import { ArrowLeft, Copy, Download, Settings, RefreshCw, Split, Sparkles, Hash, Clock, DollarSign, Share2, History } from "lucide-react";
 import { Button, Textarea, Badge, Card, CardContent, CardDescription, CardHeader, CardTitle, Slider, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, ScrollArea, toast } from '@hanzo/ui';
 import { DEFAULT_MODEL } from "@/lib/providers";
 import { useModels } from "@/lib/hooks/use-models";
+import { Spinner } from "@/components/ui/spinner";
 interface ModelConfig {
   model: string;
   temperature: number;
@@ -343,7 +344,7 @@ export default function PlaygroundPage() {
                 >
                   {isGenerating ? (
                     <>
-                      <Loader2 size={16} />
+                      <Spinner size={16} />
                       Generating...
                     </>
                   ) : (

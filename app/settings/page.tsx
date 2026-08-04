@@ -4,10 +4,12 @@ import { LoadingScreen } from "@/components/ui/loading-screen";
 import { XStack, SizableText, Paragraph, YStack, Anchor } from '@hanzo/gui';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label, Switch, Tabs, TabsList, TabsTrigger, TabsContent } from '@hanzo/ui';
+import { Button, Label, Switch, Tabs, TabsList, TabsTrigger, TabsContent } from '@hanzo/ui';
 import { useUser } from "@/hooks/useUser";
 import { AppShell } from "@/components/app-shell";
-import { accent, panel, selected } from "@/lib/chrome";
+import { ModelSelector } from "@/components/model-selector";
+import { accent, panel, rows, row, selected } from "@/lib/chrome";
+import { ExternalLink } from "lucide-react";
 import { configManager } from "@/lib/config/storage";
 import { useModels } from "@/lib/hooks/use-models";
 import { usePlan, unpaid } from "@/lib/billing/entitlements";
@@ -86,28 +88,31 @@ export default function SettingsPage() {
                       System would write a preference nothing can honor. */}
                   <YStack rowGap="$4" maxWidth={448}>
                     <div>
-                      <Label htmlFor="model-select" fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
+                      {/* `$color`, not `$color11`. The label names the setting
+                          and the line under it explains the setting, so they
+                          are not the same thing and must not be the same grey —
+                          at $color11 both came out identical and the row had no
+                          first thing to read. */}
+                      <Label htmlFor="model-select" fontSize="$3" fontWeight="500" color="$color" marginBottom="$2">
                         Default AI Model
                       </Label>
-                      <Select
+                      {/* The one picker (components/model-selector): grouped by
+                          family, marked, searchable. A flat Select listed all 70
+                          models as one alphabetical column, so "Claude Haiku 4.5"
+                          sat next to "Claude Haiku 4 5" with nothing to tell them
+                          apart. `defaultModel` is "" until configManager reads
+                          back on mount; the placeholder names that state rather
+                          than drawing a blank box. */}
+                      <ModelSelector
+                        models={models}
                         value={defaultModel}
-                        onValueChange={(v) => {
+                        placeholder="Enso (auto-route)"
+                        data-testid="default-model"
+                        onChange={(v) => {
                           setDefaultModelState(v);
                           configManager.setDefaultModel(v);
                         }}
-                      >
-                        <SelectTrigger id="model-select">
-                          {/* `defaultModel` is "" until configManager reads back on
-                              mount, and the native <select> showed an empty box in
-                              that window. Name the state instead of drawing a blank. */}
-                          <SelectValue placeholder="Enso (auto-route)" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {models.map((m) => (
-                            <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+  />
                       <Paragraph marginTop="$1.5" fontSize="$1" color="$color11">
                         Used when you don&apos;t pick a model in the composer.{" "}
                         <SizableText fontWeight="500" color="$color">Enso</SizableText> auto-routes to the best model per request.
@@ -118,44 +123,46 @@ export default function SettingsPage() {
               </YStack>
             </TabsContent>
 
-            {/* Cards ARE the panels here — an outer panel around them would be
-                $color2 on $color2, a container you can only find by its edge. */}
+            {/* One card, three rows. These were three separate panels — three
+                cards, twelve edges, for three lines that say the same thing
+                about three providers. A set reads as a set. */}
             <TabsContent value="api-keys">
-              <YStack rowGap="$4">
-                <YStack {...panel} padding="$4">
-                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
-                    <SizableText fontSize="$3" fontWeight="500" color="$color11">OpenAI API Key</SizableText>
+              <YStack {...rows}>
+                {[
+                  { name: "OpenAI", detail: "GPT models" },
+                  { name: "Anthropic", detail: "Claude models" },
+                  { name: "Google AI", detail: "Gemini models" },
+                ].map((provider) => (
+                  <XStack key={provider.name} {...row}>
+                    <YStack minWidth={0} rowGap="$1">
+                      <SizableText fontSize="$3" fontWeight="500" color="$color">{provider.name} API key</SizableText>
+                      <Paragraph fontSize="$1" color="$color11">Connect your own key for {provider.detail}</Paragraph>
+                    </YStack>
                     <a href="https://console.hanzo.ai/ai-accounts" target="_blank" rel="noopener noreferrer"><Button size="sm" variant="outline">Configure</Button></a>
                   </XStack>
-                  <Paragraph fontSize="$1" color="$color11">Connect your OpenAI API key for GPT models</Paragraph>
-                </YStack>
-
-                <YStack {...panel} padding="$4">
-                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
-                    <SizableText fontSize="$3" fontWeight="500" color="$color11">Anthropic API Key</SizableText>
-                    <a href="https://console.hanzo.ai/ai-accounts" target="_blank" rel="noopener noreferrer"><Button size="sm" variant="outline">Configure</Button></a>
-                  </XStack>
-                  <Paragraph fontSize="$1" color="$color11">Connect your Anthropic API key for Claude models</Paragraph>
-                </YStack>
-
-                <YStack {...panel} padding="$4">
-                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
-                    <SizableText fontSize="$3" fontWeight="500" color="$color11">Google AI API Key</SizableText>
-                    <a href="https://console.hanzo.ai/ai-accounts" target="_blank" rel="noopener noreferrer"><Button size="sm" variant="outline">Configure</Button></a>
-                  </XStack>
-                  <Paragraph fontSize="$1" color="$color11">Connect your Google AI API key for Gemini models</Paragraph>
-                </YStack>
+                ))}
               </YStack>
             </TabsContent>
 
+            {/* The four-cards-for-four-toggles case, and the reason `rows`
+                exists. Each switch used to be its own panel, so four related
+                preferences read as four unrelated decisions. */}
             <TabsContent value="notifications">
-              <YStack rowGap="$4">
-                {["Email notifications", "Push notifications", "Project updates", "Marketing emails"].map((item) => (
-                  <Label key={item} {...panel} display="flex" alignItems="center" justifyContent="space-between" padding="$4" cursor="pointer">
-                    <SizableText fontSize="$3" color="$color11">{item}</SizableText>
+              <YStack {...rows}>
+                {[
+                  { name: "Email notifications", detail: "Product news and account activity" },
+                  { name: "Push notifications", detail: "Alerts on this device" },
+                  { name: "Project updates", detail: "Builds, deploys and comments" },
+                  { name: "Marketing emails", detail: "Occasional launches and offers" },
+                ].map((item) => (
+                  <Label key={item.name} {...row} display="flex" cursor="pointer">
+                    <YStack minWidth={0} rowGap="$1">
+                      <SizableText fontSize="$3" fontWeight="500" color="$color">{item.name}</SizableText>
+                      <Paragraph fontSize="$1" color="$color11">{item.detail}</Paragraph>
+                    </YStack>
                     <Switch
-                      checked={notifs[item] ?? true}
-                      onCheckedChange={(v) => toggleNotif(item, !!v)}
+                      checked={notifs[item.name] ?? true}
+                      onCheckedChange={(v) => toggleNotif(item.name, !!v)}
   />
                   </Label>
                 ))}
@@ -165,28 +172,40 @@ export default function SettingsPage() {
             {/* Password, MFA, sessions and account deletion are owned by IAM
                 (the hanzo.id account page) — the ONE identity source. Link out
                 rather than re-implement auth here. */}
+            {/* Four stacked full-width outline buttons was a stack of four
+                identical loud rectangles for four things you rarely do. As
+                rows they say what they are, and the destination — IAM, not
+                this app — is stated once above them instead of four times. */}
             <TabsContent value="security">
-              <YStack {...panel} rowGap="$3" padding="$5">
-                <Anchor href="https://hanzo.id/account" target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" width="100%" justifyContent="flex-start">
-                    Change Password
-                  </Button>
-                </Anchor>
-                <Anchor href="https://hanzo.id/account" target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" width="100%" justifyContent="flex-start">
-                    Enable Two-Factor Authentication
-                  </Button>
-                </Anchor>
-                <Anchor href="https://hanzo.id/account" target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" width="100%" justifyContent="flex-start">
-                    Manage Sessions
-                  </Button>
-                </Anchor>
-                <Anchor href="https://hanzo.id/account" target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" width="100%" justifyContent="flex-start">
-                    <SizableText color="$red9">Delete Account</SizableText>
-                  </Button>
-                </Anchor>
+              <YStack rowGap="$3">
+                <Paragraph fontSize="$1" color="$color11">
+                  Your password, two-factor devices and sessions live with your Hanzo
+                  identity, so these open hanzo.id.
+                </Paragraph>
+                <YStack {...rows}>
+                  {[
+                    { name: "Password", detail: "Change the password on your Hanzo account" },
+                    { name: "Two-factor authentication", detail: "Add a second step when signing in" },
+                    { name: "Sessions", detail: "Review and sign out other devices" },
+                    { name: "Delete account", detail: "Permanently close this account", danger: true },
+                  ].map((item) => (
+                    <Anchor
+                      key={item.name}
+                      href="https://hanzo.id/account"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      textDecorationLine="none"
+                      {...row}
+                      hoverStyle={{ backgroundColor: "$color3" }}
+                    >
+                      <YStack minWidth={0} rowGap="$1">
+                        <SizableText fontSize="$3" fontWeight="500" color={item.danger ? "$red10" : "$color"}>{item.name}</SizableText>
+                        <Paragraph fontSize="$1" color="$color11">{item.detail}</Paragraph>
+                      </YStack>
+                      <ExternalLink size={14} color="var(--muted-foreground)" />
+                    </Anchor>
+                  ))}
+                </YStack>
               </YStack>
             </TabsContent>
 

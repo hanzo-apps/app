@@ -5,10 +5,11 @@ import { useState, useEffect } from 'react';
 import { toast, Badge, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@hanzo/ui';
 import { Secret } from '@/lib/vfs/types';
 import {
-  Plus, Loader2, AlertCircle, Key, MoreVertical, Pencil, Trash2, AlertTriangle
+  Plus, AlertCircle, Key, MoreVertical, Pencil, Trash2, AlertTriangle
 } from 'lucide-react';
 import { SecretEditor } from './secret-editor';
 import type { SecretsDataProvider } from './data-providers';
+import { Spinner } from '@/components/ui/spinner';
 
 interface SecretsManagerProps {
   deploymentId?: string;
@@ -120,7 +121,7 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" height="100%">
-        <Loader2 size={24} />
+        <Spinner size={24} />
       </XStack>
     );
   }

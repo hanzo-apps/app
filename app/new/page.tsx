@@ -7,7 +7,6 @@ import { Button, toast, Textarea, Input } from '@hanzo/ui';
 import {
   ArrowRight,
   ArrowUp,
-  Loader2,
   ChevronRight,
   CloudOff,
   Search,
@@ -32,6 +31,7 @@ import { OrgProvider } from "@/lib/org/client";
 import { OrgGate, OrgSwitcher } from "@/components/org-switcher";
 import { isGitUrl, gitUrlGateMessage } from "@/lib/git/url";
 import { useProjectImport } from "@/lib/import/use-project-import";
+import { Spinner } from "@/components/ui/spinner";
 
 function NewProject() {
   const router = useRouter();
@@ -304,7 +304,7 @@ function NewProjectInner() {
                   gap="$1.5" borderRadius="$6" paddingHorizontal="$4"
                 >
                   {loading ? (
-                    <Loader2 size={16} />
+                    <Spinner size={16} />
                   ) : (
                     <>
                       {looksLikeRepo ? "Deploy" : "Build"}
@@ -319,7 +319,7 @@ function NewProjectInner() {
             <XStack marginTop="$2.5" flexWrap="wrap" alignItems="center" justifyContent="center" columnGap="$1.5" rowGap="$1">
               {importing ? (
                 <XStack alignItems="center" gap="$1.5">
-                  <Loader2 size={14} />
+                  <Spinner size={14} />
                   <SizableText fontSize="$1" color="$color11">Importing your project…</SizableText>
                 </XStack>
               ) : (

@@ -3,8 +3,9 @@
 import { XStack, YStack, SizableText, Paragraph } from '@hanzo/gui';
 import { useState, useEffect, useCallback } from 'react';
 import { CodeEditor } from '@/components/code-editor';
-import { Play, Loader2, AlertCircle, CheckCircle2, History } from 'lucide-react';
+import { Play, AlertCircle, CheckCircle2, History } from 'lucide-react';
 import { Button } from '@hanzo/ui';
+import { Spinner } from '@/components/ui/spinner';
 interface SqlEditorProps {
   deploymentId?: string;
   queryEndpoint?: string;
@@ -98,7 +99,7 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
 
   if (!mounted) {
     return <XStack height="100%" alignItems="center" justifyContent="center">
-      <Loader2 size={24} />
+      <Spinner size={24} />
     </XStack>;
   }
 
@@ -114,7 +115,7 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
               size="sm"
             >
               {executing ? (
-                <Loader2 size={16} />
+                <Spinner size={16} />
               ) : (
                 <Play size={16} />
               )}

@@ -5,8 +5,9 @@ import { useState, useEffect } from 'react';
 import { configManager } from '@/lib/config/storage';
 import { validateApiKey as checkApiKey } from '@/lib/llm/llm-client';
 import { Button, Input, Label, Switch, toast, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator } from '@hanzo/ui';
-import { Eye, EyeOff, Check, X, ExternalLink, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Check, X, ExternalLink, Loader2, Lightbulb } from 'lucide-react';
 import { ModelSelector } from '@/components/model-selector';
+import { useProviderModels } from '@/lib/hooks/use-provider-models';
 import { ProviderId } from '@/lib/llm/providers/types';
 import { getAllProviders, getProvider } from '@/lib/llm/providers/registry';
 import { CodexAuthPanel } from '@/components/settings/codex-auth-panel';
@@ -42,6 +43,36 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
     }
     return false;
   });
+
+  // ONE catalog for the whole panel. The three pickers below choose from the
+  // same provider, so they load it once between them rather than three times —
+  // each picker used to fetch, cache and default independently.
+  const catalog = useProviderModels(selectedProvider);
+  const [codeModel, setCodeModel] = useState('');
+  const [chatModel, setChatModel] = useState('');
+  const [judgeModel, setJudgeModel] = useState('');
+
+  // Each role starts on its own remembered model and falls back to the
+  // provider's settled default, so a picker is never blank while a list exists.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setCodeModel(localStorage.getItem(`hanzo-app-code-model-${selectedProvider}`) || '');
+    setChatModel(localStorage.getItem(`hanzo-app-chat-model-${selectedProvider}`) || '');
+    setJudgeModel('');
+  }, [selectedProvider]);
+
+  const has = (id: string) => !!id && catalog.models.some((m) => m.value === id);
+  const codeValue = has(codeModel) ? codeModel : catalog.selected;
+  const chatValue = has(chatModel) ? chatModel : catalog.selected;
+  const judgeValue = has(judgeModel) ? judgeModel : catalog.selected;
+
+  // Reasoning is a property of the model doing the work, so it follows the code
+  // model — and only appears for a model that can actually toggle it.
+  const reasoningModel = catalog.raw.find((m) => m.id === codeValue);
+  const [reasoning, setReasoning] = useState(false);
+  useEffect(() => {
+    if (codeValue) setReasoning(configManager.getReasoningEnabled(codeValue));
+  }, [codeValue]);
 
   // Check if Codex is available (blocked on HF Spaces — HttpOnly cookies don't work)
   useEffect(() => {
@@ -369,9 +400,13 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
         <Label fontSize="$1" fontWeight="500" color="$color11">Code Model</Label>
         <YStack marginTop="$2">
           <ModelSelector
-            provider={selectedProvider}
+            models={catalog.models}
+            value={codeValue}
             mode="inline"
+            disabled={catalog.loading}
             onChange={(modelId) => {
+              setCodeModel(modelId);
+              catalog.select(modelId);
               if (typeof window !== 'undefined') {
                 localStorage.setItem(`hanzo-app-code-model-${selectedProvider}`, modelId);
               }
@@ -382,6 +417,31 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
   />
         </YStack>
       </div>
+
+      {/* Reasoning — only for a model that can toggle it. */}
+      {reasoningModel?.supportsReasoning && (
+        <XStack alignItems="center" justifyContent="space-between" gap="$2" padding="$2" borderRadius="$3" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor">
+          <XStack alignItems="center" gap="$2">
+            <Lightbulb size={16} />
+            <div>
+              <Label htmlFor="reasoning-toggle" fontSize="$3" fontWeight="500" cursor="pointer">
+                Enable Reasoning
+              </Label>
+              <Paragraph fontSize="$1" color="$color11">
+                Show step-by-step thinking process
+              </Paragraph>
+            </div>
+          </XStack>
+          <Switch
+            id="reasoning-toggle"
+            checked={reasoning}
+            onCheckedChange={(enabled) => {
+              setReasoning(enabled);
+              configManager.setReasoningEnabled(codeValue, enabled);
+            }}
+  />
+        </XStack>
+      )}
 
       {/* Separate Chat Model Toggle — hidden in judge mode */}
       {!showJudgeModel && (
@@ -406,9 +466,12 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
           <Label fontSize="$1" fontWeight="500" color="$color11">Chat Model</Label>
           <YStack marginTop="$2">
             <ModelSelector
-              provider={selectedProvider}
+              models={catalog.models}
+              value={chatValue}
               mode="inline"
+              disabled={catalog.loading}
               onChange={(modelId) => {
+                setChatModel(modelId);
                 if (typeof window !== 'undefined') {
                   localStorage.setItem(`hanzo-app-chat-model-${selectedProvider}`, modelId);
                 }
@@ -430,11 +493,17 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
             <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$2">
               Separate model for evaluating subjective test criteria
             </Paragraph>
+            {/* The judge is a per-run choice, so it is deliberately NOT written
+                back as the provider's model the way the code picker is. */}
             <ModelSelector
-              provider={selectedProvider}
+              models={catalog.models}
+              value={judgeValue}
               mode="inline"
-              skipGlobalSync
-              onChange={(modelId) => onJudgeModelChange?.(modelId)}
+              disabled={catalog.loading}
+              onChange={(modelId) => {
+                setJudgeModel(modelId);
+                onJudgeModelChange?.(modelId);
+              }}
     />
           </div>
         </>

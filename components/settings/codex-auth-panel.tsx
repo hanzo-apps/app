@@ -3,10 +3,11 @@
 import { SizableText, XStack, Paragraph, Anchor, YStack } from '@hanzo/gui';
 import { useState, useEffect, useCallback } from 'react';
 import { Button, Label, toast, Textarea } from '@hanzo/ui';
-import { ExternalLink, Loader2, Terminal, TriangleAlert } from 'lucide-react';
+import { ExternalLink, Terminal, TriangleAlert } from 'lucide-react';
 import { ConnectionBadge } from '@/components/settings/connection-badge';
 import { configManager } from '@/lib/config/storage';
 import { parseCodexAuthJson, connectCodex, disconnectCodex, checkCodexStatus } from '@/lib/auth/codex-auth';
+import { Spinner } from '@/components/ui/spinner';
 
 interface CodexAuthPanelProps {
   onAuthChange?: () => void;
@@ -208,7 +209,7 @@ export function CodexAuthPanel({ onAuthChange }: CodexAuthPanelProps) {
           onClick={handlePasteToken}
           disabled={!pasteValue.trim() || isLoading}
         >
-          {isLoading && <Loader2 size={12} />}
+          {isLoading && <Spinner size={12} />}
           Save Token
         </Button>
       </YStack>

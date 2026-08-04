@@ -2,10 +2,15 @@
  * /v1/models — Hanzo-native, fully dynamic model discovery for the builder.
  *
  * Proxies the single Hanzo AI gateway's OpenAI-compatible `GET /v1/models`,
- * filters it to the Zen build ladder and labels it (rules live in
- * `@/lib/providers`). The gateway's provider registry owns which models are
- * reachable (Zen/DO internal, BYOK, linked clouds, custom providers), so the
- * builder never fans out to per-provider APIs — it asks the gateway once.
+ * then names, groups and de-duplicates it (rules live in `@/lib/providers`).
+ * The gateway's provider registry owns which models are reachable (Zen/DO
+ * internal, BYOK, linked clouds, custom providers), so the builder never fans
+ * out to per-provider APIs — it asks the gateway once.
+ *
+ * SHAPING HAPPENS HERE, ONCE. The gateway states an id and an owner; a family,
+ * a display name and a brand mark are this app's decisions, so they are made in
+ * one place on the way through rather than re-derived by every picker that
+ * renders the list. Clients receive rows they can draw without interpreting.
  *
  * Contract: this is a non-sensitive discovery endpoint that ALWAYS returns a
  * usable list (HTTP 200) so the picker never breaks. When the live gateway list
@@ -16,7 +21,12 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { DEFAULT_MODEL, FALLBACK_MODELS, buildModelsFrom } from "@/lib/providers";
+import {
+  DEFAULT_MODEL,
+  FALLBACK_MODELS,
+  buildModelsFrom,
+  type GatewayModel,
+} from "@/lib/providers";
 import { session } from "@/lib/iam";
 
 const HANZO_AI_BASE_URL =
@@ -38,7 +48,7 @@ function offline() {
 }
 
 type GatewayModels = {
-  data?: Array<{ id?: string; description?: string }>;
+  data?: GatewayModel[];
   default_model?: string;
   default?: string;
 };

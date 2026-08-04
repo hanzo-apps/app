@@ -1120,13 +1120,160 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
    only (menus, dialogs, popovers, docked toolbars): translucent ground +
    backdrop blur/saturate, only when the browser can actually blur what's
    behind it; stays opaque otherwise. !important beats the gui atomic
-   background class. Pair with a hairline border at the call site. */
+   background class. Pair with a hairline border at the call site.
+
+   ── Applied BY SLOT, not by call site ─────────────────────────────────────
+   Every one of these is floating chrome by construction — a popover is over
+   the page or it is nothing — so which of them is glass was never a decision
+   a call site should get to make. It was making it anyway: of 135 floating
+   surfaces in this app exactly ONE (the user menu) had reached for `.frosted`,
+   and a dozen dialogs had gone the other way and pinned an opaque fill by
+   hand. Reaching them one by one would be 134 edits that agree today and drift
+   apart on the next one somebody adds.
+
+   `@hanzo/ui` already tags each surface — `slot('dialog-content')` spreads a
+   real `data-slot` attribute onto the DOM node — so the material can attach to
+   what a thing IS. A new dialog is glass because it is a dialog. Nothing to
+   remember, nothing to pass, and no way for the next one to be inconsistent.
+   The scrim rule below has relied on exactly these attributes since it was
+   written, which is the proof they reach the DOM.
+
+   `!important` earns its keep twice here: over gui's atomic background class,
+   and over the ~12 call sites that pass `backgroundColor="$background"`
+   explicitly. Those become no-ops instead of holes in the glass. */
 @supports (backdrop-filter: blur(8px)) {
-  .frosted {
+  .frosted,
+  [data-slot="dialog-content"],
+  [data-slot="popover-content"],
+  [data-slot="select-content"],
+  [data-slot="dropdown-menu-content"],
+  [data-slot="dropdown-menu-sub-content"],
+  [data-slot="menu-content"],
+  [data-slot="tooltip-content"] {
     background-color: color-mix(in oklab, var(--background) 72%, transparent) !important;
     -webkit-backdrop-filter: blur(20px) saturate(1.8);
     backdrop-filter: blur(20px) saturate(1.8);
   }
+}
+
+/* Depth follows the same law. Anchored chrome — a menu pinned to the control
+   that opened it, a tooltip to its target — sits at 2. A modal has no anchor
+   and a scrim of its own, so it floats free at 3.
+
+   Glass over glass (a select opened inside a dialog) is deliberately left to
+   stack: two 72% grounds land near 92%, so the nested surface reads as MORE
+   solid than its parent, which is the right answer and the one macOS gives. */
+[data-slot="popover-content"],
+[data-slot="select-content"],
+[data-slot="dropdown-menu-content"],
+[data-slot="dropdown-menu-sub-content"],
+[data-slot="menu-content"],
+[data-slot="tooltip-content"] {
+  box-shadow:
+    inset 0 1px 0 0 var(--hz-sheen),
+    0 8px 24px -6px rgba(0, 0, 0, 0.55) !important;
+}
+
+[data-slot="dialog-content"] {
+  box-shadow:
+    inset 0 1px 0 0 var(--hz-sheen),
+    0 24px 64px -12px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* ── Depth — three steps, and the specular edge is the load-bearing half ─────
+   A cast shadow is how a light page shows lift. On a #080808 canvas it is
+   nearly free of information: black on near-black moves no pixels, so a raised
+   panel wearing only a shadow reads exactly as flat as one wearing none. What
+   actually says "this surface is above that one" in a dark UI is the LIT EDGE —
+   the top lip catching light, which is why every macOS/iOS glass panel has one.
+
+   So each step pairs an inset top hairline (the lip) with a cast shadow (the
+   ground). The lip does the work at rest; the shadow earns its keep at level 3,
+   where the surface floats over content and there is something to darken.
+
+   --hz-sheen sits just above --border (0.06) on purpose: the border already
+   rings the whole box at 0.06, and an equal-value lip would disappear into it.
+   At 0.09 the top edge reads about a half-stop brighter than the sides — light
+   from above, one direction, the way a real bevel behaves — and because the
+   inset shadow paints INSIDE the border, the two stack into a ~2px lit lip
+   rather than fighting for the same pixel.
+
+   `!important` for the same reason `.frosted` needs it: gui's atomic classes
+   land in an inline <style> that Next orders AFTER this sheet, so a component
+   carrying its own `elevate` shadow would otherwise win on source order and
+   silently drop the lip. Same trick, same reason, one line apart.
+
+   Levels are a LADDER, not a palette — 1 rests in the flow, 2 lifts off it,
+   3 floats over the page. Nothing needs a fourth; if something seems to, it is
+   sitting at the wrong level. */
+:root {
+  --hz-sheen: rgba(255, 255, 255, 0.09);
+}
+
+.hz-elevation-1 {
+  box-shadow:
+    inset 0 1px 0 0 var(--hz-sheen),
+    0 1px 2px rgba(0, 0, 0, 0.4) !important;
+}
+
+.hz-elevation-2 {
+  box-shadow:
+    inset 0 1px 0 0 var(--hz-sheen),
+    0 8px 24px -6px rgba(0, 0, 0, 0.55) !important;
+}
+
+.hz-elevation-3 {
+  box-shadow:
+    inset 0 1px 0 0 var(--hz-sheen),
+    0 24px 64px -12px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* ── Grouped rows ────────────────────────────────────────────────────────────
+   One card, hairlines between its rows — the macOS settings group. Four
+   separate cards for four toggles (which is what /settings shipped) reads as
+   four unrelated decisions; one card with three separators reads as a set, and
+   costs three fewer edges of visual noise.
+
+   The separator is drawn by the PARENT rather than by each row, because only
+   the parent knows which child is last. Every by-hand version of this either
+   left a trailing hairline sitting against the card's own bottom border (two
+   parallel lines, 1px apart) or made each row take a `first` flag it should
+   never have needed. `> * + *` has neither failure mode and needs nothing from
+   the call site.
+
+   Pair with `overflow: hidden` on the card (the `rows` recipe does) so the
+   separators stop at the radius instead of poking through the rounded corner.
+
+   `--borderColor`, not `--border`. They are two different greys — rgb(36,36,36)
+   and rgb(38,38,38), measured — and the card's own edge is drawn with the
+   first, because `panel` asks for Tamagui's `$borderColor`. A separator on the
+   second puts two hairlines two units apart inside one card: invisible on its
+   own, and exactly the drift that ends with nobody knowing which grey a
+   hairline is meant to be. It also re-bases with the theme scope the way the
+   card's border does, so the two stay equal inside a nested theme instead of
+   only matching at the root. */
+.hz-rows > * + * {
+  border-top: 1px solid var(--borderColor, var(--border));
+}
+
+/* The scrim under a dialog.
+   `DialogContent` mounts its own overlay, and that overlay dims TWICE — a
+   `rgba(0,0,0,0.5)` ground under a further `opacity: 0.5`, landing at about a
+   quarter black. Opaque chrome gets away with it; glass does not, because the
+   blur behind a translucent panel only reads as depth when the ground behind
+   it is genuinely darker.
+
+   This used to ask `body:has([data-slot="dialog-content"].frosted)` — is a
+   FROSTED dialog open? — back when frosting was opt-in and one dialog had
+   opted in. Now the slot rule above makes every dialog glass, so the question
+   has exactly one answer and asking it is worse than not: the guard would keep
+   matching on `.frosted`, quietly leaving the deep scrim to whichever dialogs
+   still carry the class by hand and giving the other 42 the quarter-black
+   default under a translucent panel. One condition fewer, and it cannot fall
+   out of step with the material again. */
+[data-slot="dialog-overlay"] {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.55);
 }
 
 /* Stretched link — the whole positioned ancestor becomes the anchor's hit

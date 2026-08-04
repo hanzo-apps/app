@@ -3,9 +3,10 @@
 import { YStack, XStack, H4, Paragraph, SizableText } from '@hanzo/gui';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Button, toast, Textarea } from '@hanzo/ui';
-import { Play, Loader2 } from 'lucide-react';
+import { Play } from 'lucide-react';
 import { SchemaViewer } from '@/components/database-manager/schema-viewer';
 import { SqlEditor } from '@/components/database-manager/sql-editor';
+import { Spinner } from '@/components/ui/spinner';
 
 interface SchemaEditorProps {
   projectId: string;
@@ -189,7 +190,7 @@ export function SchemaEditor({ projectId, enabled, onSchemaChange }: SchemaEdito
                 disabled={applying || !ddl.trim()}
               >
                 {applying ? (
-                  <Loader2 size={12} />
+                  <Spinner size={12} />
                 ) : (
                   <Play size={12} />
                 )}

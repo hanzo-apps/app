@@ -12,6 +12,7 @@
  * Surface (proxied verbatim to cloud, see cloud clients/templates):
  *   GET /v1/templates          list the catalog     -> { data: [Template] }
  *   GET /v1/templates/:slug    one template by slug  -> Template (404 if absent)
+ *   GET /v1/templates/:slug/pages  the template's real source -> { pages } (404 if none)
  *
  * Security: GET only (read-only), and the appended subpath is traversal-guarded
  * so a caller can NEVER escape the `/v1/templates` prefix to reach another cloud
@@ -20,85 +21,30 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
 import { cloudBase } from '@/lib/org/server';
-import { getCatalog } from '@/lib/gallery-catalog';
-import { getLocalTemplatePreview } from '@/lib/template-previews';
+import { templatePages } from '@/lib/template-source';
 
 export const runtime = 'nodejs';
 
-/** Minimal HTML-attribute/text escaper for the few interpolated fields. */
-function esc(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
 /**
- * `/v1/templates/:slug/html` — the template's ready-to-show preview as a
- * self-contained HTML document, so the builder can render it in the preview
- * IMMEDIATELY (before/without any AI call) and let the AI only augment from
- * there.
+ * `/v1/templates/:slug/pages` — the template's REAL, editable source, or 404.
  *
- * Gallery templates are multi-file repos (github.com/hanzo-apps/<slug>), not a
- * single fetchable index.html — so the honest, always-correct "existing" view
- * is the template's REAL screenshot. We wrap it full-bleed in a tiny document
- * (no external CSS/JS) that renders cleanly as an iframe `srcDoc`. Never
- * fabricated: 404 when the catalog has no screenshot for the slug.
+ * The catalog also carries a screenshot per template. A screenshot is a fine way
+ * to SHOW a template and a useless way to OPEN one, so it is never an answer
+ * here: this endpoint returns markup the user can edit or nothing at all. That
+ * refusal is the point — a caller can tell "here is the template" from "here is a
+ * picture of it", and can say honestly which one it got.
  */
-async function templateHtmlResponse(slug: string): Promise<Response> {
+async function templatePagesResponse(slug: string): Promise<Response> {
   const clean = slug.trim();
   if (!clean) return NextResponse.json({ error: 'invalid slug' }, { status: 400 });
-
-  // A slug whose upstream screenshot is NOT a faithful "existing app" view (some
-  // kits screenshot their own link-index table-of-contents) ships a real,
-  // self-contained document here — served verbatim so the builder previews an
-  // actual app and the user starts editing real HTML, not an <img>.
-  const local = getLocalTemplatePreview(clean);
-  if (local) {
-    return new Response(local, {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=86400',
-      },
-    });
+  const pages = await templatePages(clean);
+  if (!pages) {
+    return NextResponse.json({ error: 'no source for slug' }, { status: 404 });
   }
-
-  try {
-    const catalog = await getCatalog();
-    const t = (catalog.templates ?? []).find((x) => x.slug === clean);
-    const shot = t?.screenshotUrl || t?.screenshot || '';
-    if (!t || !shot) {
-      return NextResponse.json({ error: 'no preview for slug' }, { status: 404 });
-    }
-    const title = t.displayName || t.name || clean;
-    const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>${esc(title)}</title>
-<style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  html,body{min-height:100%;background:#0a0a0a}
-  img{display:block;width:100%;height:auto}
-</style>
-</head>
-<body>
-<img src="${esc(shot)}" alt="${esc(title)} template preview" />
-</body>
-</html>`;
-    return new Response(html, {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=86400',
-      },
-    });
-  } catch {
-    return NextResponse.json({ error: 'template preview unavailable' }, { status: 502 });
-  }
+  return NextResponse.json(
+    { pages },
+    { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=86400' } },
+  );
 }
 
 interface Ctx {
@@ -135,10 +81,9 @@ function cleanSubpath(segments: string[] | undefined): string | null {
 export async function GET(req: NextRequest, ctx: Ctx) {
   const { path } = await ctx.params;
 
-  // `/v1/templates/:slug/html` → the template's immediate, self-contained
-  // preview document (handled locally from the gallery catalog, not proxied).
-  if (Array.isArray(path) && path.length === 2 && path[1] === 'html') {
-    return templateHtmlResponse(path[0]);
+  // `/v1/templates/:slug/pages` → the template's real, editable source (or 404).
+  if (Array.isArray(path) && path.length === 2 && path[1] === 'pages') {
+    return templatePagesResponse(path[0]);
   }
 
   const base = cleanSubpath(path);

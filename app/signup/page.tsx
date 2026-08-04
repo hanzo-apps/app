@@ -8,7 +8,8 @@ import { EVENTS } from '@hanzo/event';
 import { useAnalytics } from '@hanzo/event/react';
 import { HanzoLogo } from '@/components/HanzoLogo';
 import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription, Badge } from '@hanzo/ui';
-import { Loader2, Sparkles, Zap, Shield, Rocket } from 'lucide-react';
+import { Sparkles, Zap, Shield, Rocket } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
 
 /**
  * /signup — HIP-0111 canonical. There is no local credential form: Hanzo IAM
@@ -98,7 +99,7 @@ export default function SignupPage() {
                 size="lg"
               >
                 {loading ? (
-                  <Loader2 size={20} />
+                  <Spinner size={20} />
                 ) : (
                   <>
                     <Rocket size={20} />

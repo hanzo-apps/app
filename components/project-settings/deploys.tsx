@@ -16,10 +16,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { Anchor, Paragraph, SizableText, XStack, YStack } from "@hanzo/gui";
 import { Button } from "@hanzo/ui";
-import { Circle, ExternalLink, Loader2 } from "lucide-react";
+import { Circle, ExternalLink } from "lucide-react";
 
 import type { Project } from "@/types";
 import { relativeTime } from "@/lib/projects-view";
+import { Spinner } from "@/components/ui/spinner";
 import {
   fetchDeploys,
   inflight,
@@ -116,7 +117,7 @@ function Row({ d, slug }: { d: Deployment; slug: string }) {
       <XStack minWidth={0} flexWrap="wrap" alignItems="center" columnGap="$3" rowGap="$1">
         <XStack alignItems="center" gap="$1.5">
           {s.kind === "inflight" ? (
-            <Loader2 size={12} color="var(--muted-foreground)" />
+            <Spinner size={12} color="var(--muted-foreground)" />
           ) : (
             <Circle size={8} color={s.color ?? "var(--muted-foreground)"} />
           )}

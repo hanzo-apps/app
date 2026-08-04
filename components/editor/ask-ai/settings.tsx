@@ -4,36 +4,9 @@ import { SizableText, YStack, Paragraph } from '@hanzo/gui';
 import { Check, Settings as SettingsIcon } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger, Button } from '@hanzo/ui';
-import { ModelSelector, type ModelCatalogEntry } from '@hanzo/ui/models';
-import {
-  AUTO_MODEL,
-  FALLBACK_MODELS,
-  isBuildModel,
-  isDeadModelId,
-  type ModelOption,
-} from "@/lib/providers";
+import { ModelSelector } from '@/components/model-selector';
+import { AUTO_MODEL, FALLBACK_MODELS } from "@/lib/providers";
 import { useModels } from "@/lib/hooks/use-models";
-import { useMemo } from "react";
-
-/**
- * Adapt the builder's live model ladder (from /v1/models via useModels — the
- * gateway list is already build-filtered server-side, and useModels falls back
- * to FALLBACK_MODELS when the fetch fails, so this is never fed an empty list)
- * into the unified selector's catalog shape. The build-model policy is
- * re-applied here (isBuildModel + isDeadModelId) ON TOP of the selector's
- * `chatOnly`, so the builder only ever offers models that can actually build —
- * the family-grouped selector shows Enso, Zen, Anthropic and OpenAI (whatever
- * the predicate admits). Family is derived from the id by the selector.
- */
-function toCatalogEntries(models: ModelOption[]): ModelCatalogEntry[] {
-  return models
-    .filter(({ value }) => !isDeadModelId(value)) // show ALL live models — the user picks, we do not pre-hide
-    .map(({ value, label, description }) => ({
-      id: value,
-      label,
-      ...(description ? { description } : {}),
-    }));
-}
 
 /** One selectable row in the model list — a plain button (no nested Radix Select
  *  portal, which was rendering a second floating layer that overlapped the
@@ -93,14 +66,11 @@ export function Settings({
   routedModel?: string | null;
 }) {
   // The list is live from the gateway (via /v1/models); never a static catalog.
+  // It arrives already filtered, named and grouped, so nothing is reshaped here
+  // — the adapter that used to sit in this file was re-deriving what the BFF had
+  // already decided, and the two could disagree.
   const { models } = useModels();
-
-  // The unified, family-grouped selector's catalog. Never empty: useModels
-  // already returns FALLBACK_MODELS on a failed fetch, and this guards once more.
-  const entries = useMemo(
-    () => toCatalogEntries(models.length ? models : FALLBACK_MODELS),
-    [models]
-  );
+  const entries = models.length ? models : FALLBACK_MODELS;
 
   const isAuto = !model || model === AUTO_MODEL;
 
@@ -161,7 +131,8 @@ export function Settings({
             value={isAuto ? undefined : model}
             onChange={onModelChange}
             size="sm"
-            chatOnly
+            placeholder="Pick a model"
+            data-testid="model-picker"
   />
         </YStack>
       </PopoverContent>

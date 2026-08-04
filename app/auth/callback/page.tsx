@@ -4,12 +4,13 @@ import { SizableText, XStack, YStack, H1, Paragraph } from '@hanzo/gui';
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
 
 import { useUser } from "@/hooks/useUser";
 import { loginRedirectDestination } from "@/lib/auth/redirect";
 import { isLinkPopupReturn, finishLinkPopup } from "@/lib/hanzo/iam";
 import { HanzoLogo } from "@/components/HanzoLogo";
+import { LoadingScreen } from "@/components/ui/loading-screen";
+import { accent, screen } from "@/lib/chrome";
 
 const REDIRECT_KEY = "redirectAfterLogin";
 
@@ -21,6 +22,22 @@ const REDIRECT_KEY = "redirectAfterLogin";
  * screen ran a decorative step timer and only ever navigated via a button the
  * user had to press; this drives the real `completeLogin()` promise and calls
  * `router.replace()` on resolve.
+ *
+ * ── Waiting is `LoadingScreen`, not a second one ─────────────────────────────
+ *
+ * This page used to draw its own: a 44px mark where the shared one is 48, a
+ * `$7` gap where it is `$4`, two lines of copy where it is one, and a spinner
+ * the shared one deliberately does not have. `LoadingScreen`'s own comment
+ * already said it was the ONE page-level auth/loading gate; this page was the
+ * holdout that made that untrue.
+ *
+ * The spinner is worth naming, because it is what the owner actually saw: a
+ * still three-quarter ring beside "Signing you in…", on a screen whose entire
+ * job is to say that something is happening. lucide ships only the arc, and the
+ * rotation was an opt-in this site never took — as it turned out, nor did 79
+ * others. `components/ui/spinner` now binds the two, so the glyph cannot be
+ * rendered still; this screen simply has no spinner to place, because the
+ * mark's breathe already says it.
  */
 export default function AuthCallback() {
   const router = useRouter();
@@ -80,41 +97,33 @@ export default function AuthCallback() {
     })();
   }, [completeLogin, isAuthenticated, router]);
 
+  if (!error) return <LoadingScreen>Signing you in…</LoadingScreen>;
+
   return (
-    <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background" paddingHorizontal="$5">
-      <YStack width="100%" maxWidth={384}>
-        <XStack justifyContent="center" marginBottom="$7">
-          <HanzoLogo size={44} color="var(--foreground)" />
+    <XStack {...screen} backgroundColor="$background" paddingHorizontal="$5">
+      <YStack width="100%" maxWidth={384} rowGap="$4.5">
+        <XStack justifyContent="center" marginBottom="$3">
+          <HanzoLogo size={48} />
         </XStack>
 
-        {error ? (
-          <YStack rowGap="$4.5">
-            <div>
-              <H1 fontSize="$7" fontWeight="500" letterSpacing={-0.4} textAlign="center">
-                Sign-in didn&apos;t complete
-              </H1>
-              <Paragraph marginTop="$2" fontSize="$3" color="$color11" textAlign="center">
-                Your session couldn&apos;t be established. Please try signing in
-                again.
-              </Paragraph>
-            </div>
-            <Link
-              href="/login"
-            ><XStack width="100%" alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ backgroundColor: "$color6" }}>
-              <SizableText fontSize="$3" fontWeight="500" color="$background">Back to sign in</SizableText>
-            </XStack></Link>
-          </YStack>
-        ) : (
-          <YStack rowGap="$3">
-            <XStack alignItems="center" justifyContent="center" gap="$2.5">
-              <Loader2 size={16} />
-              <SizableText fontSize="$3" color="$color">Signing you in…</SizableText>
-            </XStack>
-            <Paragraph fontSize="$1" color="$color11" textAlign="center">
-              Completing secure sign-in with Hanzo
-            </Paragraph>
-          </YStack>
-        )}
+        <YStack>
+          <H1 fontSize="$7" fontWeight="500" letterSpacing={-0.4} textAlign="center">
+            Sign-in didn&apos;t complete
+          </H1>
+          <Paragraph marginTop="$2" fontSize="$3" color="$color11" textAlign="center">
+            Your session couldn&apos;t be established. Please try signing in
+            again.
+          </Paragraph>
+        </YStack>
+
+        {/* `accent` carries its own foreground. This button spelled the fill by
+            hand and then set the label to `$background` — near-black type on a
+            20% grey pill, the exact 1.6:1 pairing lib/chrome documents. */}
+        <Link href="/login">
+          <XStack {...accent} width="100%" alignItems="center" justifyContent="center" borderRadius="$5" paddingHorizontal="$4.5" paddingVertical="$2.5">
+            <SizableText fontSize="$3" fontWeight="500" color="$color">Back to sign in</SizableText>
+          </XStack>
+        </Link>
       </YStack>
     </XStack>
   );

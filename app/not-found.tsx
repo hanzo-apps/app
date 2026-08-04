@@ -3,6 +3,7 @@
 import { SizableText, XStack, YStack, H1, Paragraph } from '@hanzo/gui';
 import Link from 'next/link';
 import { HanzoBrand } from '@/components/HanzoLogo';
+import { screen } from '@/lib/chrome';
 
 /**
  * 404 — Next.js renders this for any unmatched route. Server component (no
@@ -12,7 +13,7 @@ import { HanzoBrand } from '@/components/HanzoLogo';
  */
 export default function NotFound() {
   return (
-    <XStack minHeight="100%" backgroundColor="$background" alignItems="center" justifyContent="center" paddingHorizontal="$5" paddingVertical="$11">
+    <XStack {...screen} backgroundColor="$background" paddingHorizontal="$5" paddingVertical="$11">
       <YStack width="100%" maxWidth={448}>
         <XStack justifyContent="center" marginBottom="$7">
           <HanzoBrand

@@ -3,8 +3,9 @@
 import { XStack, YStack, Paragraph, H3, SizableText } from '@hanzo/gui';
 import { useState, useEffect } from 'react';
 import { TableInfo } from '@/lib/vfs/types';
-import { ChevronRight, ChevronDown, Table2, KeyRound, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { ChevronRight, ChevronDown, Table2, KeyRound, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@hanzo/ui';
+import { Spinner } from '@/components/ui/spinner';
 
 interface SchemaViewerProps {
   deploymentId?: string;
@@ -62,7 +63,7 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" height="100%">
-        <Loader2 size={24} />
+        <Spinner size={24} />
       </XStack>
     );
   }

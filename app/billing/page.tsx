@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
 import { AppShell } from '@/components/app-shell';
-import { accent, panel, selected } from '@/lib/chrome';
+import { accent, panel, selected, screen } from '@/lib/chrome';
 import { CryptoPayment, CRYPTO_PAYMENTS_ENABLED } from '@/components/crypto-payment';
 import { WalletBoundary } from '@/components/providers/WalletBoundary';
 import { TopUp, Subscribe } from '@/components/billing/purchase';
@@ -15,7 +15,8 @@ import { useCloudBalance, spendableCents } from '@/lib/billing/live-balance';
 import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription, Badge, Tabs, TabsList, TabsTrigger, TabsContent, Progress } from '@hanzo/ui';
 
 // Icons
-import { Wallet, Download, Plus, ExternalLink, Sparkles, TrendingUp, Clock, Activity, Database, Brain, Loader2, FileText, CreditCard, ArrowRight, CheckCircle2, XCircle } from 'lucide-react';
+import { Wallet, Download, Plus, ExternalLink, Sparkles, TrendingUp, Clock, Activity, Database, Brain, FileText, CreditCard, ArrowRight, CheckCircle2, XCircle } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
 
 // Types
 
@@ -211,8 +212,8 @@ export default function BillingPage() {
 
   if (authLoading || loading) {
     return (
-      <XStack minHeight="100%" backgroundColor="$background" alignItems="center" justifyContent="center">
-        <Loader2 size={32} />
+      <XStack {...screen} backgroundColor="$background">
+        <Spinner size={32} />
       </XStack>
     );
   }

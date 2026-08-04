@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useIam } from '@hanzo/iam/react';
 import { HanzoBrand } from '@/components/HanzoLogo';
-import { Loader2, Sparkles, Zap, Monitor, Apple, Terminal, Smartphone } from 'lucide-react';
+import { Sparkles, Zap, Monitor, Apple, Terminal, Smartphone } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
 
 /**
  * /login — HIP-0111 canonical. There is no local credential form: Hanzo IAM
@@ -88,7 +89,7 @@ export default function LoginPage() {
             <Paragraph color="$color11" fontSize="$6" marginBottom="$7" textAlign="center">Taking you to Hanzo ID to sign in</Paragraph>
 
             <XStack alignItems="center" justifyContent="center" gap="$2" marginBottom="$8">
-              <Loader2 size={20} />
+              <Spinner size={20} />
               <Paragraph fontSize="$3" color="$color11">Redirecting to secure sign in…</Paragraph>
             </XStack>
 

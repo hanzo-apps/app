@@ -4,7 +4,8 @@ import { YStack, Paragraph, SizableText, XStack } from '@hanzo/gui';
 import { useState, useEffect } from 'react';
 import { ScheduledFunction, EdgeFunction } from '@/lib/vfs/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Input, Label, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
-import { Loader2, AlertCircle, Info } from 'lucide-react';
+import { AlertCircle, Info } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
 
 interface ScheduledFunctionEditorProps {
   scheduledFunction: ScheduledFunction | null;
@@ -227,7 +228,7 @@ export function ScheduledFunctionEditor({
           <Button onClick={handleSave} disabled={saving}>
             {saving ? (
               <>
-                <Loader2 size={16} />
+                <Spinner size={16} />
                 Saving...
               </>
             ) : (

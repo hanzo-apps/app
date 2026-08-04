@@ -3,7 +3,7 @@
 import { YStack, SizableText, Paragraph, XStack } from '@hanzo/gui';
 import { useState } from 'react';
 import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label } from '@hanzo/ui';
-import { Loader2 } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
 import {
   createProject,
   FRAMEWORKS,
@@ -146,7 +146,7 @@ export function CreateProject({ open, onOpenChange, onCreated }: CreateProjectPr
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={submitting || !name.trim()}>
-            {submitting && <Loader2 size={16} />}
+            {submitting && <Spinner size={16} />}
             Create Project
           </Button>
         </XStack>

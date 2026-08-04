@@ -5,7 +5,8 @@ import { useState, useEffect } from 'react';
 import { CodeEditor } from '@/components/code-editor';
 import { ServerFunction } from '@/lib/vfs/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Input, Label } from '@hanzo/ui';
-import { Loader2, AlertCircle, Info } from 'lucide-react';
+import { AlertCircle, Info } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
 
 interface ServerFunctionEditorProps {
   function: ServerFunction | null;
@@ -207,7 +208,7 @@ Response.json({ products });`}
           <Button onClick={handleSave} disabled={saving}>
             {saving ? (
               <>
-                <Loader2 size={16} />
+                <Spinner size={16} />
                 Saving...
               </>
             ) : (

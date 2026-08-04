@@ -4,6 +4,7 @@ import { Button } from '@hanzo/ui';
 import { XStack, YStack, H3, Paragraph, H1, H2, SizableText } from '@hanzo/gui';
 import { AlertCircle, RefreshCw, Home, Bug } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { screen } from '@/lib/chrome';
 
 interface ErrorFallbackProps {
   error: Error;
@@ -64,7 +65,7 @@ export function ErrorFallback({
 
   // Page or App level error - full page error
   return (
-    <XStack minHeight="100%" backgroundColor="$background" alignItems="center" justifyContent="center" padding="$4">
+    <XStack {...screen} backgroundColor="$background" padding="$4">
       <YStack maxWidth={448} width="100%">
         <YStack backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$8" elevation={5} overflow="hidden">
           <YStack borderBottomWidth={1} borderColor="$red9" backgroundColor="$red9" padding="$5">

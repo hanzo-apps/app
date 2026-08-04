@@ -2,7 +2,7 @@
 
 import { SizableText, YStack, XStack, Image, type GuiElement } from '@hanzo/gui';
 import { useState, useEffect, useRef, useMemo, useCallback, DragEvent, ClipboardEvent } from 'react';
-import { MessageSquare, Loader2, CheckCircle, XCircle, ChevronRight, FileCode, ClipboardList, Bot, RotateCcw, RefreshCw, Send, ChevronUp, ChevronDown, Code, Trash2, X, Brain, Image as ImageIcon } from 'lucide-react';
+import { MessageSquare, CheckCircle, XCircle, ChevronRight, FileCode, ClipboardList, Bot, RotateCcw, RefreshCw, Send, ChevronUp, ChevronDown, Code, Trash2, X, Brain, Image as ImageIcon } from 'lucide-react';
 import { DebugEvent } from '@/components/debug-panel';
 import { MarkdownRenderer } from '@/components/markdown-renderer';
 import { Button, Textarea, Popover, PopoverContent, PopoverTrigger, Tabs, TabsList, TabsTrigger } from '@hanzo/ui';
@@ -12,6 +12,7 @@ import { PendingImage } from '@/lib/llm/multi-agent-orchestrator';
 import { ContentBlock } from '@/lib/llm/types';
 import { EVENTS } from '@hanzo/event';
 import { useAnalytics } from '@hanzo/event/react';
+import { Spinner } from '@/components/ui/spinner';
 
 type FocusTarget = FocusContextPayload & { timestamp: number };
 
@@ -118,8 +119,8 @@ const toolIcons: Record<string, React.ReactNode> = {
 };
 
 const statusIcons: Record<string, React.ReactNode> = {
-  pending: <Loader2 size={12} />,
-  executing: <Loader2 size={12} />,
+  pending: <Spinner size={12} />,
+  executing: <Spinner size={12} />,
   completed: <CheckCircle size={12} />,
   failed: <XCircle size={12} />,
 };
@@ -866,7 +867,7 @@ export function ChatPanel({
               >
                 {generating ? (
                   <>
-                    <Loader2 size={16} />
+                    <Spinner size={16} />
                     Stop
                   </>
                 ) : (
@@ -947,7 +948,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
             return (
               <YStack key={item.id} backgroundColor="$color3" borderRadius="$3" padding="$2" opacity={0.7}>
                 <XStack alignItems="center" gap="$2" paddingHorizontal="$1">
-                  <Loader2 size={12} />
+                  <Spinner size={12} />
                   <SizableText fontSize="$1" color="$color11">Waiting for response...</SizableText>
                 </XStack>
               </YStack>
@@ -1284,7 +1285,7 @@ function ReasoningDisplay({ itemId, content, isExpanded, onToggle }: ReasoningDi
       >
         <XStack alignItems="center" gap="$1.5">
           {isStreaming ? (
-            <Loader2 size={12} />
+            <Spinner size={12} />
           ) : (
             <Brain size={12} />
           )}
@@ -1413,7 +1414,7 @@ function ProgressDisplay({ itemId, content, isExpanded, onToggle }: ProgressDisp
           {isCompleted ? (
             <CheckCircle size={12} />
           ) : (
-            <Loader2 size={12} />
+            <Spinner size={12} />
           )}
           <SizableText fontSize="$1" fontFamily="$mono">progress</SizableText>
         </XStack>

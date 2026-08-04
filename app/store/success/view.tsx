@@ -3,10 +3,11 @@
 import { XStack, YStack, SizableText, H1, Paragraph } from '@hanzo/gui';
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
+import { screen } from "@/lib/chrome";
 
 export default function StoreSuccessPageView() {
   return (
-    <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background" paddingHorizontal="$5">
+    <XStack {...screen} backgroundColor="$background" paddingHorizontal="$5">
       <YStack maxWidth={448}>
         <CheckCircle2 size={48} />
         <H1 fontSize="$8" fontWeight="500" marginBottom="$2" textAlign="center">Thank you — your order is confirmed</H1>

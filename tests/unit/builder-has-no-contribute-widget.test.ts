@@ -45,10 +45,27 @@ describe("the builder Enso launcher never floats over the preview", () => {
     const src = read("public/edit.js");
     expect(src).toMatch(/meta\('hanzo:anchor'\)/);
     // Anchoring must actually unpin it — a launcher inside the status bar that
-    // is still `position: fixed` lands straight back on the preview.
-    expect(src).toMatch(/:host\(\[data-hanzo-anchored\]\) \.fab\{position:static/);
+    // is still `position: fixed` lands straight back on the preview. Which of
+    // the two IN-FLOW positions it takes is the launcher's business: it is
+    // `relative` so the prism ring has something to be absolute against, and was
+    // `static` before that existed. Pinning the keyword rather than the property
+    // failed that rename while the mark was still, correctly, in the dock.
+    const anchored = src.match(/:host\(\[data-hanzo-anchored\]\) \.fab\{([^}]*)\}/);
+    expect(anchored).not.toBeNull();
+    expect(anchored![1]).toMatch(/position:(static|relative)/);
     // A selector matching nothing falls back to the corner rather than vanishing.
     expect(src).toMatch(/document\.body\.appendChild\(host\)/);
+  });
+
+  it("the mark stays a hairline at both of its sizes", () => {
+    const src = read("public/edit.js");
+    // The ensō draws at 34px in the corner and 18px in the dock from ONE svg, so
+    // a viewBox-relative stroke is two different weights — it was 14/100, which
+    // came out 4.8px and 2.5px, a donut at either size. `vector-effect` measures
+    // the stroke in screen pixels instead, which is the whole reason the mark
+    // can be small and still look drawn rather than blobbed.
+    expect(src).toMatch(/vector-effect="non-scaling-stroke"/);
+    expect(src).toMatch(/stroke-width="1\.25"/);
   });
 
   it("/dev anchors the launcher by NAMING the key", () => {

@@ -5,11 +5,12 @@ import { useState, useEffect } from 'react';
 import { toast, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@hanzo/ui';
 import { ScheduledFunction, EdgeFunction } from '@/lib/vfs/types';
 import {
-  Plus, Loader2, AlertCircle, Clock, MoreVertical, Pencil, Trash2,
+  Plus, AlertCircle, Clock, MoreVertical, Pencil, Trash2,
   ToggleLeft, ToggleRight
 } from 'lucide-react';
 import { ScheduledFunctionEditor } from './scheduled-function-editor';
 import type { ScheduledFunctionsDataProvider } from './data-providers';
+import { Spinner } from '@/components/ui/spinner';
 
 interface ScheduledFunctionsManagerProps {
   deploymentId?: string;
@@ -159,7 +160,7 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" height="100%">
-        <Loader2 size={24} />
+        <Spinner size={24} />
       </XStack>
     );
   }
