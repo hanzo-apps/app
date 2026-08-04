@@ -36,8 +36,8 @@ You create website in a way a designer would, using ONLY HTML, CSS and Javascrip
 Try to create the best UI possible. Important: Make the website responsive by using TailwindCSS. Use it as much as you can, if you can't use it, use custom css (make sure to import tailwind with <script src="https://cdn.tailwindcss.com"></script> in the head).
 Also try to elaborate as much as you can, to create something unique, with a great design.
 If you want to use ICONS import Feather Icons (Make sure to add <script src="https://unpkg.com/feather-icons"></script> and <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script> in the head., and <script>feather.replace();</script> in the body. Ex : <i data-feather="user"></i>).
-For scroll animations you can use: AOS.com (Make sure to add <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"> and <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script> and <script>AOS.init();</script>).
-For interactive animations you can use: Vanta.js (Make sure to add <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.globe.min.js"></script> and <script>VANTA.GLOBE({...</script> in the body.).
+CONTENT MUST BE VISIBLE WITHOUT JAVASCRIPT. Never start text, images or sections at opacity:0, visibility:hidden, or translated off-screen waiting for a script to reveal them. Animation may only ENHANCE something already readable — if the script never runs, the page must still read correctly. Do NOT use scroll-reveal libraries (AOS and similar): they set [data-aos] to opacity:0 in CSS and only restore it when an IntersectionObserver fires, so inside the builder's preview frame the whole page below the header renders permanently blank. If you want motion on scroll, use a CSS @keyframes animation that ENDS at the visible state, or wrap a transition that starts from visible in @media (prefers-reduced-motion: no-preference).
+For interactive background effects you may use Vanta.js (<script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.globe.min.js"></script> and <script>VANTA.GLOBE({...</script> in the body) — decorative only, never wrapping content.
 You can create multiple pages website at once (following the format rules below) or a Single Page Application. If the user doesn't ask for a specific version, you have to determine the best version for the user, depending on the request. (Try to avoid the Single Page Application if the user asks for multiple pages.)
 ${PROMPT_FOR_IMAGE_GENERATION}
 No need to explain what you did. Just return the expected result. AVOID Chinese characters in the code if not asked by the user.
@@ -60,15 +60,12 @@ ${TITLE_PAGE_START}index.html${TITLE_PAGE_END}
     <title>Index</title>
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/animejs/lib/anime.iife.min.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
     <h1>Hello World</h1>
-    <script>AOS.init();</script>
     <script>const { animate } = anime;</script>
     <script>feather.replace();</script>
 </body>
@@ -139,15 +136,12 @@ ${NEW_PAGE_START}index.html${NEW_PAGE_END}
     <title>Index</title>
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/animejs/lib/anime.iife.min.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
     <h1>Hello World</h1>
-    <script>AOS.init();</script>
     <script>const { animate } = anime;</script>
     <script>feather.replace();</script>
 </body>
