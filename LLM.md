@@ -67,6 +67,16 @@ API-identical. Two packaging facts did change, and both are landmines:
   `@hanzo/ui/gui-config`, so nothing in this repo names it. If spacing or line
   height ever looks subtly wrong after a gui bump, look here first.
 
+**Numeric `lineHeight` renders as PIXELS, and that is not new.** ~75 call sites
+write `lineHeight={1.625}` expecting the CSS unitless multiplier; Tamagui emits
+`_lh-1--625px{line-height:1.625px}`. Worth fixing — but fix it as its own piece
+of work, and do not bill it to a gui bump. Measured on both sides of 7.3.1 →
+8.0.1: the served landing page carries byte-identical rules, and its whole style
+sheet differs by exactly one ADDED rule (`_pointer{cursor:pointer}`), 205 → 206,
+none removed or changed. `styleCompat: "web"` does not govern this. The obvious
+guess — that the 8.x `styleCompat` flip caused it — is wrong, and confirming it
+costs one baseline build.
+
 8.0.0 is uninstallable under strict pnpm (six gui packages statically import
 siblings they never declared); **8.0.1 is the floor**. `@hanzogui/themes` stays
 at 8.0.0 by design, so the `lux`/`zoo`/`pars` brand themes and the
