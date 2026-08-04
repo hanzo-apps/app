@@ -302,7 +302,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                   return (
                     <XStack height="100%" alignItems="center" justifyContent="center" backgroundColor="$background" padding="$6">
                       <YStack rowGap="$4" maxWidth={672}>
-                        <ImageIcon size={48} color="$color11" />
+                        <ImageIcon size={48} />
                         <YStack rowGap="$2">
                           <H3 fontSize="$6" fontWeight="500" textAlign="center">Image Preview</H3>
                           <Paragraph fontSize="$3" color="$color11" textAlign="center">
@@ -339,7 +339,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                   return (
                     <XStack height="100%" alignItems="center" justifyContent="center" backgroundColor="$background" padding="$6">
                       <YStack rowGap="$4">
-                        <AlertCircle size={48} color="$color11" />
+                        <AlertCircle size={48} />
                         <YStack rowGap="$2">
                           <H3 fontSize="$6" fontWeight="500" textAlign="center">Unsupported File Type</H3>
                           <Paragraph fontSize="$3" color="$color11" textAlign="center">

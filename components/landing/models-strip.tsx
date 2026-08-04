@@ -31,10 +31,10 @@ export default function ModelsStrip() {
           <Paragraph fontFamily="$mono" fontSize={11} color="$color11">
             Hanzo AI
           </Paragraph>
-          <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
+          <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }} lineHeight="1.1">
             One API. 400+ models.
           </H2>
-          <Paragraph marginTop="$4" maxWidth={448} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
+          <Paragraph marginTop="$4" maxWidth={448} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
             Your app calls any frontier model — Hanzo&apos;s own Zen family plus
             Anthropic, OpenAI, Google, Mistral and more — through OpenAI-
             and Anthropic-compatible endpoints. Swap models with one string,
@@ -58,7 +58,7 @@ export default function ModelsStrip() {
             <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
             <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
           </XStack>
-          <SizableText fontFamily="$mono" fontSize={12} lineHeight={1.625} color="$color" overflow="scroll" whiteSpace="pre">
+          <SizableText fontFamily="$mono" fontSize={12} lineHeight="1.625" color="$color" overflow="scroll" whiteSpace="pre">
 {`POST https://api.hanzo.ai/v1/chat/completions
 Authorization: Bearer $HANZO_KEY
 

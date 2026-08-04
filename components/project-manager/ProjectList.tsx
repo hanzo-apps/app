@@ -71,7 +71,7 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
     return (
       <XStack alignItems="center" justifyContent="center" paddingVertical="$12">
         <YStack alignItems="center">
-          <Loader2 size={40} color="$color12" />
+          <Loader2 size={40} />
           <Paragraph marginTop="$4" fontSize="$3" color="$color11" textAlign="center">Loading projects…</Paragraph>
         </YStack>
       </XStack>
@@ -95,7 +95,7 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
       {/* Toolbar */}
       <YStack gap="$3" alignItems="flex-start" justifyContent="space-between" $sm={{ flexDirection: "row", alignItems: "center" }}>
         <YStack position="relative" flex={1} width="100%" $sm={{ maxWidth: 384 }}>
-          <Search size={16} color="$color11" />
+          <Search size={16} />
           <Input
             placeholder="Search projects…"
             value={searchQuery}
@@ -124,7 +124,7 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
 
       {filtered.length === 0 ? (
         <YStack alignItems="center" paddingVertical="$10">
-          <FolderOpen size={48} color="$color11" />
+          <FolderOpen size={48} />
           <H2 fontSize="$7" fontWeight="500" marginBottom="$2" textAlign="center">
             {searchQuery ? 'No projects found' : 'No projects yet'}
           </H2>

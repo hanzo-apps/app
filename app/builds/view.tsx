@@ -15,7 +15,7 @@ export default function BuildsIndexPageView({
   return (
     <YStack position="relative" minHeight="100%" backgroundColor="$background" overflow="hidden">
       <YStack pointerEvents="none" position="fixed" top={0} right={0} bottom={0} left={0} zIndex={0} overflow="hidden">
-        <YStack position="absolute" left="50%" top="-14%" height={520} width={860} x="50%" borderRadius="$10" backgroundColor="$color" />
+        <YStack position="absolute" left="50%" top="-14%" height={520} width={860} marginLeft={-430} borderRadius="$10" backgroundColor="$color005" filter="blur(130px)" />
       </YStack>
       <Header />
       <YStack position="relative" zIndex={10} paddingHorizontal="$4" paddingTop={36} $md={{ paddingHorizontal: "$6", paddingTop: "$9" }}>
@@ -23,10 +23,10 @@ export default function BuildsIndexPageView({
           <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
             Builds
           </Paragraph>
-          <H1 marginTop="$4" fontSize="$10" fontWeight="500" lineHeight={1.08} letterSpacing={-0.4} $sm={{ fontSize: "$11" }}>
+          <H1 marginTop="$4" fontSize="$10" fontWeight="500" lineHeight="1.08" letterSpacing={-0.4} $sm={{ fontSize: "$11" }}>
             How these were actually made
           </H1>
-          <Paragraph marginTop="$4" maxWidth={672} fontSize="$4" lineHeight={1.625} color="$color11">
+          <Paragraph marginTop="$4" maxWidth={672} fontSize="$4" lineHeight="1.625" color="$color11">
             Each of these is a real agent session — the prompt, the reasoning, and the
             commit every turn produced. The turn&nbsp;⇄&nbsp;commit binding lives in git
             itself, so you can check any claim on this site against the repository.
@@ -34,7 +34,7 @@ export default function BuildsIndexPageView({
 
           {builds.length === 0 ? (
             <YStack marginTop="$7" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5">
-              <Paragraph fontSize="$3" lineHeight={1.625} color="$color11">
+              <Paragraph fontSize="$3" lineHeight="1.625" color="$color11">
                 No builds published yet. An author publishes one from the repo the
                 session ran in:
               </Paragraph>
@@ -57,7 +57,7 @@ export default function BuildsIndexPageView({
                         {b.org}/{b.project} · {b.agent} · {b.turns} turns
                       </SizableText>
                     </YStack>
-                    <ArrowUpRight size={16} color="$color11" />
+                    <ArrowUpRight size={16} />
                   </XStack></Link>
                 </li>
               ))}

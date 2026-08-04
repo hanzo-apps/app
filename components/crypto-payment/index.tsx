@@ -136,7 +136,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
         {step === 'success' ? (
           <YStack paddingVertical="$6">
             <XStack width="$10" height="$10" borderRadius="$10" backgroundColor="$green9" alignItems="center" justifyContent="center" alignSelf="center" marginBottom="$4">
-              <Check size={32} color="$green9" />
+              <Check size={32} />
             </XStack>
             <Paragraph fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">
               +{CREDIT_PRICING[selectedAmount as keyof typeof CREDIT_PRICING]?.credits.toLocaleString()} credits added!
@@ -188,7 +188,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
                 <SizableText fontSize="$3">
                   Network: <SizableText fontWeight="500">{SUPPORTED_CHAINS.find(c => c.id === selectedChainId)?.name}</SizableText>
                 </SizableText>
-                <ChevronDown size={16} color="$color11" />
+                <ChevronDown size={16} />
               </Button>
               {chainMenuOpen && (
                 <YStack position="absolute" top="100%" left="$0" right="$0" marginTop="$1" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" overflow="hidden" zIndex={10}>
@@ -285,7 +285,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
           </YStack>
         ) : (
           <YStack paddingVertical="$6">
-            <Loader2 size={48} color="$purple9" />
+            <Loader2 size={48} />
             <Paragraph fontSize="$6" fontWeight="500" textAlign="center">
               {isConfirming ? 'Confirming transaction...' : 'Waiting for wallet...'}
             </Paragraph>

@@ -125,7 +125,7 @@ export function ScriptsTab({ settings, onChange }: ScriptsTabProps) {
 
       {allScripts.length === 0 ? (
         <YStack padding="$6" borderWidth={2} borderStyle="dashed" borderRadius="$5">
-          <Code size={48} color="$color11" />
+          <Code size={48} />
           <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">No Scripts Added</H3>
           <Paragraph fontSize="$3" color="$color11" marginBottom="$4" textAlign="center">
             Add tracking scripts, analytics, or custom code to your deployment

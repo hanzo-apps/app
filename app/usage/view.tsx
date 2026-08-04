@@ -25,7 +25,7 @@ export default function UsageView({
       <YStack maxWidth={1024} alignSelf="center" paddingHorizontal="$4" paddingVertical="$6" $md={{ paddingHorizontal: "$6", paddingVertical: "$8" }}>
         <YStack justifyContent="space-between" alignItems="flex-start" gap="$4" marginBottom="$6" $sm={{ flexDirection: "row", alignItems: "center" }}>
           <div>
-            <H1 fontSize="$10" fontWeight="500" marginBottom="$2" $md={{ fontSize: "$11" }}>Usage</H1>
+            <H1 fontSize="$10" fontWeight="500" marginBottom="$2" $md={{ fontSize: "$11" }} lineHeight="1.1">Usage</H1>
             <Paragraph color="$color11">
               Your account consumption
               {email && <SizableText marginLeft="$2" color="$color11">({email})</SizableText>}
@@ -46,7 +46,7 @@ export default function UsageView({
         <Card backgroundColor="$background" borderColor="$borderColor" marginBottom="$5">
           <CardHeader>
             <CardTitle alignItems="center" gap="$2">
-              <Activity size={16} color="$color11" />
+              <Activity size={16} />
               Account
             </CardTitle>
             <CardDescription>Current, known-good figures for your account</CardDescription>

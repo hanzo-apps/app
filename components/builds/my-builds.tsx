@@ -93,14 +93,14 @@ export function MyBuilds() {
             <XStack key={s.id} flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$3" paddingVertical="$4">
               <YStack minWidth={0}>
                 <XStack alignItems="center" gap="$2">
-                  <MessageSquare size={14} color="$color11" />
+                  <MessageSquare size={14} />
                   <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">
                     {s.title || s.project || s.id}
                   </SizableText>
                   {s.published ? (
-                    <Globe size={12} color="$color11" aria-label="public" />
+                    <Globe size={12} aria-label="public" />
                   ) : (
-                    <Lock size={12} color="$color11" aria-label="private" />
+                    <Lock size={12} aria-label="private" />
                   )}
                 </XStack>
                 <SizableText marginTop="$1" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={1.92} color="$color11">

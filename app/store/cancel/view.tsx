@@ -8,7 +8,7 @@ export default function StoreCancelPageView() {
   return (
     <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background" paddingHorizontal="$5">
       <YStack maxWidth={448} alignItems="center">
-        <XCircle size={48} color="$color11" />
+        <XCircle size={48} />
         <H1 fontSize="$8" fontWeight="500" marginBottom="$2" textAlign="center">Checkout canceled</H1>
         <Paragraph color="$color11" marginBottom="$5" textAlign="center">
           No payment was taken. Your cart is still here when you’re ready.

@@ -45,7 +45,7 @@ export default function SmartRoutingCard() {
         <XStack alignItems="flex-start" justifyContent="space-between" gap="$4">
           <div>
             <CardTitle alignItems="center" gap="$2">
-              <Zap size={16} color="$color11" />
+              <Zap size={16} />
               Smart routing
             </CardTitle>
             <CardDescription>

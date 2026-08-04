@@ -109,15 +109,15 @@ export default function CryptoPortfolio() {
           <Card>
             <CardHeader flexDirection="row" alignItems="center" justifyContent="space-between" rowGap="$0" paddingBottom="$2">
               <CardTitle fontSize="$3" fontWeight="500">Portfolio Value</CardTitle>
-              <DollarSign size={16} color="$color11" />
+              <DollarSign size={16} />
             </CardHeader>
             <CardContent>
               <YStack><SizableText fontSize="$8" fontWeight="500">${portfolio.totalValue.toLocaleString()}</SizableText></YStack>
               <XStack alignItems="center" gap="$1">
                 {portfolio.dailyChangePercent > 0 ? (
-                  <TrendingUp size={12} color="$green10" />
+                  <TrendingUp size={12} />
                 ) : (
-                  <TrendingDown size={12} color="$red10" />
+                  <TrendingDown size={12} />
                 )}
                 <SizableText fontSize="$1" {...{ color: portfolio.dailyChangePercent > 0 ? "$green10" : "$red10" }}>
                   ${Math.abs(portfolio.dailyChange).toLocaleString()} ({portfolio.dailyChangePercent}%)
@@ -130,7 +130,7 @@ export default function CryptoPortfolio() {
           <Card>
             <CardHeader flexDirection="row" alignItems="center" justifyContent="space-between" rowGap="$0" paddingBottom="$2">
               <CardTitle fontSize="$3" fontWeight="500">Total Profit</CardTitle>
-              <TrendingUp size={16} color="$color11" />
+              <TrendingUp size={16} />
             </CardHeader>
             <CardContent>
               <YStack>
@@ -149,7 +149,7 @@ export default function CryptoPortfolio() {
           <Card>
             <CardHeader flexDirection="row" alignItems="center" justifyContent="space-between" rowGap="$0" paddingBottom="$2">
               <CardTitle fontSize="$3" fontWeight="500">Total Invested</CardTitle>
-              <Wallet size={16} color="$color11" />
+              <Wallet size={16} />
             </CardHeader>
             <CardContent>
               <YStack><SizableText fontSize="$8" fontWeight="500">${portfolio.totalInvested.toLocaleString()}</SizableText></YStack>
@@ -160,7 +160,7 @@ export default function CryptoPortfolio() {
           <Card>
             <CardHeader flexDirection="row" alignItems="center" justifyContent="space-between" rowGap="$0" paddingBottom="$2">
               <CardTitle fontSize="$3" fontWeight="500">Assets</CardTitle>
-              <PieChart size={16} color="$color11" />
+              <PieChart size={16} />
             </CardHeader>
             <CardContent>
               <YStack><SizableText fontSize="$8" fontWeight="500">{holdings.length}</SizableText></YStack>
@@ -218,9 +218,9 @@ export default function CryptoPortfolio() {
                           <Paragraph fontWeight="500" textAlign="right">${coin.value.toLocaleString()}</Paragraph>
                           <XStack alignItems="center" justifyContent="flex-end" gap="$1">
                             {coin.change24h > 0 ? (
-                              <ArrowUpRight size={12} color="$green10" />
+                              <ArrowUpRight size={12} />
                             ) : (
-                              <ArrowDownRight size={12} color="$red10" />
+                              <ArrowDownRight size={12} />
                             )}
                             <SizableText fontSize="$3" {...{ color: coin.change24h > 0 ? "$green10" : "$red10" }}>
                               {Math.abs(coin.change24h)}%
@@ -269,7 +269,7 @@ export default function CryptoPortfolio() {
               <CardContent>
                 <XStack height={300} alignItems="center" justifyContent="center" backgroundColor="$color3" borderRadius="$2">
                   <YStack>
-                    <Activity size={48} color="$color11" />
+                    <Activity size={48} />
                     <Paragraph color="$color11" textAlign="center">Performance Chart (@hanzo/ui)</Paragraph>
                   </YStack>
                 </XStack>

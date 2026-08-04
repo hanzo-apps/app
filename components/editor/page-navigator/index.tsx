@@ -107,7 +107,7 @@ export function PagePanel({
   return (
     <YStack maxHeight="min(60vh,24rem)" width="100%">
       <XStack alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingBottom="$2" paddingTop="$0.5">
-        <Search size={14} color="$color11" />
+        <Search size={14} />
         <Input
           ref={inputRef}
           value={query}
@@ -146,7 +146,7 @@ export function PagePanel({
                     title={item.path}
                     width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$1.5" justifyContent="flex-start" focusStyle={{ outlineWidth: 0 }} {...{ paddingLeft: group.folder ? "$5" : undefined, backgroundColor: active ? "$color3" : undefined, hoverStyle: active ? undefined : {"backgroundColor":"white"} }}
                   >
-                    <FileCode size={14} color="$color11" />
+                    <FileCode size={14} />
                     <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
                       {item.name}
                     </SizableText>

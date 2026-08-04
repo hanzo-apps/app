@@ -235,7 +235,7 @@ export function Console({
       {open && (
         <YStack minHeight={0} flex={1} borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" overflow="scroll">
           {entries.length === 0 ? (
-            <Paragraph fontFamily="$mono" fontSize={11} lineHeight={1.625} color="$color11">
+            <Paragraph fontFamily="$mono" fontSize={11} lineHeight="1.625" color="$color11">
               Nothing logged yet — output and errors from the preview appear here.
             </Paragraph>
           ) : (
@@ -243,7 +243,7 @@ export function Console({
               <Paragraph
                 key={entry.id}
                 className="break-words"
-                fontFamily="$mono" fontSize={11} lineHeight={1.625}
+                fontFamily="$mono" fontSize={11} lineHeight="1.625"
                 whiteSpace="pre-wrap" {...{ color: entry.level === "error" ? "var(--destructive)" : entry.level === "warn"
                       ? "$color"
                       : "$color11" }}

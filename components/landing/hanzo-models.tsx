@@ -18,10 +18,10 @@ export default function HanzoModels() {
           <Paragraph fontFamily="$mono" fontSize={11} color="$color11" textAlign="center">
             Hanzo models
           </Paragraph>
-          <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ color: "2.75rem", lineHeight: 1.1 }}>
+          <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "2.75rem", lineHeight: "1.1" }}>
             Frontier intelligence, without the frontier bill.
           </H2>
-          <Paragraph marginTop="$4" fontSize="$4" color="$color11" textAlign="center" $md={{ fontSize: "$6" }}>
+          <Paragraph marginTop="$4" fontSize="$4" color="$color11" textAlign="center" $md={{ fontSize: "$6" }} lineHeight="1.5">
             Two models we build in-house: Enso, our flagship that routes every
             request to the cheapest model that can nail it — and Zen, the
             open-source family you can run anywhere.
@@ -36,10 +36,10 @@ export default function HanzoModels() {
               target="_blank"
               rel="noopener noreferrer"
               group position="relative" height="100%" flexDirection="column" borderRadius="$8" borderWidth={1} borderColor="$color" backgroundColor="$color3" padding={28} hoverStyle={{ borderColor: "$color" }}
-            >
+             display="flex" textDecorationLine="none">
               <XStack alignItems="center" justifyContent="space-between">
                 <XStack height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
-                  <Orbit size={20} color="$color" strokeWidth={1.5} />
+                  <Orbit size={20} strokeWidth={1.5} />
                 </XStack>
                 <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} color="$color11">
                   Proprietary
@@ -48,7 +48,7 @@ export default function HanzoModels() {
               <H3 marginTop="$4.5" fontSize="$7" fontWeight="500" letterSpacing={-0.4} color="$color">
                 Enso
               </H3>
-              <Paragraph marginTop="$2" flex={1} fontSize="$3" lineHeight={1.625} color="$color11">
+              <Paragraph marginTop="$2" flex={1} fontSize="$3" lineHeight="1.625" color="$color11">
                 Our new frontier model — and an agentic orchestrator with a
                 trainable routing model. Point it at your workloads and it drives
                 cost down by sending each request to the cheapest model that can
@@ -67,10 +67,10 @@ export default function HanzoModels() {
               target="_blank"
               rel="noopener noreferrer"
               group position="relative" height="100%" flexDirection="column" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding={28} hoverStyle={{ borderColor: "$color", backgroundColor: "$color" }}
-            >
+             display="flex" textDecorationLine="none">
               <XStack alignItems="center" justifyContent="space-between">
                 <XStack height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
-                  <Boxes size={20} color="$color" strokeWidth={1.5} />
+                  <Boxes size={20} strokeWidth={1.5} />
                 </XStack>
                 <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} color="$color11">
                   Open source
@@ -79,7 +79,7 @@ export default function HanzoModels() {
               <H3 marginTop="$4.5" fontSize="$7" fontWeight="500" letterSpacing={-0.4} color="$color">
                 Zen
               </H3>
-              <Paragraph marginTop="$2" flex={1} fontSize="$3" lineHeight={1.625} color="$color11">
+              <Paragraph marginTop="$2" flex={1} fontSize="$3" lineHeight="1.625" color="$color11">
                 The Zen family — open-weight models you can run, fine-tune, and
                 self-host anywhere. The same models behind the gateway, yours to
                 own with zero lock-in.

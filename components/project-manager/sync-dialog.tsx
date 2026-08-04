@@ -106,7 +106,7 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
           {/* Error Banner */}
           {error && (
             <XStack alignItems="flex-start" gap="$3" padding="$3" backgroundColor="$red9" borderWidth={1} borderColor="$red9" borderRadius="$5">
-              <AlertTriangle size={20} color="$red9" />
+              <AlertTriangle size={20} />
               <YStack>
                 <Paragraph fontWeight="500" color="$red10" $theme-dark={{ color: "$red8" }}>
                   Error loading sync status
@@ -119,7 +119,7 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
           {/* Initial Loading */}
           {loading && (
             <XStack alignItems="center" justifyContent="center" paddingVertical="$6">
-              <RefreshCw size={24} color="$color11" />
+              <RefreshCw size={24} />
               <SizableText marginLeft="$2" color="$color11">Loading sync status...</SizableText>
             </XStack>
           )}
@@ -129,7 +129,7 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
             <YStack position="relative">
               {refreshing && (
                 <XStack position="absolute" top={0} right={0} bottom={0} left={0} backgroundColor="$background" zIndex={10} alignItems="center" justifyContent="center" borderRadius="$5">
-                  <RefreshCw size={20} color="$color11" />
+                  <RefreshCw size={20} />
                 </XStack>
               )}
               <SyncTabs

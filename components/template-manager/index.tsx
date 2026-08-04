@@ -312,7 +312,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
         <YStack alignSelf="center" maxWidth={1280} gap="$3" $sm={{ flexDirection: "row" }}>
         {/* Search */}
         <YStack position="relative" flex={1}>
-          <Search size={16} color="$color11" />
+          <Search size={16} />
           <Input
             placeholder="Search templates..."
             value={searchQuery}
@@ -399,7 +399,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
             <SizableText textAlign="center" maxWidth={448} display="flex" flexDirection="column">
               {searchQuery ? (
                 <>
-                  <Search size={48} color="$color11" />
+                  <Search size={48} />
                   <H3 fontWeight="500" marginBottom="$2">No templates found</H3>
                   <Paragraph fontSize="$3" color="$color11" marginBottom="$4">
                     No templates match your search query "{searchQuery}"
@@ -410,7 +410,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
                 </>
               ) : (
                 <>
-                  <Package size={48} color="$color11" />
+                  <Package size={48} />
                   <H3 fontWeight="500" marginBottom="$2">No custom templates yet</H3>
                   <Paragraph fontSize="$3" color="$color11" marginBottom="$4">
                     Import custom templates to get started with professional designs.

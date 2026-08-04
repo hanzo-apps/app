@@ -40,7 +40,7 @@ export default function FaqSection({
               </Paragraph>
             )}
             {title && (
-              <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "$11" }}>
+              <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "$11" }} lineHeight="1.1">
                 {title}
               </H2>
             )}
@@ -71,7 +71,7 @@ export default function FaqSection({
                 </Button>
                 {isOpen && (
                   <YStack paddingBottom="$5" paddingRight="$6">
-                    <SizableText fontSize="$3" lineHeight={1.625} color="$color11" $md={{ fontSize: "$4" }}>
+                    <SizableText fontSize="$3" lineHeight="1.625" color="$color11" $md={{ fontSize: "$4" }}>
                       {it.a}
                     </SizableText>
                   </YStack>

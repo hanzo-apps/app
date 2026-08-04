@@ -52,13 +52,13 @@ export default function EnterprisePage() {
             <Building size={16} />
             Enterprise Ready
           </Badge>
-          <H1 fontSize="$11" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$13" }}>
+          <H1 fontSize="$11" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$13" }} lineHeight="1.1">
             AI Development at
             <SizableText color="$color">
               {" "}Enterprise Scale
             </SizableText>
           </H1>
-          <Paragraph fontSize="$7" color="$color11" marginBottom="$6" maxWidth={672} alignSelf="center">
+          <Paragraph fontSize="$7" color="$color11" marginBottom="$6" maxWidth={672} alignSelf="center" lineHeight="1.4">
             Build, deploy, and scale AI applications with enterprise-grade security, compliance, and dedicated support
           </Paragraph>
           <YStack alignItems="center" gap="$4" justifyContent="center" $sm={{ flexDirection: "row" }}>
@@ -80,7 +80,7 @@ export default function EnterprisePage() {
       <YStack paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6" }}>
         <YStack maxWidth={1280} alignSelf="center">
           <YStack marginBottom="$10">
-            <H2 fontSize="$10" fontWeight="500" marginBottom="$4" $md={{ fontSize: "$11" }}>
+            <H2 fontSize="$10" fontWeight="500" marginBottom="$4" $md={{ fontSize: "$11" }} lineHeight="1.1">
               Everything you need for enterprise AI
             </H2>
             <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center">
@@ -110,7 +110,7 @@ export default function EnterprisePage() {
               <Badge variant="secondary" className="mb-4">
                 Security First
               </Badge>
-              <H2 fontSize="$10" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$11" }}>
+              <H2 fontSize="$10" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$11" }} lineHeight="1.1">
                 Bank-grade security & compliance
               </H2>
               <Paragraph fontSize="$6" color="$color11" marginBottom="$6">
@@ -118,28 +118,28 @@ export default function EnterprisePage() {
               </Paragraph>
               <YStack rowGap="$4">
                 <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle2 size={24} color="$green8" />
+                  <CheckCircle2 size={24} />
                   <div>
                     <YStack marginBottom="$1"><SizableText fontWeight="500">SOC 2 Type II — Audit in Progress</SizableText></YStack>
                     <YStack><SizableText fontSize="$3" color="$color11">Independent Type II audit underway; report available under NDA on completion</SizableText></YStack>
                   </div>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle2 size={24} color="$green8" />
+                  <CheckCircle2 size={24} />
                   <div>
                     <YStack marginBottom="$1"><SizableText fontWeight="500">GDPR & CCPA Compliant</SizableText></YStack>
                     <YStack><SizableText fontSize="$3" color="$color11">Full compliance with global data privacy regulations</SizableText></YStack>
                   </div>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle2 size={24} color="$green8" />
+                  <CheckCircle2 size={24} />
                   <div>
                     <YStack marginBottom="$1"><SizableText fontWeight="500">SSO, RBAC & Audit Logs</SizableText></YStack>
                     <YStack><SizableText fontSize="$3" color="$color11">SAML single sign-on, role-based access control, and a full audit trail</SizableText></YStack>
                   </div>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle2 size={24} color="$green8" />
+                  <CheckCircle2 size={24} />
                   <div>
                     <YStack marginBottom="$1"><SizableText fontWeight="500">End-to-end Encryption</SizableText></YStack>
                     <YStack><SizableText fontSize="$3" color="$color11">Your data is encrypted at rest and in transit</SizableText></YStack>
@@ -190,10 +190,10 @@ export default function EnterprisePage() {
       {/* CTA Section */}
       <YStack paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6" }}>
         <YStack maxWidth={896} alignSelf="center">
-          <H2 fontSize="$10" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$11" }}>
+          <H2 fontSize="$10" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$11" }} lineHeight="1.1">
             Ready to transform your business with AI?
           </H2>
-          <Paragraph fontSize="$7" color="$color11" marginBottom="$6">
+          <Paragraph fontSize="$7" color="$color11" marginBottom="$6" lineHeight="1.4">
             Join leading companies using Hanzo to build the future
           </Paragraph>
           <Button size="lg" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}>

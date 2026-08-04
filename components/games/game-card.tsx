@@ -34,7 +34,7 @@ export function GameCard({ game }: { game: GameEntry }) {
       {/* Header band — engine + play status */}
       <XStack alignItems="center" justifyContent="space-between" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3">
         <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" color="$color">
-          <Gamepad2 size={16} color="$color11" aria-hidden />
+          <Gamepad2 size={16} aria-hidden />
           {ENGINE_LABEL[game.engine]}
           <SizableText color="$color11">{game.engineVersion}</SizableText>
         </SizableText>

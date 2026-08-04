@@ -146,7 +146,7 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
         >
           {hasPlanBody ? (
             <YStack maxHeight={220} overflow="scroll">
-              <SizableText whiteSpace="pre-line" fontSize={12.5} lineHeight={1.625} color="$color11">
+              <SizableText whiteSpace="pre-line" fontSize={12.5} lineHeight="1.625" color="$color11">
                 {plan}
               </SizableText>
             </YStack>
@@ -223,7 +223,7 @@ function CollapsibleSection({
           ) : null}
         </SizableText>
         <ChevronDown
-          size={14} color="$color11"
+          size={14}
   />
       </Button>
       {open && <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2">{children}</YStack>}
@@ -247,7 +247,7 @@ function ActivityItems({ labels, settled = false }: { labels: string[]; settled?
                 <SizableText position="relative" width="$1.5" height="$1.5" borderRadius="$10" backgroundColor="var(--brand-accent)" />
               </XStack>
             ) : (
-              <Check size={12} color="$color11" />
+              <Check size={12} />
             )}
             <SizableText fontSize={12} {...{ color: active ? undefined : "$color11" }} className="thread-shimmer-text">
               {label}

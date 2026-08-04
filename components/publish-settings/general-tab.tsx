@@ -101,7 +101,7 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
 
           {projectId !== originalProjectId && (
             <XStack alignItems="flex-start" gap="$3" padding="$3" backgroundColor="$yellow1" borderWidth={1} borderColor="$yellow3" borderRadius="$5" $theme-dark={{ backgroundColor: "$yellow12", borderColor: "$yellow11" }}>
-              <AlertTriangle size={16} color="$yellow10" />
+              <AlertTriangle size={16} />
               <YStack>
                 <Paragraph fontSize="$3" fontWeight="500" color="$yellow11" $theme-dark={{ color: "$yellow3" }}>Changing the source project may break the published deployment.</Paragraph>
                 <Paragraph fontSize="$3" marginTop="$1" color="$yellow11" $theme-dark={{ color: "$yellow4" }}>
@@ -123,7 +123,7 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
           <YStack rowGap="$2">
             <Label fontSize="$1" color="$color11">Public URL</Label>
             <XStack alignItems="center" gap="$2" padding="$3" backgroundColor="$color3" borderRadius="$5">
-              <Globe size={16} color="$color11" />
+              <Globe size={16} />
               <SizableText fontSize="$3" flex={1}>{publicUrl}</SizableText>
               {settings.enabled && (
                 <Badge variant="default" className="ml-2">
@@ -146,7 +146,7 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
             <YStack rowGap="$2">
               <Label fontSize="$1" color="$color11">Hanzo App Path (Debug)</Label>
               <XStack alignItems="center" gap="$2" padding="$3" backgroundColor="$color3" borderRadius="$5" borderWidth={1} borderStyle="dashed">
-                <Globe size={16} color="$color11" />
+                <Globe size={16} />
                 <SizableText fontSize="$1" flex={1} color="$color11">{appUrl}</SizableText>
               </XStack>
               <Paragraph fontSize="$1" color="$color11">

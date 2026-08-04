@@ -90,7 +90,7 @@ function VibeApp({ v, compact }: { v: number; compact?: boolean }): ReactElement
         )}
       </XStack>
 
-      <H3 fontWeight="500" lineHeight={1.25} letterSpacing={-0.4} color="$color" {...{ fontSize: compact ? 13 : "$6" }}>
+      <H3 fontWeight="500" lineHeight="1.25" letterSpacing={-0.4} color="$color" {...{ fontSize: compact ? 13 : "$6" }}>
         How&apos;s the team feeling today?
       </H3>
 
@@ -338,7 +338,7 @@ export default function HeroPreview() {
           {/* Chat rail — transcript + the rounded composer input. */}
           <YStack width="100%" flexShrink={0} borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" $md={{ width: 248, borderBottomWidth: 0, borderRightWidth: 1 }}>
             <XStack alignItems="center" gap="$2" paddingHorizontal="$3.5" paddingTop="$3">
-              <Sparkles size={12} color="$color" />
+              <Sparkles size={12} />
               <SizableText fontFamily="$mono" fontSize={9} color="$color">
                 Agent chat
               </SizableText>
@@ -354,11 +354,11 @@ export default function HeroPreview() {
                     key={i}
                     alignSelf="flex-end" borderRadius="$5" borderBottomRightRadius="$1" backgroundColor="$color" paddingHorizontal="$2.5" paddingVertical="$1.5" className="line"
                   >
-                    <SizableText fontSize={11} lineHeight={1.375} color="$color">{b.text}</SizableText>
+                    <SizableText fontSize={11} lineHeight="1.375" color="$color">{b.text}</SizableText>
                   </YStack>
                 ) : (
                   <XStack key={i} alignItems="center" gap="$1.5" className="line">
-                    <Check size={10} color="$color" strokeWidth={3} />
+                    <Check size={10} strokeWidth={3} />
                     <SizableText numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">{b.text}</SizableText>
                   </XStack>
                 ),
@@ -380,7 +380,7 @@ export default function HeroPreview() {
                     <SizableText marginLeft="$0.25" height="$3" width={1} y={1} backgroundColor="$color" verticalAlign="middle" className="caret" />
                   )}
                 </SizableText>
-                <CornerDownLeft size={12} color="$color" />
+                <CornerDownLeft size={12} />
               </XStack>
             </YStack>
           </YStack>
@@ -408,7 +408,7 @@ export default function HeroPreview() {
                       </SizableText>
                     </>
                   ) : (
-                    <Loader2 size={10} color="$color" />
+                    <Loader2 size={10} />
                   )}
                 </XStack>
               </XStack>
@@ -461,7 +461,7 @@ export default function HeroPreview() {
               </>
             ) : phase === "publishing" ? (
               <>
-                <Loader2 size={10} color="$color" />
+                <Loader2 size={10} />
                 <SizableText fontFamily="$mono" fontSize={9} color="$color">Publishing…</SizableText>
               </>
             ) : (

@@ -1049,7 +1049,7 @@ export function AskAI({
             onClick={() => setSuggestionsDismissed(true)}
             flexShrink={0} borderRadius="$10" padding="$1" hoverStyle={{ backgroundColor: "$color3" }}
           >
-            <X size={14} color="$color11" />
+            <X size={14} />
           </Button>
         </XStack>
       )}

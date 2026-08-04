@@ -43,7 +43,7 @@ function WalletInner() {
           width="$1.5" height="$1.5" flexShrink={0} borderRadius="$10" backgroundColor="$green9" shadowColor="$shadowColor"
           aria-hidden
   />
-        <SizableText minWidth={0} flex={1} flexDirection="column" lineHeight={1.25}>
+        <SizableText minWidth={0} flex={1} flexDirection="column" lineHeight="1.25">
           <SizableText fontSize={11} fontWeight="500" color="$color11">Wallet</SizableText>
           <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
             {shortAddress(address)}
@@ -73,9 +73,9 @@ function WalletInner() {
       width="100%" alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }} disabledStyle={{ opacity: 0.5 }} focusVisibleStyle={{ outlineWidth: 0 }}
     >
       {isPending ? (
-        <Loader2 size={16} color="$color11" />
+        <Loader2 size={16} />
       ) : (
-        <Wallet size={16} color="$color11" />
+        <Wallet size={16} />
       )}
       <SizableText flex={1} textAlign="left" fontSize="$3" color="$color">
         {isPending ? "Connecting…" : "Connect wallet"}

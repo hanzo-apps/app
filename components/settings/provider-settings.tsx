@@ -269,7 +269,7 @@ export function ProviderSettings() {
                   <XStack alignItems="center" gap="$2">
                     {provider.name}
                     {hasApiKey(provider.id) && (
-                      <CheckCircle size={12} color="$green9" />
+                      <CheckCircle size={12} />
                     )}
                   </XStack>
                 </SelectItem>
@@ -315,7 +315,7 @@ export function ProviderSettings() {
       <Card backgroundColor="$yellow9" borderColor="$yellow9">
         <CardContent paddingTop="$5">
           <XStack gap="$3">
-            <Key size={20} color="$yellow10" />
+            <Key size={20} />
             <YStack rowGap="$2">
               <Paragraph fontWeight="500" fontSize="$3" color="$yellow10">Security Notice</Paragraph>
               <YStack rowGap="$1">

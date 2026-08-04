@@ -113,15 +113,15 @@ interface Turn {
 }
 
 const toolIcons: Record<string, React.ReactNode> = {
-  shell: <ChevronRight size={12} color="$blue9" />,
-  write: <FileCode size={12} color="$orange9" />,
+  shell: <ChevronRight size={12} />,
+  write: <FileCode size={12} />,
 };
 
 const statusIcons: Record<string, React.ReactNode> = {
-  pending: <Loader2 size={12} color="$color8" />,
-  executing: <Loader2 size={12} color="$blue9" />,
-  completed: <CheckCircle size={12} color="$green9" />,
-  failed: <XCircle size={12} color="$red9" />,
+  pending: <Loader2 size={12} />,
+  executing: <Loader2 size={12} />,
+  completed: <CheckCircle size={12} />,
+  failed: <XCircle size={12} />,
 };
 
 export function ChatPanel({
@@ -710,13 +710,13 @@ export function ChatPanel({
       <YStack marginTop="$2" rowGap="$2">
         {focusContext.domPath && (
           <YStack className="break-all">
-            <SizableText fontSize={11} fontFamily="$mono" color="$color11" lineHeight={1.375}>
+            <SizableText fontSize={11} fontFamily="$mono" color="$color11" lineHeight="1.375">
               {focusContext.domPath}
             </SizableText>
           </YStack>
         )}
         {trimmedSnippet && (
-          <SizableText maxHeight="$12" overflow="scroll" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$1" fontSize={11} color="$color" lineHeight={1.625} fontFamily="$mono" whiteSpace="pre">
+          <SizableText maxHeight="$12" overflow="scroll" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$1" fontSize={11} color="$color" lineHeight="1.625" fontFamily="$mono" whiteSpace="pre">
             <code>{trimmedSnippet}</code>
           </SizableText>
         )}
@@ -947,7 +947,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
             return (
               <YStack key={item.id} backgroundColor="$color3" borderRadius="$3" padding="$2" opacity={0.7}>
                 <XStack alignItems="center" gap="$2" paddingHorizontal="$1">
-                  <Loader2 size={12} color="$blue8" />
+                  <Loader2 size={12} />
                   <SizableText fontSize="$1" color="$color11">Waiting for response...</SizableText>
                 </XStack>
               </YStack>
@@ -1022,8 +1022,8 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                   onClick={() => onToggleExpanded(item.id)}
                   alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
                 >
-                  <ChevronRight size={12} color="$color11" />
-                  <FileCode size={12} color="$color11" />
+                  <ChevronRight size={12} />
+                  <FileCode size={12} />
                   <SizableText fontSize="$1" color="$color11">Project context</SizableText>
                 </Button>
                 {expandedItems.has(item.id) && (
@@ -1061,7 +1061,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
             return (
               <YStack key={item.id} backgroundColor="$red9" borderWidth={1} borderColor="$red9" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$2">
                 <XStack alignItems="flex-start" gap="$2">
-                  <XCircle size={16} color="$red9" />
+                  <XCircle size={16} />
                   <YStack flex={1}>
                     <YStack marginBottom="$1"><SizableText fontWeight="500" color="$red9" fontSize="$3">Error</SizableText></YStack>
                     <YStack>
@@ -1243,11 +1243,11 @@ function SyntheticErrorDisplay({ itemId, content, isExpanded, onToggle }: Synthe
         alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$yellow9" }}
       >
         <XStack alignItems="center" gap="$1.5">
-          <RefreshCw size={12} color="$yellow10" />
+          <RefreshCw size={12} />
           <SizableText fontSize="$1" fontFamily="$mono">Auto-correction</SizableText>
         </XStack>
         <YStack marginLeft="auto">
-          <CheckCircle size={12} color="$yellow10" />
+          <CheckCircle size={12} />
         </YStack>
       </Button>
 
@@ -1284,9 +1284,9 @@ function ReasoningDisplay({ itemId, content, isExpanded, onToggle }: ReasoningDi
       >
         <XStack alignItems="center" gap="$1.5">
           {isStreaming ? (
-            <Loader2 size={12} color="$purple9" />
+            <Loader2 size={12} />
           ) : (
-            <Brain size={12} color="$purple9" />
+            <Brain size={12} />
           )}
           <SizableText fontSize="$1" fontFamily="$mono">reasoning</SizableText>
         </XStack>
@@ -1328,7 +1328,7 @@ function PlanDisplay({ itemId, content, isExpanded, onToggle }: PlanDisplayProps
         alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
       >
         <XStack alignItems="center" gap="$1.5">
-          <ClipboardList size={12} color="$orange9" />
+          <ClipboardList size={12} />
           <SizableText fontSize="$1" fontFamily="$mono">plan</SizableText>
         </XStack>
         <SizableText fontSize="$1" color="$color11" numberOfLines={1} flex={1}>
@@ -1369,7 +1369,7 @@ function AgentDisplay({ itemId, content, isExpanded, onToggle }: AgentDisplayPro
         alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
       >
         <XStack alignItems="center" gap="$1.5">
-          <Bot size={12} color="$purple9" />
+          <Bot size={12} />
           <SizableText fontSize="$1" fontFamily="$mono">agent</SizableText>
         </XStack>
         <SizableText fontSize="$1" color="$color11" numberOfLines={1} flex={1}>
@@ -1411,9 +1411,9 @@ function ProgressDisplay({ itemId, content, isExpanded, onToggle }: ProgressDisp
       >
         <XStack alignItems="center" gap="$1.5">
           {isCompleted ? (
-            <CheckCircle size={12} color="$green9" />
+            <CheckCircle size={12} />
           ) : (
-            <Loader2 size={12} color="$blue9" />
+            <Loader2 size={12} />
           )}
           <SizableText fontSize="$1" fontFamily="$mono">progress</SizableText>
         </XStack>

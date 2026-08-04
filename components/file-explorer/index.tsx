@@ -476,15 +476,15 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
     // Get the appropriate folder icon for special directories
     const getFolderIcon = (expanded: boolean) => {
       if (isServerContext) {
-        return <Server size={16} color="$orange9" />;
+        return <Server size={16} />;
       }
       if (isSkills) {
-        return <BookOpen size={16} color="$purple9" />;
+        return <BookOpen size={16} />;
       }
       return expanded ? (
-        <FolderOpen size={16} color="$blue9" />
+        <FolderOpen size={16} />
       ) : (
-        <Folder size={16} color="$blue9" />
+        <Folder size={16} />
       );
     };
 
@@ -507,9 +507,9 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
             {item.type === 'directory' ? (
               <>
                 {isExpanded ? (
-                  <ChevronDown size={16} color="$color11" />
+                  <ChevronDown size={16} />
                 ) : (
-                  <ChevronRight size={16} color="$color11" />
+                  <ChevronRight size={16} />
                 )}
                 {getFolderIcon(isExpanded)}
               </>
@@ -519,18 +519,18 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
                 {(() => {
                   const effectiveEntryPoint = entryPoint || '/index.html';
                   if (item.path === effectiveEntryPoint) {
-                    return <Home size={16} color="$green9" />;
+                    return <Home size={16} />;
                   }
                   if (item.name === '.PROMPT.md') {
-                    return <ScrollText size={16} color="$yellow9" />;
+                    return <ScrollText size={16} />;
                   }
                   const fileType = getFileTypeFromPath(item.path);
                   if (fileType === 'image') {
-                    return <Image size={16} color="$green9" />;
+                    return <Image size={16} />;
                   } else if (fileType === 'video') {
-                    return <Video size={16} color="$purple9" />;
+                    return <Video size={16} />;
                   } else {
-                    return <File size={16} color="$color11" />;
+                    return <File size={16} />;
                   }
                 })()}
               </>
@@ -718,7 +718,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
             {isDraggingOver && (
               <XStack position="absolute" top={0} right={0} bottom={0} left={0} alignItems="center" justifyContent="center" pointerEvents="none">
                 <YStack backgroundColor="$blue9" borderWidth={2} borderStyle="dashed" borderColor="$blue9" borderRadius="$5" padding="$6">
-                  <Upload size={48} color="$blue9" />
+                  <Upload size={48} />
                   <Paragraph fontSize="$3" color="$blue10">Drop files here to upload</Paragraph>
                 </YStack>
               </XStack>
@@ -726,7 +726,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
             {fileTree.length === 0 ? (
               <XStack flex={1} alignItems="center" justifyContent="center" paddingVertical="$6">
                 <YStack alignItems="center" rowGap="$3">
-                  <Folder size={48} color="$color11" />
+                  <Folder size={48} />
                   <YStack rowGap="$1">
                     <Paragraph fontSize="$4" fontWeight="500" color="$color" textAlign="center">No files yet</Paragraph>
                     <Paragraph fontSize="$3" color="$color11" textAlign="center">Create your first file to get started</Paragraph>

@@ -65,7 +65,7 @@ function ModelRow({
           </SizableText>
         )}
       </YStack>
-      {selected && <Check size={16} color="$color" />}
+      {selected && <Check size={16} />}
     </Button>
   );
 }

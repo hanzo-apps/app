@@ -111,7 +111,7 @@ function ResourcesBrowser() {
           <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$7">
             <XStack marginBottom="$2" alignItems="center" gap="$3">
               <XStack height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color3">
-                <Sparkles size={24} color="$color" />
+                <Sparkles size={24} />
               </XStack>
               <H1 fontSize="$10" fontWeight="500">Resources</H1>
               <Badge variant="secondary">
@@ -130,7 +130,7 @@ function ResourcesBrowser() {
         <YStack position="sticky" top="$0" zIndex={30} borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" backdropFilter="blur(8px)">
           <XStack width="100%" maxWidth={1280} alignSelf="center" flexWrap="wrap" alignItems="flex-start" gap="$3" paddingHorizontal="$5" paddingVertical="$3">
             <YStack position="relative" width="100%" $sm={{ width: "auto" }}>
-              <Search size={16} color="$color11" />
+              <Search size={16} />
               <Input
                 placeholder="Search resources…"
                 value={query}
@@ -166,7 +166,7 @@ function ResourcesBrowser() {
           {filtered.length === 0 && (
             <YStack paddingVertical="$11" alignItems="center">
               {loading ? (
-                <Loader2 size={24} color="$color11" />
+                <Loader2 size={24} />
               ) : (
                 <>
                   <Paragraph fontSize="$6" color="$color11">Nothing matches your search.</Paragraph>

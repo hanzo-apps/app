@@ -113,7 +113,7 @@ export function CodexAuthPanel({ onAuthChange }: CodexAuthPanelProps) {
   const warningBanner = (
     <YStack padding="$2.5" borderWidth={1} borderColor="$yellow10" borderRadius="$3" backgroundColor="$yellow12" rowGap="$1">
       <XStack alignItems="flex-start" gap="$2">
-        <TriangleAlert size={14} color="$yellow9" />
+        <TriangleAlert size={14} />
         <div>
           <Paragraph fontSize="$1" color="$yellow3">
             <SizableText fontWeight="500" color="$yellow8">Use at your own risk.</SizableText>{' '}

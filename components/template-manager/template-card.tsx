@@ -76,14 +76,14 @@ export function TemplateCard({
               </YStack>
             ) : (
               <XStack width="$12" height="$10" borderRadius="$3" backgroundColor="$color3" alignItems="center" justifyContent="center">
-                <FileBox size={32} color="$color11" />
+                <FileBox size={32} />
               </XStack>
             )}
             {isBuiltIn && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <YStack position="absolute" top="$1" right="$1" backgroundColor="$background" borderRadius="$10" padding="$1">
-                    <Link2 size={12} color="$color11" />
+                    <Link2 size={12} />
                   </YStack>
                 </TooltipTrigger>
                 <TooltipContent>Built-in template</TooltipContent>
@@ -268,14 +268,14 @@ export function TemplateCard({
           </YStack>
         ) : (
           <XStack width="100%" backgroundColor="$color3" alignItems="center" justifyContent="center">
-            <FileBox size={64} color="$color11" />
+            <FileBox size={64} />
           </XStack>
         )}
         {isBuiltIn && (
           <Tooltip>
             <TooltipTrigger asChild>
               <YStack position="absolute" top="$2" right="$2" backgroundColor="$background" borderRadius="$10" padding="$1.5" elevation={1}>
-                <Link2 size={16} color="$color11" />
+                <Link2 size={16} />
               </YStack>
             </TooltipTrigger>
             <TooltipContent>Built-in template</TooltipContent>
@@ -291,7 +291,7 @@ export function TemplateCard({
                 position="absolute" top="$2" left="$2" backgroundColor="$background" borderRadius="$10" padding="$1.5" elevation={1} hoverStyle={{ backgroundColor: "$background" }}
                 onClick={(e) => e.stopPropagation()}
               >
-                <ExternalLink size={16} color="$color11" />
+                <ExternalLink size={16} />
               </Anchor>
             </TooltipTrigger>
             <TooltipContent>View on marketplace</TooltipContent>

@@ -421,7 +421,7 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
   const reasoningSection = selectedModelData?.supportsReasoning && (
     <XStack marginTop="$3" alignItems="center" justifyContent="space-between" gap="$2" padding="$2" borderRadius="$3" backgroundColor="$color3" borderWidth={1}>
       <XStack alignItems="center" gap="$2">
-        <Lightbulb size={16} color="$yellow9" />
+        <Lightbulb size={16} />
         <div>
           <Label htmlFor="reasoning-toggle" fontSize="$3" fontWeight="500" cursor="pointer">
             Enable Reasoning

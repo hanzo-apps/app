@@ -42,7 +42,7 @@ export function ListPagesItem({
             }
           }}
         >
-          <XIcon size={12} color="$color11" />
+          <XIcon size={12} />
         </Button>
       )}
     </SizableText>

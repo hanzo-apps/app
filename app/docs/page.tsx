@@ -112,7 +112,7 @@ export default function DocsPage() {
         {/* ── Hero ─────────────────────────────────────────────── */}
         <YStack position="relative" overflow="hidden" paddingHorizontal="$4" paddingVertical="$8" $sm={{ paddingVertical: "$10" }} $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
           <YStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} overflow="hidden">
-            <YStack position="absolute" left="50%" top="-30%" height={420} width={720} x="50%" borderRadius="$10" backgroundColor="$color" />
+            <YStack position="absolute" left="50%" top="-30%" height={420} width={720} marginLeft={-360} borderRadius="$10" backgroundColor="$color005" filter="blur(130px)" />
           </YStack>
 
           <YStack position="relative" alignSelf="center" maxWidth={768}>
@@ -126,7 +126,7 @@ export default function DocsPage() {
             </Reveal>
 
             <Reveal delay={60}>
-              <H1 fontSize="$11" fontWeight="500" textAlign="center" lineHeight={1.03} letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
+              <H1 fontSize="$11" fontWeight="500" textAlign="center" lineHeight="1.03" letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
                 Everything you need
                 <br />
                 to build with Hanzo.
@@ -134,7 +134,7 @@ export default function DocsPage() {
             </Reveal>
 
             <Reveal delay={120}>
-              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" textAlign="center" color="$color11" $md={{ fontSize: "$6" }}>
+              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" textAlign="center" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
                 Start in the builder, then reach for the full docs, the API, and
                 the template gallery when you need them. Real destinations, no
                 dead ends.
@@ -170,7 +170,7 @@ export default function DocsPage() {
               <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
                 Quick start
               </Paragraph>
-              <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
+              <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }} lineHeight="1.1">
                 From a sentence to a live app.
               </H2>
               <Paragraph marginTop="$3" maxWidth={576} fontSize="$4" color="$color11">
@@ -186,7 +186,7 @@ export default function DocsPage() {
                     <H3 marginTop="$4" fontSize="$6" fontWeight="500" color="$color">
                       {s.title}
                     </H3>
-                    <Paragraph marginTop="$2" fontSize="$3" lineHeight={1.625} color="$color11">
+                    <Paragraph marginTop="$2" fontSize="$3" lineHeight="1.625" color="$color11">
                       {s.body}
                     </Paragraph>
                   </YStack>
@@ -203,7 +203,7 @@ export default function DocsPage() {
               <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
                 Explore
               </Paragraph>
-              <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
+              <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }} lineHeight="1.1">
                 Where to go next.
               </H2>
             </Reveal>
@@ -217,15 +217,15 @@ export default function DocsPage() {
                         {d.icon}
                       </XStack>
                       {d.external ? (
-                        <ArrowUpRight size={16} color="$color11" />
+                        <ArrowUpRight size={16} />
                       ) : (
-                        <ArrowRight size={16} color="$color11" />
+                        <ArrowRight size={16} />
                       )}
                     </XStack>
                     <H3 marginTop="$4.5" fontSize="$4" fontWeight="500" color="$color">
                       {d.title}
                     </H3>
-                    <Paragraph marginTop="$2" flex={1} fontSize="$3" lineHeight={1.625} color="$color11">
+                    <Paragraph marginTop="$2" flex={1} fontSize="$3" lineHeight="1.625" color="$color11">
                       {d.description}
                     </Paragraph>
                     <SizableText marginTop="$4" fontSize="$3" fontWeight="500" color="$color" $group-hover={{ color: "$color" }}>
@@ -256,7 +256,7 @@ export default function DocsPage() {
               <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
                 API
               </Paragraph>
-              <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
+              <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }} lineHeight="1.1">
                 One endpoint. 400+ models.
               </H2>
               <Paragraph marginTop="$4" maxWidth={448} fontSize="$4" color="$color11">
@@ -281,7 +281,7 @@ export default function DocsPage() {
                 <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
                 <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
               </XStack>
-              <SizableText fontFamily="$mono" fontSize={12} lineHeight={1.625} color="$color" overflow="scroll" whiteSpace="pre">
+              <SizableText fontFamily="$mono" fontSize={12} lineHeight="1.625" color="$color" overflow="scroll" whiteSpace="pre">
 {`POST https://api.hanzo.ai/v1/chat/completions
 Authorization: Bearer $HANZO_KEY
 
@@ -298,7 +298,7 @@ Authorization: Bearer $HANZO_KEY
         {/* ── Help CTA ─────────────────────────────────────────── */}
         <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
           <Reveal alignSelf="center" width="100%" maxWidth={672}>
-            <H2 fontSize="$10" fontWeight="500" textAlign="center" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
+            <H2 fontSize="$10" fontWeight="500" textAlign="center" letterSpacing={-0.4} $md={{ fontSize: "$11" }} lineHeight="1.1">
               Still stuck?
             </H2>
             <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" textAlign="center" color="$color11">

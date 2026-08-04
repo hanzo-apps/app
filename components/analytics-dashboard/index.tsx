@@ -251,7 +251,7 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
 
               {!loading && notPublished && (
                 <YStack alignItems="center" justifyContent="center" height={384}>
-                  <BarChart3 size={64} color="$color11" />
+                  <BarChart3 size={64} />
                   <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">Analytics Not Available</H3>
                   <Paragraph color="$color11" maxWidth={448} textAlign="center">
                     Analytics data will be available after you publish your deployment for the first time.
@@ -337,7 +337,7 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
             <TabsContent value="heatmaps" padding="$5">
               {notPublished ? (
                 <YStack alignItems="center" justifyContent="center" height={384}>
-                  <MousePointerClick size={64} color="$color11" />
+                  <MousePointerClick size={64} />
                   <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">Heatmaps Not Available</H3>
                   <Paragraph color="$color11" maxWidth={448} textAlign="center">
                     Heatmap data will be collected after you publish your deployment.
@@ -351,7 +351,7 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
             <TabsContent value="sessions" padding="$5">
               {notPublished ? (
                 <YStack alignItems="center" justifyContent="center" height={384}>
-                  <Users size={64} color="$color11" />
+                  <Users size={64} />
                   <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">Sessions Not Available</H3>
                   <Paragraph color="$color11" maxWidth={448} textAlign="center">
                     Session data will be collected after you publish your deployment.
@@ -365,7 +365,7 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
             <TabsContent value="engagement" padding="$5">
               {notPublished ? (
                 <YStack alignItems="center" justifyContent="center" height={384}>
-                  <Activity size={64} color="$color11" />
+                  <Activity size={64} />
                   <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">Engagement Metrics Not Available</H3>
                   <Paragraph color="$color11" maxWidth={448} textAlign="center">
                     Engagement data will be collected after you publish your deployment.

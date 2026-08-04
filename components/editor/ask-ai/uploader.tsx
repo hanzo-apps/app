@@ -125,7 +125,7 @@ export const Uploader = ({
                     <SizableText fontSize="$7">💻</SizableText>
                   </XStack>
                 </XStack>
-                <Paragraph fontSize="$7" fontWeight="500" color="$color" textAlign="center">
+                <Paragraph fontSize="$7" fontWeight="500" color="$color" textAlign="center" lineHeight="1.4">
                   Add Custom Images
                 </Paragraph>
                 <Paragraph fontSize="$3" color="$color11" marginTop="$1.5" textAlign="center">

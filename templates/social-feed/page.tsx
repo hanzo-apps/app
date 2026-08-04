@@ -214,7 +214,7 @@ export default function SocialFeed() {
           <Card>
             <CardHeader>
               <CardTitle alignItems="center" gap="$2">
-                <TrendingUp size={20} color="$blue10" />
+                <TrendingUp size={20} />
                 Trending Now
               </CardTitle>
             </CardHeader>

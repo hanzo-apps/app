@@ -283,7 +283,7 @@ export default function ProfilePage() {
                       title="Change profile photo"
                       position="absolute" bottom="$0" right="$0" padding="$1.5" backgroundColor="$purple9" borderRadius="$10" hoverStyle={{ backgroundColor: "$purple10" }} disabledStyle={{ opacity: 0.5 }}
                     >
-                      <Camera size={16} color="$color" />
+                      <Camera size={16} />
                     </Button>
                   </>
                 )}
@@ -379,7 +379,7 @@ export default function ProfilePage() {
                   </Label>
                   <YStack rowGap="$2">
                     <XStack alignItems="center" gap="$2">
-                      <Globe size={16} color="$color11" />
+                      <Globe size={16} />
                       {isEditing ? (
                         <Input
                           type="url"
@@ -403,7 +403,7 @@ export default function ProfilePage() {
                       )}
                     </XStack>
                     <XStack alignItems="center" gap="$2">
-                      <Twitter size={16} color="$color11" />
+                      <Twitter size={16} />
                       {isEditing ? (
                         <Input
                           type="text"
@@ -418,7 +418,7 @@ export default function ProfilePage() {
                       )}
                     </XStack>
                     <XStack alignItems="center" gap="$2">
-                      <Github size={16} color="$color11" />
+                      <Github size={16} />
                       {isEditing ? (
                         <Input
                           type="text"

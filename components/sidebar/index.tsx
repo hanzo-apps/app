@@ -317,7 +317,7 @@ function SidebarContent({
               >
                 <HanzoLogo size={20} color="var(--foreground)" />
                 <YStack minWidth={0}>
-                  <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" lineHeight={1}>Hanzo&nbsp;App</SizableText>
+                  <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" lineHeight="1">Hanzo&nbsp;App</SizableText>
                   <SizableText marginTop="$0.5" fontSize={10} lineHeight={10} color="$color11">
                     {isServerMode ? `Server · v${VERSION}` : `v${VERSION}`}
                   </SizableText>
@@ -421,7 +421,7 @@ function SidebarContent({
                   }}
                   title={f.name}
                 >
-                  <Folder size={14} color="$color11" />
+                  <Folder size={14} />
                   <SizableText numberOfLines={1} fontSize="$3">{f.name}</SizableText>
                 </Button>
               ))}
@@ -446,7 +446,7 @@ function SidebarContent({
                     title={project.name}
                   >
                     <FolderOpen
-                      size={14} color="$color11"
+                      size={14}
   />
                     {!collapsed && <SizableText numberOfLines={1} fontSize="$3">{project.name}</SizableText>}
                   </Button>
@@ -602,7 +602,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
         <H2 marginTop="$4" fontSize="$6" fontWeight="600" letterSpacing={-0.4}>
           Share Hanzo, earn free weeks
         </H2>
-        <Paragraph marginTop="$2" fontSize="$3" lineHeight={1.625} color="$color11">
+        <Paragraph marginTop="$2" fontSize="$3" lineHeight="1.625" color="$color11">
           For every friend who signs up and subscribes to a paid plan through your
           link, you get{' '}
           <SizableText fontWeight="500" color="$color">1 week free</SizableText> — up to{' '}
@@ -651,7 +651,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
           </Anchor>
         </XStack>
 
-        <Paragraph marginTop="$4" fontSize={11} lineHeight={1.625} color="$color11">
+        <Paragraph marginTop="$4" fontSize={11} lineHeight="1.625" color="$color11">
           Free weeks are credited when a referred friend&apos;s paid subscription
           starts. Rewards cap at 52 weeks.
         </Paragraph>

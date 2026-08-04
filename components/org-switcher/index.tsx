@@ -76,7 +76,7 @@ export function OrgAvatar({
         flexShrink={0} alignItems="center" justifyContent="center" width={box.width} height={box.height}
         aria-hidden={true}
       >
-        <SizableText lineHeight={1} style={{ fontSize: "1.05rem" }}>{resolved}</SizableText>
+        <SizableText lineHeight="1" style={{ fontSize: "1.05rem" }}>{resolved}</SizableText>
       </XStack>
     );
   }
@@ -157,7 +157,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
         <OrgAvatar name={currentName} logo={currentLogo} />
         <SizableText maxWidth="7.5rem" numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{currentName}</SizableText>
         {isScopedAway() && <SizableText borderRadius="$2" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$1" fontSize={10} color="$color11">scoped</SizableText>}
-        <ChevronsUpDown size={14} color="$color11" />
+        <ChevronsUpDown size={14} />
       </Button>
 
       {open && (
@@ -190,7 +190,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
             ) : (
               <YStack rowGap="$1">
                 <XStack alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$1">
-                  <Search size={14} color="$color11" />
+                  <Search size={14} />
                   <Input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
@@ -220,7 +220,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
                           {org.isPersonal && (
                             <SizableText borderRadius="$2" backgroundColor="$color3" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} color="$color11">personal</SizableText>
                           )}
-                          {isCurrent && <Check size={16} color="$color" />}
+                          {isCurrent && <Check size={16} />}
                         </Button>
                       );
                     })
@@ -275,7 +275,7 @@ export function OrgGate({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" paddingVertical="$12">
-        <Loader2 size={32} color="$color11" />
+        <Loader2 size={32} />
       </XStack>
     );
   }
@@ -306,7 +306,7 @@ function OnboardingPanel() {
   return (
     <YStack alignSelf="center" maxWidth={448} paddingHorizontal="$4" paddingVertical="$10">
       <XStack alignSelf="center" marginBottom="$5" height="$9" width="$9" alignItems="center" justifyContent="center" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
-        <Sparkles size={28} color="$color" />
+        <Sparkles size={28} />
       </XStack>
       <H1 marginBottom="$2" fontSize="$8" fontWeight="500" textAlign="center">Set up your workspace</H1>
       <Paragraph marginBottom="$6" fontSize="$3" color="$color11" textAlign="center">

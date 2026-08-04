@@ -409,7 +409,7 @@ export function LivePreview({
         <Header />
         <XStack flex={1} alignItems="center" justifyContent="center">
           <SizableText textAlign="center" rowGap="$2" display="flex" flexDirection="column">
-            <RefreshCw size={32} color="$color12" />
+            <RefreshCw size={32} />
             <Paragraph color="$color11">Compiling project...</Paragraph>
           </SizableText>
         </XStack>

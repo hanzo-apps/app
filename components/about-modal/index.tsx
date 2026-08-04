@@ -31,15 +31,15 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
         <YStack rowGap="$5" maxHeight="60vh" paddingRight="$4" overflow="scroll">
           <section>
             <YStack rowGap="$3">
-              <SizableText fontSize="$3" color="$color10" lineHeight={1.625} $theme-dark={{ color: "$color4" }}>
+              <SizableText fontSize="$3" color="$color10" lineHeight="1.625" $theme-dark={{ color: "$color4" }}>
                 Hanzo App is an agentic, browser-based app builder: describe what you want and an agent writes the code, then ships it through the real pipeline — commit to git, build, deploy to object storage, live at your-app.hanzo.app. Web apps, mobile, and games, all on the Hanzo Cloud stack.
               </SizableText>
 
-              <SizableText fontSize="$3" color="$color10" lineHeight={1.625} $theme-dark={{ color: "$color4" }}>
+              <SizableText fontSize="$3" color="$color10" lineHeight="1.625" $theme-dark={{ color: "$color4" }}>
                 Every app is wired into Hanzo Cloud primitives out of the box — Database, Auth (hanzo.id), AI (api.hanzo.ai), and Storage — with usage and billing unified across the platform. Sign in with GitHub, GitLab, or Google and deploy from any repo.
               </SizableText>
 
-              <SizableText fontSize="$3" color="$color10" lineHeight={1.625} $theme-dark={{ color: "$color4" }}>
+              <SizableText fontSize="$3" color="$color10" lineHeight="1.625" $theme-dark={{ color: "$color4" }}>
                 If you make something with the app I would be thrilled if you could share what you've made.
               </SizableText>
             </YStack>

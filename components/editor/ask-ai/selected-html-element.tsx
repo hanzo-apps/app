@@ -30,12 +30,12 @@ export const SelectedHtmlElement = ({
     >
       <CollapsibleTrigger alignItems="center" justifyContent="flex-start" gap="$2" cursor="pointer">
         <XStack borderRadius="$5" backgroundColor="$color3" width="$5" height="$5" alignItems="center" justifyContent="center">
-          <Code size={14} color="$color11" />
+          <Code size={14} />
         </XStack>
         <Paragraph fontSize="$3" fontWeight="500" color="$color11">
           {element.textContent?.trim().split(/\s+/)[0]} {htmlTagToText(tagName)}
         </Paragraph>
-        <XCircle size={16} color="$color11" />
+        <XCircle size={16} />
       </CollapsibleTrigger>
           </Collapsible>
   );

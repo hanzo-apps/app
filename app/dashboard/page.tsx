@@ -111,7 +111,7 @@ export default function DashboardPage() {
             <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={2.56} color="$color11" $group-hover={{ color: "$color" }}>
               Your projects
             </SizableText>
-            <ChevronDown size={16} color="$color11" />
+            <ChevronDown size={16} />
           </Button>
         </YStack>
 
@@ -239,7 +239,7 @@ function ProjectGrid({
             {/* Real thumbnail: the live site itself (inert); monogram otherwise. */}
             <YStack position="relative">
               <ProjectThumb name={p.name} liveUrl={p.liveUrl} />
-              <ArrowUpRight size={16} color="$color11" />
+              <ArrowUpRight size={16} />
             </YStack>
             <YStack padding="$4">
               <H3 numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{p.name}</H3>

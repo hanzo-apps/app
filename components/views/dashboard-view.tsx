@@ -358,7 +358,7 @@ function WhatsNewCard({
     <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
       <XStack alignItems="flex-start" justifyContent="space-between" gap="$4" marginBottom="$3">
         <XStack alignItems="center" gap="$2">
-          <Newspaper size={16} color="$orange9" />
+          <Newspaper size={16} />
           <H3 fontSize="$3" fontWeight="500" color="$color">
             What&apos;s New in v{whatsNew.version}
           </H3>
@@ -538,7 +538,7 @@ function RecentProjectsCard({
     <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
       <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
         <XStack alignItems="center" gap="$2">
-          <FolderOpen size={16} color="$orange9" />
+          <FolderOpen size={16} />
           <H3 fontSize="$3" fontWeight="500" color="$color11">Recent Projects</H3>
         </XStack>
         <Link
@@ -580,7 +580,7 @@ function RecentDeploymentsCard({ deployments }: { deployments: DashboardData['re
     <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
       <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
         <XStack alignItems="center" gap="$2">
-          <Globe size={16} color="$orange9" />
+          <Globe size={16} />
           <H3 fontSize="$3" fontWeight="500" color="$color11">Recent Deployments</H3>
         </XStack>
         <Link
@@ -626,7 +626,7 @@ function TrafficLists({ data }: { data: DashboardData }) {
       {/* Top Deployments */}
       <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
         <XStack alignItems="center" gap="$2" marginBottom="$3">
-          <Globe size={16} color="$orange9" />
+          <Globe size={16} />
           <H3 fontSize="$3" fontWeight="500" color="$color11">Top Deployments (24h)</H3>
         </XStack>
         {data.traffic.topDeployments.length === 0 ? (
@@ -654,7 +654,7 @@ function TrafficLists({ data }: { data: DashboardData }) {
       {/* Recent Errors */}
       <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
         <XStack alignItems="center" gap="$2" marginBottom="$3">
-          <AlertTriangle size={16} color="$orange9" />
+          <AlertTriangle size={16} />
           <H3 fontSize="$3" fontWeight="500" color="$color11">Recent Errors</H3>
         </XStack>
         {data.traffic.recentErrors.length === 0 ? (
@@ -770,7 +770,7 @@ export function DashboardView({ onNavigate, onProjectSelect, onStartTour }: Dash
     return (
       <XStack height="100%" alignItems="center" justifyContent="center">
         <YStack alignItems="center">
-          <AlertTriangle size={32} color="$red9" />
+          <AlertTriangle size={32} />
           <Paragraph color="$color11" fontSize="$3" textAlign="center">{error}</Paragraph>
           <Button variant="outline" size="sm" onClick={fetchData} marginTop="$4">
             Retry

@@ -201,11 +201,11 @@ export const DeployButtonContent = ({
         <YStack borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4">
           <XStack marginBottom="$2" alignItems="center" justifyContent="center">
             <XStack width={36} height={36} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$green9" backgroundColor="$green9">
-              <Rocket size={16} color="$green8" />
+              <Rocket size={16} />
             </XStack>
           </XStack>
           <Paragraph textAlign="center" fontSize="$4" fontWeight="500" color="$color">Your app is live</Paragraph>
-          <Paragraph marginTop="$1" textAlign="center" fontSize="$1" lineHeight={1.625} color="$color11">
+          <Paragraph marginTop="$1" textAlign="center" fontSize="$1" lineHeight="1.625" color="$color11">
             Share this link — anyone can open it.
           </Paragraph>
         </YStack>
@@ -227,7 +227,7 @@ export const DeployButtonContent = ({
               variant="ghost"
               width={28} height={28} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3"
             >
-              {copied ? <Check size={16} color="$green8" /> : <Copy size={16} />}
+              {copied ? <Check size={16} /> : <Copy size={16} />}
             </Button>
           </XStack>
           <Anchor
@@ -261,7 +261,7 @@ export const DeployButtonContent = ({
           </XStack>
         </XStack>
         <Paragraph textAlign="center" fontSize="$4" fontWeight="500" color="$color">Publish your project</Paragraph>
-        <Paragraph marginTop="$1" textAlign="center" fontSize="$1" lineHeight={1.625} color="$color11">
+        <Paragraph marginTop="$1" textAlign="center" fontSize="$1" lineHeight="1.625" color="$color11">
           {options?.description ??
             "Publish to your org on Hanzo Cloud — billed to your org, live across your Hanzo tools."}
         </Paragraph>

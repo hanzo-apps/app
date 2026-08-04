@@ -33,7 +33,7 @@ export default function HowItWorks() {
           <Paragraph fontFamily="$mono" fontSize={11} color="$color11" textAlign="center">
             How it works
           </Paragraph>
-          <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "$11" }}>
+          <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "$11" }} lineHeight="1.1">
             From a sentence to a shipped app.
           </H2>
         </Reveal>
@@ -49,7 +49,7 @@ export default function HowItWorks() {
               <H3 marginTop="$5" fontSize="$7" fontWeight="500" letterSpacing={-0.4} color="$color">
                 {s.title}
               </H3>
-              <Paragraph marginTop="$3" fontSize="$3" lineHeight={1.625} color="$color11">
+              <Paragraph marginTop="$3" fontSize="$3" lineHeight="1.625" color="$color11">
                 {s.body}
               </Paragraph>
             </YStack>

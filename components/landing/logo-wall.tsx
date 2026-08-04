@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, Image, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, Image, Paragraph } from '@hanzo/gui';
 // Partner / infrastructure logo wall — REAL assets only, honestly labeled.
 // Hanzo AI is Techstars '17 (real backing); the rest are the real cloud +
 // silicon partners the platform runs on. No fabricated customers.
@@ -34,18 +34,18 @@ export default function LogoWall() {
           </Paragraph>
         </Reveal>
 
-        <YStack marginTop="$7" alignItems="center" columnGap="$7" rowGap="$6" $md={{ columnGap: "$9" }}>
+        <XStack marginTop="$7" flexWrap="wrap" alignItems="center" justifyContent="center" columnGap="$7" rowGap="$6" $md={{ columnGap: "$9" }}>
           {partners.map((p, i) => (
             <Reveal key={p.alt} delay={i * 40} alignItems="center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <Image
                 src={p.src}
                 alt={p.alt}
-                height="$5" width="auto" maxWidth="100%" objectFit="contain" opacity={0.45} hoverStyle={{ opacity: 0.9 }} $md={{ height: 28 }}
+                filter="brightness(0) invert(1)" height="$5" width="auto" maxWidth="100%" objectFit="contain" opacity={0.45} hoverStyle={{ opacity: 0.9 }} $md={{ height: 28 }}
   />
             </Reveal>
           ))}
-        </YStack>
+        </XStack>
       </YStack>
     </YStack>
   );

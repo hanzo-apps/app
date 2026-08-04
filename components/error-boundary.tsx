@@ -35,7 +35,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return this.props.fallback || (
         <YStack alignItems="center" justifyContent="center" minHeight={400} padding="$6">
-          <AlertCircle size={48} color="$red9" />
+          <AlertCircle size={48} />
           <H2 fontSize="$7" fontWeight="500" marginBottom="$2" textAlign="center">Something went wrong</H2>
           <Paragraph color="$color11" marginBottom="$4" textAlign="center">
             {this.state.error?.message || 'An unexpected error occurred'}

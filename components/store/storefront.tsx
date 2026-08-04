@@ -171,7 +171,7 @@ export function Storefront() {
           </H1>
           <XStack alignItems="center" gap="$4">
             <YStack position="relative" display="none">
-              <Search size={16} color="$color11" />
+              <Search size={16} />
               <Input
                 placeholder="Search products..."
                 value={query}
@@ -205,14 +205,14 @@ export function Storefront() {
 
           {!loading && error && (
             <YStack maxWidth={448} alignSelf="center" alignItems="center" paddingVertical="$12">
-              <StoreIcon size={40} color="$color11" />
+              <StoreIcon size={40} />
               <Paragraph color="$color11" textAlign="center">{error}</Paragraph>
             </YStack>
           )}
 
           {!loading && !error && products.length === 0 && (
             <YStack maxWidth={448} alignSelf="center" alignItems="center" paddingVertical="$12">
-              <StoreIcon size={40} color="$color11" />
+              <StoreIcon size={40} />
               <H2 fontSize="$6" fontWeight="500" marginBottom="$1" textAlign="center">No products yet</H2>
               <Paragraph color="$color11" textAlign="center">
                 This store is connected but its catalog is empty. Add a product
@@ -240,7 +240,7 @@ export function Storefront() {
   />
                         ) : (
                           <XStack width="100%" height="100%" alignItems="center" justifyContent="center" backgroundColor="$color3">
-                            <StoreIcon size={32} color="$color11" />
+                            <StoreIcon size={32} />
                           </XStack>
                         )}
                       </AspectRatio>

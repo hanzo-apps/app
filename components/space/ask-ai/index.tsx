@@ -23,12 +23,12 @@ export const AskAi = () => {
               variant="outline"
               borderColor="$borderColor" hoverStyle={{ borderColor: "$color" }}
             >
-              <UserPlus size={16} color="$color11" />
+              <UserPlus size={16} />
             </Button>
           </XStack>
           <XStack alignItems="center" justifyContent="flex-end" gap="$2">
             <Button backgroundColor="$color12" size="sm">
-              <Settings size={16} color="$color4" />
+              <Settings size={16} />
               <SizableText color="$color4">Settings</SizableText>
             </Button>
             <Button size="icon">

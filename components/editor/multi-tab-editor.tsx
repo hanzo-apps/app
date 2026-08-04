@@ -369,7 +369,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
       {openFiles.size === 0 ? (
         <YStack flex={1} minHeight={0}>
           <XStack alignItems="center" gap="$2" borderBottomWidth={1} paddingHorizontal="$3" paddingVertical="$2">
-            <Search size={14} color="$color11" />
+            <Search size={14} />
             <Input
               value={browseQuery}
               onChange={(e) => setBrowseQuery(e.target.value)}
@@ -384,7 +384,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
           <YStack minHeight={0} flex={1} paddingVertical="$1" overflow="scroll">
             {browseGroups.length === 0 ? (
               <YStack height="100%" alignItems="center" justifyContent="center" gap="$3" padding="$5">
-                <FileCode size={40} color="$color11" />
+                <FileCode size={40} />
                 <YStack rowGap="$1">
                   <Paragraph fontSize="$3" fontWeight="500" color="$color11" textAlign="center">
                     {allFiles.length === 0
@@ -399,7 +399,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                 <YStack key={group.folder || '/'} paddingVertical="$0.5">
                   {group.folder && (
                     <XStack alignItems="center" gap="$1.5" paddingHorizontal="$3" paddingVertical="$1">
-                      <Folder size={12} color="$color11" />
+                      <Folder size={12} />
                       <SizableText numberOfLines={1} fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color11">{group.folder}</SizableText>
                     </XStack>
                   )}
@@ -412,9 +412,9 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                       width="100%" alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" justifyContent="flex-start" hoverStyle={{ backgroundColor: "$color3" }} focusStyle={{ outlineWidth: 0 }} {...{ paddingLeft: group.folder ? 28 : undefined }}
                     >
                       {getFileType(file.path).type === 'image' ? (
-                        <ImageIcon size={14} color="$color11" />
+                        <ImageIcon size={14} />
                       ) : (
-                        <FileCode size={14} color="$color11" />
+                        <FileCode size={14} />
                       )}
                       <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1">{file.name}</SizableText>
                     </Button>
@@ -460,7 +460,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                   return (
                     <XStack height="100%" alignItems="center" justifyContent="center" backgroundColor="$background" padding="$6">
                       <YStack rowGap="$4" maxWidth={672}>
-                        <ImageIcon size={48} color="$color11" />
+                        <ImageIcon size={48} />
                         <YStack rowGap="$2">
                           <H3 fontSize="$6" fontWeight="500" textAlign="center">Image Preview</H3>
                           <Paragraph fontSize="$3" color="$color11" textAlign="center">
@@ -497,7 +497,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                   return (
                     <XStack height="100%" alignItems="center" justifyContent="center" backgroundColor="$background" padding="$6">
                       <YStack rowGap="$4">
-                        <AlertCircle size={48} color="$color11" />
+                        <AlertCircle size={48} />
                         <YStack rowGap="$2">
                           <H3 fontSize="$6" fontWeight="500" textAlign="center">Unsupported File Type</H3>
                           <Paragraph fontSize="$3" color="$color11" textAlign="center">

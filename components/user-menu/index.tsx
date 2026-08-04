@@ -42,8 +42,8 @@ export const UserMenu = ({ className }: { className?: string }) => {
       <DropdownMenuContent width={224}>
         <DropdownMenuLabel>
           <YStack rowGap="$1">
-            <Paragraph fontSize="$3" fontWeight="500" lineHeight={1}>{displayName}</Paragraph>
-            <Paragraph fontSize="$1" lineHeight={1} color="$color11">
+            <Paragraph fontSize="$3" fontWeight="500" lineHeight="1">{displayName}</Paragraph>
+            <Paragraph fontSize="$1" lineHeight="1" color="$color11">
               {user?.email || user?.username}
             </Paragraph>
           </YStack>
@@ -54,19 +54,19 @@ export const UserMenu = ({ className }: { className?: string }) => {
         <DropdownMenuGroup>
           <Link href="/dashboard">
             <DropdownMenuItem>
-              <Home size={16} color="$color11" />
+              <Home size={16} />
               Dashboard
             </DropdownMenuItem>
           </Link>
           <Link href="/chat">
             <DropdownMenuItem>
-              <MessageCircle size={16} color="$color11" />
+              <MessageCircle size={16} />
               Chat
             </DropdownMenuItem>
           </Link>
           <Link href="/new">
             <DropdownMenuItem>
-              <CirclePlus size={16} color="$color11" />
+              <CirclePlus size={16} />
               New Project
             </DropdownMenuItem>
           </Link>
@@ -78,26 +78,26 @@ export const UserMenu = ({ className }: { className?: string }) => {
         <DropdownMenuGroup>
           <Link href="/projects">
             <DropdownMenuItem>
-              <FolderCode size={16} color="$color11" />
+              <FolderCode size={16} />
               My Projects
             </DropdownMenuItem>
           </Link>
           <Link href="/projects">
             <DropdownMenuItem>
-              <Import size={16} color="$color11" />
+              <Import size={16} />
               Import Project
             </DropdownMenuItem>
           </Link>
           <Link href="/gallery">
             <DropdownMenuItem>
-              <Sparkles size={16} color="$color11" />
+              <Sparkles size={16} />
               Gallery
             </DropdownMenuItem>
           </Link>
           {/* Everything the fleet has built, across every org — /v1/catalog. */}
           <Link href="/catalog">
             <DropdownMenuItem>
-              <Search size={16} color="$color11" />
+              <Search size={16} />
               Catalog
             </DropdownMenuItem>
           </Link>
@@ -109,19 +109,19 @@ export const UserMenu = ({ className }: { className?: string }) => {
         <DropdownMenuGroup>
           <Link href="/settings">
             <DropdownMenuItem>
-              <Settings size={16} color="$color11" />
+              <Settings size={16} />
               Settings
             </DropdownMenuItem>
           </Link>
           <Link href="/profile">
             <DropdownMenuItem>
-              <User size={16} color="$color11" />
+              <User size={16} />
               Profile
             </DropdownMenuItem>
           </Link>
           <Link href="/billing">
             <DropdownMenuItem>
-              <DollarSign size={16} color="$color11" />
+              <DollarSign size={16} />
               Billing
             </DropdownMenuItem>
           </Link>

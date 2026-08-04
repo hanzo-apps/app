@@ -158,7 +158,7 @@ export function MarkdownRenderer({ content, muted = false, skipNormalization = f
 
           // Fenced code block with language
           return (
-            <SizableText fontFamily="$mono" fontSize={12} lineHeight={1.625}>
+            <SizableText fontFamily="$mono" fontSize={12} lineHeight="1.625">
               {children}
             </SizableText>
           );

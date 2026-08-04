@@ -332,9 +332,9 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
             {keyValid !== null && (
               <XStack alignItems="center">
                 {keyValid ? (
-                  <Check size={20} color="$green9" />
+                  <Check size={20} />
                 ) : (
-                  <X size={20} color="$red9" />
+                  <X size={20} />
                 )}
               </XStack>
             )}

@@ -223,7 +223,7 @@ export default function BillingPage() {
         {/* Header */}
         <YStack justifyContent="space-between" alignItems="flex-start" gap="$4" marginBottom="$6" $sm={{ flexDirection: "row", alignItems: "center" }}>
           <div>
-            <H1 fontSize="$10" fontWeight="500" marginBottom="$2" $md={{ fontSize: "$11" }}>Billing & Usage</H1>
+            <H1 fontSize="$10" fontWeight="500" marginBottom="$2" $md={{ fontSize: "$11" }} lineHeight="1.1">Billing & Usage</H1>
             <Paragraph color="$color11">
               Manage your credits, subscriptions, and monitor usage
               {user?.email && <SizableText marginLeft="$2" color="$color11">({user.email})</SizableText>}
@@ -298,7 +298,7 @@ export default function BillingPage() {
                           ? 'Sign in'
                           : 'Unavailable'}
                   </SizableText>
-                  <TrendingUp size={20} color="$green9" />
+                  <TrendingUp size={20} />
                 </XStack>
                 <Paragraph fontSize="$1" color="$color11">
                   Spendable credit across every Hanzo service
@@ -409,7 +409,7 @@ export default function BillingPage() {
               <CardContent>
                 {invoices.length === 0 ? (
                   <YStack alignItems="center" paddingVertical="$8">
-                    <FileText size={48} color="$color11" />
+                    <FileText size={48} />
                     <Paragraph color="$color11" marginBottom="$1" textAlign="center">No transactions yet</Paragraph>
                     <Paragraph fontSize="$3" color="$color11" textAlign="center">Purchase credits to see your transaction history</Paragraph>
                   </YStack>
@@ -466,7 +466,7 @@ export default function BillingPage() {
               <CardContent>
                 {invoices.length === 0 ? (
                   <YStack alignItems="center" paddingVertical="$8">
-                    <FileText size={48} color="$color11" />
+                    <FileText size={48} />
                     <Paragraph color="$color11" marginBottom="$1" textAlign="center">No transactions yet</Paragraph>
                     <Paragraph fontSize="$3" color="$color11" textAlign="center">Purchase credits to see your transaction history</Paragraph>
                   </YStack>
@@ -493,7 +493,7 @@ export default function BillingPage() {
                 <div>
                   <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
                     <XStack alignItems="center">
-                      <Activity size={16} color="$color11" />
+                      <Activity size={16} />
                       <span>API Calls</span>
                     </XStack>
                     <SizableText fontSize="$3" color="$color11">
@@ -511,7 +511,7 @@ export default function BillingPage() {
                 <div>
                   <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
                     <XStack alignItems="center">
-                      <Brain size={16} color="$color11" />
+                      <Brain size={16} />
                       <span>AI Responses</span>
                     </XStack>
                     <SizableText fontSize="$3" color="$color11">
@@ -529,7 +529,7 @@ export default function BillingPage() {
                 <div>
                   <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
                     <XStack alignItems="center">
-                      <Database size={16} color="$color11" />
+                      <Database size={16} />
                       <span>Storage</span>
                     </XStack>
                     <SizableText fontSize="$3" color="$color11">
@@ -587,11 +587,11 @@ export default function BillingPage() {
 // Transaction row component
 function TransactionRow({ invoice }: { invoice: Invoice }) {
   const statusIcon = invoice.status === 'paid' ? (
-    <CheckCircle2 size={16} color="$green9" />
+    <CheckCircle2 size={16} />
   ) : invoice.status === 'failed' ? (
-    <XCircle size={16} color="$red9" />
+    <XCircle size={16} />
   ) : (
-    <Clock size={16} color="$yellow9" />
+    <Clock size={16} />
   );
 
   const explorerBaseUrl = invoice.chain === 'ethereum'

@@ -162,11 +162,11 @@ function Step({ state, label, subline }: { state: StepState; label: string; subl
     <XStack alignItems="flex-start" gap="$3">
       <XStack marginTop="$0.5" height="$4.5" width="$4.5" alignItems="center" justifyContent="center">
         {state === 'done' ? (
-          <Check size={16} color="$green8" />
+          <Check size={16} />
         ) : state === 'active' ? (
-          <Loader2 size={16} color="$color" />
+          <Loader2 size={16} />
         ) : (
-          <Circle size={10} color="$color11" />
+          <Circle size={10} />
         )}
       </XStack>
       <YStack minWidth={0}>

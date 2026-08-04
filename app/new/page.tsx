@@ -243,10 +243,10 @@ function NewProjectInner() {
   />
 
         <YStack position="relative" paddingTop="$10" $sm={{ paddingTop: "$11" }}>
-          <H1 fontSize="$11" fontWeight="500" letterSpacing={-0.32} textAlign="center" $sm={{ fontSize: "$12" }}>
+          <H1 fontSize="$11" fontWeight="500" letterSpacing={-0.32} textAlign="center" $sm={{ fontSize: "$12" }} lineHeight="1.1">
             Let&rsquo;s build something new
           </H1>
-          <Paragraph alignSelf="center" marginTop="$4" maxWidth={576} textAlign="center" fontSize="$4" color="$color11" $sm={{ fontSize: "$6" }}>
+          <Paragraph alignSelf="center" marginTop="$4" maxWidth={576} textAlign="center" fontSize="$4" color="$color11" $sm={{ fontSize: "$6" }} lineHeight="1.5">
             Describe an app to build, or paste a Git repository to deploy as a
             service. Hanzo builds, ships, and manages it.
           </Paragraph>
@@ -279,7 +279,7 @@ function NewProjectInner() {
                   }
                 }}
                 placeholder="Describe the app you want, or paste a GitHub / GitLab repository URL…"
-                maxHeight="$17" minHeight={52} width="100%" backgroundColor="transparent" paddingHorizontal="$3" paddingTop="$2" fontSize={15} lineHeight={1.625} color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
+                maxHeight="$17" minHeight={52} width="100%" backgroundColor="transparent" paddingHorizontal="$3" paddingTop="$2" fontSize={15} lineHeight="1.625" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
   />
               <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$2" paddingBottom="$1" paddingTop="$1">
                 <XStack alignItems="center" gap="$1">
@@ -324,7 +324,7 @@ function NewProjectInner() {
                 </XStack>
               ) : (
                 <>
-                  <FolderUp size={14} color="$color11" />
+                  <FolderUp size={14} />
                   <SizableText fontSize="$1" color="$color11">Drag &amp; drop your project, or</SizableText>
                   <Button
                     type="button"
@@ -411,11 +411,11 @@ function NewProjectInner() {
           <YStack borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4.5" $sm={{ padding: "$5" }}>
             <XStack marginBottom="$4" alignItems="center" justifyContent="space-between" gap="$3">
               <XStack alignItems="center" gap="$2">
-                <Boxes size={18} color="$color" />
+                <Boxes size={18} />
                 <H2 fontSize={15} fontWeight="500">Clone a Template</H2>
               </XStack>
               <YStack position="relative" display="none" width="$17">
-                <Search size={14} color="$color11" />
+                <Search size={14} />
                 <Input
                   value={repoFilter}
                   onChange={(e) => setRepoFilter(e.target.value)}
@@ -466,7 +466,7 @@ function NewProjectInner() {
                             .join(" · ") || "Starter"}
                         </SizableText>
                       </YStack>
-                      <ArrowRight size={16} color="$color11" />
+                      <ArrowRight size={16} />
                     </Button>
                   ))}
               {!galleryLoading && filteredTemplates.length === 0 && (

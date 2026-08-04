@@ -103,9 +103,9 @@ export default function AnalyticsDashboard() {
                 <YStack><SizableText fontSize="$8" fontWeight="500">{metric.value}</SizableText></YStack>
                 <XStack alignItems="center" gap="$1">
                   {metric.trend === "up" ? (
-                    <TrendingUp size={12} color="$green10" />
+                    <TrendingUp size={12} />
                   ) : (
-                    <TrendingDown size={12} color="$red10" />
+                    <TrendingDown size={12} />
                   )}
                   <SizableText fontSize="$1" {...{ color: metric.trend === "up" ? "$green10" : "$red10" }}>
                     {metric.change}

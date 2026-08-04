@@ -130,7 +130,7 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" height="100%">
-        <Loader2 size={24} color="$color11" />
+        <Loader2 size={24} />
       </XStack>
     );
   }
@@ -138,7 +138,7 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
   if (error) {
     return (
       <YStack alignItems="center" justifyContent="center" height="100%" gap="$4">
-        <AlertCircle size={32} color="$red9" />
+        <AlertCircle size={32} />
         <Paragraph fontSize="$3" color="$color11">{error}</Paragraph>
         <Button variant="outline" onClick={loadFunctions}>
           Retry
@@ -160,7 +160,7 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
       <YStack flex={1} overflow="scroll">
         {functions.length === 0 ? (
           <YStack alignItems="center" justifyContent="center" height="100%" padding="$6" borderWidth={1} borderRadius="$5">
-            <Wrench size={32} color="$color11" />
+            <Wrench size={32} />
             <Paragraph fontSize="$3" color="$color11" textAlign="center">No server functions yet</Paragraph>
             <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$4" textAlign="center">
               Create reusable helpers for your edge functions
@@ -180,7 +180,7 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
                 <XStack alignItems="flex-start" justifyContent="space-between" gap="$2">
                   <YStack flex={1} minWidth={0} overflow="hidden">
                     <XStack alignItems="center" gap="$2" flexWrap="wrap">
-                      <Wrench size={16} color="$orange9" />
+                      <Wrench size={16} />
                       <SizableText fontFamily="$mono" fontWeight="500" numberOfLines={1}>{fn.name}</SizableText>
                       {!fn.enabled && (
                         <SizableText fontSize="$1" backgroundColor="$color3" paddingHorizontal="$1.5" paddingVertical="$0.5" borderRadius="$2" flexShrink={0}>disabled</SizableText>

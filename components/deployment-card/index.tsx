@@ -92,7 +92,7 @@ export function DeploymentCard({
         {/* Publishing spinner overlay */}
         {isPublishing && (
           <XStack position="absolute" top={0} right={0} bottom={0} left={0} backgroundColor="$background" alignItems="center" justifyContent="center" zIndex={10}>
-            <Loader2 size={24} color="$color11" />
+            <Loader2 size={24} />
           </XStack>
         )}
 
@@ -140,7 +140,7 @@ export function DeploymentCard({
         {/* URL */}
         {deployment.enabled && (
           <XStack alignItems="center" gap="$2" marginBottom="$3" padding="$2" backgroundColor="$color3" borderRadius="$2">
-            <Globe size={12} color="$color11" />
+            <Globe size={12} />
             <SizableText flex={1} numberOfLines={1} fontSize="$1">{publicUrl}</SizableText>
             <Button
               variant="ghost"

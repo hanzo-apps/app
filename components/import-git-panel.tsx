@@ -243,7 +243,7 @@ export function ImportGitPanel() {
   return (
     <YStack borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4.5" $sm={{ padding: "$5" }}>
       <XStack marginBottom="$1" alignItems="center" gap="$2">
-        <Github size={18} color="$color" />
+        <Github size={18} />
         <H2 fontSize={15} fontWeight="500">Import Git Repository</H2>
       </XStack>
       <Paragraph marginBottom="$4.5" fontSize="$3" color="$color11">
@@ -374,7 +374,7 @@ export function ImportGitPanel() {
 
             <YStack position="relative" flex={1}>
               <View position="absolute" left={12} top={0} bottom={0} zIndex={10} justifyContent="center" pointerEvents="none">
-                <Search size={16} color="$color11" />
+                <Search size={16} />
               </View>
               <Input
                 value={search}
@@ -420,7 +420,7 @@ export function ImportGitPanel() {
                         {r.fullName}
                       </SizableText>
                       {r.private && (
-                        <Lock size={12} color="$color11" />
+                        <Lock size={12} />
                       )}
                     </XStack>
                     <SizableText numberOfLines={1} fontSize="$1" color="$color11">
@@ -494,7 +494,7 @@ function ConnectCta({
   return (
     <YStack alignSelf="center" maxWidth={448} alignItems="center" borderRadius="$6" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$5" paddingVertical="$7">
       <XStack marginBottom="$4" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
-        <Github size={24} color="$color" />
+        <Github size={24} />
       </XStack>
       <H3 fontSize="$3" fontWeight="500" color="$color" textAlign="center">Connect a Git provider</H3>
       <Paragraph alignSelf="center" marginTop="$1.5" maxWidth={320} fontSize="$3" color="$color11" textAlign="center">

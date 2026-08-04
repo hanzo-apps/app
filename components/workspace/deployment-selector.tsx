@@ -75,7 +75,7 @@ export function DeploymentSelector({
   if (loading) {
     return (
       <XStack alignItems="center" gap="$2" className={`${className}`}>
-        <Loader2 size={16} color="$color11" />
+        <Loader2 size={16} />
         <SizableText fontSize="$3" color="$color11">Loading deployments...</SizableText>
       </XStack>
     );
@@ -84,7 +84,7 @@ export function DeploymentSelector({
   if (error) {
     return (
       <XStack alignItems="center" gap="$2" className={`${className}`}>
-        <Server size={16} color="$red9" />
+        <Server size={16} />
         <SizableText fontSize="$3" color="$red9">{error}</SizableText>
       </XStack>
     );
@@ -97,7 +97,7 @@ export function DeploymentSelector({
       <Tooltip placement="bottom">
         <TooltipTrigger asChild>
           <XStack alignItems="center" gap="$1.5">
-            <Database size={16} color="$color11" />
+            <Database size={16} />
           </XStack>
         </TooltipTrigger>
         <TooltipContent>

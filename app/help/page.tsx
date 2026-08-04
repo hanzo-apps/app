@@ -94,7 +94,7 @@ export default function HelpPage() {
         {/* ── Hero ─────────────────────────────────────────────── */}
         <YStack position="relative" overflow="hidden" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
           <YStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} overflow="hidden">
-            <YStack position="absolute" left="50%" top="-30%" height={420} width={720} x="50%" borderRadius="$10" backgroundColor="$color" />
+            <YStack position="absolute" left="50%" top="-30%" height={420} width={720} marginLeft={-360} borderRadius="$10" backgroundColor="$color005" filter="blur(130px)" />
           </YStack>
 
           <YStack position="relative" alignSelf="center" maxWidth={768}>
@@ -108,13 +108,13 @@ export default function HelpPage() {
             </Reveal>
 
             <Reveal delay={60}>
-              <H1 fontSize="$11" fontWeight="500" lineHeight={1.03} letterSpacing={-0.4} textAlign="center" $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
+              <H1 fontSize="$11" fontWeight="500" lineHeight="1.03" letterSpacing={-0.4} textAlign="center" $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
                 How can we help?
               </H1>
             </Reveal>
 
             <Reveal delay={120}>
-              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" color="$color11" textAlign="center" $md={{ fontSize: "$6" }}>
+              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" color="$color11" textAlign="center" $md={{ fontSize: "$6" }} lineHeight="1.5">
                 Start with the FAQ or docs for a fast answer, or reach the team
                 directly at{" "}
                 <Anchor
@@ -140,15 +140,15 @@ export default function HelpPage() {
                       {c.icon}
                     </XStack>
                     {c.external ? (
-                      <ArrowUpRight size={16} color="$color" />
+                      <ArrowUpRight size={16} />
                     ) : (
-                      <ArrowRight size={16} color="$color" />
+                      <ArrowRight size={16} />
                     )}
                   </XStack>
                   <H3 marginTop="$4.5" fontSize="$4" fontWeight="500" color="$color">
                     {c.title}
                   </H3>
-                  <Paragraph marginTop="$2" flex={1} fontSize="$3" lineHeight={1.625} color="$color11">
+                  <Paragraph marginTop="$2" flex={1} fontSize="$3" lineHeight="1.625" color="$color11">
                     {c.description}
                   </Paragraph>
                   <SizableText marginTop="$4" fontSize="$3" fontWeight="500" color="$color" $group-hover={{ color: "$color" }}>
@@ -176,10 +176,10 @@ export default function HelpPage() {
           <Reveal alignSelf="center" width="100%" maxWidth={1152}>
             <YStack alignItems="flex-start" justifyContent="space-between" gap="$4.5" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$6" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: "$7" }}>
               <div>
-                <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$10" }}>
+                <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$10" }} lineHeight="1.1">
                   Talk to a human.
                 </H2>
-                <Paragraph marginTop="$2" maxWidth={448} fontSize="$3" color="$color11" $md={{ fontSize: "$4" }}>
+                <Paragraph marginTop="$2" maxWidth={448} fontSize="$3" color="$color11" $md={{ fontSize: "$4" }} lineHeight="1.5">
                   Account, billing, or something the docs didn&apos;t cover — email
                   the team and we&apos;ll get back to you.
                 </Paragraph>

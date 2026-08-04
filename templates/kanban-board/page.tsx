@@ -328,11 +328,11 @@ export default function KanbanBoard() {
             <YStack rowGap="$4" paddingTop="$4">
               <XStack alignItems="center" gap="$4">
                 <XStack alignItems="center" gap="$2">
-                  <User size={16} color="$color11" />
+                  <User size={16} />
                   <SizableText fontSize="$3">{selectedTask.assignee}</SizableText>
                 </XStack>
                 <XStack alignItems="center" gap="$2">
-                  <Calendar size={16} color="$color11" />
+                  <Calendar size={16} />
                   <SizableText fontSize="$3">Due {selectedTask.dueDate}</SizableText>
                 </XStack>
                 <Badge className={`${priorityColors[selectedTask.priority as keyof typeof priorityColors]}`}>

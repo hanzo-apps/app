@@ -142,7 +142,7 @@ export default function SaaSLandingPage() {
                   <YStack rowGap="$2">
                     {plan.features.map((feature) => (
                       <SizableText key={feature} alignItems="center" gap="$2">
-                        <CheckCircle size={16} color="$green10" />
+                        <CheckCircle size={16} />
                         <SizableText fontSize="$3">{feature}</SizableText>
                       </SizableText>
                     ))}

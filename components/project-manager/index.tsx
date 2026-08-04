@@ -526,7 +526,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
               <YStack alignSelf="center" maxWidth={1280} gap="$3" $sm={{ flexDirection: "row" }} data-tour-id="projects-actions">
                 {/* Search */}
                 <YStack position="relative" flex={1}>
-                  <Search size={16} color="$color11" />
+                  <Search size={16} />
                   <Input
                     placeholder="Search projects..."
                     value={searchQuery}
@@ -602,7 +602,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
               <YStack alignSelf="center" maxWidth={1280}>
                 {filteredProjects.length === 0 ? (
                   <YStack paddingVertical="$8">
-                    <FolderOpen size={48} color="$color11" />
+                    <FolderOpen size={48} />
                     <H2 fontSize="$7" fontWeight="500" marginBottom="$2">
                       {searchQuery ? 'No projects found' : 'No projects yet'}
                     </H2>

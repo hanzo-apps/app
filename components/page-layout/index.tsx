@@ -136,7 +136,7 @@ export function PageLayout({
         <DialogContent $sm={{ maxWidth: 448 }}>
           <DialogHeader>
             <DialogTitle alignItems="center" gap="$2">
-              <AlertTriangle size={20} color="$orange9" />
+              <AlertTriangle size={20} />
               Server Database Not Initialized
             </DialogTitle>
             <DialogDescription>
@@ -146,7 +146,7 @@ export function PageLayout({
 
           <YStack rowGap="$4" paddingVertical="$4">
             <XStack alignItems="flex-start" gap="$3" padding="$3" backgroundColor="$color3" borderRadius="$5">
-              <Database size={20} color="$color11" />
+              <Database size={20} />
               <YStack>
                 <Paragraph fontSize="$3" fontWeight="500">Why does this matter?</Paragraph>
                 <Paragraph fontSize="$3" color="$color11" marginTop="$1">

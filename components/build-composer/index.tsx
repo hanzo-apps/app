@@ -190,7 +190,7 @@ export function BuildComposer({
   return (
     <YStack alignSelf="center" width="100%" maxWidth={672} className={`${className}`}>
       {greetingName && (
-        <H1 marginBottom="$2" textAlign="center" fontSize="$10" fontWeight="500" letterSpacing={-0.4} color="$color" $sm={{ fontSize: "$11" }}>
+        <H1 marginBottom="$2" textAlign="center" fontSize="$10" fontWeight="500" letterSpacing={-0.4} color="$color" $sm={{ fontSize: "$11" }} lineHeight="1.1">
           Ready to build, {greetingName}?
         </H1>
       )}
@@ -230,7 +230,7 @@ export function BuildComposer({
             onBlur={() => setFocused(false)}
             placeholder={placeholder}
             aria-label="Ask Hanzo to build"
-            width="100%" backgroundColor="transparent" paddingHorizontal="$4" paddingBottom="$2" paddingTop="$4" fontSize={15} lineHeight={1.625} color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
+            width="100%" backgroundColor="transparent" paddingHorizontal="$4" paddingBottom="$2" paddingTop="$4" fontSize={15} lineHeight="1.625" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
   />
           <XStack alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$2.5" paddingBottom="$2.5">
             <XStack alignItems="center" gap="$1">
@@ -244,7 +244,7 @@ export function BuildComposer({
                     <XStack alignItems="center" gap="$1.5">
                       <CurrentMode.icon size={14} />
                       <SizableText fontSize="$1" color="$color">{CurrentMode.label}</SizableText>
-                      <ChevronDown size={12} color="$color11" />
+                      <ChevronDown size={12} />
                     </XStack>
                   </Button>
                 </DropdownMenuTrigger>

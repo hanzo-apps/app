@@ -309,10 +309,10 @@ export default function Comparison() {
           <Paragraph textAlign="center" fontFamily="$mono" fontSize={11} color="$color11">
             Why Hanzo
           </Paragraph>
-          <H2 textAlign="center" marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ color: "2.75rem", lineHeight: 1.1 }}>
+          <H2 textAlign="center" marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "2.75rem", lineHeight: "1.1" }}>
             One platform beats the whole stack.
           </H2>
-          <Paragraph textAlign="center" marginTop="$4" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
+          <Paragraph textAlign="center" marginTop="$4" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
             Site builders lock you in. AI coding tools hand you bugs to clean up.
             Hanzo ships production apps you own — fast, secure, and built to
             scale.
@@ -394,7 +394,7 @@ export default function Comparison() {
                       {COLS.map((c) => (
                         <SizableText
                           key={c.short}
-                          width={208} minWidth={208} paddingHorizontal="$4" paddingBottom="$4" verticalAlign="bottom" fontFamily="$mono" fontSize={10} fontWeight="400" lineHeight={1.25} letterSpacing={1.6} color="$color11"
+                          width={208} minWidth={208} paddingHorizontal="$4" paddingBottom="$4" verticalAlign="bottom" fontFamily="$mono" fontSize={10} fontWeight="400" lineHeight="1.25" letterSpacing={1.6} color="$color11"
                         >
                           <YStack marginBottom="$2">
                             <c.icon size={16} color="var(--muted-foreground)" strokeWidth={1.5} aria-hidden />
@@ -436,10 +436,10 @@ export default function Comparison() {
                               <YStack minWidth={0}>
                                 <XStack alignItems="center" gap="$1.5">
                                   <ColIcon i={ci} />
-                                  <SizableText fontSize={13} lineHeight={1.375} color={r.hanzo ? "$color" : TEXT[cell.t]}>{cell.v}</SizableText>
+                                  <SizableText fontSize={13} lineHeight="1.375" color={r.hanzo ? "$color" : TEXT[cell.t]}>{cell.v}</SizableText>
                                 </XStack>
                                 {cell.d && (
-                                  <SizableText marginTop="$0.5" fontSize={11} lineHeight={1.375} color="$color11">
+                                  <SizableText marginTop="$0.5" fontSize={11} lineHeight="1.375" color="$color11">
                                     {cell.d}
                                   </SizableText>
                                 )}

@@ -103,7 +103,7 @@ export default function LoginPage() {
                   rel="noopener noreferrer"
                   alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" group hoverStyle={{ backgroundColor: "$color3" }}
                 >
-                  <Monitor size={16} color="$color11" />
+                  <Monitor size={16} />
                   <SizableText fontSize="$3" color="$color11" $group-hover={{ color: "$color" }}>Windows</SizableText>
                 </Anchor>
 
@@ -113,7 +113,7 @@ export default function LoginPage() {
                   rel="noopener noreferrer"
                   alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" group hoverStyle={{ backgroundColor: "$color3" }}
                 >
-                  <Apple size={16} color="$color11" />
+                  <Apple size={16} />
                   <SizableText fontSize="$3" color="$color11" $group-hover={{ color: "$color" }}>macOS</SizableText>
                 </Anchor>
 
@@ -123,12 +123,12 @@ export default function LoginPage() {
                   rel="noopener noreferrer"
                   alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" group hoverStyle={{ backgroundColor: "$color3" }}
                 >
-                  <Terminal size={16} color="$color11" />
+                  <Terminal size={16} />
                   <SizableText fontSize="$3" color="$color11" $group-hover={{ color: "$color" }}>Linux</SizableText>
                 </Anchor>
 
                 <XStack alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" opacity={0.4} cursor="not-allowed">
-                  <Smartphone size={16} color="$color11" />
+                  <Smartphone size={16} />
                   <SizableText fontSize="$3" color="$color11">Mobile</SizableText>
                 </XStack>
               </YStack>
@@ -152,16 +152,16 @@ export default function LoginPage() {
   />
           </YStack>
 
-          <YStack position="absolute" top="25%" right="-14" width={384} height={384} backgroundColor="$color" borderRadius="$10" />
+          <YStack position="absolute" top="25%" right="-14" width={384} height={384} backgroundColor="$color005" borderRadius="$10" filter="blur(130px)" />
           <YStack
-            position="absolute" bottom="25%" left="-14" width={384} height={384} backgroundColor="$color" borderRadius="$10"
+            position="absolute" bottom="25%" left="-14" width={384} height={384} backgroundColor="$color005" borderRadius="$10" filter="blur(130px)"
             style={{ animationDelay: '2s' }}
   />
 
           <YStack position="relative" zIndex={10} maxWidth={576} width="100%">
             <YStack marginBottom="$6">
               <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" backgroundColor="$color3" backdropFilter="blur(4px)" borderRadius="$10" borderWidth={1} borderColor="$borderColor" marginBottom="$5">
-                <Sparkles size={16} color="$color" />
+                <Sparkles size={16} />
                 <SizableText fontSize="$3" color="$color">AI-powered development</SizableText>
               </XStack>
 
@@ -180,7 +180,7 @@ export default function LoginPage() {
                   <YStack minHeight={60}>
                     <Paragraph
                       fontSize="$7" color="$color" fontWeight="300" {...{ opacity: isTyping ? 1 : 0 }}
-                    >
+                     lineHeight="1.4">
                       {ideas[currentIdea]}
                       <SizableText width="$0.5" height="$5" backgroundColor="$color" marginLeft="$1" />
                     </Paragraph>

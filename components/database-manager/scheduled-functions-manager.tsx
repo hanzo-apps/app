@@ -159,7 +159,7 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" height="100%">
-        <Loader2 size={24} color="$color11" />
+        <Loader2 size={24} />
       </XStack>
     );
   }
@@ -167,7 +167,7 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
   if (error) {
     return (
       <YStack alignItems="center" justifyContent="center" height="100%" gap="$4">
-        <AlertCircle size={32} color="$red9" />
+        <AlertCircle size={32} />
         <Paragraph fontSize="$3" color="$color11">{error}</Paragraph>
         <Button variant="outline" onClick={loadFunctions}>
           Retry
@@ -189,7 +189,7 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
       <YStack flex={1} overflow="scroll">
         {scheduledFunctions.length === 0 ? (
           <YStack alignItems="center" justifyContent="center" height="100%" padding="$6" borderWidth={1} borderRadius="$5">
-            <Clock size={32} color="$color11" />
+            <Clock size={32} />
             <Paragraph fontSize="$3" color="$color11" textAlign="center">No scheduled functions yet</Paragraph>
             <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$4" textAlign="center">
               Run edge functions on a cron schedule
@@ -209,7 +209,7 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
                 <XStack alignItems="flex-start" justifyContent="space-between" gap="$2">
                   <YStack flex={1} minWidth={0} overflow="hidden">
                     <XStack alignItems="center" gap="$2" flexWrap="wrap">
-                      <Clock size={16} color="$orange9" />
+                      <Clock size={16} />
                       <SizableText fontFamily="$mono" fontWeight="500" numberOfLines={1}>{fn.name}</SizableText>
                       <SizableText fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5" borderRadius="$2" backgroundColor="$orange9" color="$orange10" flexShrink={0}>
                         {fn.cronExpression}

@@ -182,7 +182,7 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
             <H3 fontSize="$1" fontWeight="500" color="$color11">Project access</H3>
             <Row>
               <XStack minWidth={0} alignItems="center" gap="$2.5">
-                <Users size={16} color="$color11" />
+                <Users size={16} />
                 <YStack minWidth={0}>
                   <Paragraph fontSize={13}>Visible to your workspace</Paragraph>
                   <Paragraph fontSize={11} color="$color11">Anyone in your workspace can view this project</Paragraph>
@@ -210,7 +210,7 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
           {/* Create invite link. */}
           <Row>
             <XStack minWidth={0} alignItems="center" gap="$2.5">
-              <Link2 size={16} color="$color11" />
+              <Link2 size={16} />
               <YStack minWidth={0}>
                 <Paragraph fontSize={13}>Create invite link</Paragraph>
                 <Paragraph fontSize={11} color="$color11">Anyone with this link can join</Paragraph>
