@@ -26,8 +26,17 @@ import { Page } from "@/types";
 
 const TITLE_RE = /<<<<<<< START_TITLE (.*?) >>>>>>> END_TITLE/;
 const TITLE_RE_G = /<<<<<<< START_TITLE (.*?) >>>>>>> END_TITLE/g;
-const HTML_START_RE = /<!DOCTYPE html>[\s\S]*/i;
-const HTML_TAG_RE = /<html[\s\S]*/i;
+// A document ENDS at `</html>`; whatever the model writes after it is commentary,
+// not page content. These prefer the bounded form and fall back to "to the end"
+// only while the closing tag has not streamed in yet.
+//
+// Unbounded was the whole rule before, so a model that added a summary after its
+// closing tag had that prose appended into the page — browsers hoist stray text
+// into <body>, so the preview grew a tall, near-empty tail exactly as long as
+// whatever was written. A user reported it as "blank but scrolls as far down as
+// the pasted text", which is precisely the shape of a spec echoed back.
+const HTML_START_RE = /<!DOCTYPE html>[\s\S]*?<\/html\s*>|<!DOCTYPE html>[\s\S]*/i;
+const HTML_TAG_RE = /<html[\s\S]*?<\/html\s*>|<html[\s\S]*/i;
 
 /**
  * Drop `<think>…</think>` reasoning blocks (and any trailing, still-open

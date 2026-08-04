@@ -208,7 +208,15 @@ export const useCallAi = ({
             // work and discarding it would be its own bug — but it is named.
             // Unlike the empty-response cases above, retrying CAN change this
             // one, so this is the one place that may honestly suggest it.
-            const cut = newPages.filter((p) => unterminatedDocument(p.html));
+            // Checked against the RAW stream, not the parsed pages. `parsePages`
+            // runs `ensureCompleteHtml`, which APPENDS `</html>` so a still-
+            // streaming fragment can render in the preview — so by the time a
+            // page exists it always looks terminated, and this guard could never
+            // fire where it was first written. The stream is the only place the
+            // truth survives.
+            const cut = unterminatedDocument(splitSideChannel(contentResponse).content)
+              ? newPages
+              : [];
             setisAiWorking(false);
 
             if (cut.length) {
