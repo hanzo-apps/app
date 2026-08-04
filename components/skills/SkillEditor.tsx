@@ -99,20 +99,20 @@ export function SkillEditor({ skill, mode, onSave, onCancel }: SkillEditorProps)
   return (
     <YStack backgroundColor="$background" height="inherit">
       {/* Header */}
-      <YStack borderBottomWidth={1} paddingHorizontal="$5" paddingVertical="$4" flexShrink={0}>
+      <YStack borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$5" paddingVertical="$4" flexShrink={0}>
         <XStack alignItems="center" justifyContent="space-between">
           <XStack alignItems="center" gap="$3">
             <Button variant="ghost" size="sm" onClick={onCancel}>
               <ArrowLeft size={16} />
             </Button>
-            <div>
+            <YStack>
               <H1 fontSize="$8" fontWeight="500">
                 {mode === 'create' ? 'Create New Skill' : 'Edit Skill'}
               </H1>
               <Paragraph fontSize="$3" color="$color11">
                 Define specialized knowledge for the AI assistant
               </Paragraph>
-            </div>
+            </YStack>
           </XStack>
           <XStack gap="$2">
             <Button variant="outline" onClick={onCancel}>
@@ -128,7 +128,7 @@ export function SkillEditor({ skill, mode, onSave, onCancel }: SkillEditorProps)
 
       {/* Editor Tabs */}
       <YStack flex={1} overflow="scroll">
-        <YStack borderBottomWidth={1} paddingHorizontal="$5" flexShrink={0}>
+        <YStack borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$5" flexShrink={0}>
           <XStack gap="$2">
             <Button
               onClick={() => setActiveTab('form')}
@@ -150,7 +150,7 @@ export function SkillEditor({ skill, mode, onSave, onCancel }: SkillEditorProps)
         {activeTab === 'form' && (
           <YStack flex={1} paddingHorizontal="$5" paddingVertical="$4" overflow="scroll">
             <YStack rowGap="$5">
-              <div>
+              <YStack>
                 <Label htmlFor="name">Skill Name *</Label>
                 <Input
                   id="name"
@@ -162,9 +162,9 @@ export function SkillEditor({ skill, mode, onSave, onCancel }: SkillEditorProps)
                 <Paragraph fontSize="$1" color="$color11" marginTop="$1">
                   Lowercase with hyphens (will be used as file name)
                 </Paragraph>
-              </div>
+              </YStack>
 
-              <div>
+              <YStack>
                 <Label htmlFor="description">Description *</Label>
                 <Input
                   id="description"
@@ -176,9 +176,9 @@ export function SkillEditor({ skill, mode, onSave, onCancel }: SkillEditorProps)
                 <Paragraph fontSize="$1" color="$color11" marginTop="$1">
                   Max 200 characters - shown in skills list
                 </Paragraph>
-              </div>
+              </YStack>
 
-              <div>
+              <YStack>
                 <Label htmlFor="markdown">Skill Content *</Label>
                 <Textarea
                   id="markdown"
@@ -190,13 +190,13 @@ export function SkillEditor({ skill, mode, onSave, onCancel }: SkillEditorProps)
                 <Paragraph fontSize="$1" color="$color11" marginTop="$1">
                   Markdown content that the AI will read when using this skill
                 </Paragraph>
-              </div>
+              </YStack>
 
               <YStack backgroundColor="$color3" borderRadius="$5" padding="$4">
-                <H3 fontWeight="500" marginBottom="$2" alignItems="center" gap="$2">
+                <XStack alignItems="center" gap="$2" marginBottom="$2">
                   <FileText size={16} />
-                  Tips for Writing Skills
-                </H3>
+                  <H3 fontSize="$5" fontWeight="500">Tips for Writing Skills</H3>
+                </XStack>
                 <YStack rowGap="$1" marginLeft="$4.5">
                   <SizableText fontSize="$3" color="$color11">Be specific and actionable - provide clear guidelines and examples</SizableText>
                   <SizableText fontSize="$3" color="$color11">Use markdown formatting for better readability</SizableText>
@@ -212,7 +212,7 @@ export function SkillEditor({ skill, mode, onSave, onCancel }: SkillEditorProps)
         {activeTab === 'raw' && (
           <YStack flex={1} overflow="scroll" paddingHorizontal="$5" paddingVertical="$4">
             <YStack maxWidth={896}>
-              <div>
+              <YStack>
                 <Label htmlFor="raw-content">Raw SKILL.md Content</Label>
                 <Textarea
                   id="raw-content"
@@ -224,7 +224,7 @@ export function SkillEditor({ skill, mode, onSave, onCancel }: SkillEditorProps)
                 <Paragraph fontSize="$1" color="$color11" marginTop="$1">
                   Direct editing of the SKILL.md file (YAML frontmatter + markdown)
                 </Paragraph>
-              </div>
+              </YStack>
             </YStack>
           </YStack>
         )}

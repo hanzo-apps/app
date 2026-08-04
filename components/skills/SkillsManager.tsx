@@ -218,10 +218,7 @@ export function SkillsManager() {
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" height="100%">
-        <YStack>
-          <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$color12" alignSelf="center"></YStack>
-          <Paragraph marginTop="$4" textAlign="center">Loading skills...</Paragraph>
-        </YStack>
+        <Paragraph color="$color11">Loading skills…</Paragraph>
       </XStack>
     );
   }
@@ -231,11 +228,13 @@ export function SkillsManager() {
       <YStack height="100%">
         {/* Toolbar */}
         <YStack paddingTop="$4" paddingHorizontal="$4" paddingBottom="$3" flexShrink={0} $sm={{ paddingTop: "$5", paddingHorizontal: "$5", paddingBottom: "$3" }}>
-          <YStack alignSelf="center" maxWidth={896} gap="$3">
+          <YStack alignSelf="center" width="100%" maxWidth={896} gap="$3">
             <YStack gap="$3" $sm={{ flexDirection: "row" }}>
               {/* Search */}
               <YStack position="relative" flex={1}>
-                <Search size={16} />
+                <YStack position="absolute" left={12} top={0} bottom={0} justifyContent="center" pointerEvents="none">
+                  <Search size={16} />
+                </YStack>
                 <Input
                   placeholder="Search skills..."
                   value={searchQuery}
@@ -278,16 +277,16 @@ export function SkillsManager() {
 
             {/* Skill Evaluation Toggle */}
             <XStack alignItems="center" justifyContent="space-between" padding="$3" backgroundColor="$color3" borderRadius="$5" borderWidth={1} borderColor="$borderColor">
-              <XStack alignItems="center" gap="$2">
+              <XStack alignItems="center" gap="$2" flex={1} minWidth={0}>
                 <Sparkles size={16} />
-                <div>
+                <YStack flex={1} minWidth={0}>
                   <Label htmlFor="eval-toggle" fontSize="$3" fontWeight="500" cursor="pointer">
                     Skill Evaluation
                   </Label>
                   <Paragraph fontSize="$1" color="$color11">
                     Pre-check which skills are relevant before each message. Increases initial token usage per message.
                   </Paragraph>
-                </div>
+                </YStack>
               </XStack>
               <Switch
                 id="eval-toggle"
@@ -301,7 +300,7 @@ export function SkillsManager() {
 
         {/* Skills List */}
         <YStack flex={1} paddingHorizontal="$4" paddingTop="$3" paddingBottom="$4" overflow="scroll" $sm={{ paddingHorizontal: "$5", paddingTop: "$3", paddingBottom: "$5" }}>
-          <YStack alignSelf="center" maxWidth={896}>
+          <YStack alignSelf="center" width="100%" maxWidth={896}>
             {filteredSkills.length === 0 ? (
               <YStack paddingVertical="$8" alignItems="center">
                 <Sparkles size={48} />
@@ -320,11 +319,11 @@ export function SkillsManager() {
               <YStack rowGap="$5">
                 {/* Built-in Skills */}
                 {builtInSkills.length > 0 && (
-                  <div>
-                    <H2 fontSize="$6" fontWeight="500" marginBottom="$3" alignItems="center" gap="$2">
+                  <YStack>
+                    <XStack alignItems="center" gap="$2" marginBottom="$3">
                       <FileText size={20} />
-                      Built-in Skills ({builtInSkills.length})
-                    </H2>
+                      <H2 fontSize="$6" fontWeight="500">Built-in Skills ({builtInSkills.length})</H2>
+                    </XStack>
                     <YStack gap="$3">
                       {builtInSkills.map(skill => (
                         <SkillCard
@@ -338,16 +337,16 @@ export function SkillsManager() {
   />
                       ))}
                     </YStack>
-                  </div>
+                  </YStack>
                 )}
 
                 {/* Custom Skills */}
                 {customSkills.length > 0 && (
-                  <div>
-                    <H2 fontSize="$6" fontWeight="500" marginBottom="$3" alignItems="center" gap="$2">
+                  <YStack>
+                    <XStack alignItems="center" gap="$2" marginBottom="$3">
                       <Sparkles size={20} />
-                      Custom Skills ({customSkills.length})
-                    </H2>
+                      <H2 fontSize="$6" fontWeight="500">Custom Skills ({customSkills.length})</H2>
+                    </XStack>
                     <YStack gap="$3">
                       {customSkills.map(skill => (
                         <SkillCard
@@ -361,7 +360,7 @@ export function SkillsManager() {
   />
                       ))}
                     </YStack>
-                  </div>
+                  </YStack>
                 )}
               </YStack>
             )}
@@ -421,18 +420,18 @@ function SkillCard({ skill, isEnabled, globalEnabled, onToggle, onEdit, onDelete
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <YStack borderWidth={1} borderRadius="$5" {...{ borderColor: effectiveEnabled ? "$color12" : "$borderColor" }}>
+      <YStack borderWidth={1} borderRadius="$5" borderColor={effectiveEnabled ? "$color12" : "$borderColor"}>
         <YStack padding="$4">
           <XStack alignItems="flex-start" justifyContent="space-between" gap="$4">
             <YStack flex={1} minWidth={0}>
               <XStack alignItems="center" gap="$2" marginBottom="$2">
-                <CollapsibleTrigger alignItems="center" gap="$2">
+                <CollapsibleTrigger flexDirection="row" alignItems="center" gap="$2" minWidth={0}>
                   {isOpen ? (
                     <ChevronDown size={16} />
                   ) : (
                     <ChevronRight size={16} />
                   )}
-                  <H3 fontWeight="500" numberOfLines={1}>{skill.name}</H3>
+                  <H3 fontSize="$5" fontWeight="500" numberOfLines={1}>{skill.name}</H3>
                 </CollapsibleTrigger>
                 {skill.isBuiltIn && (
                   <Badge variant="secondary">
@@ -478,22 +477,22 @@ function SkillCard({ skill, isEnabled, globalEnabled, onToggle, onEdit, onDelete
         </YStack>
 
         <CollapsibleContent>
-          <YStack borderTopWidth={1} paddingHorizontal="$4" paddingVertical="$3" backgroundColor="$color3">
+          <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$3" backgroundColor="$color3">
             <YStack rowGap="$2">
               <XStack alignItems="center" gap="$2">
                 <SizableText fontWeight="500" fontSize="$3" color="$color11">Updated:</SizableText>
                 <SizableText fontSize="$3" color="$color11">{skill.updatedAt.toLocaleDateString()}</SizableText>
               </XStack>
-              <div>
+              <YStack>
                 <SizableText fontWeight="500" color="$color11" fontSize="$3">Description:</SizableText>
                 <Paragraph marginTop="$1">{skill.description}</Paragraph>
-              </div>
-              <div>
+              </YStack>
+              <YStack>
                 <SizableText fontWeight="500" color="$color11" fontSize="$3">Content:</SizableText>
                 <SizableText marginTop="$1" fontSize="$1" backgroundColor="$background" padding="$3" borderRadius="$2" borderWidth={1} overflow="scroll" maxHeight={384} whiteSpace="pre" fontFamily="$mono">
                   {skill.markdown}
                 </SizableText>
-              </div>
+              </YStack>
             </YStack>
           </YStack>
         </CollapsibleContent>
