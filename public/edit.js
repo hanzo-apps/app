@@ -584,15 +584,39 @@
   // Anchoring moves the HOST, so the panel still opens from the launcher and the
   // shadow boundary is untouched. A selector that matches nothing falls back to
   // the corner rather than losing the widget.
-  function mount() {
+  // Put the launcher where `hanzo:anchor` points. Returns true once it lands in
+  // the slot. The catch: that slot is usually rendered by the host app's
+  // framework AFTER this script runs — hanzo.app's dock is a React node that does
+  // not exist at script-load — so a ONE-SHOT querySelector always missed it and
+  // the mark fell back to the fixed corner, full size, sitting on the builder
+  // chrome. Observed exactly that, three times. So `place` is retryable and
+  // `mount` watches for the slot instead of giving up on the first miss.
+  function place() {
     var sel = meta('hanzo:anchor');
-    var slot = sel ? document.querySelector(sel) : null;
-    if (slot) {
+    if (!sel) return false;
+    var slot = document.querySelector(sel);
+    if (!slot) return false;
+    if (host.parentNode !== slot) {
       host.setAttribute('data-hanzo-anchored', '');
       slot.appendChild(host);
-      return;
     }
+    return true;
+  }
+  function mount() {
+    if (place()) return;
+    // Show it at the corner meanwhile, and WATCH for the anchor to appear — the
+    // corner is the fallback, never the destination when a slot is named. Stop
+    // watching the moment it lands, or after a grace period on a page that simply
+    // has no such slot, so this never observes the DOM forever.
     document.body.appendChild(host);
+    if (!meta('hanzo:anchor')) return;
+    try {
+      var obs = new MutationObserver(function () { if (place()) obs.disconnect(); });
+      obs.observe(document.documentElement, { childList: true, subtree: true });
+      setTimeout(function () { obs.disconnect(); }, 10000);
+    } catch (e) {
+      /* no MutationObserver: the corner fallback stands */
+    }
   }
   if (document.body) {
     mount();

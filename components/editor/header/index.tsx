@@ -229,7 +229,7 @@ export function Header({
                   type="button"
                   title="Browse pages"
                   aria-label="Browse pages"
-                  className="flex max-w-[12rem] items-center gap-1.5 rounded-lg bg-foreground/[0.04] px-2.5 py-1.5 text-sm text-foreground ring-1 ring-border transition-colors duration-150 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="flex h-8 max-w-[12rem] items-center gap-1.5 rounded-lg bg-foreground/[0.04] px-2.5 text-sm text-foreground ring-1 ring-border transition-colors duration-150 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <span className="truncate font-mono text-xs">
                     {currentPage}

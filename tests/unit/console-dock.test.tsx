@@ -236,13 +236,24 @@ describe("the workspace controls ride far right on the bar", () => {
     expect(screen.queryByRole("button", { name: /talk to hanzo/i })).toBeNull();
   });
 
-  it("puts both of them to the right of the status readout", () => {
-    const { dock } = setup();
+  it("sits the panel toggle on the LEFT, by the pane it controls", () => {
+    // The toggle shows and hides the LEFT chat pane, so it lives on the left: a
+    // right-side control that collapsed the left pane read as belonging to the
+    // preview and people could not find it.
+    setup();
     const ai = screen.getByRole("button", { name: /chat panel/i });
+    expect((ai.parentElement as HTMLElement).className).toContain("left-2");
+  });
+
+  it("sits the mic and Enso on the RIGHT, mic first", () => {
+    setup();
     const mic = screen.getByRole("button", { name: /talk to hanzo/i });
-    const cluster = ai.parentElement as HTMLElement;
-    expect(cluster).toContainElement(mic);
+    const cluster = mic.parentElement as HTMLElement;
     expect(cluster.className).toContain("right-2");
+    // Enso anchors into #enso-dock, ordered AFTER the mic (to its right).
+    const dock = cluster.querySelector("#enso-dock");
+    expect(dock).not.toBeNull();
+    expect(mic.compareDocumentPosition(dock as Node) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("clicking a control does not resize or toggle the dock", () => {

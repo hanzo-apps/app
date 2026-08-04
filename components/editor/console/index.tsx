@@ -143,8 +143,30 @@ export function Console({
           <span className="pointer-events-none absolute left-1/2 top-[3px] h-1 w-8 -translate-x-1/2 rounded-full bg-transparent transition-colors duration-150 group-hover/dock:bg-foreground/30 group-focus-visible/dock:bg-foreground/45 group-active/dock:bg-foreground/45" />
         </div>
 
-        {/* State, inert: it rides on the bar but never eats the drag. */}
-        <div className="pointer-events-none relative flex h-full items-center gap-2.5 pl-3 pr-[4.75rem] text-[11px] text-muted-foreground">
+        {/* Far LEFT — the chat/AI panel toggle. It shows and hides the LEFT pane,
+            so it belongs on the left: a right-side control that collapsed the left
+            pane read as belonging to the preview, and people could not find it.
+            Floated over the bar like the right cluster so the separator underneath
+            stays one clean, uninterrupted drag target. */}
+        <div className="absolute left-2 top-0 flex h-full items-center">
+          <button
+            type="button"
+            onClick={onToggleSidebar}
+            aria-label="Chat panel"
+            aria-expanded={!sidebarCollapsed}
+            className="flex size-5 items-center justify-center rounded text-muted-foreground transition-colors duration-150 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {sidebarCollapsed ? (
+              <PanelLeft className="size-3.5" />
+            ) : (
+              <PanelLeftClose className="size-3.5" />
+            )}
+          </button>
+        </div>
+
+        {/* State, inert: it rides on the bar but never eats the drag. Padded to
+            clear the panel toggle on the left and the mic + Enso on the right. */}
+        <div className="pointer-events-none relative flex h-full items-center gap-2.5 pl-9 pr-[4.25rem] text-[11px] text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">
             <span className="relative flex size-1.5 items-center justify-center">
               <span className="absolute inline-flex size-1.5 animate-ping rounded-full bg-[var(--brand-accent)] opacity-60 motion-reduce:animate-none" />
@@ -181,28 +203,11 @@ export function Console({
           </span>
         </div>
 
-        {/* Far right — the workspace controls, floated over the bar so the
-            separator underneath stays one clean, uninterrupted drag target. */}
+        {/* Far right — the workspace AI controls, floated over the bar so the
+            separator underneath stays one clean, uninterrupted drag target.
+            Order is mic then Enso: the mic is the conversation, Enso the editor,
+            and the user asked for the mark to sit to the RIGHT of the mic. */}
         <div className="absolute right-2 top-0 flex h-full items-center gap-0.5">
-          {/* Enso mounts HERE (public/edit.js, `hanzo:anchor` in app/dev/layout).
-              It used to float at the viewport corner, where it sat on top of the
-              customer's preview — so /dev turned it off entirely. In the control
-              plane it is out of the canvas and beside the other workspace
-              controls, which is where a tool for editing hanzo.app belongs. */}
-          <span id="enso-dock" className="flex items-center [&_[data-hanzo-edit]]:flex" />
-          <button
-            type="button"
-            onClick={onToggleSidebar}
-            aria-label="Chat panel"
-            aria-expanded={!sidebarCollapsed}
-            className="flex size-5 items-center justify-center rounded text-muted-foreground transition-colors duration-150 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            {sidebarCollapsed ? (
-              <PanelLeft className="size-3.5" />
-            ) : (
-              <PanelLeftClose className="size-3.5" />
-            )}
-          </button>
           {voice && (
             <Voice
               voice={voice}
@@ -219,6 +224,13 @@ export function Console({
               )}
             />
           )}
+          {/* Enso mounts HERE (public/edit.js, `hanzo:anchor` in app/dev/layout),
+              to the RIGHT of the mic. It used to float at the viewport corner, on
+              top of the customer's preview — so /dev turned it off entirely. In
+              the control plane it is out of the canvas and beside the other
+              workspace controls, which is where a tool for editing hanzo.app
+              belongs. Anchored size is pinned small in public/edit.js. */}
+          <span id="enso-dock" className="flex items-center [&_[data-hanzo-edit]]:flex" />
         </div>
       </div>
 
