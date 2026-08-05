@@ -243,7 +243,7 @@ export const accent = {
    * in the browser, not guessed. The sign-in modal's only button was invisible.
    *
    * So the foreground travels with the fill, here, once. A call site that names
-   * a colour on an `accent` label is re-opening this bug.
+   * `$color` or `$color11` on an `accent` label is re-opening this bug.
    *
    * And it only reaches a label the BUTTON paints. This is the half that is
    * easy to miss: `<Button {...accent}><SizableText>…</SizableText></Button>`
@@ -252,13 +252,28 @@ export const accent = {
    * mounted — where `--color` is re-based to 80%. Measured on both modals:
    * fill rgb(51,51,51) and border rgb(69,69,69), correct, with the label at
    * rgb(204,204,204) — `$color11`, the QUIET foreground, on the loudest
-   * control in the dialog. Passing the string straight through (`<Button
-   * {...accent}>Log In to Continue</Button>`) hands it to the library's own
-   * text host, which paints rgb(255,255,255): 7.87:1 → 12.63:1.
+   * control in the dialog. 7.87:1 where the recipe promises 12.63:1.
    *
-   * The wrapper is usually there to set `fontSize`, which the Button's `size`
-   * already decides. So: let the label be text. If a size really must change,
-   * move it to the Button, never to a Text inside it.
+   * Two guesses about the cure are both WRONG, and each was measured:
+   *
+   *   - "Just don't name a colour." A bare `<SizableText>` inside the Button
+   *     still measures rgb(204,204,204). Silence is not neutral here; the
+   *     nested scope answers for you. The rule is to SAY `$color12`, not to
+   *     say nothing.
+   *   - "Hoist the size to the Button and drop the wrapper." `fontSize="$1"`
+   *     on the Button does not reach the label — still 13px, the `size`
+   *     default. So a control that genuinely wants 11px keeps its wrapper.
+   *
+   * Which leaves two honest shapes. No size of your own → hand the string
+   * straight to the Button and let its text host paint it (both modals).
+   * A deliberate size or `numberOfLines` → keep the wrapper and give it
+   * `color="$color12"`, measured 11px and rgb(255,255,255) (the five toolbar
+   * and sidebar controls). `tests/unit/emphasis-token.test.ts` scans for it.
+   *
+   * BUTTON ONLY. A plain `XStack` mounts no theme scope: /auth/callback
+   * spreads `accent` onto one whose label asks for `$color` and measures
+   * rgb(255,255,255) — correct, and NOT to be "fixed". The ban is exactly as
+   * wide as the re-basing, which is why the scan keys on `<Button`.
    *
    * `$color12`, for the reason `selected` gives above and by the same
    * measurement: a Button mounts its OWN theme scope, and inside it `--color`

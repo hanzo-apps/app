@@ -629,7 +629,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
             flexShrink={0} alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$3" paddingVertical="$1.5" {...accent}
           >
             {copied ? <Check size={14} /> : <Copy size={14} />}
-            <SizableText fontSize="$1" fontWeight="500" color="$color">{copied ? 'Copied' : 'Copy'}</SizableText>
+            <SizableText fontSize="$1" fontWeight="500" color="$color12">{copied ? 'Copied' : 'Copy'}</SizableText>
           </Button>
         </XStack>
 
@@ -683,11 +683,10 @@ function UpgradeCard({ onClick }: { onClick: () => void }) {
     <Button
       onClick={onClick}
       title="More credits & private apps"
-      variant="outline"
       width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$1.5" {...accent}
     >
       <Zap size={14} />
-      <SizableText numberOfLines={1} fontWeight="500" fontSize="$1" color="$color">Upgrade to Pro</SizableText>
+      <SizableText numberOfLines={1} fontWeight="500" fontSize="$1" color="$color12">Upgrade to Pro</SizableText>
     </Button>
   );
 }
