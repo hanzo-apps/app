@@ -242,3 +242,39 @@ The glass material and recipes come FROM the package — `@hanzo/ui/glass` +
 are deleted. The elevation ladder owns `--glass-shadow-1/2/3` (declared per
 canvas upstream since 8.0.52) — glass rules never read brand's generic
 `--shadow-*` names; `tests/unit/glass.test.ts` bites on exactly that.
+
+### Work items live in the cloud tracker, and "task" is the wrong word
+
+`/dev/:org/:project/issues` is the project's board. It stores NOTHING: rows come
+from cloud `/v1/tracker` through the same-origin BFF at `app/v1/tracker`, which
+is `proxy()` plus a prefix.
+
+The name matters, because three planes are easy to braid and cloud
+`apps/tracker/contract.go` is law about it. A **tracker Issue** is the ONE
+work-item primitive — the thing a human moves across a board. **hanzoai/tasks**
+is durable async EXECUTION, a different plane entirely. And the hanzo-mcp
+`tasks` tool is a private todo file on disk. So this surface is called Issues
+end to end, and the MCP tools are `tracker_*` — naming any of it "tasks" points
+the next reader at one of the two planes that cannot answer the question.
+
+Two rules the types cannot state:
+
+- **An agent's run is a SESSION, not a "mission".** Nothing in the fleet models a
+  mission; `/v1/agents/sessions` (status `running|paused|done|error`) is the
+  agent-run plane, and "mission-control" is only an informal name for the console
+  over it. An issue points at one through `extRef`, which the tracker contract
+  already defines as "a link INTO another plane", using the anchor
+  `session:<id>` (`sessionRef`/`refSession` in `lib/api/tracker.ts`). No new
+  column, no metadata bag. The board joins the two planes in ONE extra request
+  and renders status inline — never one lookup per row.
+- **A project slug and a board key are different alphabets** (`my-site` vs
+  `^[A-Z][A-Z0-9]{1,7}$`), and there is no total function between them — four
+  leading characters collide constantly. So the app never DERIVES the mapping: it
+  lists boards and matches key-then-name (`boardFor`), which is why both
+  `/dev/acme/ENG/issues` and `/dev/acme/my-site/issues` open the same board.
+  `proposeKey` mirrors cloud's own `deriveKey` for the create form's prefill
+  only, and widens the one-character case that cloud's regex would refuse.
+
+Tenancy is never ours to assert: cloud `middleware_identity.go` STRIPS every
+client-supplied authority header and re-mints `X-Org-Id` from the validated
+bearer, so the BFF forwards the token and nothing else.

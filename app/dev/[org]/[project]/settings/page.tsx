@@ -23,6 +23,7 @@ import {
   Pencil,
   Trash2,
   GitBranch,
+  ListChecks,
   Rocket,
 } from "lucide-react";
 
@@ -36,6 +37,7 @@ import {
   listDeployments,
   liveUrlOf,
   builderLink,
+  issuesLink,
   FRAMEWORKS,
   type Project,
   type Deployment,
@@ -136,6 +138,12 @@ export default function ProjectSettingsPage() {
             <Circle size={6} color={st.text} />
             <SizableText fontSize={11} letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
           </XStack>
+          <Link href={issuesLink(slug, org)}>
+            <Button variant="outline" gap="$2">
+              <ListChecks size={14} />
+              Issues
+            </Button>
+          </Link>
           <Link href={builderLink(slug, org)}>
             <Button variant="outline" gap="$2">
               <Pencil size={14} />

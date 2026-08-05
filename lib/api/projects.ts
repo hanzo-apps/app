@@ -198,6 +198,13 @@ export function builderLink(slug: string, org?: string | null): string {
   return `/dev?project=${encodeURIComponent(slug)}`;
 }
 
+/** The per-project WORK ITEMS board (cloud tracker) — needs the org. */
+export function issuesLink(slug: string, org?: string | null): string {
+  const o = (org || '').trim();
+  if (o) return `/dev/${encodeURIComponent(o)}/${encodeURIComponent(slug)}/issues`;
+  return `/dev?project=${encodeURIComponent(slug)}`;
+}
+
 /** The per-project CONFIG page (settings/integrations/Base) — needs the org. */
 export function configLink(slug: string, org?: string | null): string {
   const o = (org || '').trim();

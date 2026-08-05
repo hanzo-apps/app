@@ -23,6 +23,7 @@ import type { NextRequest } from 'next/server';
 
 import { session, type Session } from '@/lib/iam';
 import { parseOwnerRepo } from '@/lib/git/sync';
+import { requireSameOrigin } from '@/lib/org/csrf';
 import type { Org, OrgContext } from '@/lib/org/types';
 
 const trim = (s: string) => s.replace(/\/+$/, '');
@@ -114,16 +115,22 @@ export async function resolveOrgContext(req: NextRequest): Promise<OrgContext | 
 }
 
 /**
- * Forward a request to the org-scoped cloud `/v1/projects` surface as the user.
+ * Forward a request to one org-scoped cloud surface as the user.
+ *
+ * `prefix` is the cloud surface this call may reach — "/v1/projects",
+ * "/v1/tracker" — and it is the ONLY thing that varies between BFFs, so it is a
+ * parameter rather than a second copy of this function. The caller passes an
+ * already-authorized `subpath` (e.g. "" or "/my-site"); `proxy` below is what
+ * authorizes one off the wire.
  *
  * Attaches the user's IAM bearer (the gateway derives the tenant from its owner
  * claim — the authoritative org scope + billing attribution). For a GLOBAL ADMIN
  * that has switched scope, also stamps `X-Org-Id` (cloud honors it only for
  * admin-org members; for anyone else it is ignored, so stamping is always safe).
- * The caller passes an already-authorized `subpath` (e.g. "" or "/my-site").
  */
-export async function forwardProjects(
+export async function forward(
   req: NextRequest,
+  prefix: string,
   subpath: string,
   init: { method: string; body?: BodyInit | null; contentType?: string },
 ): Promise<Response> {
@@ -139,7 +146,7 @@ export async function forwardProjects(
   // Stamp X-Org-Id ONLY for a validated global admin acting cross-org.
   if (scope.crossOrg) headers['X-Org-Id'] = scope.org;
 
-  const url = `${cloudBase()}/v1/projects${subpath}`;
+  const url = `${cloudBase()}${prefix}${subpath}`;
   try {
     const res = await fetch(url, {
       method: init.method,
@@ -153,11 +160,84 @@ export async function forwardProjects(
       status: res.status,
       headers: {
         'Content-Type': res.headers.get('content-type') || 'application/json',
+        'Cache-Control': 'no-store',
       },
     });
   } catch {
-    return jsonError('projects backend unreachable', 502);
+    return jsonError(`${prefix} backend unreachable`, 502);
   }
+}
+
+/**
+ * Reject any traversal/escape so a forward stays under its prefix. A malformed
+ * percent-escape (decodeURIComponent throws) is treated as hostile → rejected as
+ * invalid, never a 500.
+ *
+ * This is the guard that keeps a catch-all BFF from being an open relay onto the
+ * whole cloud: without it, `/v1/tracker/../iam/users` would reach `/v1/iam`. It
+ * lives here, once, because a security check with two copies is a security check
+ * with one stale copy.
+ */
+export function cleanSubpath(segments: string[] | undefined): string | null {
+  if (!segments || segments.length === 0) return '';
+  for (const s of segments) {
+    if (!s) continue;
+    let decoded: string;
+    try {
+      decoded = decodeURIComponent(s);
+    } catch {
+      return null; // malformed % escape → reject
+    }
+    const lower = decoded.toLowerCase();
+    const raw = s.toLowerCase();
+    if (
+      lower === '..' ||
+      lower.includes('/') ||
+      lower.includes('\\') ||
+      raw.includes('%2e') ||
+      raw.includes('%2f') ||
+      raw.includes(';')
+    ) {
+      return null;
+    }
+  }
+  return '/' + segments.map((s) => encodeURIComponent(s)).join('/');
+}
+
+/**
+ * Serve one catch-all BFF call: guard the subpath, refuse a cross-origin
+ * mutation, carry the body through unchanged, forward as the caller.
+ *
+ * Every `/v1/<surface>/[[...path]]` route is this function plus a prefix, so the
+ * traversal guard and the CSRF gate cannot drift apart between surfaces.
+ */
+export async function proxy(
+  req: NextRequest,
+  segments: string[] | undefined,
+  prefix: string,
+  method: string,
+  withBody: boolean,
+): Promise<Response> {
+  // CSRF: a cross-origin mutating request is refused BEFORE any identity or
+  // forward work. GET is a no-op here.
+  const csrf = requireSameOrigin(req);
+  if (csrf) return csrf;
+
+  const base = cleanSubpath(segments);
+  if (base === null) return jsonError('invalid path', 400);
+  const sub = base + (req.nextUrl.search || '');
+
+  let body: BodyInit | null = null;
+  let contentType: string | undefined;
+  if (withBody) {
+    // Pass the body through unchanged (JSON, or a binary deploy artifact).
+    // Reading as an ArrayBuffer preserves tars.
+    contentType = req.headers.get('content-type') || undefined;
+    const buf = await req.arrayBuffer();
+    body = buf.byteLength ? buf : null;
+  }
+
+  return forward(req, prefix, sub, { method, body, contentType });
 }
 
 function jsonError(error: string, status: number): Response {

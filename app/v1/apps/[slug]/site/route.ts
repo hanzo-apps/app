@@ -16,7 +16,7 @@
  */
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { forwardProjects } from '@/lib/org/server';
+import { forward } from '@/lib/org/server';
 
 export const runtime = 'nodejs';
 
@@ -97,7 +97,9 @@ export async function GET(req: NextRequest, ctx: Ctx) {
   }
 
   // The org-scoped record (auth + tenancy enforced by the shared forward).
-  const recRes = await forwardProjects(req, `/${encodeURIComponent(clean)}`, { method: 'GET' });
+  const recRes = await forward(req, '/v1/projects', `/${encodeURIComponent(clean)}`, {
+    method: 'GET',
+  });
   if (!recRes.ok) {
     return NextResponse.json(
       { liveUrl: null, pages: [], error: `project unavailable (${recRes.status})` },
