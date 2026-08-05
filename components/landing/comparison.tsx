@@ -266,7 +266,7 @@ const ROWS: Row[] = [
 // Severity reads as LIGHTNESS, not hue — the house is monochrome, and the
 // argument ("row one is a clean sweep") survives it: Hanzo's row stays solid
 // white while everyone else's dots fade out.
-const DOT: Record<Tone, React.ComponentProps<typeof SizableText>> = {
+const DOT: Record<Tone, React.ComponentProps<typeof YStack>> = {
   good: { backgroundColor: "$color" },
   mid: { backgroundColor: "$color", opacity: 0.45 },
   bad: { backgroundColor: "$color", opacity: 0.2 },
@@ -279,13 +279,13 @@ const TEXT: Record<Tone, string> = {
   na: "$color11",
 };
 
+// A stack, not a text. `SizableText` renders a <span>, and width/height do not
+// build a box on an inline element: every dot measured 0x7 or 12.7x18 with the
+// fill painting nothing, so the legend read as four bare words and the "clean
+// sweep of green" that IS the argument was never on screen. `flexShrink={0}`
+// because these sit in flex rows that would otherwise crush them to zero.
 function Dot({ tone }: { tone: Tone }) {
-  return (
-    <SizableText
-      aria-hidden
-      height={7} width={7} flex={0} borderRadius="$10" {...DOT[tone]}
-  />
-  );
+  return <YStack aria-hidden height={7} width={7} flexShrink={0} borderRadius="$10" {...DOT[tone]} />;
 }
 
 // The criterion's icon by column index (JSX can't render COLS[ci].icon inline).
@@ -303,7 +303,7 @@ export default function Comparison() {
     el.scrollBy({ left: dir * Math.max(340, el.clientWidth * 0.8), behavior: "smooth" });
   };
   return (
-    <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
+    <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
       <YStack alignSelf="center" maxWidth={1152}>
         <Reveal alignSelf="center" width="100%" maxWidth={672}>
           <Paragraph textAlign="center" fontFamily="$mono" fontSize={11} color="$color11">
@@ -393,78 +393,83 @@ export default function Comparison() {
               </XStack>
             </XStack>
 
-            <YStack position="relative">
-              {/* right edge fade — signals there's more to slide to */}
-              <YStack pointerEvents="none" position="absolute" top="$0" bottom="$0" right="$0" zIndex={20} width="$10" />
+            {/* Flex rows, not table tags. This was `<thead>/<tbody>/<tr>` nested
+                directly in a gui YStack — a <div> — with `SizableText` (a
+                <span>) for every cell and no <table> anywhere. The parser
+                cannot make that a table, so it generated anonymous ones: the
+                header alone measured 460px tall, the body 7,690px, the whole
+                matrix one 8,150px column with scrollWidth EQUAL to its client
+                width — so "slide across all 10 criteria" had nothing to slide.
+                It also cost three React hydration errors (<span> in <tr>,
+                <div> in <thead>, <div> in <tbody>) — the six the dev overlay
+                counted on `/`. The section rendered as ~9,800px of black.
 
-              <YStack
-                ref={scrollRef}
-                overflow="scroll" className="no-scrollbar"
-              >
-                <YStack>
-                  <thead>
-                    <tr>
-                      <SizableText position="sticky" left="$0" zIndex={10} width={188} minWidth={188} backgroundColor="$background" paddingBottom="$4" paddingRight="$4" verticalAlign="bottom" />
-                      {COLS.map((c) => (
-                        <SizableText
-                          key={c.short}
-                          width={208} minWidth={208} paddingHorizontal="$4" paddingBottom="$4" verticalAlign="bottom" fontFamily="$mono" fontSize={10} fontWeight="400" lineHeight="1.25" color="$color11"
-                        >
-                          <YStack marginBottom="$2">
-                            <c.icon size={16} color="var(--muted-foreground)" strokeWidth={1.5} aria-hidden />
-                          </YStack>
-                          {c.full}
+                A row is an XStack; the pinned name cell is `position: sticky,
+                left: 0` against this scroller. `flexShrink={0}` on every cell
+                is what keeps the row wider than the port — that width IS the
+                horizontal scroll. */}
+            <YStack
+              ref={scrollRef}
+              overflow="scroll" className="no-scrollbar"
+            >
+              <YStack>
+                <XStack alignItems="flex-end">
+                  <YStack position="sticky" left={0} zIndex={10} width={188} flexShrink={0} backgroundColor="$background" paddingBottom="$4" paddingRight="$4" />
+                  {COLS.map((c) => (
+                    <YStack key={c.short} width={208} flexShrink={0} paddingHorizontal="$4" paddingBottom="$4">
+                      <YStack marginBottom="$2">
+                        <c.icon size={16} color="var(--muted-foreground)" strokeWidth={1.5} aria-hidden />
+                      </YStack>
+                      <SizableText fontFamily="$mono" fontSize={10} fontWeight="400" lineHeight="1.25" color="$color11">
+                        {c.full}
+                      </SizableText>
+                    </YStack>
+                  ))}
+                </XStack>
+                {ROWS.map((r) => (
+                  <XStack key={r.name} group alignItems="stretch">
+                    <YStack
+                      position="sticky" left={0} zIndex={10} width={188} flexShrink={0} paddingVertical="$2.5" paddingLeft="$1" paddingRight="$4.5" backgroundColor={r.hanzo ? "$color3" : "$background"}
+                    >
+                      <XStack alignItems="center" gap="$2">
+                        <SizableText fontWeight="500" color="$color" whiteSpace="nowrap">{r.name}</SizableText>
+                        {r.hanzo && (
+                          <SizableText borderRadius="$10" borderWidth={1} borderColor="$color" backgroundColor="$color4" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={9} color="$color">
+                            Best
+                          </SizableText>
+                        )}
+                      </XStack>
+                      {r.note && (
+                        <SizableText marginTop="$0.5" fontFamily="$mono" fontSize={10} fontWeight="400" color="$color11">
+                          {r.note}
                         </SizableText>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {ROWS.map((r) => (
-                      <YStack key={r.name} group>
-                        <SizableText
-                          position="sticky" left="$0" zIndex={10} width={188} minWidth={188} whiteSpace="nowrap" paddingVertical="$3" paddingLeft="$1" paddingRight="$4.5" textAlign="left" verticalAlign="top" fontWeight="500" {...{ backgroundColor: r.hanzo ? "$color3" : "$background", color: r.hanzo ? "$color" : "$color" }}
-                        >
-                          <XStack alignItems="center" gap="$2">
-                            <SizableText fontWeight="500">{r.name}</SizableText>
-                            {r.hanzo && (
-                              <SizableText borderRadius="$10" borderWidth={1} borderColor="$color" backgroundColor="$color4" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={9} color="$color">
-                                Best
+                      )}
+                    </YStack>
+                    {r.cells.map((cell, ci) => (
+                      <YStack
+                        key={ci}
+                        width={208} flexShrink={0} paddingHorizontal="$4" paddingVertical="$2.5" {...{ backgroundColor: r.hanzo ? "$color3" : undefined, "$group-hover": r.hanzo ? undefined : { backgroundColor: "$color3" } }}
+                      >
+                        <XStack alignItems="flex-start" gap="$2">
+                          <YStack marginTop="$1">
+                            <Dot tone={r.hanzo ? "good" : cell.t} />
+                          </YStack>
+                          <YStack minWidth={0}>
+                            <XStack alignItems="center" gap="$1.5">
+                              <ColIcon i={ci} />
+                              <SizableText fontSize={13} lineHeight="1.375" color={r.hanzo ? "$color" : TEXT[cell.t]}>{cell.v}</SizableText>
+                            </XStack>
+                            {cell.d && (
+                              <SizableText marginTop="$0.5" fontSize={11} lineHeight="1.375" color="$color11">
+                                {cell.d}
                               </SizableText>
                             )}
-                          </XStack>
-                          {r.note && (
-                            <SizableText marginTop="$0.5" fontFamily="$mono" fontSize={10} fontWeight="400" color="$color11">
-                              {r.note}
-                            </SizableText>
-                          )}
-                        </SizableText>
-                        {r.cells.map((cell, ci) => (
-                          <SizableText
-                            key={ci}
-                            width={208} minWidth={208} paddingHorizontal="$4" paddingVertical="$3" verticalAlign="top" {...{ backgroundColor: r.hanzo ? "$color3" : undefined, "$group-hover": r.hanzo ? undefined : {"backgroundColor":"$color3"} }}
-                          >
-                            <XStack alignItems="flex-start" gap="$2">
-                              <SizableText marginTop="$1">
-                                <Dot tone={r.hanzo ? "good" : cell.t} />
-                              </SizableText>
-                              <YStack minWidth={0}>
-                                <XStack alignItems="center" gap="$1.5">
-                                  <ColIcon i={ci} />
-                                  <SizableText fontSize={13} lineHeight="1.375" color={r.hanzo ? "$color" : TEXT[cell.t]}>{cell.v}</SizableText>
-                                </XStack>
-                                {cell.d && (
-                                  <SizableText marginTop="$0.5" fontSize={11} lineHeight="1.375" color="$color11">
-                                    {cell.d}
-                                  </SizableText>
-                                )}
-                              </YStack>
-                            </XStack>
-                          </SizableText>
-                        ))}
+                          </YStack>
+                        </XStack>
                       </YStack>
                     ))}
-                  </tbody>
-                </YStack>
+                  </XStack>
+                ))}
               </YStack>
             </YStack>
           </Reveal>
