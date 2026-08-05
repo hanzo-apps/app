@@ -88,13 +88,23 @@ test("mode/link — refuses what it cannot address, with a reason", () => {
     assert.throws(() => parse("not a url"), /is not a link/);
     assert.throws(() => parse("http://drive.google.com/drive/folders/1"), /https/);
     assert.throws(() => parse("https://drive.google.com/"), /no folder or file id/);
-    assert.throws(() => parse("https://pin.it/abc123"), /paste the full pinterest.com board/);
     assert.throws(() => parse("https://example.com/album"), /Only Pinterest and Google Drive/);
   });
 
-test("mode/link — says Pinterest is not connectable yet, and why", () => {
+test("mode/link — both kinds import today", () => {
     assert.equal(ready("drive").ok, true);
-    const p = ready("pinterest");
-    assert.equal(p.ok, false);
-    assert.match(String(p.because), /developer app/);
+    assert.equal(ready("pinterest").ok, true);
+  });
+
+test("mode/link — a pin link is one pin, not a profile named 'pin'", () => {
+    const s = parse("https://www.pinterest.com/pin/1234567890/");
+    assert.equal(s.kind, "pinterest");
+    assert.equal(s.kind === "pinterest" && s.pin, "1234567890");
+    assert.equal(s.kind === "pinterest" && s.user, undefined);
+  });
+
+test("mode/link — a pin.it code is carried, for the server to expand", () => {
+    const s = parse("https://pin.it/abc123");
+    assert.equal(s.kind, "pinterest");
+    assert.equal(s.kind === "pinterest" && s.short, "abc123");
   });

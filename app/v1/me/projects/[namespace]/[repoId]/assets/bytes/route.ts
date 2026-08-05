@@ -30,6 +30,7 @@ import { session } from "@/lib/iam";
 import { getProject, spaceId } from "@/lib/db/projects";
 import { listAssets, upsertAsset } from "@/lib/db/assets";
 import * as drive from "@/lib/source/drive";
+import * as pinterest from "@/lib/source/pinterest";
 import { requireSameOrigin } from "@/lib/org/csrf";
 
 type Ctx = { params: Promise<{ namespace: string; repoId: string }> };
@@ -58,9 +59,10 @@ export async function POST(req: NextRequest, ctx: Ctx) {
     return NextResponse.json({ ok: false, error: "Project not found." }, { status: 404 });
   }
 
-  // Anything whose stored url is still Drive's (or empty) has not landed yet.
+  // Anything whose stored url is not the project's own copy has not landed
+  // yet — whichever source it came from.
   const pending = (await listAssets(user.token, user.sub, key)).filter(
-    (a) => a.kind === "drive" && !a.url.startsWith("https://huggingface.co/")
+    (a) => !a.url.startsWith("https://huggingface.co/")
   );
   if (pending.length === 0) {
     return NextResponse.json({ ok: true, landed: 0, remaining: 0 });
@@ -72,10 +74,15 @@ export async function POST(req: NextRequest, ctx: Ctx) {
 
   for (const a of batch) {
     try {
-      const { data, mime } = await drive.bytes(
-        user.token,
-        `https://www.googleapis.com/drive/v3/files/${a.external}?alt=media`
-      );
+      // Each kind downloads its own way: Drive with the org's token, Pinterest
+      // from its public image host. Both land through the same upload below.
+      const { data, mime } =
+        a.kind === "drive"
+          ? await drive.bytes(
+              user.token,
+              `https://www.googleapis.com/drive/v3/files/${a.external}?alt=media`
+            )
+          : await pinterest.bytes(a.url);
       const path = safeName(a.kind, a.external, a.name);
       files.push(new File([new Uint8Array(data)], path, { type: mime }));
       named.push({ asset: a, path });
@@ -87,7 +94,7 @@ export async function POST(req: NextRequest, ctx: Ctx) {
 
   if (files.length === 0) {
     return NextResponse.json(
-      { ok: false, error: "None of these images could be downloaded from Drive." },
+      { ok: false, error: "None of these images could be downloaded from their source." },
       { status: 502 }
     );
   }

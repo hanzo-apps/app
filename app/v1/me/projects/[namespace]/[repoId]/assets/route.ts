@@ -27,6 +27,7 @@ import { LinkError, parse, ready } from "@/lib/source/link";
 import { requireMode, policy } from "@/lib/source/mode";
 import { forget } from "@/lib/source/brand";
 import * as drive from "@/lib/source/drive";
+import * as pinterest from "@/lib/source/pinterest";
 import { requireSameOrigin } from "@/lib/org/csrf";
 
 type Ctx = { params: Promise<{ namespace: string; repoId: string }> };
@@ -82,22 +83,32 @@ export async function POST(req: NextRequest, ctx: Ctx) {
     return NextResponse.json({ ok: false, error: can.because }, { status: 501 });
   }
 
-  let found;
+  const limit = Math.min(Math.max(Number(body.limit) || 60, 1), 200);
+
+  // Each kind reads its own way — Drive as the org's Google connection,
+  // Pinterest as the public page — and both land in the same found shape:
+  // a stable external id, a name, and the url the tile shows now.
+  let found: { id: string; name: string; url: string }[];
   try {
-    found = await drive.images(
-      s.user.token,
-      source.kind === "drive" ? source.id : "",
-      source.kind === "drive" ? source.folder : false,
-      Math.min(Math.max(Number(body.limit) || 60, 1), 200)
-    );
+    found =
+      source.kind === "drive"
+        ? (await drive.images(s.user.token, source.id, source.folder, limit)).map((f) => ({
+            id: f.id,
+            name: f.name,
+            url: f.thumb ?? "",
+          }))
+        : await pinterest.images(source, limit);
   } catch (e) {
-    const msg = e instanceof drive.DriveError ? e.message : "Could not read that Drive link.";
+    const msg =
+      e instanceof drive.DriveError || e instanceof pinterest.PinError || e instanceof LinkError
+        ? e.message
+        : "Could not read that link.";
     return NextResponse.json({ ok: false, error: msg }, { status: 502 });
   }
 
   if (found.length === 0) {
     return NextResponse.json(
-      { ok: false, error: "No images in that folder — Drive shows no png, jpeg, gif, webp or avif there." },
+      { ok: false, error: "No images there — nothing png, jpeg, gif, webp or avif was found." },
       { status: 404 }
     );
   }
@@ -115,7 +126,7 @@ export async function POST(req: NextRequest, ctx: Ctx) {
         external: img.id,
         name: img.name,
         mode,
-        url: img.thumb ?? "",
+        url: img.url,
         origin: source.url,
       })
     );

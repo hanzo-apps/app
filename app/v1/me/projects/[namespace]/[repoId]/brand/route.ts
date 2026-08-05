@@ -83,7 +83,7 @@ export async function POST(req: NextRequest, ctx: Ctx) {
       {
         ok: false,
         error:
-          "No reference images yet. Import a Drive folder with \"use as inspiration\" first.",
+          "No reference images yet. Import a Pinterest board or Drive folder with \"use as inspiration\" first.",
       },
       { status: 409 }
     );

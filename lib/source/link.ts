@@ -26,7 +26,17 @@ export type Kind = "drive" | "pinterest";
 
 export type Source =
   | { kind: "drive"; id: string; folder: boolean; url: string }
-  | { kind: "pinterest"; user: string; board?: string; url: string };
+  | {
+      kind: "pinterest";
+      /** A profile or board address: /<user>[/<board>]. */
+      user?: string;
+      board?: string;
+      /** A single pin: /pin/<id>. */
+      pin?: string;
+      /** A pin.it code — an address only Pinterest can expand, server-side. */
+      short?: string;
+      url: string;
+    };
 
 /** Why a link was refused, in words a person can act on. */
 export class LinkError extends Error {}
@@ -88,16 +98,24 @@ export function parse(raw: string): Source {
   }
 
   if (PIN_HOSTS.has(host)) {
-    // pin.it short links resolve server-side; there is nothing to parse here and
-    // guessing a username from an opaque code would be a fiction.
-    if (host === "pin.it") {
-      throw new LinkError(
-        "Open the pin.it link and paste the full pinterest.com board address."
-      );
-    }
     const parts = u.pathname.split("/").filter(Boolean);
+    // A pin.it code is an address only Pinterest can expand; carry it as what
+    // it is and let the server-side reader follow it.
+    if (host === "pin.it") {
+      if (parts.length !== 1) {
+        throw new LinkError("That pin.it link carries no code — copy it from Pinterest's share button.");
+      }
+      return { kind: "pinterest", short: parts[0], url: text };
+    }
     if (parts.length === 0) {
       throw new LinkError("That Pinterest link names no board — open the board and copy its address.");
+    }
+    // /pin/<id> is one pin, not a profile named "pin".
+    if (parts[0] === "pin") {
+      if (!parts[1]) {
+        throw new LinkError("That pin link has no id — open the pin and copy its address.");
+      }
+      return { kind: "pinterest", pin: parts[1], url: text };
     }
     return { kind: "pinterest", user: parts[0], board: parts[1], url: text };
   }
@@ -110,16 +128,9 @@ export function parse(raw: string): Source {
 /**
  * Whether a kind can actually be imported on this deployment.
  *
- * Pinterest parses but cannot connect until a developer app exists and its
- * credentials are sealed in KMS. Saying so HERE — rather than discovering it as
- * a failed OAuth redirect — is what lets the UI explain the gap instead of
- * looking broken.
+ * Both can, today: Drive rides the org's Google connection, and Pinterest reads
+ * the public page a signed-out visitor sees (lib/source/pinterest.ts) — no
+ * developer app, nothing to connect. A PRIVATE board is the one thing the
+ * public reader cannot see, and the import says so when it happens.
  */
-export const ready = (kind: Kind): { ok: boolean; because?: string } =>
-  kind === "drive"
-    ? { ok: true }
-    : {
-        ok: false,
-        because:
-          "Pinterest needs a registered developer app before it can be connected. Google Drive works today.",
-      };
+export const ready = (_kind: Kind): { ok: boolean; because?: string } => ({ ok: true });
