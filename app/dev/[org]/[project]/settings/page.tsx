@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
-import { accent, panel } from "@/lib/chrome";
+import { accent } from "@/lib/chrome";
 import { LoadingScreen } from "@/components/ui/loading-screen";
 import {
   fetchProject,
@@ -42,11 +42,17 @@ import {
   type Project,
   type Deployment,
 } from "@/lib/api/projects";
-import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, toast, Button, Label } from '@hanzo/ui';
+import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, toast, Button } from '@hanzo/ui';
+import { CopyButton, FieldRow, Fieldset } from '@hanzo/ui/product';
 import { statusOf } from "@/lib/project-status";
 import { relativeTime } from "@/lib/projects-view";
 import { currentOrg, setCurrentOrg } from "@/lib/org-scope";
 import { Spinner } from "@/components/ui/spinner";
+
+/** The legend glyph's colour — quiet by default, the danger tone in that one
+ *  group. `Fieldset` takes the icon as a node, so the colour is stated here. */
+const ICON = "var(--muted-foreground)";
+const DANGER_ICON = "rgba(248,113,113,0.7)";
 
 export default function ProjectSettingsPage() {
   const params = useParams<{ org: string; project: string }>();
@@ -155,13 +161,13 @@ export default function ProjectSettingsPage() {
     >
           <YStack rowGap="$4.5">
             {/* General */}
-            <Section icon={Pencil} title="General">
-              <Field label="Project name">
+            <Fieldset icon={<Pencil size={16} color={ICON} />} title="General">
+              <FieldRow label="Project name">
                 {/* The field emits text, not a change event — the DOM spelling
                     never fires on @hanzo/ui Input, so this rename box was inert. */}
                 <Input value={name} onChangeText={setName} />
-              </Field>
-              <Field label="Framework">
+              </FieldRow>
+              <FieldRow label="Framework">
                 <Select value={framework} onValueChange={setFramework}>
                   <SelectTrigger>
                     <SelectValue />
@@ -174,7 +180,7 @@ export default function ProjectSettingsPage() {
                     ))}
                   </SelectContent>
                 </Select>
-              </Field>
+              </FieldRow>
               <XStack justifyContent="flex-end" paddingTop="$1">
                 <Button
                   type="button"
@@ -186,10 +192,10 @@ export default function ProjectSettingsPage() {
                   Save changes
                 </Button>
               </XStack>
-            </Section>
+            </Fieldset>
 
             {/* Domains */}
-            <Section icon={Globe} title="Domain">
+            <Fieldset icon={<Globe size={16} color={ICON} />} title="Domain">
               <XStack flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$3">
                 <YStack minWidth={0}>
                   <Paragraph fontSize="$3" color="$color">Live URL</Paragraph>
@@ -207,10 +213,10 @@ export default function ProjectSettingsPage() {
                 Custom domains are coming to project settings. For now every published app is served at{" "}
                 <SizableText fontFamily="$mono" color="$color11">{slug}.hanzo.app</SizableText>.
               </Paragraph>
-            </Section>
+            </Fieldset>
 
             {/* Source (Git) */}
-            <Section icon={GitBranch} title="Source repository">
+            <Fieldset icon={<GitBranch size={16} color={ICON} />} title="Source repository">
               <Paragraph fontSize="$3" color="$color11">
                 Every published app is versioned in Hanzo Git (S3-backed). Its source is committed and pushed on each publish.
               </Paragraph>
@@ -219,32 +225,27 @@ export default function ProjectSettingsPage() {
                 <SizableText minWidth={0} flex={1} numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
                   https://git.hanzo.ai/{org}/{slug}.git
                 </SizableText>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => {
-                    navigator.clipboard?.writeText(`https://git.hanzo.ai/${org}/${slug}.git`);
-                    toast.success("Clone URL copied.");
-                  }}
-                  flexShrink={0} borderRadius="$2" paddingHorizontal="$2" paddingVertical="$1"
-                >
-                  <SizableText fontSize="$1" color="$color11">Copy</SizableText>
-                </Button>
+                <CopyButton
+                  value={`https://git.hanzo.ai/${org}/${slug}.git`}
+                  label="Copy clone URL"
+                  size={22}
+                  id="clone-url"
+                />
               </XStack>
-            </Section>
+            </Fieldset>
 
             {/* Deployments — the ONE serve (S3 → <slug>.hanzo.app) */}
-            <Section icon={Rocket} title="Deployments">
+            <Fieldset icon={<Rocket size={16} color={ICON} />} title="Deployments">
               <Paragraph fontSize="$3" color="$color11">
                 Publishing deploys your site to Hanzo Cloud — live at{" "}
                 <SizableText fontFamily="$mono" color="$color">{slug}.hanzo.app</SizableText> — and
                 commits the source to Hanzo Git. Each publish is a new versioned deployment.
               </Paragraph>
               <DeploymentStatus slug={slug} />
-            </Section>
+            </Fieldset>
 
             {/* Integrations */}
-            <Section icon={Plug} title="Integrations & connections">
+            <Fieldset icon={<Plug size={16} color={ICON} />} title="Integrations & connections">
               <Paragraph fontSize="$3" color="$color11">
                 Connect data sources, auth providers, and third-party services your app uses.
               </Paragraph>
@@ -254,10 +255,10 @@ export default function ProjectSettingsPage() {
                 <Plug size={14} />
                 <SizableText fontSize="$3" color="$color">Manage connectors</SizableText>
               </XStack></Link>
-            </Section>
+            </Fieldset>
 
             {/* Base backend */}
-            <Section icon={Database} title="Base backend">
+            <Fieldset icon={<Database size={16} color={ICON} />} title="Base backend">
               <Paragraph fontSize="$3" color="$color11">
                 This app’s data plane — forms, records, and realtime run on its own Hanzo Base. It is provisioned on publish when the Base option is enabled.
               </Paragraph>
@@ -267,10 +268,10 @@ export default function ProjectSettingsPage() {
                 <Database size={14} />
                 <SizableText fontSize="$3" color="$color">Open data & schema in builder</SizableText>
               </XStack></Link>
-            </Section>
+            </Fieldset>
 
             {/* Danger */}
-            <Section icon={Trash2} title="Danger zone" danger>
+            <Fieldset icon={<Trash2 size={16} color={DANGER_ICON} />} title="Danger zone" danger>
               <XStack flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$3">
                 <Paragraph fontSize="$3" color="$color11">
                   Delete this project and its live site. This cannot be undone.
@@ -287,56 +288,9 @@ export default function ProjectSettingsPage() {
                   </XStack>
                 </Button>
               </XStack>
-            </Section>
+            </Fieldset>
           </YStack>
     </AppShell>
-  );
-}
-
-function Section({
-  icon: Icon,
-  title,
-  danger,
-  children,
-}: {
-  icon: React.ElementType;
-  title: string;
-  danger?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    // `panel`, like every other surface in the app. This drew itself: radius
-    // $8 where the recipe says $6, and — the real bug — `$color3` as its fill.
-    // $color3 is the SELECTED-state token, the "you are here" highlight the
-    // sidebar and the tabs use. Seven sections permanently wearing the selected
-    // look is the state having no picture left to draw with.
-    //
-    // Danger says danger with its EDGE. It used to say it with `$red9` as the
-    // background — a solid saturated red card, the loudest object on a
-    // monochrome page, for a section whose whole job is to be found only when
-    // you are looking for it. Colour is an accent here, so the border carries
-    // it and the surface stays on the ladder with its six neighbours.
-    <YStack {...panel} padding="$4.5" borderColor={danger ? "$red9" : "$borderColor"}>
-      <XStack marginBottom="$4" alignItems="center" gap="$2">
-        <Icon size={16} color={danger ? "rgba(248,113,113,0.7)" : "var(--muted-foreground)"} />
-        <H2 fontSize="$3" fontWeight="500" color={danger ? "$red10" : "$color"}>{title}</H2>
-      </XStack>
-      <YStack rowGap="$3">{children}</YStack>
-    </YStack>
-  );
-}
-
-// The form label, at the SAME size and colour as /settings' ("Default AI
-// Model") — $3 in $color. It was $1 in $color11, which is the register this
-// app uses for the sentence UNDER a control, so the thing you must read to use
-// the field was quieter than the aside explaining it. Two specs for one idea,
-// two routes apart; this is the one that names something.
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <Label>
-      <SizableText marginBottom="$2" fontSize="$3" fontWeight="500" color="$color">{label}</SizableText>
-      {children}
-    </Label>
   );
 }
 
