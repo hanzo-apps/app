@@ -261,7 +261,7 @@ function NewProjectInner() {
               group position="relative" borderRadius="$8" borderWidth={1} padding="$2" elevation={6} focusStyle={{ borderColor: "$color" }} {...{ borderColor: dragActive ? "$color" : "$borderColor", backgroundColor: dragActive ? "$color3" : "$color005" }}
             >
               {dragActive && (
-                <XStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} zIndex={10} alignItems="center" justifyContent="center" borderRadius="$8" borderWidth={2} borderStyle="dashed" borderColor="$color" backgroundColor="$background" backdropFilter="blur(4px)">
+                <XStack {...glass(2)} pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} zIndex={10} alignItems="center" justifyContent="center" borderRadius="$8" borderWidth={2} borderStyle="dashed" borderColor="$color">
                   <XStack alignItems="center" gap="$2">
                     <FolderUp size={20} />
                     <SizableText fontSize="$3" fontWeight="500" color="$color">Drop your project folder or .zip to import</SizableText>

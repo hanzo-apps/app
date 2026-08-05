@@ -609,7 +609,7 @@ export function VisualEditor({
           onClick={() => setIsHidden(false)}
           title="Show visual editor"
           aria-label="Show visual editor"
-          position="absolute" bottom="$3" right="$3" zIndex={50} width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" {...{ color: "$color11" }} elevation={4} backdropFilter="blur(8px)" hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
+          {...glass(2)} position="absolute" bottom="$3" right="$3" zIndex={50} width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
           style={anchorStyle}
         >
           <Wand2 size={16} />
@@ -622,7 +622,7 @@ export function VisualEditor({
             onClick={() => setIsMinimized(false)}
             title="Expand visual editor"
             aria-label="Expand visual editor"
-            width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" {...{ color: "$color11" }} elevation={4} backdropFilter="blur(8px)" hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
+            {...glass(2)} width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
           >
             {isVertical ? <GripVertical size={16} /> : <GripHorizontal size={16} />}
           </Button>
@@ -632,7 +632,7 @@ export function VisualEditor({
           role="toolbar"
           aria-label="Visual editor"
           aria-orientation={isVertical ? "vertical" : "horizontal"}
-          position="absolute" zIndex={50} alignItems="center" gap="$1" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$1" elevation={4} backdropFilter="blur(8px)" {...{ maxHeight: isVertical ? "calc(100% - 1.5rem)" : undefined, flexDirection: isVertical ? "column" : "row", borderRadius: isVertical ? "$8" : "$10", maxWidth: isVertical ? undefined : "calc(100% - 1.5rem)" }} {...anchorProps[position]}
+          {...glass(2)} position="absolute" zIndex={50} alignItems="center" gap="$1" borderWidth={1} padding="$1" {...{ maxHeight: isVertical ? "calc(100% - 1.5rem)" : undefined, flexDirection: isVertical ? "column" : "row", borderRadius: isVertical ? "$8" : "$10", maxWidth: isVertical ? undefined : "calc(100% - 1.5rem)" }} {...anchorProps[position]}
           style={anchorStyle}
         >
           {/* Master arm/disarm — turns the visual editor on for the preview. */}

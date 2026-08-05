@@ -1,6 +1,7 @@
 'use client';
 
 import { XStack, YStack, SizableText, Paragraph } from '@hanzo/gui';
+import { scrim } from "@/lib/chrome";
 import React, { useState, useEffect } from 'react';
 import { Project } from '@/lib/vfs/types';
 import { Sidebar } from '@/components/sidebar';
@@ -104,7 +105,7 @@ export function PageLayout({
 
       {/* Backdrop when sidebar is unpinned and hovering */}
       {!sidebarPinned && sidebarHovering && (
-        <YStack position="absolute" top={0} right={0} bottom={0} left={0} backgroundColor="black" zIndex={30} />
+        <YStack position="absolute" top={0} right={0} bottom={0} left={0} {...scrim} zIndex={30} />
       )}
 
       <YStack
