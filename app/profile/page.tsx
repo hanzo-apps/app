@@ -12,7 +12,8 @@ import { accent, panel } from "@/lib/chrome";
 import { useUser } from "@/hooks/useUser";
 import { MyBuilds } from "@/components/builds/my-builds";
 import { gravatarUrl } from "@/lib/avatar";
-import { avatarDataUrl } from "@/lib/image";
+import { avatarDataUrl, type Region } from "@/lib/image";
+import { Crop } from "@/components/crop";
 
 /** Mirrors `lib/profile`'s AVATAR_LIMIT — the client reduces to fit, the server enforces. */
 const AVATAR_LIMIT = 96 * 1024;
@@ -94,13 +95,25 @@ export default function ProfilePage() {
     };
   }, [user, token]);
 
-  const pickPhoto = useCallback(async (file: File) => {
+  // A picked file opens the crop dialog; nothing is encoded until the user has
+  // framed the square. The dialog owns the framing, this page owns the encode.
+  const [cropFile, setCropFile] = useState<File | null>(null);
+  const pickPhoto = useCallback((file: File) => {
+    setCropFile(file);
+    // Clear the input so re-picking the SAME file fires change again.
+    if (fileInput.current) fileInput.current.value = "";
+  }, []);
+
+  const framePhoto = useCallback(async (region: Region) => {
+    const file = cropFile;
+    setCropFile(null);
+    if (!file) return;
     setBusy(true);
     try {
       // Reduce HERE. A 12 MB camera photo would fail the server's cap, and
       // "your photo is too large" is a useless answer when the browser can
-      // simply make it the right size.
-      const dataUrl = await avatarDataUrl(file, AVATAR_LIMIT);
+      // simply make it the right size — at the square the user just framed.
+      const dataUrl = await avatarDataUrl(file, AVATAR_LIMIT, region);
       set("avatar", dataUrl);
       setImgFailed(false);
       toast.success("Photo ready — press Save Changes to keep it");
@@ -108,10 +121,8 @@ export default function ProfilePage() {
       toast.error(e instanceof Error ? e.message : "That photo could not be used");
     } finally {
       setBusy(false);
-      // Clear the input so re-picking the SAME file fires change again.
-      if (fileInput.current) fileInput.current.value = "";
     }
-  }, []);
+  }, [cropFile]);
 
   /**
    * The avatar IS the photo control — one gesture, from anywhere on the page.
@@ -272,7 +283,7 @@ export default function ProfilePage() {
                   }
                 }}
               >
-                <Avatar width="$12" height="$12" borderWidth={4} borderColor="$background">
+                <Avatar width="$12" height="$12">
                   {/* An `<img>` with src="" resolves to the PAGE url, loads HTML,
                       fails to decode, and renders the browser's broken-image
                       icon — which is exactly what this showed, because
@@ -291,10 +302,10 @@ export default function ProfilePage() {
                 <XStack
                   pointerEvents="none"
                   position="absolute"
-                  top={4}
-                  right={4}
-                  bottom={4}
-                  left={4}
+                  top={0}
+                  right={0}
+                  bottom={0}
+                  left={0}
                   alignItems="center"
                   justifyContent="center"
                   borderRadius="$10"
@@ -502,6 +513,7 @@ export default function ProfilePage() {
             <MyBuilds />
           </YStack>
       </YStack>
+      <Crop file={cropFile} onUse={(r) => void framePhoto(r)} onCancel={() => setCropFile(null)} />
     </AppShell>
   );
 }

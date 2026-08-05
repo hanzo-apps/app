@@ -36,21 +36,30 @@ async function decode(file: Blob): Promise<ImageBitmap> {
   }
 }
 
+/** A square region of the source image, in source pixels. */
+export type Region = { x: number; y: number; edge: number };
+
 /**
  * A square, avatar-sized data URI for `file`, at most `limit` bytes.
+ *
+ * `region` is the square to keep — the crop dialog hands in the one the user
+ * framed; without it the centre square is kept, which is the right default for
+ * a photo that was already framed. Either way the same encoder runs, so there
+ * is exactly one road from a picked file to a stored avatar.
  *
  * Throws when the image cannot be decoded, or when even the lowest quality
  * exceeds `limit` — never returns something oversized, and never truncates
  * (a cut data URI is a broken image that looks like a successful save).
  */
-export async function avatarDataUrl(file: Blob, limit: number): Promise<string> {
+export async function avatarDataUrl(file: Blob, limit: number, region?: Region): Promise<string> {
   const bitmap = await decode(file);
 
-  // Centre crop to a square, then scale to SIZE. Cropping before scaling keeps
-  // the subject centred instead of squashing the aspect ratio.
-  const edge = Math.min(bitmap.width, bitmap.height);
-  const sx = (bitmap.width - edge) / 2;
-  const sy = (bitmap.height - edge) / 2;
+  // The chosen square, clamped inside the image — a hand-framed region arrives
+  // in source pixels and must never read outside the bitmap. Default: centred.
+  const full = Math.min(bitmap.width, bitmap.height);
+  const edge = Math.max(1, Math.min(Math.round(region?.edge ?? full), full));
+  const sx = Math.max(0, Math.min(Math.round(region?.x ?? (bitmap.width - edge) / 2), bitmap.width - edge));
+  const sy = Math.max(0, Math.min(Math.round(region?.y ?? (bitmap.height - edge) / 2), bitmap.height - edge));
 
   const canvas = document.createElement('canvas');
   canvas.width = SIZE;

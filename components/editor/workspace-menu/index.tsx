@@ -59,6 +59,26 @@ const ITEM = {
   color: "$color", focusStyle: { backgroundColor: "$color3" },
 } as const;
 
+// Every menu row is ONE shape: 16px icon left, label beside it, left-aligned.
+// The row carries its own layout because an `asChild` item delegates rendering
+// to the wrapped anchor and the item's flex props never reach it — the icon
+// stacked above a centered label there, while plain items sat left. With the
+// shape inside the row, alignment cannot depend on who renders the outside.
+function MenuRow({
+  icon: Icon,
+  children,
+}: {
+  icon: React.ComponentType<{ size?: number | string }>;
+  children: React.ReactNode;
+}) {
+  return (
+    <XStack alignItems="center" gap="$2.5" width="100%">
+      <Icon size={16} />
+      <SizableText fontSize="$3" color="$color">{children}</SizableText>
+    </XStack>
+  );
+}
+
 export function WorkspaceMenu({
   project,
   onRenamed,
@@ -177,8 +197,7 @@ export function WorkspaceMenu({
           {/* Back to the dashboard. */}
           <DropdownMenuItem asChild {...ITEM}>
             <Link href="/dashboard">
-              <LayoutDashboard />
-              Go to Dashboard
+              <MenuRow icon={LayoutDashboard}>Go to Dashboard</MenuRow>
             </Link>
           </DropdownMenuItem>
 
@@ -286,28 +305,23 @@ export function WorkspaceMenu({
 
           <DropdownMenuItem asChild {...ITEM}>
             <Link href="/settings">
-              <Settings />
-              Settings
+              <MenuRow icon={Settings}>Settings</MenuRow>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild {...ITEM}>
             <Link href="/connectors">
-              <Plug />
-              Project connectors
+              <MenuRow icon={Plug}>Project connectors</MenuRow>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem {...ITEM} onSelect={() => openRename()}>
-            <Pencil />
-            Rename project
+            <MenuRow icon={Pencil}>Rename project</MenuRow>
           </DropdownMenuItem>
           <DropdownMenuItem {...ITEM} onSelect={() => setDetailsOpen(true)}>
-            <Info />
-            Project details
+            <MenuRow icon={Info}>Project details</MenuRow>
           </DropdownMenuItem>
           <DropdownMenuItem asChild {...ITEM}>
             <a href="https://hanzo.ai/docs" target="_blank" rel="noopener noreferrer">
-              <LifeBuoy />
-              Help
+              <MenuRow icon={LifeBuoy}>Help</MenuRow>
             </a>
           </DropdownMenuItem>
 
@@ -317,8 +331,7 @@ export function WorkspaceMenu({
             onSelect={() => void logout()}
             {...ITEM}
           >
-            <LogOut size={16} />
-            Sign out
+            <MenuRow icon={LogOut}>Sign out</MenuRow>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
