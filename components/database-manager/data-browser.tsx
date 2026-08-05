@@ -1,7 +1,7 @@
 'use client';
 
 import { XStack, YStack, SizableText, Paragraph, H3 } from '@hanzo/gui';
-import { glass } from "@/lib/chrome";
+import { glass, scrim } from "@/lib/chrome";
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Input, Label } from '@hanzo/ui';
 import {
@@ -251,8 +251,8 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
 
       {/* New / edit record drawer */}
       {editing && (
-        <XStack position="fixed" top={0} right={0} bottom={0} left={0} zIndex={50} justifyContent="flex-end" backgroundColor="black" onClick={() => !saving && setEditing(null)}>
-          <YStack height="100%" width="100%" maxWidth={448} backgroundColor="$background" padding="$4.5" elevation={6} overflow="scroll" onClick={(e) => e.stopPropagation()}>
+        <XStack position="fixed" top={0} right={0} bottom={0} left={0} zIndex={50} justifyContent="flex-end" {...scrim} onClick={() => !saving && setEditing(null)}>
+          <YStack {...glass(3)} height="100%" width="100%" maxWidth={448} padding="$4.5" overflow="scroll" onClick={(e) => e.stopPropagation()}>
             <XStack marginBottom="$4" alignItems="center" justifyContent="space-between">
               <H3 fontSize="$6" fontWeight="500" color="$color">
                 {editing.mode === 'new' ? 'New record' : 'Edit record'} · <SizableText color="$color11">{selected}</SizableText>

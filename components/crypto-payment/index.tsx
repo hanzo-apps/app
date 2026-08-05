@@ -1,6 +1,7 @@
 'use client'
 
 import { SizableText, XStack, Paragraph, Anchor, YStack } from '@hanzo/gui';
+import { glass } from "@/lib/chrome";
 import { useState } from 'react'
 import { useAccount, useConnect, useDisconnect, useWriteContract, useWaitForTransactionReceipt, useSwitchChain } from 'wagmi'
 import { parseUnits } from 'viem'
@@ -192,7 +193,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
                 <ChevronDown size={16} />
               </Button>
               {chainMenuOpen && (
-                <YStack position="absolute" top="100%" left="$0" right="$0" marginTop="$1" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" overflow="hidden" zIndex={10}>
+                <YStack {...glass(2)} position="absolute" top="100%" left="$0" right="$0" marginTop="$1" borderRadius="$5" borderWidth={1} overflow="hidden" zIndex={10}>
                   {SUPPORTED_CHAINS.map((c) => (
                     <Button
                       key={c.id}

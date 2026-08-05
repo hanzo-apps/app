@@ -39,7 +39,7 @@ import {
   Gift,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { accent, selected } from '@/lib/chrome';
+import { accent, selected, glass, scrim } from '@/lib/chrome';
 import { OrgProvider } from '@/lib/org/client';
 import { OrgSwitcher } from '@/components/org-switcher';
 import { SidebarWallet } from '@/components/SidebarWallet';
@@ -585,14 +585,14 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
 
   return (
     <XStack
-      position="fixed" top={0} right={0} bottom={0} left={0} zIndex={70} alignItems="center" justifyContent="center" backgroundColor="black" padding="$4"
+      position="fixed" top={0} right={0} bottom={0} left={0} zIndex={70} alignItems="center" justifyContent="center" {...scrim} padding="$4"
       onClick={onClose}
       role="dialog"
       aria-modal={true}
       aria-label="Share Hanzo"
     >
       <YStack
-        position="relative" width="100%" maxWidth={448} borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$5" elevation={6}
+        {...glass(3)} position="relative" width="100%" maxWidth={448} borderRadius="$8" borderWidth={1} padding="$5"
         onClick={(e) => e.stopPropagation()}
       >
         <Button

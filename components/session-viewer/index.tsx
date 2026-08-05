@@ -1,6 +1,7 @@
 'use client';
 
 import { YStack, SizableText, H3, XStack, H4, Paragraph } from '@hanzo/gui';
+import { glass, scrim } from "@/lib/chrome";
 import { useState, useEffect } from 'react';
 import { Button, toast } from '@hanzo/ui';
 
@@ -207,11 +208,11 @@ export function SessionViewer({ deploymentId }: SessionViewerProps) {
       {/* Session Details Modal */}
       {selectedSession && (
         <XStack
-          position="fixed" top={0} right={0} bottom={0} left={0} backgroundColor="black" alignItems="center" justifyContent="center" zIndex={50}
+          position="fixed" top={0} right={0} bottom={0} left={0} {...scrim} alignItems="center" justifyContent="center" zIndex={50}
           onClick={() => setSelectedSession(null)}
         >
           <YStack
-            backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$5" maxWidth={672} width="100%" maxHeight="80vh" overflow="scroll"
+            {...glass(3)} borderWidth={1} borderRadius="$5" padding="$5" maxWidth={672} width="100%" maxHeight="80vh" overflow="scroll"
             onClick={(e) => e.stopPropagation()}
           >
             <XStack justifyContent="space-between" alignItems="flex-start" marginBottom="$4">

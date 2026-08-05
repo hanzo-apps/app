@@ -1,6 +1,7 @@
 "use client";
 
 import { XStack, SizableText, YStack, Image, H1, Paragraph, Anchor, H3, H4 } from '@hanzo/gui';
+import { glass } from "@/lib/chrome";
 import { useState, useEffect } from "react";
 import { Button, Label, Textarea } from '@hanzo/ui';
 import {
@@ -100,7 +101,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
 
   return (
     <XStack minHeight="100dvh" backgroundColor="$background" alignItems="center" justifyContent="center" padding="$4" $lg={{ padding: "$5" }}>
-      <YStack width="100%" maxWidth={1024} overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={6} $lg={{ maxHeight: "calc(100dvh-3rem)" }}>
+      <YStack {...glass(3)} width="100%" maxWidth={1024} overflow="hidden" borderRadius="$8" borderWidth={1} $lg={{ maxHeight: "calc(100dvh-3rem)" }}>
         {/* LEFT — template identity + live preview thumbnail. */}
         <YStack borderBottomWidth={1} borderColor="$borderColor" padding="$5" $lg={{ borderBottomWidth: 0, borderRightWidth: 1, padding: "$6" }}>
           <XStack marginBottom="$4" width="max-content" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1">
