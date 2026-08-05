@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Input } from '@hanzo/ui';
+import { selected } from '@/lib/chrome';
 import { SizableText, YStack, XStack, H3, Anchor, Paragraph, H1 } from '@hanzo/gui';
 // The cross-org catalog browser — everything the fleet has built, in one place:
 // hanzo, lux and zoo repos plus every site this platform is serving. ONE component
@@ -49,9 +50,9 @@ function Pill({
     <Button
       onClick={onClick}
       group
-      flexShrink={0} borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" {...{ backgroundColor: active ? "$color12" : "$color3", borderWidth: active ? undefined : 1, borderColor: active ? undefined : "$borderColor", hoverStyle: active ? undefined : { borderColor: "$color" } }}
+      flexShrink={0} borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" borderWidth={1} {...selected(active)} borderColor={active ? "$color6" : "$borderColor"} hoverStyle={active ? undefined : { borderColor: "$color" }}
     >
-      <SizableText whiteSpace="nowrap" fontSize="$1" fontWeight="500" color={active ? "$background" : "$color11"} $group-hover={active ? undefined : { color: "$color" }}>
+      <SizableText whiteSpace="nowrap" fontSize="$1" fontWeight="500" color={active ? "$color12" : "$color11"} $group-hover={active ? undefined : { color: "$color" }}>
         {label}
       </SizableText>
       {count !== undefined && (

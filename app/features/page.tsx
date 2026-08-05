@@ -2,6 +2,7 @@
 
 import { SizableText, YStack, XStack, H1, Paragraph, H2, H3 } from '@hanzo/gui';
 import { Button, Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@hanzo/ui';
+import { accent } from '@/lib/chrome';
 import Link from "next/link";
 import SiteFooter from "@/components/landing/site-footer";
 import { ArrowRight, Check, X, Sparkles, Zap, Brain, Code, Globe, Shield, Database, Rocket, Users, Server, Cloud, Settings, BarChart, Cpu, Layers, GitBranch, MonitorPlay, Package } from "lucide-react";
@@ -166,13 +167,11 @@ export default function FeaturesPage() {
             </XStack>
 
             <H1 fontSize="$11" fontWeight="500" marginBottom="$4" textAlign="center" $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13", marginBottom: "$5" }} lineHeight="1.1">
-              Everything you need to{" "}
-              <SizableText position="relative">
-                <SizableText backgroundClip="text" color="transparent">
-                  build faster
-                </SizableText>
-                <YStack position="absolute" top="$-2" right="$-2" bottom="$-2" left="$-2" zIndex={-10} />
-              </SizableText>
+              {/* Plain ink. This was backgroundClip="text" + color transparent
+                  over a gradient a codemod deleted — two invisible words in the
+                  page's one headline. Monochrome law: emphasis is weight, not
+                  paint. */}
+              Everything you need to build faster
             </H1>
             <Paragraph fontSize="$6" color="$color11" marginBottom="$8" maxWidth={768} alignSelf="center" textAlign="center" $md={{ fontSize: "$7" }} lineHeight="1.5">
               From AI-powered code generation to instant deployment, Hanzo provides all the tools you need to turn ideas into production-ready applications
@@ -181,10 +180,11 @@ export default function FeaturesPage() {
             <YStack gap="$4" justifyContent="center" alignItems="center" $sm={{ flexDirection: "row" }}>
               <Button
                 onClick={() => user ? router.push('/dev') : openLoginWindow()}
+                {...accent}
                 paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6"
               >
                 <Zap size={20} />
-                <SizableText color="$background" fontWeight="500" fontSize="$6">Start Building</SizableText>
+                <SizableText color="$color12" fontWeight="500" fontSize="$6">Start Building</SizableText>
               </Button>
               <Button
                 onClick={() => router.push('/docs')}
@@ -397,10 +397,11 @@ export default function FeaturesPage() {
             <YStack gap="$4" justifyContent="center" alignItems="center" $sm={{ flexDirection: "row" }}>
               <Button
                 onClick={() => user ? router.push('/dev') : openLoginWindow()}
+                {...accent}
                 paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6"
               >
                 <Zap size={20} />
-                <SizableText color="$background" fontWeight="500" fontSize="$6">Start Building Now</SizableText>
+                <SizableText color="$color12" fontWeight="500" fontSize="$6">Start Building Now</SizableText>
               </Button>
               <Button
                 onClick={() => router.push('/community')}

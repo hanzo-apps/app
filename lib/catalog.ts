@@ -108,10 +108,10 @@ export async function searchCatalog(
   p.set("limit", String(query.limit ?? 60));
   if (query.offset) p.set("offset", String(query.offset));
 
-  const res = await fetch(`${API_BASE}/v1/catalog?${p}`, {
-    credentials: "include",
-    signal,
-  });
+  // Same-origin through the app's own /v1/catalog proxy — the gateway grants
+  // no CORS to app origins, so the direct fetch failed everywhere it wasn't
+  // same-host. The proxy passes the query through untouched.
+  const res = await fetch(`/v1/catalog?${p}`, { signal });
   if (!res.ok) throw new Error(`catalog: ${res.status}`);
   return res.json();
 }
