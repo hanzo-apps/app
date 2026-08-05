@@ -384,9 +384,15 @@ export function CatalogBrowser({
           )}
           {/* The divider separates two questions — whose, and what — so it is
               only ever drawn BETWEEN them. Unconditional, it trailed "All orgs"
-              with nothing on its right. */}
+              with nothing on its right.
+
+              A rule, not a "|". `$borderColor` is the hairline EDGE token
+              (rgba(255,255,255,.1)); painted as text it measured 1.25:1 against
+              the page — the glyph was there and no one could see it. The
+              element wanted to be a 1px rule all along, which is the one thing
+              that token is for. */}
           {whose && what && (
-            <SizableText marginHorizontal="$1" alignSelf="center" color="$borderColor">|</SizableText>
+            <YStack marginHorizontal="$2" alignSelf="stretch" width={1} backgroundColor="$borderColor" />
           )}
           {kinds.map(([k, n]) => (
             <Pill
