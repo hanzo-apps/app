@@ -54,7 +54,7 @@ import { Sidebar } from '@/components/sidebar';
 import { OrgProvider } from '@/lib/org/client';
 import { HanzoLogo } from '@/components/HanzoLogo';
 import { CommandPalette } from '@/components/command-palette';
-import { useCommandK } from '@/hooks/useCommandK';
+import { useCommandK } from '@hanzo/ui/product';
 import type { Project } from '@/lib/vfs/types';
 import { builderLink } from '@/lib/api/projects';
 import { RAIL, glass } from '@/lib/chrome';

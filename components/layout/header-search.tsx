@@ -16,7 +16,7 @@ import { SizableText, XStack } from '@hanzo/gui';
 import { useCallback, useState } from 'react';
 import { Search } from 'lucide-react';
 import { CommandPalette } from '@/components/command-palette';
-import { useCommandK } from '@/hooks/useCommandK';
+import { useCommandK } from '@hanzo/ui/product';
 export function HeaderSearch({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
   const toggle = useCallback(() => setOpen((o) => !o), []);

@@ -3,25 +3,40 @@
 /**
  * ⌘K command palette — the ONE fast switcher for hanzo.app.
  *
- * Opens on ⌘K (or clicking the sidebar "Search"). Two sections wired to REAL
- * data: "Recent projects" (the org-scoped /v1/projects list, ordered by what
- * this browser most recently opened — see lib/recent-projects) with a live
- * RIGHT-side preview panel (created-by, status, created, last-edited,
- * last-opened), and "Navigate to" (Dashboard, Create new project, Resources,
- * Connectors, Documentation).
+ * The bar itself is `Palette` from `@hanzo/ui/product` now: the dialog, the
+ * cursor, the grouping and the matching rule are the package's, so hanzo.app,
+ * console and chat stop being three hand-rolled palettes that disagree. What
+ * stays here is the only part that is genuinely this app's — its projects, its
+ * navigation, and the live preview panel, which the package takes as its
+ * right-hand slot.
  *
- *   ↵     open the highlighted project in the builder (/dev?project=<slug>)
- *   ⌘↵    open its published site (https://<slug>.hanzo.app)
+ * Three groups, and the third is the point:
  *
- * Composed from the @hanzo/ui `Command` primitive inside a wide `Dialog` (rather
- * than the stock `CommandDialog`, which doesn't forward `onValueChange` — needed
- * to drive the preview panel from the highlighted row).
+ *   Recent projects  the org-scoped /v1/projects list, ordered by what this
+ *                    browser most recently opened (lib/recent-projects), with a
+ *                    RIGHT-side preview of the highlighted row.
+ *   Navigate to      this app's own pages. Local commands: no route behind them,
+ *                    so they are the only ones that must be declared by hand.
+ *   Run              EVERY operation the cloud answers, from /v1/commands. Not
+ *                    written down here and not curated here — see
+ *                    hooks/useCommands.
+ *
+ * The safety rule that makes a 2,323-operation bar usable lives in the package
+ * (`@hanzo/ui/product` → match.ts): GET commands match fuzzily, every other
+ * method needs an exact `service operation` prefix, and no route shows on an
+ * empty query. So opening ⌘K still shows projects and navigation exactly as it
+ * did, and typing is what reaches the API.
+ *
+ *   ↵     open the highlighted project in the builder (/dev?project=<slug>), or
+ *         run the highlighted command
+ *   ⌘↵    open the highlighted project's published site
  */
 
 import { XStack, SizableText, YStack, H3, Anchor } from '@hanzo/gui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, Dialog, DialogContent, DialogTitle } from '@hanzo/ui';
+import { Palette, type Op } from '@hanzo/ui/product';
+import { toast } from '@hanzo/ui';
 import {
   LayoutDashboard,
   Plus,
@@ -37,6 +52,8 @@ import {
 
 import { useUser } from '@/hooks/useUser';
 import { useProjects } from '@/hooks/useProjects';
+import { useCommands } from '@/hooks/useCommands';
+import { run } from '@/lib/run';
 import { builderLink, liveUrlOf } from '@/lib/api/projects';
 import { ProjectThumb } from '@/components/project-thumb';
 import { markProjectOpened, lastOpenedAt, recentProjectIds } from '@/lib/recent-projects';
@@ -54,19 +71,16 @@ interface PaletteProject {
   updatedAtIso: string | null;
 }
 
-interface NavCommand {
-  id: string;
-  label: string;
-  icon: React.ElementType;
-  route: string;
-}
+const PROJECTS = 'Recent projects';
+const NAVIGATE = 'Navigate to';
 
-const NAV_COMMANDS: NavCommand[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, route: '/dashboard' },
-  { id: 'new', label: 'Create new project', icon: Plus, route: '/dev' },
-  { id: 'resources', label: 'Resources', icon: Sparkles, route: '/resources' },
-  { id: 'connectors', label: 'Connectors', icon: Plug, route: '/connectors' },
-  { id: 'docs', label: 'Documentation', icon: BookOpen, route: '/docs' },
+/** The pages this app has. Nothing routes them, so they are declared. */
+const NAV: Array<Op & { route: string }> = [
+  { id: 'nav:dashboard', group: NAVIGATE, label: 'Dashboard', route: '/dashboard', icon: <LayoutDashboard size={16} /> },
+  { id: 'nav:new', group: NAVIGATE, label: 'Create new project', route: '/dev', icon: <Plus size={16} /> },
+  { id: 'nav:resources', group: NAVIGATE, label: 'Resources', route: '/resources', icon: <Sparkles size={16} /> },
+  { id: 'nav:connectors', group: NAVIGATE, label: 'Connectors', route: '/connectors', icon: <Plug size={16} /> },
+  { id: 'nav:docs', group: NAVIGATE, label: 'Documentation', route: '/docs', icon: <BookOpen size={16} /> },
 ];
 
 /** The public vanity URL a project deploys to (honest — where publish ships). */
@@ -86,7 +100,8 @@ export function CommandPalette({
   // ONE shared, org-scoped project source (hooks/useProjects) — same cloud list
   // the sidebar + dashboard read; a module cache dedupes the fetch.
   const { projects: apiProjects } = useProjects();
-  const [activeValue, setActiveValue] = useState('');
+  const { ops: commands, find } = useCommands();
+  const [active, setActive] = useState('');
 
   const projects = useMemo<PaletteProject[]>(() => {
     const mapped: PaletteProject[] = apiProjects.map((p) => ({
@@ -114,10 +129,28 @@ export function CommandPalette({
     return mapped;
   }, [apiProjects]);
 
+  // One list, three kinds of row. The package groups by `group` in this order
+  // and decides which survive the search; a project and a fleet operation differ
+  // only in whether they carry a `method`.
+  const ops = useMemo<Op[]>(
+    () => [
+      ...projects.map((p) => ({
+        id: `project:${p.slug}`,
+        group: PROJECTS,
+        label: p.name,
+        icon: <FolderOpen size={16} />,
+        end: <StatusDot status={p.status} />,
+      })),
+      ...NAV,
+      ...commands,
+    ],
+    [projects, commands],
+  );
+
   // Default the highlighted row when the palette opens / the list changes.
   useEffect(() => {
     if (!open) return;
-    setActiveValue(projects.length ? `project:${projects[0].slug}` : 'nav:dashboard');
+    setActive(projects.length ? `project:${projects[0].slug}` : 'nav:dashboard');
   }, [open, projects]);
 
   const openProject = useCallback(
@@ -140,122 +173,95 @@ export function CommandPalette({
   );
 
   const activeProject = useMemo(
-    () => projects.find((p) => `project:${p.slug}` === activeValue) ?? null,
-    [projects, activeValue],
+    () => projects.find((p) => `project:${p.slug}` === active) ?? null,
+    [projects, active],
   );
 
-  // ⌘↵ opens the highlighted project's PUBLISHED site; plain ↵ is handled by
-  // cmdk's onSelect (opens in the builder). We intercept only the meta/ctrl case.
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-      if (activeProject) {
+  // Three kinds of row, three executors, one callback — which is what lets a
+  // local command and a fleet operation sit in one list.
+  const onRun = useCallback(
+    (op: Op) => {
+      const project = projects.find((p) => `project:${p.slug}` === op.id);
+      if (project) {
+        openProject(project);
+        return;
+      }
+
+      const nav = NAV.find((n) => n.id === op.id);
+      if (nav) {
+        onOpenChange(false);
+        router.push(nav.route);
+        return;
+      }
+
+      const command = find(op.id);
+      if (!command) return;
+      onOpenChange(false);
+      // The answer is a sentence either way: `run` translates a refusal through
+      // lib/gateway, so a 403 says it is permission and never "try again".
+      void run(command).then(({ ok, message }) =>
+        ok ? toast.success(message) : toast.error(message),
+      );
+    },
+    [projects, openProject, onOpenChange, router, find],
+  );
+
+  // ⌘↵ opens the highlighted project's PUBLISHED site; plain ↵ is the package's
+  // own onSelect. Only the meta/ctrl case is intercepted, and only for a project.
+  useEffect(() => {
+    if (!open || !activeProject) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         e.stopPropagation();
         openPublished(activeProject);
       }
-    }
-  };
+    };
+    window.addEventListener('keydown', onKey, true);
+    return () => window.removeEventListener('keydown', onKey, true);
+  }, [open, activeProject, openPublished]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      {/* Glass, one hairline, one scrim. `glass` (assets/globals.css) is the
-          ONE glass material and it only engages where the browser can really
-          blur what is behind it, so `backgroundColor` stays as the opaque
-          ground everywhere else — the @supports guard is why it is not
-          redundant. The hairline is `DialogContent`'s own `borderWidth: 1` /
-          `borderColor: "$borderColor"` default; restating it here just gave
-          two places to change one line. */}
-      <DialogContent
-        className="glass"
-        showCloseButton={false}
-        maxWidth={672} overflow="hidden" backgroundColor="$background" padding="$0" gap="$0"
-      >
-        <DialogTitle position="absolute" width={1} height={1} overflow="hidden">Search projects and commands</DialogTitle>
-        <Command
-          value={activeValue}
-          onValueChange={setActiveValue}
-          onKeyDown={handleKeyDown}
-          backgroundColor="transparent"
-        >
-          <CommandInput
-            placeholder="Search projects and commands…"
-            color="$color" placeholderTextColor="$color11"
-  />
-          <XStack minHeight={320}>
-            {/* Left: results */}
-            <CommandList maxHeight={320} width="50%" borderRightWidth={1} borderColor="$borderColor" paddingVertical="$1">
-              <CommandEmpty><SizableText color="$color11">No results found.</SizableText></CommandEmpty>
-
-              {projects.length > 0 && (
-                <CommandGroup heading="Recent projects">
-                  {projects.map((p) => (
-                    <CommandItem
-                      key={p.slug}
-                      value={`project:${p.slug}`}
-                      onSelect={() => openProject(p)}
-                      gap="$2"
-                    >
-                      <FolderOpen size={16} />
-                      <SizableText numberOfLines={1}>{p.name}</SizableText>
-                      <StatusDot status={p.status} alignEnd />
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              )}
-
-              <CommandGroup heading="Navigate to">
-                {NAV_COMMANDS.map((c) => (
-                  <CommandItem
-                    key={c.id}
-                    value={`nav:${c.id}`}
-                    onSelect={() => {
-                      onOpenChange(false);
-                      router.push(c.route);
-                    }}
-                    gap="$2"
-                  >
-                    <c.icon size={16} color="var(--muted-foreground)" />
-                    <span>{c.label}</span>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-
-            {/* Right: live preview of the highlighted project */}
-            <YStack width="50%">
-              <PreviewPanel project={activeProject} authorName={user?.name || user?.fullname || '—'} />
-            </YStack>
-          </XStack>
-
-          {/* Footer hints */}
-          <XStack alignItems="center" gap="$4" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2">
-            <XStack alignItems="center" gap="$1.5">
-              <SizableText fontSize={11} color="$color11">Open published project</SizableText>
-              <kbd>
-                <CommandIcon size={12} />
-                <CornerDownLeft size={12} />
-              </kbd>
-            </XStack>
-            <XStack alignItems="center" gap="$1.5">
-              <SizableText fontSize={11} color="$color11">Open project</SizableText>
-              <kbd>
-                <CornerDownLeft size={12} />
-              </kbd>
-            </XStack>
-          </XStack>
-        </Command>
-      </DialogContent>
-    </Dialog>
+    <Palette
+      open={open}
+      onOpenChange={onOpenChange}
+      ops={ops}
+      onRun={onRun}
+      active={active}
+      onActive={setActive}
+      placeholder="Search projects and commands…"
+      title="Search projects and commands"
+      footer={<Hints />}
+    >
+      <PreviewPanel project={activeProject} authorName={user?.name || user?.fullname || '—'} />
+    </Palette>
   );
 }
 
-function StatusDot({ status, alignEnd = false }: { status: string; alignEnd?: boolean }) {
+function Hints() {
+  return (
+    <>
+      <XStack alignItems="center" gap="$1.5">
+        <SizableText fontSize={11} color="$color11">Open published project</SizableText>
+        <kbd>
+          <CommandIcon size={12} />
+          <CornerDownLeft size={12} />
+        </kbd>
+      </XStack>
+      <XStack alignItems="center" gap="$1.5">
+        <SizableText fontSize={11} color="$color11">Open project</SizableText>
+        <kbd>
+          <CornerDownLeft size={12} />
+        </kbd>
+      </XStack>
+    </>
+  );
+}
+
+function StatusDot({ status }: { status: string }) {
   const st = statusOf(status);
   return (
-    <XStack
-      alignItems="center" gap="$1"
-      {...(alignEnd ? { marginLeft: "auto" } : null)}
-    >
+    <XStack alignItems="center" gap="$1" marginLeft="auto">
       <Circle size={6} color={st.text} />
       <SizableText fontSize={10} letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
     </XStack>
