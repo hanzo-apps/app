@@ -72,7 +72,9 @@ export default function GameDetail() {
   return (
     <YStack minHeight="100%" backgroundColor="$background">
       <Header />
-      <YStack flex={1} backgroundColor="$background" overflow="scroll">
+      {/* Document scroll, no inner region — flex={1} is basis-0 under an
+          indefinite root and clips the whole page to zero (see /templates). */}
+      <YStack backgroundColor="$background">
         <YStack width="100%" maxWidth={1024} alignSelf="center" paddingHorizontal="$5" paddingVertical="$6">
           <Link
             href="/games"

@@ -936,14 +936,16 @@ export default function TestGenerationPage() {
   ];
 
   return (
-    <YStack height="100%">
+    <YStack minHeight="100%">
       <AppHeader
         leftText="Hanzo Benchmark"
         onLogoClick={() => router.push('/')}
         actions={headerActions}
   />
 
-      <YStack flex={1} overflow="scroll" backgroundColor="$background" padding="$5">
+      {/* Document scroll — height="100%" of an auto body is indefinite, and a
+          flex-basis-0 scroll child under it clips to zero (see /templates). */}
+      <YStack backgroundColor="$background" padding="$5">
         <YStack maxWidth={1152} alignSelf="center">
 
         {/* Info Banner */}

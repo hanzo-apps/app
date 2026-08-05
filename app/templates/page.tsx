@@ -112,7 +112,12 @@ function ResourcesBrowser() {
   return (
     <YStack minHeight="100%" backgroundColor="$background">
       <Header />
-      <YStack flex={1} backgroundColor="$background" overflow="scroll">
+      {/* No inner scroll region on a public page — the document scrolls. This
+          wrapper carried flex={1} (RN semantics: flex-basis 0) + overflow
+          scroll, and under a minHeight root a basis-0 child resolves to ZERO
+          height: 5,600px of grid mounted invisible, on prod. The shell's
+          scroll region belongs to signed-in surfaces only. */}
+      <YStack backgroundColor="$background">
         {/* Hero */}
         <YStack borderBottomWidth={1} borderColor="$borderColor">
           <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$7">
