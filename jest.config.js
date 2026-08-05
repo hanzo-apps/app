@@ -84,6 +84,11 @@ const customJestConfig = {
       // A project inherits NOTHING from the root config — it IS a config — so
       // the jsdom polyfills have to be named here or they run nowhere.
       setupFiles: ['<rootDir>/jest.setup.jsdom.js'],
+      // Same non-inheritance, second casualty: without this, jsdom resolves
+      // packages through their `browser` export condition and hands jest ESM
+      // it cannot parse (@hanzogui/telemetry's env.mjs, import.meta). Jest
+      // executes CJS, so it must ask for CJS.
+      testEnvironmentOptions: { customExportConditions: ['node', 'node-addons'] },
     },
     {
       displayName: 'integration',

@@ -102,8 +102,8 @@ export default function PricingPage() {
                 One subscription powers AI across the app builder, Hanzo Chat, and
                 the API at{" "}
                 <SizableText fontFamily="$mono" color="$color">api.hanzo.ai</SizableText> — from
-                a single monthly allowance. Start for free; add a plan when you need
-                more.
+                a single monthly allowance. Pick the plan that fits; scale it when
+                you need more.
               </Paragraph>
             </Reveal>
           </YStack>
@@ -216,18 +216,18 @@ export default function PricingPage() {
           </YStack>
         </YStack>
 
-        {/* ── Free-to-start note ───────────────────────────────── */}
+        {/* ── Start note ───────────────────────────────────────── */}
         <YStack paddingHorizontal="$4" $md={{ paddingHorizontal: "$6" }}>
           <Reveal alignSelf="center" width="100%" maxWidth={1152}>
             <YStack alignItems="flex-start" justifyContent="space-between" gap="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$5" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: 28 }}>
               <div>
                 <H3 fontSize="$4" fontWeight="500" color="$color">
-                  Start for free
+                  Start in minutes
                 </H3>
                 <Paragraph marginTop="$1" fontSize="$3" color="$color11">
-                  No card required to sign up. Create an account, explore the
-                  builder, and subscribe when you&apos;re ready to ship with more
-                  shared AI usage.
+                  Every plan includes the builder, Hanzo Chat, and the API from
+                  one shared allowance. Choose a plan, add a card, and ship —
+                  change or cancel anytime.
                 </Paragraph>
               </div>
               <Link

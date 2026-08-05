@@ -16,7 +16,11 @@ jest.mock("next/navigation", () => ({
   useRouter: () => ({ push }),
 }));
 
+// Override ONLY the hook this suite asserts on. @hanzo/ui's barrel reads
+// ErrorBoundary off this module at load, so a mock that replaces the whole
+// namespace takes the barrel down with it.
 jest.mock("@hanzo/event/react", () => ({
+  ...jest.requireActual("@hanzo/event/react"),
   useAnalytics: () => ({ capture }),
 }));
 
