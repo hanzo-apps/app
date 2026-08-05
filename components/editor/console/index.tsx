@@ -81,6 +81,11 @@ export function Console({
   return (
     <YStack
       data-console
+      // The dock floats over the preview, so it takes the app's ONE glass:
+      // translucent ground + backdrop blur, with the separator's hairline
+      // finishing the top edge. Opaque `$background` made it read as a second
+      // page stacked under the first.
+      className="frosted"
       position="relative" zIndex={20} flexShrink={0} overflow="hidden" backgroundColor="$background"
       style={{ height }}
     >
@@ -155,6 +160,7 @@ export function Console({
             onClick={onToggleSidebar}
             aria-label="Chat panel"
             aria-expanded={!sidebarCollapsed}
+            variant="ghost"
             group
             width="$4.5" height="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
           >
@@ -173,9 +179,14 @@ export function Console({
             measured clearances, so they stay the measurements they are. */}
         <XStack pointerEvents="none" position="relative" height="100%" alignItems="center" gap="$2.5" paddingLeft="2.25rem" paddingRight="4.25rem">
           <XStack alignItems="center" gap="$1.5">
-            <XStack position="relative" width="$1.5" height="$1.5" alignItems="center" justifyContent="center">
-              <SizableText position="absolute" width="$1.5" height="$1.5" borderRadius="$10" backgroundColor="var(--brand-accent)" opacity={0.6} />
-              <SizableText position="relative" width="$1.5" height="$1.5" borderRadius="$10" backgroundColor="var(--brand-accent)" />
+            {/* A live indicator: a small dot inside a wider, dimmer halo. All
+                three boxes were `$1.5` — 24px, the size of a BUTTON, so this
+                read as a white blob beside 11px text, and the halo, being
+                exactly the dot's size, sat perfectly hidden behind it. The
+                halo has to be bigger than the dot or there is nothing to see. */}
+            <XStack position="relative" width={12} height={12} alignItems="center" justifyContent="center">
+              <SizableText position="absolute" width={12} height={12} borderRadius="$10" backgroundColor="var(--brand-accent)" opacity={0.25} />
+              <SizableText position="relative" width={6} height={6} borderRadius="$10" backgroundColor="var(--brand-accent)" />
             </XStack>
             <SizableText fontSize={11} color="$color11">Live</SizableText>
           </XStack>

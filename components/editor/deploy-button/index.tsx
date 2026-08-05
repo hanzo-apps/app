@@ -9,6 +9,7 @@ import { LoginModal } from "@/components/login-modal";
 import { useUser } from "@/hooks/useUser";
 import { Page } from "@/types";
 import { DeployButtonContent } from "./content";
+import { accent } from "@/lib/chrome";
 import { Save } from "lucide-react";
 
 export function DeployButton({
@@ -46,7 +47,7 @@ export function DeployButton({
                     the icon — so the worst a media-query failure can do is show
                     an icon on a narrow screen, never a second Publish. */}
                 <Button
-                  variant="default"
+                  {...accent}
                   size="sm"
                   height={28} gap="$1.5" paddingHorizontal="$2.5"
                   disabled={disabled}
@@ -54,7 +55,7 @@ export function DeployButton({
                   <View $lg={{ display: "none" }}>
                     <Save size={14} />
                   </View>
-                  <SizableText fontSize="$1">{disabled ? "Building…" : "Publish"}</SizableText>
+                  <SizableText fontSize="$1" color="$color">{disabled ? "Building…" : "Publish"}</SizableText>
                 </Button>
               </div>
             </PopoverTrigger>
@@ -68,7 +69,7 @@ export function DeployButton({
           </Popover>
         ) : (
           <Button
-            variant="default"
+            {...accent}
             size="sm"
             height={28} gap="$1.5" paddingHorizontal="$2.5"
             onClick={() => setOpen(true)}
@@ -77,7 +78,7 @@ export function DeployButton({
             <View $lg={{ display: "none" }}>
               <Save size={14} />
             </View>
-            <SizableText fontSize="$1">{disabled ? "Building…" : "Publish"}</SizableText>
+            <SizableText fontSize="$1" color="$color">{disabled ? "Building…" : "Publish"}</SizableText>
           </Button>
         )}
         <LoginModal

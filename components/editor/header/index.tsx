@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger, Button } from '@hanzo/ui';
+import { selected } from "@/lib/chrome";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { PagePanel } from "@/components/editor/page-navigator";
 import { WorkspaceMenu } from "@/components/editor/workspace-menu";
@@ -34,6 +35,23 @@ const DEVICES = [
   { name: "desktop", icon: Monitor },
   { name: "mobile", icon: Smartphone },
 ] as const;
+
+/**
+ * The bar's ONE control size. Every square box here — the brand corner, each
+ * icon button — measures exactly this, and the segmented pills reach it as
+ * 28 + their group's `$0.5` padding.
+ *
+ * A literal, not a size token. Four boxes asked for `width="$6" height="$6"`
+ * meaning 32; `$6` is 64 on gui's size scale, so each drew at DOUBLE its
+ * intended size. 64px of brand corner plus two 64px icon buttons overran the
+ * bar, and the three clusters ended up painting over one another — measured at
+ * 1440px: `Load ⨯ Preview`, `Preview ⨯ Publish`, `Publish ⨯ Code`, which is the
+ * push icon sitting on top of the Publish pill in the owner's screenshot.
+ *
+ * Naming the number is the fix: there is no token that reads 32, so every call
+ * site was guessing, and one guess was wrong four times.
+ */
+const CONTROL = 32;
 
 /**
  * Builder top chrome — the ONE bar (Lovable structure, Hanzo true-black
@@ -115,7 +133,7 @@ export function Header({
         <Link
           href="/"
           aria-label="Hanzo home"
-        ><XStack marginRight="$0.5" width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}>
+        ><XStack marginRight="$0.5" width={CONTROL} height={CONTROL} alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}>
           <HanzoLogo size={20} />
         </XStack></Link>
         <YStack minWidth={0}>
@@ -130,7 +148,8 @@ export function Header({
             title={historyOpen ? "Back to chat" : "Version history"}
             aria-label={historyOpen ? "Back to chat" : "Version history"}
             aria-pressed={Boolean(historyOpen)}
-            display="none" width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: historyOpen ? "$color3" : undefined, hoverStyle: historyOpen ? undefined : { backgroundColor: "$color3" } }}
+            variant="ghost"
+            display="none" width={CONTROL} height={CONTROL} alignItems="center" justifyContent="center" borderRadius="$5" focusVisibleStyle={{ outlineWidth: 0 }} {...{ ...selected(Boolean(historyOpen)), hoverStyle: historyOpen ? undefined : { backgroundColor: "$color3" } }}
           >
             <History size={16} />
           </Button>
@@ -147,11 +166,13 @@ export function Header({
         >
           {TABS.map((item) => {
             const active = tab === item.value;
+            const sel = selected(active);
             return (
               <Button
                 key={item.value}
                 type="button"
                 role="tab"
+                variant="ghost"
                 aria-selected={active}
                 title={item.label}
                 onClick={() => onNewTab(item.value)}
@@ -160,9 +181,9 @@ export function Header({
                 // device group beside it and every icon button. Padding + line-height
                 // computed to 32px of CONTENT, so the group rendered 36px and sat 4px
                 // taller than its own sibling. Set the height; never let padding decide it.
-                height={28} alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2.5" focusVisibleStyle={{ outlineWidth: 0 }} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, backgroundColor: active ? "$color12" : undefined, elevation: active ? 1 : undefined, hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
+                height={28} alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2.5" focusVisibleStyle={{ outlineWidth: 0 }} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, ...sel, hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
               >
-                <SizableText color={active ? "$background" : "$color11"}>
+                <SizableText color={sel.color}>
                   <item.icon size={16} />
                 </SizableText>
                 <SizableText display="none">{item.label}</SizableText>
@@ -181,17 +202,19 @@ export function Header({
           >
             {DEVICES.map((d) => {
               const active = device === d.name;
+              const sel = selected(active);
               return (
                 <Button
                   key={d.name}
                   type="button"
                   role="tab"
+                  variant="ghost"
                   aria-selected={active}
                   title={`${d.name[0].toUpperCase()}${d.name.slice(1)} preview`}
                   onClick={() => setDevice(d.name as "desktop" | "mobile")}
-                  width={28} height={28} alignItems="center" justifyContent="center" borderRadius="$3" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: active ? "$color12" : undefined, elevation: active ? 1 : undefined, hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
+                  width={28} height={28} alignItems="center" justifyContent="center" borderRadius="$3" focusVisibleStyle={{ outlineWidth: 0 }} {...{ ...sel, hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
                 >
-                  <SizableText color={active ? "$background" : "$color11"}>
+                  <SizableText color={sel.color}>
                     <d.icon size={16} />
                   </SizableText>
                 </Button>
@@ -202,7 +225,8 @@ export function Header({
             type="button"
             onClick={handleRefreshIframe}
             title="Refresh preview"
-            width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
+            variant="ghost"
+            width={CONTROL} height={CONTROL} alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
           >
             <RefreshCcw size={14} />
           </Button>
@@ -248,7 +272,8 @@ export function Header({
             onClick={onOpenExternal}
             title="Open preview in a new tab"
             aria-label="Open preview in a new tab"
-            width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
+            variant="ghost"
+            width={CONTROL} height={CONTROL} alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
           >
             <ExternalLink size={14} />
           </Button>
@@ -258,7 +283,14 @@ export function Header({
       {/* RIGHT — the solid Publish primary is pinned `shrink-0` OUTSIDE the
           scroll track so it always paints fully; the secondary actions
           (Share · Load · Push) scroll within their own track on tight widths. */}
-      <XStack minWidth={0} flex={1} alignItems="center" justifyContent="flex-end" gap="$1.5" $lg={{ flex: 0, gap: "$2" }}>
+      {/* `flex={1}` at EVERY width. It used to widen to `$lg={{ flex: 0 }}`,
+          and `flex: 0` is not "stop growing" — it is `0 0 0%`, a box with no
+          basis and no growth, which measures ZERO. Above `lg` this cluster was
+          1440px of header collapsed to 0px at x=170, so Publish, Push, Load and
+          Share overflowed a widthless parent and painted straight over the
+          centre tab group: `Preview ⨯ Publish`, `Code ⨯ Publish`. Growing is
+          the whole job — it is what carries `justifyContent="flex-end"`. */}
+      <XStack minWidth={0} flex={1} alignItems="center" justifyContent="flex-end" gap="$1.5" $lg={{ gap: "$2" }}>
         {secondary.length > 0 && (
           <XStack minWidth={0} alignItems="center" gap="$1.5" overflow="scroll" $lg={{ gap: "$2" }} className="no-scrollbar">
             {secondary}

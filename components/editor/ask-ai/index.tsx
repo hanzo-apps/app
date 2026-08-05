@@ -11,6 +11,7 @@ import { useUsageLimit } from "@/components/usage/usage-limit";
 import { useModels } from "@/lib/hooks/use-models";
 import { useRoutingDefaults } from "@/lib/hooks/use-routing-defaults";
 import { AUTO_MODEL, isDeadModelId, isSmartRouting, resolveSmartRouting } from "@/lib/providers";
+import { accent, selected } from "@/lib/chrome";
 import { HtmlHistory, Page, Project } from "@/types";
 // import { InviteFriends } from "@/components/invite-friends";
 import { Settings } from "@/components/editor/ask-ai/settings";
@@ -1046,6 +1047,7 @@ export function AskAI({
           <Button
             type="button"
             aria-label="Dismiss suggestions"
+            variant="ghost"
             onClick={() => setSuggestionsDismissed(true)}
             flexShrink={0} borderRadius="$10" padding="$1" hoverStyle={{ backgroundColor: "$color3" }}
           >
@@ -1069,6 +1071,7 @@ export function AskAI({
           role="separator"
           aria-orientation="horizontal"
           aria-label="Resize chat input (Arrow Up to grow, Arrow Down to shrink)"
+          variant="ghost"
           onPointerDown={onResizePointerDown}
           onKeyDown={(e) => {
             if (e.key === "ArrowUp") {
@@ -1304,12 +1307,22 @@ export function AskAI({
             <XStack
               role="group"
               aria-label="Composer mode"
-              flexShrink={0} alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$0.5"
+              flexShrink={0} alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$0.5"
             >
-              {(["build", "plan"] as const).map((m) => (
+              {(["build", "plan"] as const).map((m) => {
+                // The app's ONE selected look, so the composer's mode agrees
+                // with the header's tabs and the sidebar's rows. It read
+                // `var(--brand-accent)`, which resolves to #ffffff here — a pure
+                // white pill, paired with a near-black label. Both segments were
+                // white, in fact: the inactive one passed `undefined`, and an
+                // unset background is not "no background" but the Button's
+                // `default` variant, which is also white.
+                const sel = selected(mode === m);
+                return (
                 <Button
                   key={m}
                   type="button"
+                  variant="ghost"
                   aria-pressed={mode === m}
                   title={
                     m === "plan"
@@ -1317,11 +1330,12 @@ export function AskAI({
                       : "Build: generate and modify your app"
                   }
                   onClick={() => setMode(m)}
-                  borderRadius="$10" paddingHorizontal="$2.5" paddingVertical="$1" focusVisibleStyle={{ outlineWidth: 0 }} backgroundColor={mode === m ? "var(--brand-accent)" : undefined}
+                  borderRadius="$10" paddingHorizontal="$2.5" paddingVertical="$1" focusVisibleStyle={{ outlineWidth: 0 }} {...sel}
                 >
-                  <SizableText fontWeight="500" fontSize="$1" textTransform="capitalize" color={mode === m ? "var(--brand-accent-fg)" : "$color11"}>{m}</SizableText>
+                  <SizableText fontWeight="500" fontSize="$1" textTransform="capitalize" color={sel.color}>{m}</SizableText>
                 </Button>
-              ))}
+                );
+              })}
             </XStack>
             {isSmartRouting(model) && routedModel && (
               <Tooltip>
@@ -1357,6 +1371,7 @@ export function AskAI({
             ) : (
               <Button
                 size="icon"
+                {...accent}
                 borderRadius="$10"
                 disabled={
                   isUploading ||
