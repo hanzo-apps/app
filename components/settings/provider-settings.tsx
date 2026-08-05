@@ -2,7 +2,8 @@
 
 import { XStack, YStack, Anchor, SizableText, H2, Paragraph } from '@hanzo/gui';
 import { useState, useEffect } from 'react';
-import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription, Input, Label, Badge, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Tabs, TabsContent, TabsList, TabsTrigger, toast } from '@hanzo/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription, Label, Badge, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Tabs, TabsContent, TabsList, TabsTrigger, toast } from '@hanzo/ui';
+import { SecretInput } from '@hanzo/ui/product';
 import { CheckCircle, ExternalLink, Key, Trash2 } from 'lucide-react';
 
 import {
@@ -30,7 +31,6 @@ interface ProviderCardProps {
 
 function ProviderCard({ provider, onValidate, onRemove, isValidating }: ProviderCardProps) {
   const [apiKey, setApiKeyValue] = useState('');
-  const [showKey, setShowKey] = useState(false);
   const hasKey = hasApiKey(provider.id);
 
   useEffect(() => {
@@ -100,23 +100,12 @@ function ProviderCard({ provider, onValidate, onRemove, isValidating }: Provider
                   </Anchor>
                 )}
               </XStack>
-              <XStack gap="$2">
-                <Input
-                  id={`${provider.id}-key`}
-                  type={showKey ? 'text' : 'password'}
-                  value={apiKey}
-                  onChange={(e) => setApiKeyValue(e.target.value)}
-                  placeholder={provider.apiKeyPlaceholder || 'Enter API key'}
-                  flex={1}
-  />
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setShowKey(!showKey)}
-                >
-                  {showKey ? 'Hide' : 'Show'}
-                </Button>
-              </XStack>
+              <SecretInput
+                value={apiKey}
+                onChange={setApiKeyValue}
+                placeholder={provider.apiKeyPlaceholder || 'Enter API key'}
+                id={`${provider.id}-key`}
+              />
             </YStack>
 
             <XStack gap="$2">

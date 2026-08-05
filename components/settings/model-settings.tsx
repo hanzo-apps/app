@@ -4,8 +4,9 @@ import { YStack, H3, Paragraph, SizableText, Anchor, XStack } from '@hanzo/gui';
 import { useState, useEffect } from 'react';
 import { configManager } from '@/lib/config/storage';
 import { validateApiKey as checkApiKey } from '@/lib/llm/llm-client';
-import { Button, Input, Label, Switch, toast, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator } from '@hanzo/ui';
-import { Eye, EyeOff, Check, X, ExternalLink, Loader2, Lightbulb } from 'lucide-react';
+import { Button, Label, Switch, toast, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator } from '@hanzo/ui';
+import { SecretInput } from '@hanzo/ui/product';
+import { Check, X, ExternalLink, Loader2, Lightbulb } from 'lucide-react';
 import { ModelSelector } from '@/components/model-selector';
 import { useProviderModels } from '@/lib/hooks/use-provider-models';
 import { ProviderId } from '@/lib/llm/providers/types';
@@ -27,7 +28,6 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
   const [selectedProvider, setSelectedProvider] = useState<ProviderId>(() =>
     configManager.getSelectedProvider()
   );
-  const [showApiKey, setShowApiKey] = useState(false);
   const [validatingKey, setValidatingKey] = useState(false);
   const [keyValid, setKeyValid] = useState<boolean | null>(null);
   const [currentApiKey, setCurrentApiKey] = useState('');
@@ -266,32 +266,16 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
   />
         ) : (
           <div>
-            <Label htmlFor="api-key">{providerConfig.name} API Key</Label>
+            <Label>{providerConfig.name} API Key</Label>
             <XStack gap="$2" marginTop="$2">
-              <YStack position="relative" flex={1}>
-                <Input
-                  id="api-key"
-                  type={showApiKey ? "text" : "password"}
+              <YStack flex={1}>
+                <SecretInput
                   value={currentApiKey}
-                  onChange={(e) => { setCurrentApiKey(e.target.value); setKeyValid(null); }}
-                  onKeyDown={(e) => { if (e.key === 'Enter' && currentApiKey.trim()) handleConnect(); }}
+                  onChange={(v) => { setCurrentApiKey(v); setKeyValid(null); }}
                   placeholder={providerConfig.apiKeyPlaceholder || 'API Key'}
-                  paddingRight="$7"
-                  data-tour-id="provider-key-input"
                   disabled={validatingKey}
-  />
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  position="absolute" right="$1" top="$1" height={28} width={28}
-                  onClick={() => setShowApiKey(!showApiKey)}
-                >
-                  {showApiKey ? (
-                    <EyeOff size={16} />
-                  ) : (
-                    <Eye size={16} />
-                  )}
-                </Button>
+                  id={`${providerConfig.name}-key`}
+                />
               </YStack>
               <Button
                 onClick={handleConnect}
@@ -325,33 +309,18 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
         )
       ) : providerConfig.isLocal ? (
         <div>
-          <Label htmlFor="api-key">
+          <Label>
             {providerConfig.name} API Key
             <SizableText color="$color11" fontSize="$1" marginLeft="$1">(optional)</SizableText>
           </Label>
           <XStack gap="$2" marginTop="$2">
-            <YStack position="relative" flex={1}>
-              <Input
-                id="api-key"
-                type={showApiKey ? "text" : "password"}
+            <YStack flex={1}>
+              <SecretInput
                 value={currentApiKey}
-                onChange={(e) => handleApiKeyChange(e.target.value)}
+                onChange={handleApiKeyChange}
                 placeholder={providerConfig.apiKeyPlaceholder || 'API Key'}
-                paddingRight="$7"
-                data-tour-id="provider-key-input"
-  />
-              <Button
-                size="icon"
-                variant="ghost"
-                position="absolute" right="$1" top="$1" height={28} width={28}
-                onClick={() => setShowApiKey(!showApiKey)}
-              >
-                {showApiKey ? (
-                  <EyeOff size={16} />
-                ) : (
-                  <Eye size={16} />
-                )}
-              </Button>
+                id={`${providerConfig.name}-key`}
+              />
             </YStack>
             <Button
               onClick={validateApiKey}
