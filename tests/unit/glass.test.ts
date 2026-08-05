@@ -47,7 +47,21 @@ const rel = (f: string) => f.replace(repoRoot + "/", "");
 const offendersOf = (re: RegExp) =>
   files.filter((f) => re.test(readFileSync(f, "utf8"))).map(rel);
 
-const css = readFileSync(join(repoRoot, "assets", "globals.css"), "utf8");
+// The app's own sheet. It no longer holds the material — only the two tokens
+// that have to outrank @hanzo/brand — so it is asserted on for exactly that.
+const appCss = readFileSync(join(repoRoot, "assets", "globals.css"), "utf8");
+
+// The material itself. It moved to `@hanzo/ui/glass.css`, so the law is asserted
+// where the law now lives; asserting it against the app's sheet after the move
+// would pass only for as long as a stale copy survived, which is backwards.
+// Read by path, not by specifier: Jest's moduleNameMapper sends every `.css`
+// specifier to a style mock, and it catches `createRequire` too — resolving
+// through it returns the mock, so the assertions below passed against an empty
+// stub. The symlink pnpm puts at node_modules/@hanzo/ui is the real file.
+const pkgCss = readFileSync(
+  join(repoRoot, "node_modules", "@hanzo", "ui", "dist", "glass.css"),
+  "utf8",
+);
 
 describe("The material attaches to the slot, not to who remembered", () => {
   it("scans a non-trivial number of source files", () => {
@@ -57,19 +71,19 @@ describe("The material attaches to the slot, not to who remembered", () => {
   // Every one of these is floating chrome BY CONSTRUCTION. If @hanzo/ui adds a
   // surface, or renames a slot, this is where it gets noticed — rather than in
   // a screenshot six weeks later showing one opaque menu among forty glass ones.
+  // `menu-content` used to be on this list and is deliberately off it: nothing
+  // emits it. @hanzo/ui's dropdown backend tags its surface
+  // `dropdown-menu-content`, and the old entry was matching that string by
+  // accident. It was a selector guarding a slot that does not exist.
   it.each([
     "dialog-content",
     "popover-content",
     "select-content",
     "dropdown-menu-content",
     "dropdown-menu-sub-content",
-    "menu-content",
     "tooltip-content",
   ])("%s wears the material", (slot) => {
-    const material = css.slice(
-      css.indexOf("@supports (backdrop-filter"),
-      css.indexOf("/* Depth —"),
-    );
+    const material = pkgCss.slice(pkgCss.indexOf("@supports (backdrop-filter"));
     expect(material).toContain(`[data-slot="${slot}"]`);
   });
 
@@ -82,7 +96,11 @@ describe("The material attaches to the slot, not to who remembered", () => {
     // a capability probe, and its argument is deliberately a cheap radius no
     // browser would refuse. Matching it would make this test fail on the very
     // line that guards the material.
-    const declarations = css
+    //
+    // Both sheets, because "once" is a fact about the DOCUMENT: the app's own
+    // sheet reintroducing a radius would be just as much a second answer as the
+    // package growing one.
+    const declarations = (pkgCss + "\n" + appCss)
       .split("\n")
       .filter((l) => !l.includes("@supports"))
       .join("\n");
@@ -128,7 +146,9 @@ describe("The material attaches to the slot, not to who remembered", () => {
 
 describe("Depth is a ladder, and it has three rungs", () => {
   it("exactly three elevation levels exist", () => {
-    const levels = [...css.matchAll(/\.elevation-(\d)\s*\{/g)].map((m) => m[1]);
+    // `,` as well as `{`: rungs 2 and 3 share their rule with the slots that
+    // stand on them, so the class is followed by a comma rather than a brace.
+    const levels = [...pkgCss.matchAll(/\.elevation-(\d)\s*[,{]/g)].map((m) => m[1]);
     expect(levels).toEqual(["1", "2", "3"]);
   });
 
@@ -136,18 +156,36 @@ describe("Depth is a ladder, and it has three rungs", () => {
     // The lip is the half that reads on #080808 — black-on-near-black moves no
     // pixels, so a rung with only a shadow is a rung that does nothing.
     for (const level of ["1", "2", "3"]) {
-      const rule = css.slice(css.indexOf(`.elevation-${level} {`));
+      const rule = pkgCss.slice(pkgCss.indexOf(`.elevation-${level}`));
       const body = rule.slice(0, rule.indexOf("}"));
-      expect(body).toContain("inset 0 1px 0 0 var(--hz-sheen)");
-      expect(body).toMatch(/rgba\(0, 0, 0, 0\.\d+\)/);
+      expect(body).toContain("--edge-highlight");
+      expect(body).toMatch(/--shadow-(sm|lg|floating)/);
     }
   });
 
   it("the sheen sits ABOVE the hairline, or it disappears into it", () => {
     // --border rings the whole box; an equal-value lip is invisible against it.
-    const sheen = css.match(/--hz-sheen:\s*rgba\(255, 255, 255, ([\d.]+)\)/);
+    const sheen = pkgCss.match(/--edge-highlight,\s*inset 0 1px 0 0 rgb\(255 255 255 \/ \.(\d+)\)/);
     expect(sheen).not.toBeNull();
-    expect(Number(sheen![1])).toBeGreaterThan(0.06);
+    expect(Number("0." + sheen![1])).toBeGreaterThan(0.06);
+  });
+
+  it("the ladder's cast shadows outrank @hanzo/brand's light-canvas ones", () => {
+    // The ladder reads --shadow-sm/--shadow-lg, and @hanzo/brand declares both
+    // at the stock 0.05/0.1 for a WHITE page. Next emits brand after this app's
+    // sheet, so a plain `:root` override loses on source order and the ladder
+    // goes flat — measured, in a browser, at 0.4 → 0.05 and 0.55 → 0.1.
+    //
+    // Two things have to hold, and each failed once: the override exists, and
+    // it is anchored high enough to win.
+    // Anchored on the declaration, not on the first `html:root` in the file —
+    // the typography block is also anchored that way and comes first.
+    const at = appCss.indexOf("--shadow-sm:");
+    expect(at).toBeGreaterThan(-1);
+    const block = appCss.slice(at - 300, at + 300);
+    expect(block).toContain("html:root");
+    expect(block).toMatch(/--shadow-sm:\s*0 1px 2px 0 rgb\(0 0 0 \/ 0\.4\)/);
+    expect(block).toMatch(/--shadow-lg:.*rgb\(0 0 0 \/ 0\.55\)/);
   });
 
   it("glass offers no level 1 — a floating thing is never at rest", () => {
@@ -185,13 +223,19 @@ describe("Depth is a ladder, and it has three rungs", () => {
 
 describe("A scrim dims the page — it does not delete it", () => {
   it("the dim is declared once, in CSS, and read from both languages", () => {
-    expect(css).toMatch(/--surface-scrim:\s*rgba\(0, 0, 0, 0\.55\)/);
-    expect(css).toContain("background-color: var(--surface-scrim)");
+    // One token, reached from both languages: the overlay reads it from the
+    // package's sheet, the three hand-rolled modals read it from `scrim` in
+    // lib/chrome. Neither states the number, so they cannot disagree.
+    expect(pkgCss).toContain("background-color: var(--surface-scrim");
     expect(scrim.backgroundColor).toContain("var(--surface-scrim");
   });
 
   it("nothing hardcodes the scrim value — there is one copy and it is not here", () => {
-    expect(offendersOf(/backgroundColor="rgba\(0, ?0, ?0, ?0\.55\)"/)).toEqual([]);
+    // The scrim's two values — the one this app tuned and the one it now takes
+    // from the package — and not "any black with an alpha": a translucent black
+    // fill is a legitimate thing for a component to want. Only the SCRIM has to
+    // come from the token.
+    expect(offendersOf(/backgroundColor="rgba\(0, ?0, ?0, ?0\.(55|8)\)"/)).toEqual([]);
   });
 
   it("no full-bleed overlay is opaque black", () => {
@@ -233,6 +277,6 @@ describe("Glass is for chrome; the flow gets a panel", () => {
     // --border and --borderColor are two different greys (rgb(38,38,38) vs
     // rgb(36,36,36)); the card's edge is drawn with the second, so the first
     // put two hairlines two units apart inside one card.
-    expect(css).toMatch(/\[data-slot="rows"\] > \* \+ \* \{\s*border-top: 1px solid var\(--borderColor/);
+    expect(pkgCss).toMatch(/\[data-slot="rows"\] > \* \+ \* \{\s*border-top: 1px solid var\(--borderColor/);
   });
 });

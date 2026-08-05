@@ -8,6 +8,12 @@ import TanstackProvider from "@/components/providers/tanstack-query-provider";
 // Tamagui `--background !important` fix. One import, at the root, once.
 import "@hanzo/brand/styles/variables.css";
 import "@/assets/globals.css";
+// The frosted material, the elevation ladder, the dialog scrim, the row
+// separators. Defined in this app first and packaged from it, so it sits in the
+// cascade slot its own copy used to hold: after the app's tokens, which it
+// reads, and before gui.css, whose atomic background it outranks with the
+// !important it carries for exactly that reason.
+import "@hanzo/ui/glass.css";
 // The full @hanzo/gui atomic sheet as a REAL stylesheet (scripts/gen-gui-css.mjs).
 // GuiProvider gets disableInjectCSS so the same 350KB is no longer inlined into
 // every HTML document, uncacheable.
