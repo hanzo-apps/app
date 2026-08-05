@@ -6,13 +6,13 @@ import {
   ArrowLeft,
   AtSign,
   ChevronRight,
-  Copy,
   ExternalLink,
   FileText,
   GitCommitHorizontal,
   X,
 } from "lucide-react";
 import { toast, Button } from '@hanzo/ui';
+import { CopyButton } from '@hanzo/ui/product';
 
 import { Page } from "@/types";
 import {
@@ -281,15 +281,7 @@ function FileCard({
           <IconBtn title="Mention in chat" onClick={() => onMention(file.path)}>
             <AtSign size={14} />
           </IconBtn>
-          <IconBtn
-            title="Copy path"
-            onClick={() => {
-              void navigator.clipboard?.writeText(file.path).catch(() => {});
-              toast.success("Copied path");
-            }}
-          >
-            <Copy size={14} />
-          </IconBtn>
+          <CopyButton value={file.path} label="Copy path" size={28} id="commit-file-path" />
         </XStack>
       </XStack>
       {open && <DiffView lines={file.lines} />}

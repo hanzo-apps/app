@@ -3,6 +3,7 @@
 import { YStack, XStack, H3, SizableText, Paragraph } from '@hanzo/gui';
 import { Deployment, Project } from '@/lib/vfs/types';
 import { Button, Badge, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@hanzo/ui';
+import { CopyButton } from '@hanzo/ui/product';
 import {
   Globe,
   Settings,
@@ -142,15 +143,7 @@ export function DeploymentCard({
           <XStack alignItems="center" gap="$2" marginBottom="$3" padding="$2" backgroundColor="$color3" borderRadius="$2">
             <Globe size={12} />
             <SizableText flex={1} numberOfLines={1} fontSize="$1">{publicUrl}</SizableText>
-            <Button
-              variant="ghost"
-              size="icon"
-              padding="$0"
-              onClick={handleCopyUrl}
-              title="Copy URL"
-            >
-              <Copy size={12} />
-            </Button>
+            <CopyButton value={publicUrl} label="Copy URL" size={20} id="deployment-url" />
           </XStack>
         )}
 

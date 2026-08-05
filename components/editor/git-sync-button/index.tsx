@@ -10,10 +10,10 @@ import {
 } from "react";
 import { useIam } from "@hanzo/iam/react";
 import { toast, Button, Input, Switch, Popover, PopoverContent, PopoverTrigger, Label } from '@hanzo/ui';
+import { CopyButton } from '@hanzo/ui/product';
 import {
   AlertCircle,
   Check,
-  Copy,
   ExternalLink,
   Github,
   GitBranch,
@@ -129,7 +129,6 @@ export function GitSyncButton({
   // When linked, the compact re-sync card leads; this reveals the full form
   // (different provider / repo name) on demand.
   const [showForm, setShowForm] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   // Reuse the open project's slug/name so a re-sync targets the SAME record/repo,
   // and hydrate the linked-repo state from the project record so RE-OPENING the
@@ -285,16 +284,6 @@ export function GitSyncButton({
     return runSync(linked.provider, linked.label.split("/").pop() || name);
   };
 
-  const copyUrl = async (url: string) => {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      /* clipboard unavailable */
-    }
-  };
-
   return (
     <Popover
       open={open}
@@ -389,18 +378,12 @@ export function GitSyncButton({
                 >
                   {repoLabel(result.htmlUrl || result.repoUrl || "")}
                 </Anchor>
-                <Button
-                  type="button"
-                  onClick={() => copyUrl(result.htmlUrl || result.repoUrl || "")}
-                  variant="linkMuted"
-                  title="Copy URL"
-                >
-                  {copied ? (
-                    <Check size={14} />
-                  ) : (
-                    <Copy size={14} />
-                  )}
-                </Button>
+                <CopyButton
+                  value={result.htmlUrl || result.repoUrl || ""}
+                  label="Copy URL"
+                  size={22}
+                  id="repo-url"
+                />
                 <Anchor
                   href={result.htmlUrl}
                   target="_blank"
@@ -472,18 +455,7 @@ export function GitSyncButton({
                 >
                   {linked.label}
                 </Anchor>
-                <Button
-                  type="button"
-                  onClick={() => copyUrl(linked.htmlUrl)}
-                  variant="linkMuted"
-                  title="Copy URL"
-                >
-                  {copied ? (
-                    <Check size={14} />
-                  ) : (
-                    <Copy size={14} />
-                  )}
-                </Button>
+                <CopyButton value={linked.htmlUrl} label="Copy URL" size={22} id="repo-url" />
                 <Anchor
                   href={linked.htmlUrl}
                   target="_blank"

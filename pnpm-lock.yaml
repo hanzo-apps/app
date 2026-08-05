@@ -91,8 +91,8 @@ importers:
         specifier: ^0.1.6
         version: 0.1.6(react@19.2.8)
       '@hanzo/ui':
-        specifier: ^8.0.55
-        version: 8.0.55(5d6ff80e0d753a34f975d30cfda0bc71)
+        specifier: ^8.0.56
+        version: 8.0.56(5d6ff80e0d753a34f975d30cfda0bc71)
       '@hanzo/usage':
         specifier: ^0.1.6
         version: 0.1.6(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(@hanzogui/lucide-icons-2@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8))(react@19.2.8)
@@ -904,8 +904,8 @@ packages:
       react:
         optional: true
 
-  '@hanzo/ui@8.0.55':
-    resolution: {integrity: sha512-Kcv8HsPWLLhV8KdnOQndigIW1cWoVc7RA2E1jc2lCnsxLqHh/RIeFn8wYZRGRI/orrjYgEhLZk6MAtaci4T3eA==}
+  '@hanzo/ui@8.0.56':
+    resolution: {integrity: sha512-QA9sdUNlEMe01jCRJOp5MQ5okPP5g8nysCc/C3Z9hv4jdTHzqH9oKv0FYMRpPDLzhkWRAvvV+MJWn0gKEiFoBA==}
     peerDependencies:
       '@hanzo/canvas': '>=0.1.0'
       '@hanzo/cd': '>=0.1.0'
@@ -8124,7 +8124,7 @@ snapshots:
       '@hanzogui/lucide-icons-2': 8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8)
       react: 19.2.8
 
-  '@hanzo/ui@8.0.55(5d6ff80e0d753a34f975d30cfda0bc71)':
+  '@hanzo/ui@8.0.56(5d6ff80e0d753a34f975d30cfda0bc71)':
     dependencies:
       '@hanzo/data': 1.2.2(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8)
       '@hanzo/design': 0.4.6

@@ -1,11 +1,12 @@
 'use client';
 
 import { YStack, XStack, Paragraph, SizableText, Anchor } from '@hanzo/gui';
-import { Rocket, Check, Copy, ExternalLink } from "lucide-react";
+import { Rocket, ExternalLink } from "lucide-react";
 import Image from "next/image";
 
 import Loading from "@/components/loading";
 import { Button, Input, toast, Label } from '@hanzo/ui';
+import { CopyButton } from '@hanzo/ui/product';
 import SpaceIcon from "@/assets/space.svg";
 import { Page } from "@/types";
 import { builderLink } from "@/lib/api/projects";
@@ -37,7 +38,6 @@ export const DeployButtonContent = ({
   // After a successful publish that returns a live URL, hold it so we can hand the
   // user a real, shareable link (Open + Copy) instead of silently redirecting away.
   const [published, setPublished] = useState<{ url: string; slug: string; org?: string } | null>(null);
-  const [copied, setCopied] = useState(false);
   // When the builder was opened on an existing project (`/dev?project=<slug>`),
   // reuse its slug + name so re-publishing updates the SAME shared record.
   const [existingSlug, setExistingSlug] = useState<string | undefined>(undefined);
@@ -212,23 +212,7 @@ export const DeployButtonContent = ({
         <YStack rowGap="$3" backgroundColor="$background" padding="$4">
           <XStack alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$2">
             <SizableText flex={1} numberOfLines={1} fontFamily="$mono" fontSize="$3" color="$color">{host}</SizableText>
-            <Button
-              type="button"
-              aria-label="Copy link"
-              onClick={() => {
-                navigator.clipboard?.writeText(published.url).then(
-                  () => {
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 1400);
-                  },
-                  () => {},
-                );
-              }}
-              variant="ghost"
-              width={28} height={28} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3"
-            >
-              {copied ? <Check size={16} /> : <Copy size={16} />}
-            </Button>
+            <CopyButton value={published.url} label="Copy link" size={28} id="published-url" />
           </XStack>
           <Anchor display="inline-flex"
             href={published.url}
