@@ -202,14 +202,29 @@ export const selected = (on: boolean) =>
  * The primary control — the ONE loud thing a page is allowed.
  *
  * `$color5` on `$color6` is a raised pushbutton: legible, quiet, monochrome.
- * The alternative is what @hanzo/ui's `default` variant does — `$color12`,
- * which in this theme is `hsl(0 0% 100%)`, i.e. a PURE WHITE PILL. That is the
- * loudest possible object on a #080808 page, and it is what an unnamed variant
- * silently gives you: `<Button>Edit Profile</Button>` in the screenshot was the
- * brightest element on the page, brighter than the page's own title.
  *
- * So: name a variant on every control, and when one of them is the primary
- * action, spread this. Never `variant="default"`, never `variant="primary"`.
+ * This used to say that the alternative was a PURE WHITE PILL, because
+ * @hanzo/ui's `default` variant was once `bg: $color12` — and an unnamed
+ * `<Button>Edit Profile</Button>` really was the brightest object on a #080808
+ * page. That is no longer true and has not been since the library split the two
+ * apart: at 8.0.44 `default` is `bg: $color2` / `color: $color12`, a QUIET
+ * control on the surface ladder, and `primary` is this recipe exactly —
+ * measured in the browser as rgb(51,51,51) on rgb(69,69,69) with a white label.
+ *
+ * The failure mode INVERTED when that landed, and the stale sentence sent a
+ * whole sweep looking for glare. What an unnamed control gives you now is a
+ * button too quiet to find: pro-modal's only action, "Subscribe to PRO", was
+ * painted `$color2` — the same fill `panel` uses — so the single thing the
+ * dialog asked for read as another surface. Under-emphasis leaves no mark on a
+ * screenshot, which is exactly why it needs a rule rather than an eye.
+ *
+ * So the rule survives its reason: name a variant on every control, and when
+ * one is the primary action, spread this. Never `variant="default"`.
+ *
+ * Not `variant="primary"` either, even though it now paints the same pixels —
+ * a variant only reaches a `Button`, and half this app's loud controls are an
+ * `XStack` (/auth/callback), a `SizableText` (/dev settings) or a `Link`. One
+ * recipe that spreads onto any element beats two spellings of one value.
  */
 export const accent = {
   backgroundColor: '$color5',
@@ -218,12 +233,32 @@ export const accent = {
   /**
    * The foreground is part of the recipe, not an afterthought.
    *
-   * A Button with no `variant` still resolves to `default`, and `default` is a
-   * PAIR — `bg: $color12` with `color: $color1` to sit on it. Overriding only
-   * the fill keeps the other half: $color1 is hsl(0 0% 4%), so the label came
-   * out near-black on a 20% grey button at 1.6:1, well under any legibility
-   * floor and worse than the white pill it replaced. Measured in the browser,
-   * not guessed — every inline copy of this recipe in the app has that bug.
+   * Spell the fill by hand and you own the label too, and that half is the one
+   * people drop. `default` was once a PAIR — `bg: $color12` with `color:
+   * $color1` to sit on it — so overriding only the fill left a near-black label
+   * on a 20% grey button at 1.6:1. The library has since made `default` quiet,
+   * and that made hand-spelled foregrounds WORSE rather than moot: login-modal
+   * kept `color="$color1"` (hsl(0 0% 4%)) on a label whose fill had moved to
+   * `$color2` (8%), and "Log In to Continue" was painted at 1.07:1 — measured
+   * in the browser, not guessed. The sign-in modal's only button was invisible.
+   *
+   * So the foreground travels with the fill, here, once. A call site that names
+   * a colour on an `accent` label is re-opening this bug.
+   *
+   * And it only reaches a label the BUTTON paints. This is the half that is
+   * easy to miss: `<Button {...accent}><SizableText>…</SizableText></Button>`
+   * puts a second component between the recipe and the text, and that
+   * component resolves its own colour from the theme scope the Button just
+   * mounted — where `--color` is re-based to 80%. Measured on both modals:
+   * fill rgb(51,51,51) and border rgb(69,69,69), correct, with the label at
+   * rgb(204,204,204) — `$color11`, the QUIET foreground, on the loudest
+   * control in the dialog. Passing the string straight through (`<Button
+   * {...accent}>Log In to Continue</Button>`) hands it to the library's own
+   * text host, which paints rgb(255,255,255): 7.87:1 → 12.63:1.
+   *
+   * The wrapper is usually there to set `fontSize`, which the Button's `size`
+   * already decides. So: let the label be text. If a size really must change,
+   * move it to the Button, never to a Text inside it.
    *
    * `$color12`, for the reason `selected` gives above and by the same
    * measurement: a Button mounts its OWN theme scope, and inside it `--color`

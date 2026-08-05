@@ -4,6 +4,7 @@ import { SizableText, XStack, YStack, H2, Paragraph } from '@hanzo/gui';
 import { useLocalStorage } from "react-use";
 import { Button, Dialog, DialogContent, DialogTitle, Separator } from '@hanzo/ui';
 import { CheckCheck } from "lucide-react";
+import { accent } from "@/lib/chrome";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { Page } from "@/types";
 
@@ -71,12 +72,17 @@ export const ProModal = ({
               ... and lots more!
             </SizableText>
           </YStack>
+          {/* Sole action of the modal, so it is the loud one. Unnamed, it
+              resolved to the quiet variant — `$color2`, the same fill a panel
+              uses — and the only thing this dialog asks you to do read as
+              another surface rather than a control. */}
           <Button
+            {...accent}
             size="lg"
             width="100%" height={44} marginTop="$6"
             onClick={handleProClick}
           >
-            <SizableText fontSize="$4">Subscribe to PRO ($9/month)</SizableText>
+            Subscribe to PRO ($9/month)
           </Button>
         </YStack>
       </DialogContent>

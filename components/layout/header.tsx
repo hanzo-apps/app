@@ -32,6 +32,7 @@ import {
 } from "@hanzo/ui";
 import { HeaderSearch } from "@/components/layout/header-search";
 import { useUser } from "@/hooks/useUser";
+import { accent } from "@/lib/chrome";
 
 export default function Header() {
   const { user, isAuthenticated, login, logout } = useUser();
@@ -90,7 +91,13 @@ export default function Header() {
       <Button onClick={() => login()} variant="ghost">
         Sign In
       </Button>
-      <Button onClick={getStarted} variant="primary">
+      {/* This asked the library for its loud variant by name, which paints
+          identically today — measured rgb(51,51,51) on rgb(69,69,69), i.e.
+          `accent` exactly. Still the wrong spelling: a variant only reaches a
+          Button, and half this app's loud controls are an XStack or a Link.
+          One recipe that works on every element beats two names for one value.
+          (Old spelling described, not quoted — the ratchet greps source.) */}
+      <Button onClick={getStarted} {...accent}>
         Get started
       </Button>
     </>

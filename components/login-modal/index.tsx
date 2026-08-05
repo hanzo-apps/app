@@ -4,6 +4,7 @@ import { SizableText, XStack, YStack, Paragraph } from '@hanzo/gui';
 import { useLocalStorage } from "react-use";
 import { Button, Dialog, DialogContent, DialogTitle } from '@hanzo/ui';
 import { useUser } from "@/hooks/useUser";
+import { accent } from "@/lib/chrome";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { Page } from "@/types";
 
@@ -49,12 +50,19 @@ export const LoginModal = ({
           <Paragraph color="$color11" fontSize="$4" marginTop="$2" maxWidth={384}>
             {description}
           </Paragraph>
+          {/* The one action this modal exists for, so it wears `accent` — and
+              the label says nothing about colour, because the recipe already
+              carries `$color12`. Spelling a foreground here is what broke it:
+              `$color1` is hsl(0 0% 4%) and the unnamed variant's fill is now
+              `$color2` at 8%, so "Log In to Continue" was painted at 1.07:1 —
+              measured, not guessed. Legible only if you knew where to click. */}
           <Button
+            {...accent}
             size="lg"
             width="100%" height={44} marginTop="$6"
             onClick={handleClick}
           >
-            <SizableText fontSize="$4" color="$color1">Log In to Continue</SizableText>
+            Log In to Continue
           </Button>
         </YStack>
       </DialogContent>

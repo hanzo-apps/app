@@ -7,9 +7,10 @@ import { useIam } from '@hanzo/iam/react';
 import { EVENTS } from '@hanzo/event';
 import { useAnalytics } from '@hanzo/event/react';
 import { HanzoLogo } from '@/components/HanzoLogo';
-import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription, Badge } from '@hanzo/ui';
-import { Sparkles, Zap, Shield, Rocket } from 'lucide-react';
+import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription } from '@hanzo/ui';
+import { Sparkles, Shield, Rocket } from 'lucide-react';
 import { Spinner } from '@/components/ui/spinner';
+import { accent } from '@/lib/chrome';
 
 /**
  * /signup — HIP-0111 canonical. There is no local credential form: Hanzo IAM
@@ -57,9 +58,6 @@ export default function SignupPage() {
               <XStack justifyContent="center" marginBottom="$5">
                 <XStack width="$10" height="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" borderRadius="$8" alignItems="center" justifyContent="center" position="relative">
                   <HanzoLogo size={40} color="var(--foreground)" />
-                  <Badge className="absolute -top-2 -right-2">
-                    Free
-                  </Badge>
                 </XStack>
               </XStack>
               <CardTitle fontSize="$8">Create your account</CardTitle>
@@ -76,10 +74,13 @@ export default function SignupPage() {
                     <Sparkles size={16} />
                     <SizableText fontSize="$3" color="$color">Access to 400+ AI models</SizableText>
                   </XStack>
-                  <XStack alignItems="center" gap="$3">
-                    <Zap size={16} />
-                    <SizableText fontSize="$3" color="$color">$5 free cloud credits to start</SizableText>
-                  </XStack>
+                  {/* No starter-credit line here. The free $5 grant was
+                      retired — onboarding picks a paid plan at hanzo.id — and
+                      nothing in this app ever granted it, so the promise was
+                      only ever copy. Same call the crypto rail's "bonus
+                      credits" got on /billing: if no backend grants it, it
+                      does not go on the page. What remains is what signing up
+                      actually gets you. */}
                   <XStack alignItems="center" gap="$3">
                     <Shield size={16} />
                     <SizableText fontSize="$3" color="$color">Secure cloud infrastructure</SizableText>
@@ -95,7 +96,8 @@ export default function SignupPage() {
               <Button
                 onClick={handleSignup}
                 disabled={loading}
-                width="100%" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}
+                {...accent}
+                width="100%"
                 size="lg"
               >
                 {loading ? (
@@ -108,16 +110,16 @@ export default function SignupPage() {
                 )}
               </Button>
 
-              <YStack position="relative">
-                <XStack position="absolute" top={0} right={0} bottom={0} left={0} alignItems="center">
-                  <YStack width="100%" borderTopWidth={1} borderColor="$borderColor"></YStack>
-                </XStack>
-                <XStack position="relative" justifyContent="center">
-                  <SizableText backgroundColor="$background" paddingHorizontal="$2" color="$color11" fontSize="$1">
-                    No credit card required
-                  </SizableText>
-                </XStack>
-              </YStack>
+              {/* A ruled line sat here carrying the promise that signing up
+                  needed no payment method. That stopped being true when
+                  onboarding started asking for a plan, and the divider went
+                  with it rather than being left to label nothing — it existed
+                  only to carry that sentence.
+
+                  Deliberately not quoting the old wording: the ratchet in
+                  tests/unit/no-unbacked-credit-claim.test.ts greps source text
+                  and cannot tell a quotation from a claim, so a comment that
+                  spells it out re-breaks the build. It caught this one. */}
 
               {/* Trust badges */}
               <XStack alignItems="center" justifyContent="center" gap="$5" paddingTop="$2">
