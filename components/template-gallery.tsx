@@ -52,7 +52,7 @@ function RailPill({
 
 function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?: boolean }) {
   return (
-    <YStack group className="zoom-scope" position="relative" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" hoverStyle={{ y: "-1", borderColor: "$color06", backgroundColor: "$color2" }}>
+    <YStack group className="zoom-scope" position="relative" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" hoverStyle={{ y: "$-1", borderColor: "$color06", backgroundColor: "$color2" }}>
       {/* Preview — image-first via TemplateThumb; on-brand tile when no real shot. */}
       <YStack position="relative" overflow="hidden" backgroundColor="$background">
         <TemplateThumb
@@ -87,7 +87,7 @@ function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?
       </YStack>
 
       <YStack flex={1} padding="$4" $sm={{ padding: "$4.5" }}>
-        <H3 alignItems="flex-start" gap="$1.5" fontSize={15} fontWeight="500" lineHeight="1.375" letterSpacing={-0.4} color="$color">
+        <H3 display="flex" alignItems="flex-start" gap="$1.5" fontSize={15} fontWeight="500" lineHeight="1.375" letterSpacing={-0.4} color="$color">
           <SizableText numberOfLines={1}>{t.name}</SizableText>
           <ArrowUpRight
             size={16}

@@ -168,11 +168,11 @@ export function Storefront() {
     <YStack minHeight="100%" backgroundColor="$background">
       <YStack {...glass(2)} borderBottomWidth={1} position="sticky" top="$0" zIndex={50}>
         <XStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$4" alignItems="center" justifyContent="space-between" gap="$4">
-          <H1 fontSize="$8" fontWeight="500" alignItems="center" gap="$2">
+          <H1 fontSize="$8" fontWeight="500" display="flex" alignItems="center" gap="$2">
             <StoreIcon size={24} /> Store
           </H1>
           <XStack alignItems="center" gap="$4">
-            <YStack position="relative" display="none">
+            <YStack position="relative" display="none" $md={{ display: "flex" }}>
               <Search size={16} />
               <Input
                 placeholder="Search products..."

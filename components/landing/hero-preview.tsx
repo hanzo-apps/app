@@ -251,7 +251,7 @@ export default function HeroPreview() {
       `}</style>
 
       {/* Soft floor glow to seat the frame. */}
-      <YStack pointerEvents="none" position="absolute" left="$0" right="$0" bottom="-7" top="$6" zIndex={10} borderRadius="2rem" backgroundColor="$color005" filter="blur(80px)" $sm={{ left: "-6", right: "-6" }} />
+      <YStack pointerEvents="none" position="absolute" left="$0" right="$0" bottom="$-7" top="$6" zIndex={-10} borderRadius="2rem" backgroundColor="$color005" filter="blur(80px)" $sm={{ left: "$-6", right: "$-6" }} />
 
       <YStack overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={6}>
         {/* ── Editor header — the real /dev chrome in miniature ── */}
@@ -262,12 +262,12 @@ export default function HeroPreview() {
             <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
           </XStack>
           <HMark size={14} color="var(--foreground)" />
-          <SizableText display="none" numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">
+          <SizableText display="none" $sm={{ display: "inline" }} numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">
             maxpower / vibe-check
           </SizableText>
 
           {/* View tabs (chat | preview | code) — the builder's ONE view state. */}
-          <YStack alignSelf="center" display="none" alignItems="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" padding="$0.5">
+          <XStack alignSelf="center" display="none" $sm={{ display: "flex" }} alignItems="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" padding="$0.5">
             {[
               { id: "chat", icon: MessageSquare },
               { id: "preview", icon: Eye },
@@ -280,7 +280,7 @@ export default function HeroPreview() {
                 <tabItem.icon size={12} />
               </XStack>
             ))}
-          </YStack>
+          </XStack>
 
           <XStack marginLeft="auto" alignItems="center" gap="$1.5" $sm={{ marginLeft: "$0" }}>
             <Button
@@ -323,7 +323,7 @@ export default function HeroPreview() {
               {live ? (
                 <>
                   <Check size={12} strokeWidth={3} />
-                  <SizableText display="none">Published</SizableText>
+                  <SizableText display="none" $sm={{ display: "inline" }}>Published</SizableText>
                 </>
               ) : phase === "publishing" ? (
                 <>
@@ -406,7 +406,7 @@ export default function HeroPreview() {
                   {live ? (
                     <>
                       <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" className="livedot" />
-                      <SizableText display="none" fontFamily="$mono" fontSize={8} color="$color">
+                      <SizableText display="none" $sm={{ display: "inline" }} fontFamily="$mono" fontSize={8} color="$color">
                         Live
                       </SizableText>
                     </>

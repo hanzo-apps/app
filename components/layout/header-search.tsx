@@ -35,7 +35,7 @@ export function HeaderSearch({ className }: { className?: string }) {
           <SizableText color="$color11" $group-hover={{ color: "$color" }}>
             <Search size={16} />
           </SizableText>
-          <SizableText display="none">Search</SizableText>
+          <SizableText display="none" $lg={{ display: "inline" }}>Search</SizableText>
           <kbd className="hs-kbd">
             ⌘K
           </kbd>

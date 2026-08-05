@@ -91,7 +91,7 @@ export function AppHeader({
           >
             <Logo width={24} height={24} />
             {/* Show leftText next to logo on desktop only */}
-            {leftText && <SizableText fontWeight="500" fontSize="$6" display="none">{leftText}</SizableText>}
+            {leftText && <SizableText fontWeight="500" fontSize="$6" display="none" $md={{ display: "inline" }}>{leftText}</SizableText>}
           </Button>
         )}
 
@@ -131,15 +131,15 @@ export function AppHeader({
 
         {/* Desktop - Show subtitle only if no leftText and no center title */}
         {!leftText && !title && subtitle && (
-          <YStack display="none" alignItems="center" flex={1} marginLeft="$5">
+          <XStack display="none" $md={{ display: "flex" }} alignItems="center" flex={1} marginLeft="$5">
             <SizableText fontSize="$3" color="$color11">{subtitle}</SizableText>
-          </YStack>
+          </XStack>
         )}
 
         {/* Right side controls */}
         <XStack alignItems="center" gap="$2">
           {/* Desktop actions */}
-          <YStack display="none" alignItems="center" gap="$2">
+          <XStack display="none" $md={{ display: "flex" }} alignItems="center" gap="$2">
             {actions.map((action) => (
               action.content ? (
                 <div key={action.id}>{action.content}</div>
@@ -159,7 +159,7 @@ export function AppHeader({
               )
             ))}
             {desktopOnlyContent}
-          </YStack>
+          </XStack>
 
           {/* Mobile visible actions */}
           <XStack alignItems="center" gap="$2" $md={{ display: "none" }}>

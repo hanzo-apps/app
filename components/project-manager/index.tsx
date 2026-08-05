@@ -542,7 +542,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                     <PopoverTrigger asChild>
                       <Button variant="outline" size="sm" gap="$2">
                         <ArrowUpDown size={16} />
-                        <SizableText display="none">Sort</SizableText>
+                        <SizableText display="none" $sm={{ display: "inline" }}>Sort</SizableText>
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent width="$19" align="end">
@@ -671,7 +671,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
 
       {/* Footer with Navigation Buttons - Hidden on mobile */}
       {!hideFooter && (
-        <YStack display="none" borderTopWidth={1} backgroundColor="$background" paddingVertical="$3" paddingHorizontal="$5">
+        <YStack display="none" $md={{ display: "flex" }} borderTopWidth={1} backgroundColor="$background" paddingVertical="$3" paddingHorizontal="$5">
           <XStack justifyContent="center" gap="$2">
             <Button
               variant="outline"

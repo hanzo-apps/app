@@ -162,13 +162,17 @@ function ResourcesBrowser() {
           </XStack>
         </YStack>
 
-        {/* Grid */}
+        {/* Grid — a real one. `.card-grid` is auto-fill/minmax, so the column
+            count follows the width with no breakpoints to keep in sync. */}
         <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$6">
-          <YStack gap="$4.5">
+          {/* A plain div, like `.hiw-grid`: `.is_View` on a YStack also sets
+              `display`, at the same specificity, so which one won would come
+              down to sheet order. The grid owns its own box. */}
+          <div className="card-grid">
             {filtered.map((item) => (
               <ResourceCard key={item.id} item={item} onOpen={openPreview} />
             ))}
-          </YStack>
+          </div>
 
           {filtered.length === 0 && (
             <YStack paddingVertical="$11" alignItems="center">
@@ -256,12 +260,25 @@ function ResourceCard({
   const hairline = colour ? `hsl(${colour.hue} 65% 55% / 0.35)` : "$borderColor";
   const lit = colour ? `hsl(${colour.hue} 75% 62% / 0.8)` : "$color";
   return (
-    <Button
-      type="button"
+    /* A CARD, not a control. @hanzo/ui's Button pins its size variant's height
+       over anything the caller passes, and overflow="hidden" then crops the
+       card to that band — measured here at 30px holding 425px of content, 46
+       cards deep. A clickable stack sizes from its content instead. This is the
+       same shape the landing strip already uses. */
+    <YStack
+      role="button"
+      tabIndex={0}
+      aria-label={`Preview ${item.title}`}
       onClick={() => onOpen(item)}
-      group className="zoom-scope" flexDirection="column" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor={hairline} backgroundColor="$background" hoverStyle={{ y: "-1", borderColor: lit }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onOpen(item);
+        }
+      }}
+      cursor="pointer" group className="zoom-scope" flexDirection="column" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor={hairline} backgroundColor="$background" hoverStyle={{ y: "$-1", borderColor: lit }}
     >
-      <YStack position="relative" overflow="hidden" backgroundColor="$background">
+      <YStack position="relative" overflow="hidden" aspectRatio={16 / 10} backgroundColor="$background">
         {item.hasImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <Image
@@ -300,6 +317,6 @@ function ResourceCard({
         <Paragraph marginTop="$1" numberOfLines={2} minHeight="2.5rem" fontSize="$1" color="$color11">{item.description}</Paragraph>
         <Paragraph marginTop="auto" paddingTop="$3" fontSize={11} color="$color11">{item.meta || item.framework}</Paragraph>
       </YStack>
-    </Button>
+    </YStack>
   );
 }

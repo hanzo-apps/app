@@ -414,7 +414,7 @@ export function ProjectSettingsModal({ project, isOpen, onClose, onProjectUpdate
         <DialogHeader>
           <XStack alignItems="center" justifyContent="space-between" paddingRight="$5">
             <div>
-              <DialogTitle alignItems="center" gap="$2">
+              <DialogTitle display="flex" alignItems="center" gap="$2">
                 <Settings2 size={16} />
                 Project Settings
               </DialogTitle>

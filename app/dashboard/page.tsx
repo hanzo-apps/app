@@ -202,7 +202,7 @@ export default function DashboardPage() {
                       <Link
                         key={t.slug}
                         href="/templates"
-                      ><XStack group className="zoom-scope" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "-0.5", borderColor: "$color" }}>
+                      ><XStack group className="zoom-scope" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "$-0.5", borderColor: "$color" }}>
                         <YStack position="relative" overflow="hidden" backgroundColor="$background">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <Image
@@ -249,7 +249,7 @@ function ProjectGrid({
             variant="ghost"
             key={p.id}
             onClick={() => onOpen(p)}
-            group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "-0.5", borderColor: "$color", backgroundColor: "$color3" }}
+            group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "$-0.5", borderColor: "$color", backgroundColor: "$color3" }}
           >
             {/* Real thumbnail: the live site itself (inert); monogram otherwise. */}
             <YStack position="relative">
@@ -321,7 +321,7 @@ function EmptyState({
       <H3 fontWeight="500" color="$color" textAlign="center">{title}</H3>
       <Paragraph alignSelf="center" marginTop="$1" maxWidth={448} fontSize="$3" color="$color11" textAlign="center">{body}</Paragraph>
       {action && (
-        <Anchor
+        <Anchor display="inline-flex"
           href={action.href}
           target="_blank"
           rel="noopener noreferrer"

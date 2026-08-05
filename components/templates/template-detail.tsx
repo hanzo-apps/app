@@ -122,7 +122,7 @@ export function TemplateDetail({
                     <SizableText color="$background"><Code2 size={16} /></SizableText>
                     <SizableText fontSize="$3" fontWeight="500" color="$background">Use template</SizableText>
                   </XStack></Link>
-                  <Anchor
+                  <Anchor display="inline-flex"
                     href={t.previewUrl}
                     target="_blank"
                     rel="noreferrer"
@@ -262,7 +262,7 @@ export function TemplateDetail({
                 </div>
                 <Link
                   href={catHref}
-                ><SizableText display="none" flexShrink={0} fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
+                ><SizableText display="none" $sm={{ display: "inline" }} flexShrink={0} fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
                   View all →
                 </SizableText></Link>
               </Reveal>
@@ -272,7 +272,7 @@ export function TemplateDetail({
                   <Link
                     key={r.slug}
                     href={`/templates/${r.slug}`}
-                  ><YStack group className="zoom-scope" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" hoverStyle={{ y: "-0.5", borderColor: "$color06", backgroundColor: "$color2" }}>
+                  ><YStack group className="zoom-scope" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" hoverStyle={{ y: "$-0.5", borderColor: "$color06", backgroundColor: "$color2" }}>
                     <YStack position="relative" overflow="hidden" backgroundColor="$color3">
                       <TemplateThumb
                         name={r.name}

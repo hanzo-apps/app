@@ -89,7 +89,7 @@ function ProviderCard({ provider, onValidate, onRemove, isValidating }: Provider
               <XStack alignItems="center" justifyContent="space-between">
                 <Label htmlFor={`${provider.id}-key`}>API Key</Label>
                 {provider.apiKeyHelpUrl && (
-                  <Anchor
+                  <Anchor display="flex"
                     href={provider.apiKeyHelpUrl}
                     target="_blank"
                     rel="noopener noreferrer"

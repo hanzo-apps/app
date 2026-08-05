@@ -157,7 +157,7 @@ export function TemplateCard({
           </YStack>
 
           {/* Actions - Desktop */}
-          <YStack display="none" alignItems="center" gap="$3" flexShrink={0}>
+          <XStack display="none" $md={{ display: "flex" }} alignItems="center" gap="$3" flexShrink={0}>
             <SizableText fontSize="$1" color="$color11" whiteSpace="nowrap">
               {formatDate(customTemplate?.updatedAt || template.updatedAt)}
             </SizableText>
@@ -206,7 +206,7 @@ export function TemplateCard({
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-          </YStack>
+          </XStack>
 
           {/* Actions - Mobile */}
           <YStack $md={{ display: "none" }}>
@@ -323,7 +323,7 @@ export function TemplateCard({
           {(customTemplate?.metadata.author || template.metadata?.author) && (
             <YStack>
               {customTemplate?.metadata.authorUrl ? (
-                <Anchor
+                <Anchor display="inline-flex"
                   href={customTemplate.metadata.authorUrl}
                   target="_blank"
                   rel="noopener noreferrer"

@@ -201,7 +201,7 @@ function NewProjectInner() {
             <Link href="/"><XStack alignItems="center" gap="$2">
               <HanzoBrand markSize={28} wordmarkFromSm />
             </XStack></Link>
-            <YStack display="none" alignItems="center" gap="$1">
+            <XStack display="none" $md={{ display: "flex" }} alignItems="center" gap="$1">
               {[
                 { href: "/dashboard", label: "Dashboard" },
                 { href: "/projects", label: "Projects" },
@@ -214,7 +214,7 @@ function NewProjectInner() {
                   {l.label}
                 </SizableText></Link>
               ))}
-            </YStack>
+            </XStack>
           </XStack>
 
           <XStack alignItems="center" gap="$3">
@@ -293,7 +293,7 @@ function NewProjectInner() {
                   >
                     <Paperclip size={18} />
                   </Button>
-                  <SizableText marginLeft="$1" display="none" fontSize="$1" color="$color11">
+                  <SizableText marginLeft="$1" display="none" $sm={{ display: "inline" }} fontSize="$1" color="$color11">
                     {looksLikeRepo
                       ? "Deploys this repository as a service"
                       : "Press ⏎ to build · ⇧⏎ for a new line"}
@@ -415,7 +415,7 @@ function NewProjectInner() {
                 <Boxes size={18} />
                 <H2 fontSize={15} fontWeight="500">Clone a Template</H2>
               </XStack>
-              <YStack position="relative" display="none" width="$17">
+              <YStack position="relative" display="none" $sm={{ display: "flex" }} width="$17">
                 <Search size={14} />
                 <Input
                   value={repoFilter}
@@ -436,7 +436,7 @@ function NewProjectInner() {
               </XStack>
             )}
 
-            <YStack marginRight="-2" maxHeight={420} rowGap="$2" paddingRight="$2" overflow="scroll" className="thin-scrollbar">
+            <YStack marginRight="$-2" maxHeight={420} rowGap="$2" paddingRight="$2" overflow="scroll" className="thin-scrollbar">
               {galleryLoading
                 ? Array.from({ length: 5 }).map((_, i) => (
                     <YStack

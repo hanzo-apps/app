@@ -103,7 +103,7 @@ export function Settings({
         </YStack>
         <YStack rowGap="$2.5" paddingHorizontal="$4" paddingTop="$4" paddingBottom="$4.5">
           {error && error !== "" && (
-            <Paragraph alignItems="center" justifyContent="space-between" borderRadius="$3" backgroundColor="$red9" padding="$2" fontSize="$3" fontWeight="500" color="$red9">
+            <Paragraph display="flex" alignItems="center" justifyContent="space-between" borderRadius="$3" backgroundColor="$red9" padding="$2" fontSize="$3" fontWeight="500" color="$red9">
               {error}
             </Paragraph>
           )}

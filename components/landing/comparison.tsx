@@ -343,7 +343,7 @@ export default function Comparison() {
         </Reveal>
 
         {/* ── Desktop / tablet-wide: sliding matrix ─────────────── */}
-        <YStack marginTop="$7" display="none">
+        <YStack marginTop="$7" display="none" $lg={{ display: "flex" }}>
           <Reveal delay={80}>
             <XStack marginBottom="$3" alignItems="center" justifyContent="space-between" gap="$4">
               <Paragraph fontFamily="$mono" fontSize={11} color="$color11">

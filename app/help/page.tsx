@@ -184,7 +184,7 @@ export default function HelpPage() {
                   the team and we&apos;ll get back to you.
                 </Paragraph>
               </div>
-              <Anchor
+              <Anchor display="inline-flex"
                 href="mailto:support@hanzo.ai"
                 flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$color12" hoverStyle={{ backgroundColor: "$color6" }}
               >

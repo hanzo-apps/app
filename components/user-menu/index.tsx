@@ -36,7 +36,7 @@ export const UserMenu = ({ className }: { className?: string }) => {
               {userInitial}
             </AvatarFallback>
           </Avatar>
-          <SizableText display="none" maxWidth="12rem" numberOfLines={1}>{displayName}</SizableText>
+          <SizableText display="none" $sm={{ display: "inline" }} maxWidth="12rem" numberOfLines={1}>{displayName}</SizableText>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent width={224} className="frosted" borderWidth={1} borderColor="$borderColor">

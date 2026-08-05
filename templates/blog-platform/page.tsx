@@ -97,7 +97,7 @@ export default function BlogPlatform() {
           <XStack alignItems="center" justifyContent="space-between">
             <XStack alignItems="center" gap="$6">
               <H1 fontSize="$8" fontWeight="700">Hanzo Blog</H1>
-              <YStack display="none" alignItems="center" gap="$5">
+              <XStack display="none" $md={{ display: "flex" }} alignItems="center" gap="$5">
                 {categories.slice(0, 5).map(cat => (
                   <Button
                     key={cat.name}
@@ -109,11 +109,11 @@ export default function BlogPlatform() {
                     </SizableText>
                   </Button>
                 ))}
-              </YStack>
+              </XStack>
             </XStack>
 
             <XStack alignItems="center" gap="$4">
-              <YStack position="relative" display="none">
+              <YStack position="relative" display="none" $md={{ display: "flex" }}>
                 <Search size={16} />
                 <Input
                   placeholder="Search articles..."
@@ -255,7 +255,7 @@ export default function BlogPlatform() {
                 {/* Popular Authors */}
                 <Card>
                   <CardHeader>
-                    <CardTitle alignItems="center" gap="$2">
+                    <CardTitle display="flex" alignItems="center" gap="$2">
                       <Users size={20} />
                       Popular Authors
                     </CardTitle>
@@ -287,7 +287,7 @@ export default function BlogPlatform() {
                 {/* Your Stats */}
                 <Card>
                   <CardHeader>
-                    <CardTitle alignItems="center" gap="$2">
+                    <CardTitle display="flex" alignItems="center" gap="$2">
                       <BarChart size={20} />
                       Your Stats
                     </CardTitle>
@@ -317,7 +317,7 @@ export default function BlogPlatform() {
                 {/* Reading List */}
                 <Card>
                   <CardHeader>
-                    <CardTitle alignItems="center" gap="$2">
+                    <CardTitle display="flex" alignItems="center" gap="$2">
                       <Clock size={20} />
                       Reading List
                     </CardTitle>

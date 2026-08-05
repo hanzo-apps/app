@@ -341,7 +341,7 @@ export const AppEditor = ({
           height={28} gap="$1.5" paddingHorizontal="$2.5" borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ backgroundColor: "$color3" }}
         >
           <Share2 size={14} />
-          <SizableText display="none">Share</SizableText>
+          <SizableText display="none" $md={{ display: "inline" }}>Share</SizableText>
         </Button>
         <LoadProject
           onSuccess={(project: Project) => {
@@ -474,7 +474,7 @@ export const AppEditor = ({
               where to grab) that strengthens on hover/drag, a wide-enough hit
               target (w-3) to grab from either panel's edge, and an always-visible
               centered grip pill for the affordance. */}
-          <YStack pointerEvents="none" position="absolute" top="$0" bottom="$0" left="50%" width={1} x="50%" backgroundColor="$borderColor" $group-resizer-hover={{ backgroundColor: "$color06" }} $group-resizer-press={{ backgroundColor: "$color" }} />
+          <YStack pointerEvents="none" position="absolute" top="$0" bottom="$0" left="50%" width={1} x="-50%" backgroundColor="$borderColor" $group-resizer-hover={{ backgroundColor: "$color06" }} $group-resizer-press={{ backgroundColor: "$color" }} />
           <YStack pointerEvents="none" position="relative" height="$8" width="$1" borderRadius="$10" backgroundColor="$color5" $group-resizer-hover={{ backgroundColor: "$color8" }} $group-resizer-press={{ backgroundColor: "$color" }} />
         </XStack>
         {/* RIGHT — Preview OR Code as a RAISED, rounded card that fills the whole

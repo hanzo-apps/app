@@ -155,7 +155,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           type="button"
           onClick={onClose}
           aria-label="Hide preview"
-          position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" group {...{ color: "$color11" }}
+          position="relative" display="none" $md={{ display: "flex" }} height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" group {...{ color: "$color11" }}
         >
           <Eye 
             size={16} 
@@ -925,7 +925,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
       </XStack>
 
       {/* Desktop Layout - Single row */}
-      <YStack borderBottomWidth={1} padding="$2" display="none" alignItems="center" gap="$2">
+      <XStack borderBottomWidth={1} padding="$2" display="none" $md={{ display: "flex" }} alignItems="center" gap="$2">
         <XStack alignItems="center" gap="$1">
           <Button
             size="icon"
@@ -1047,7 +1047,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
             <Monitor size={12} />
           </Button>
         </XStack>
-      </YStack>
+      </XStack>
 
       {/* Preview Frame */}
       <YStack flex={1} backgroundColor="$color3" padding="$4" overflow="scroll" minHeight={0} $theme-dark={{ backgroundColor: "$color3" }}>

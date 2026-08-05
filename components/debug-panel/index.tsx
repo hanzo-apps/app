@@ -158,7 +158,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
               type="button"
               onClick={onClose}
               aria-label="Hide debug panel"
-              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" group
+              position="relative" display="none" $md={{ display: "flex" }} height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" group
             >
               <Bug
                 size={16}
@@ -224,7 +224,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
 
       {/* Auto-scroll toggle */}
       <XStack padding="$2" borderBottomWidth={1} borderColor="$borderColor" alignItems="center" gap="$2">
-        <Label fontSize="$1" alignItems="center" gap="$1" cursor="pointer">
+        <Label fontSize="$1" display="flex" alignItems="center" gap="$1" cursor="pointer">
           <Input
             type="checkbox"
             checked={autoScroll}

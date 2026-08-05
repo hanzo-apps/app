@@ -167,7 +167,7 @@ export function CodexAuthPanel({ onAuthChange }: CodexAuthPanelProps) {
         <YStack rowGap="$2">
           <SizableText fontSize="$1" color="$color11">
             Install the{' '}
-            <Anchor
+            <Anchor display="inline-flex"
               href="https://github.com/openai/codex"
               target="_blank"
               rel="noopener noreferrer"

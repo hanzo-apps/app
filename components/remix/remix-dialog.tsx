@@ -69,7 +69,7 @@ export function RemixDialog({
   />
           </div>
 
-          <Label cursor="pointer" alignItems="flex-start" gap="$2.5">
+          <Label cursor="pointer" display="flex" alignItems="flex-start" gap="$2.5">
             <Checkbox
               checked={ack}
               onCheckedChange={(v: boolean | 'indeterminate') => setAck(v === true)}

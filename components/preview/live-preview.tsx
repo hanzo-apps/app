@@ -83,7 +83,7 @@ export function LivePreview({
           type="button"
           onClick={onClose}
           aria-label="Hide preview"
-          position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" group
+          position="relative" display="none" $md={{ display: "flex" }} height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" group
         >
           <Eye
             size={16}

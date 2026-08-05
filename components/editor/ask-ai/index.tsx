@@ -1082,13 +1082,13 @@ export function AskAI({
               nudgeComposer(-24);
             }
           }}
-          position="absolute" top="-1.5" left="50%" zIndex={20} height="$3" width="$7" x="50%" cursor="ns-resize" alignItems="center" justifyContent="center" borderRadius="$10" opacity={0} $group-hover={{ opacity: 1 }} focusVisibleStyle={{ opacity: 1, outlineWidth: 0 }}
+          position="absolute" top="$-1.5" left="50%" zIndex={20} height="$3" width="$7" x="-50%" cursor="ns-resize" alignItems="center" justifyContent="center" borderRadius="$10" opacity={0} $group-hover={{ opacity: 1 }} focusVisibleStyle={{ opacity: 1, outlineWidth: 0 }}
         >
           <SizableText height="$0.5" width="$5" borderRadius="$10" backgroundColor="$color11" />
         </Button>
         {isDragging && (
           <XStack position="absolute" top={0} right={0} bottom={0} left={0} zIndex={30} borderRadius="$8" borderWidth={2} borderStyle="dashed" borderColor="$color11" backgroundColor="$background" alignItems="center" justifyContent="center" pointerEvents="none">
-            <Paragraph fontSize="$3" color="$color" alignItems="center" gap="$2">
+            <Paragraph fontSize="$3" color="$color" display="flex" alignItems="center" gap="$2">
               <ImagePlus size={16} />
               Drop images to attach as references
             </Paragraph>
@@ -1264,8 +1264,9 @@ export function AskAI({
                             : "More composer modes"
                         }
                         borderRadius="$10"
+                        {...{ color: modes.length > 0 ? "var(--brand-accent)" : "$color11" }}
                       >
-                        <MoreHorizontal size={16} color={modes.length > 0 ? "var(--brand-accent)" : "$color11"} />
+                        <MoreHorizontal size={16} />
                       </Button>
                     </DropdownMenuTrigger>
                   </TooltipTrigger>

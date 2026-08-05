@@ -188,7 +188,7 @@ export default function ProjectSettingsPage() {
                 <YStack minWidth={0}>
                   <Paragraph fontSize="$3" color="$color">Live URL</Paragraph>
                   {live ? (
-                    <Anchor href={live} target="_blank" rel="noopener noreferrer" marginTop="$0.5" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize="$1" color="$green8" hoverStyle={{ color: "$green8" }}>
+                    <Anchor href={live} target="_blank" rel="noopener noreferrer" marginTop="$0.5" display="inline-flex" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize="$1" color="$green8" hoverStyle={{ color: "$green8" }}>
                       {live.replace(/^https?:\/\//, "")}
                       <ExternalLink size={12} />
                     </Anchor>
@@ -398,7 +398,7 @@ function DeploymentStatus({ slug }: { slug: string }) {
         {d.version > 0 && <SizableText fontFamily="$mono" fontSize={11} color="$color11">v{d.version}</SizableText>}
         {when && <SizableText fontSize={11} color="$color11">{when}</SizableText>}
       </XStack>
-      <Anchor
+      <Anchor display="inline-flex"
         href="https://console.hanzo.ai"
         target="_blank"
         rel="noopener noreferrer"

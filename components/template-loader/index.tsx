@@ -131,7 +131,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
             preview panel, fork it to your account, or ship straight to Hanzo Cloud.
           </Paragraph>
           <YStack marginTop="auto" paddingTop="$5">
-            <Anchor
+            <Anchor display="inline-flex"
               href={templateRepo.fullUrl}
               target="_blank"
               rel="noopener noreferrer"

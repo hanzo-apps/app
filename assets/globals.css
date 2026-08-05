@@ -424,6 +424,20 @@ a {
     --control-h: 2.75rem; /* 44px — Apple HIG minimum, WCAG 2.5.8 with room over */
   }
 
+  /* iOS Safari zooms the whole viewport when a field it is focusing renders
+     text under 16px, and then leaves it zoomed — the page is off-centre for
+     every tap after. The type scale cannot supply the floor: it deliberately
+     has NO 16, `$5` was collapsed onto 15 to retire the 16px base. So this is
+     not a type decision at all, it is a platform constraint, and it applies
+     only where a soft keyboard exists. Desktop keeps the designed 14/15.
+
+     Specificity is the whole trick: gui compiles `fontSize` to a single atomic
+     class (0,1,0), which beats a bare `input` (0,0,1). The two :not()s carry
+     this to (0,2,1) so it lands without !important. */
+  :is(input, textarea, select):not([type='checkbox']):not([type='radio']) {
+    font-size: 16px;
+  }
+
   /* A full-width bare button is a ROW in a stack, so it takes case 1: real height,
      which grows the stack's pitch with it. Measured why this is separate — the two
      footer rows sit 6px apart, so as 31px boxes with 44px overlays they clipped each
@@ -432,10 +446,16 @@ a {
     min-height: var(--control-h);
   }
 
-  button:not([data-slot="button"]):not([class*="absolute"]):not([class*="fixed"]):not([class*="sticky"]) {
+  /* `[role="button"]` is here for the same reason `button` is: it IS a button,
+     it just isn't spelled with the tag. The starter chips on the landing page
+     are spans carrying the role, and measured at 390 they were 34px tall — the
+     overlay skipped them purely because of how they were written. Widening the
+     selector fixes all five without touching a call site, which is the point of
+     doing this from CSS in the first place. */
+  :is(button, [role="button"]):not([data-slot="button"]):not([class*="absolute"]):not([class*="fixed"]):not([class*="sticky"]) {
     position: relative;
   }
-  button:not([data-slot="button"])::after {
+  :is(button, [role="button"]):not([data-slot="button"])::after {
     content: '';
     position: absolute;
     left: 50%;
@@ -731,6 +751,23 @@ kbd {
 /* How-it-works step grid — hairline-gap card row (marketing landing). */
 .hiw-grid { display: grid; gap: 1px; overflow: hidden; border-radius: 16px; border: 1px solid var(--border); background: var(--muted); }
 @media (min-width: 768px) { .hiw-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* A card grid. `{/* Grid *\/}` on /templates sat above a plain YStack — the
+   conversion dropped `grid-cols-1 md:grid-cols-2 lg:grid-cols-3` and left one
+   card per row. Nobody noticed because the cards were also being cropped to a
+   30px bar, so a single column looked like a list on purpose.
+
+   auto-fill + minmax means NO breakpoints: the column count follows the space
+   available, so it is correct at 390 and at 1920 and at every width between,
+   including ones no breakpoint names. @hanzo/ui is shipping a Grid primitive
+   with exactly this behaviour — when it lands, this class is deleted and the
+   markup takes the component. */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: 18px;
+  align-items: start;
+}
 
 /* Mobile-only chrome — hidden from md up. !important so the gate beats
    runtime-injected atomic display classes regardless of sheet order. */

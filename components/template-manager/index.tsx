@@ -341,7 +341,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
             <PopoverTrigger asChild>
               <Button variant="outline" size="sm" gap="$2">
                 <ArrowUpDown size={16} />
-                <SizableText display="none">Sort</SizableText>
+                <SizableText display="none" $sm={{ display: "inline" }}>Sort</SizableText>
               </Button>
             </PopoverTrigger>
             <PopoverContent width="$19" align="end">

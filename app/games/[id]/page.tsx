@@ -141,7 +141,7 @@ export default function GameDetail() {
               </XStack>
             </Spec>
             <Spec label="Upstream">
-              <Anchor
+              <Anchor display="inline-flex"
                 href={upstreamUrl(game.upstream)}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -154,7 +154,7 @@ export default function GameDetail() {
             </Spec>
             <Spec label="Hanzo fork">
               {game.fork ? (
-                <Anchor
+                <Anchor display="inline-flex"
                   href={`https://github.com/${game.fork}`}
                   target="_blank"
                   rel="noopener noreferrer"

@@ -79,7 +79,7 @@ function Card({
 }) {
   const href = e.url || e.repo;
   return (
-    <YStack group position="relative" gap="$2" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4" hoverStyle={{ y: "-1", borderColor: "$color" }} $sm={{ padding: "$4.5" }}>
+    <YStack group position="relative" gap="$2" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4" hoverStyle={{ y: "$-1", borderColor: "$color" }} $sm={{ padding: "$4.5" }}>
       <XStack alignItems="center" gap="$2">
         <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} color="$color11">
           {e.org}
@@ -113,7 +113,7 @@ function Card({
         )}
       </XStack>
 
-      <H3 alignItems="flex-start" gap="$1.5" fontSize={15} fontWeight="500" lineHeight="1.375" letterSpacing={-0.4} color="$color">
+      <H3 display="flex" alignItems="flex-start" gap="$1.5" fontSize={15} fontWeight="500" lineHeight="1.375" letterSpacing={-0.4} color="$color">
         <Anchor href={href} target="_blank" rel="noreferrer" className="stretch-link">
           <SizableText numberOfLines={1}>{e.title || e.name}</SizableText>
         </Anchor>

@@ -136,7 +136,7 @@ export function PageLayout({
       <Dialog open={initModalOpen} onOpenChange={setInitModalOpen}>
         <DialogContent $sm={{ maxWidth: 448 }}>
           <DialogHeader>
-            <DialogTitle alignItems="center" gap="$2">
+            <DialogTitle display="flex" alignItems="center" gap="$2">
               <AlertTriangle size={20} />
               Server Database Not Initialized
             </DialogTitle>

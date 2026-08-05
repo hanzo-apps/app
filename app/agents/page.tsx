@@ -467,7 +467,7 @@ export default function AgentsPage() {
                             <CardTitle fontSize="$4" color="$color" numberOfLines={1}>
                               {agent.name}
                             </CardTitle>
-                            <CardDescription alignItems="center" gap="$1" fontSize="$1">
+                            <CardDescription display="flex" alignItems="center" gap="$1" fontSize="$1">
                               <Terminal size={12} />
                               <SizableText numberOfLines={1}>{agent.model}</SizableText>
                             </CardDescription>

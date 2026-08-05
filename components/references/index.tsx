@@ -200,6 +200,7 @@ export function References({ project }: { project?: string | null }) {
               backgroundColor={mode === m ? "$color4" : "transparent"}
               padding="$2"
               fontSize="$3"
+              display="flex"
               flexDirection="row"
               alignItems="flex-start"
             >

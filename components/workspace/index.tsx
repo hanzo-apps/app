@@ -1170,7 +1170,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
         title="Project Settings"
       >
         <Settings2 size={16} />
-        <SizableText fontSize="$3" display="none">Project</SizableText>
+        <SizableText fontSize="$3" display="none" $lg={{ display: "inline" }}>Project</SizableText>
       </Button>
 
       {/* Settings popover */}
@@ -1247,7 +1247,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
   />
 
         {/* Desktop Workspace */}
-        <YStack display="none" flex={1} overflow="hidden" backgroundColor="$background">
+        <XStack display="none" $md={{ display: "flex" }} flex={1} overflow="hidden" backgroundColor="$background">
           {/* Left sidebar for panel toggles */}
           <YStack width="$7" backgroundColor="$color2" borderRightWidth={1} borderColor="$borderColor" alignItems="center" paddingVertical="$3" gap="$1.5">
             <Tooltip placement="right">
@@ -1509,7 +1509,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
 
           </ResizablePanelGroup>
           </YStack>
-        </YStack>
+        </XStack>
 
         {/* Mobile Workspace */}
         <YStack flex={1} overflow="hidden" backgroundColor="$background" $md={{ display: "none" }}>

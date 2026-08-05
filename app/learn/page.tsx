@@ -254,7 +254,7 @@ export default function LearnPage() {
               <Video size={32} />
               <H3 fontSize="$7" fontWeight="500" marginBottom="$2">YouTube Channel</H3>
               <Paragraph color="$color11" marginBottom="$4">Video tutorials and live coding sessions</Paragraph>
-              <Anchor href="https://youtube.com/@hanzoai" color="$purple8" alignItems="center" gap="$1" hoverStyle={{ color: "$purple4" }}>
+              <Anchor href="https://youtube.com/@hanzoai" color="$purple8" display="flex" alignItems="center" gap="$1" hoverStyle={{ color: "$purple4" }}>
                 Watch Videos <ArrowRight size={16} />
               </Anchor>
             </YStack>

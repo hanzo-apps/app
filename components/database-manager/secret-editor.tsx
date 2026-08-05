@@ -126,7 +126,7 @@ export function SecretEditor({
                 type="button"
                 variant="ghost"
                 size="icon"
-                position="absolute" right="$1" top="50%" y="50%" padding="$0"
+                position="absolute" right="$1" top="50%" y="-50%" padding="$0"
                 onClick={() => setShowValue(!showValue)}
               >
                 {showValue ? (

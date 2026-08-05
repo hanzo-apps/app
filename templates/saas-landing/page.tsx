@@ -141,10 +141,10 @@ export default function SaaSLandingPage() {
                 <CardContent>
                   <YStack rowGap="$2">
                     {plan.features.map((feature) => (
-                      <SizableText key={feature} alignItems="center" gap="$2">
+                      <XStack key={feature} alignItems="center" gap="$2">
                         <CheckCircle size={16} />
                         <SizableText fontSize="$3">{feature}</SizableText>
-                      </SizableText>
+                      </XStack>
                     ))}
                   </YStack>
                 </CardContent>

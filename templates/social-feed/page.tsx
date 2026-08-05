@@ -213,7 +213,7 @@ export default function SocialFeed() {
           {/* Trending */}
           <Card>
             <CardHeader>
-              <CardTitle alignItems="center" gap="$2">
+              <CardTitle display="flex" alignItems="center" gap="$2">
                 <TrendingUp size={20} />
                 Trending Now
               </CardTitle>

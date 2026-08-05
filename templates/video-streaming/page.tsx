@@ -200,7 +200,7 @@ export default function VideoStreaming() {
                 <CardTitle>{currentVideo.title}</CardTitle>
                 <XStack alignItems="center" justifyContent="space-between">
                   <SizableText alignItems="center" gap="$4" fontSize="$3" color="$color11" display="flex" flexDirection="row">
-                    <SizableText alignItems="center" gap="$1">
+                    <SizableText display="flex" alignItems="center" gap="$1">
                       <Eye size={16} />
                       {currentVideo.views.toLocaleString()} views
                     </SizableText>

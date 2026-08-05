@@ -147,7 +147,7 @@ export function HFAuthPanel({ onAuthChange }: HFAuthPanelProps) {
           info={
             <>
               Free tier: $0.10/month in free inference credits.{' '}
-              <Anchor
+              <Anchor display="inline-flex"
                 href="https://huggingface.co/pricing"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -242,7 +242,7 @@ export function HFAuthPanel({ onAuthChange }: HFAuthPanelProps) {
         <YStack rowGap="$1">
           <li>
             Go to{' '}
-            <Anchor
+            <Anchor display="inline-flex"
               href="https://huggingface.co/settings/tokens"
               target="_blank"
               rel="noopener noreferrer"

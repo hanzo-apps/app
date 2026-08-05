@@ -155,7 +155,7 @@ export default function SettingsPage() {
                   { name: "Project updates", detail: "Builds, deploys and comments" },
                   { name: "Marketing emails", detail: "Occasional launches and offers" },
                 ].map((item) => (
-                  <Label key={item.name} {...row} cursor="pointer">
+                  <Label key={item.name} {...row} display="flex" cursor="pointer">
                     <YStack minWidth={0} rowGap="$1">
                       <SizableText fontSize="$3" fontWeight="500" color="$color">{item.name}</SizableText>
                       <Paragraph fontSize="$1" color="$color11">{item.detail}</Paragraph>

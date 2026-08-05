@@ -111,7 +111,7 @@ export function GuidedTourOverlay({ location }: GuidedTourOverlayProps) {
   />
       )}
 
-      <YStack position="absolute" bottom="$7" left="50%" width="100%" maxWidth={576} x="50%" gap="$4" paddingHorizontal="$4">
+      <YStack position="absolute" bottom="$7" left="50%" width="100%" maxWidth={576} x="-50%" gap="$4" paddingHorizontal="$4">
         <YStack {...glass(3)} pointerEvents="auto" borderRadius="$8" borderWidth={1} padding="$5">
           <XStack alignItems="flex-start" justifyContent="space-between" gap="$4">
             <YStack flex={1}>

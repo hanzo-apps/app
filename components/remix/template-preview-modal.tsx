@@ -83,7 +83,7 @@ export function TemplatePreviewModal({
           <XStack marginTop="$4" alignItems="flex-start" justifyContent="space-between" gap="$4">
             <Paragraph fontSize="$3" color="$color11">{item.description}</Paragraph>
             {item.previewUrl && (
-              <Anchor
+              <Anchor display="inline-flex"
                 href={item.previewUrl}
                 target="_blank"
                 rel="noopener noreferrer"

@@ -147,7 +147,7 @@ export default function FeaturesPage() {
       {/* Gradient background */}
       <YStack position="fixed" top={0} right={0} bottom={0} left={0} pointerEvents="none" zIndex={0}>
         <YStack position="absolute" top={0} right={0} bottom={0} left={0} />
-        <YStack position="absolute" top="20%" left="50%" x="50%" y="50%" width={800} height={600} />
+        <YStack position="absolute" top="20%" left="50%" x="-50%" y="-50%" width={800} height={600} />
       </YStack>
 
       {/* The ONE header. This page hand-rolled its own nav and mobile sheet —
@@ -171,7 +171,7 @@ export default function FeaturesPage() {
                 <SizableText backgroundClip="text" color="transparent">
                   build faster
                 </SizableText>
-                <YStack position="absolute" top="-2" right="-2" bottom="-2" left="-2" zIndex={10} />
+                <YStack position="absolute" top="$-2" right="$-2" bottom="$-2" left="$-2" zIndex={-10} />
               </SizableText>
             </H1>
             <Paragraph fontSize="$6" color="$color11" marginBottom="$8" maxWidth={768} alignSelf="center" textAlign="center" $md={{ fontSize: "$7" }} lineHeight="1.5">
@@ -333,7 +333,7 @@ export default function FeaturesPage() {
                   position="relative" backgroundColor="$color002" {...{ borderColor: plan.popular ? "$color" : "$borderColor", scale: plan.popular ? 1.05 : undefined, hoverStyle: plan.popular ? undefined : {"borderColor":"$color06"} }}
                 >
                   {plan.popular && (
-                    <YStack position="absolute" top="-3" left="50%" x="50%">
+                    <YStack position="absolute" top="$-3" left="50%" x="-50%">
                       <Badge className="px-4 py-1">
                         Most Popular
                       </Badge>

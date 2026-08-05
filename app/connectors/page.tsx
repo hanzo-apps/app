@@ -360,7 +360,7 @@ function ConnectorRow({
             </XStack>
           )}
           {p.category && !p.connected && (
-            <YStack display="none">
+            <YStack display="none" $sm={{ display: "inline-flex" }}>
               <Badge variant="outline">{p.category}</Badge>
             </YStack>
           )}
