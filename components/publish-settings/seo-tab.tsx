@@ -204,7 +204,9 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
         {settings.seo.ogImage && (
           <YStack padding="$4" borderWidth={1} borderRadius="$5">
             <Paragraph fontSize="$3" fontWeight="500" marginBottom="$2">Image Preview</Paragraph>
-            <XStack position="relative" backgroundColor="$color3" borderRadius="$2" alignItems="center" justifyContent="center" overflow="hidden">
+            {/* OG images are 1200×630 — the preview frames at that ratio so the
+                crop shown is the crop social cards will make. */}
+            <XStack position="relative" aspectRatio={1200 / 630} backgroundColor="$color3" borderRadius="$2" alignItems="center" justifyContent="center" overflow="hidden">
               <Image
                 src={settings.seo.ogImage}
                 alt="OG Image preview"
@@ -284,7 +286,7 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
           <YStack padding="$4" borderWidth={1} borderRadius="$5" backgroundColor="$color3">
             <YStack rowGap="$2">
               {settings.seo.ogImage && (
-                <YStack backgroundColor="$color3" borderRadius="$2" overflow="hidden">
+                <YStack aspectRatio={1200 / 630} backgroundColor="$color3" borderRadius="$2" overflow="hidden">
                   <Image
                     src={settings.seo.ogImage}
                     alt="Social preview"

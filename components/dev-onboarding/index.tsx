@@ -195,14 +195,29 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
               </Link>
             </XStack>
 
-            <YStack gap="$3">
+            {/* CARDS, not controls, in a real grid. @hanzo/ui's Button pins its
+                size variant's height over anything the caller passes, so each of
+                these rendered as a full-width ~40px band with the shot cover-
+                cropped to a sliver. A clickable stack sizes from its content and
+                the aspect wrapper gives every shot the same 16:10 frame at any
+                column width — the exact shape /templates' ResourceCard uses. */}
+            <div className="card-grid">
               {popular.map((template) => (
-                <Button
+                <YStack
                   key={template.slug}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Use the ${template.displayName} template`}
                   onClick={() => handleTemplateSelect(template)}
-                  flexDirection="column" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" group className="zoom-scope" hoverStyle={{ borderColor: "$color", y: "$-0.5" }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleTemplateSelect(template);
+                    }
+                  }}
+                  cursor="pointer" flexDirection="column" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" group className="zoom-scope" hoverStyle={{ borderColor: "$color", y: "$-0.5" }}
                 >
-                  <YStack position="relative" backgroundColor="$background" overflow="hidden">
+                  <YStack position="relative" overflow="hidden" aspectRatio={16 / 10} backgroundColor="$background">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <Image
                       src={template.screenshotUrl}
@@ -223,9 +238,9 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                       {template.description || template.framework}
                     </Paragraph>
                   </YStack>
-                </Button>
+                </YStack>
               ))}
-            </YStack>
+            </div>
           </YStack>
 
           {/* Features Grid */}

@@ -259,7 +259,7 @@ export function TemplateCard({
       {/* Thumbnail */}
       <YStack position="relative">
         {customTemplate?.metadata.thumbnail ? (
-          <YStack width="100%" backgroundColor="$color3">
+          <YStack width="100%" aspectRatio={16 / 10} backgroundColor="$color3">
             <Image
               src={customTemplate.metadata.thumbnail}
               alt={template.name}
@@ -267,7 +267,7 @@ export function TemplateCard({
   />
           </YStack>
         ) : (
-          <XStack width="100%" backgroundColor="$color3" alignItems="center" justifyContent="center">
+          <XStack width="100%" aspectRatio={16 / 10} backgroundColor="$color3" alignItems="center" justifyContent="center">
             <FileBox size={64} />
           </XStack>
         )}

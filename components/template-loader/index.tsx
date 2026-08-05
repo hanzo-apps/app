@@ -108,7 +108,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
             <SizableText fontFamily="$mono" fontSize={10} color="$color11">Start from this template</SizableText>
           </XStack>
           {meta?.screenshotUrl ? (
-            <YStack marginBottom="$4.5" width="100%" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
+            <YStack marginBottom="$4.5" width="100%" aspectRatio={16 / 10} overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <Image
                 src={meta.screenshotUrl}

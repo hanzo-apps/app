@@ -321,3 +321,22 @@ describe("Spinners spin", () => {
     ]);
   });
 });
+
+/**
+ * A cover-fit image sizes itself FROM its frame — it has no height of its own.
+ * @hanzo/ui's Button pins its size variant's height over anything the caller
+ * passes, so a Button can never be that frame: the image collapses to the
+ * control band and `cover` crops it to a sliver. Measured twice — /templates'
+ * ResourceCard (30px holding 425px of content) and dev-onboarding's template
+ * cards (full-width ~40px strips). The card idiom is a clickable YStack with an
+ * `aspectRatio` wrapper; this scan keeps the Button version from returning.
+ */
+describe("Images own a frame", () => {
+  it("a cover-fit image never renders inside a Button", () => {
+    const offenders = files.filter((f) => {
+      const src = readFileSync(f, "utf8");
+      return /<Button\b(?:(?!<\/Button>)[\s\S])*?<Image\b(?:(?!\/>)[\s\S])*?objectFit/.test(src);
+    });
+    expect(offenders.map(rel)).toEqual([]);
+  });
+});

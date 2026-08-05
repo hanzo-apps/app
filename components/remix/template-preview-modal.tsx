@@ -63,7 +63,7 @@ export function TemplatePreviewModal({
 
         {/* Preview body */}
         <YStack padding="$4.5">
-          <YStack position="relative" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
+          <YStack position="relative" overflow="hidden" aspectRatio={16 / 10} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
             {item.hasImage ? (
               // eslint-disable-next-line @next/next/no-img-element
               <Image

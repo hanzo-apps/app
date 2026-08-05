@@ -202,8 +202,12 @@ export default function DashboardPage() {
                       <Link
                         key={t.slug}
                         href="/templates"
-                      ><XStack group className="zoom-scope" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "$-0.5", borderColor: "$color" }}>
-                        <YStack position="relative" overflow="hidden" backgroundColor="$background">
+                      ><XStack group className="zoom-scope" alignItems="center" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "$-0.5", borderColor: "$color" }}>
+                        {/* The thumb owns a frame: in a row card an unsized
+                            wrapper collapses and cover-crops the shot to a
+                            sliver. 16:10 at a fixed width, like every other
+                            template thumb. */}
+                        <YStack position="relative" overflow="hidden" backgroundColor="$background" width={168} aspectRatio={16 / 10} flexShrink={0}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <Image
                             src={t.screenshotUrl}
@@ -215,7 +219,7 @@ export default function DashboardPage() {
                             }}
   />
                         </YStack>
-                        <YStack padding="$3">
+                        <YStack padding="$3" flex={1} minWidth={0}>
                           <Paragraph numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{t.displayName}</Paragraph>
                           <Paragraph numberOfLines={1} fontSize="$1" color="$color11">{t.category}</Paragraph>
                         </YStack>
