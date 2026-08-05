@@ -73,6 +73,13 @@ function transpiled() {
     '@hanzo/usage',
     '@hanzo/brand',
     '@hanzo/base',
+    // `@hanzo/ui/product` re-exports the design tokens and tag tones from
+    // @hanzo/data, whose exports map points at `src/index.ts` — TypeScript
+    // SOURCE, not a build. So the first app file to import from `product` takes
+    // the whole webpack build down with "Module parse failed: Unexpected token"
+    // on an `export type` block. It is a peer of @hanzo/ui here, not a package
+    // this app imports by name.
+    '@hanzo/data',
     // gui 8 dropped its own react-native-web dependency, so this app declares
     // it and the `react-native$` alias points the gui graph at that one copy.
     'react-native-web',
