@@ -91,11 +91,11 @@ importers:
         specifier: ^0.1.1
         version: 0.1.1(react@19.2.8)
       '@hanzo/ui':
-        specifier: ^8.0.48
-        version: 8.0.48(7f28daf0593ae1b766f6fd933bda153e)
+        specifier: ^8.0.52
+        version: 8.0.52(5d6ff80e0d753a34f975d30cfda0bc71)
       '@hanzo/usage':
         specifier: ^0.1.6
-        version: 0.1.6(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(@hanzogui/lucide-icons-2@8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
+        version: 0.1.6(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(@hanzogui/lucide-icons-2@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8))(react@19.2.8)
       '@hanzo/voice':
         specifier: 0.1.3
         version: 0.1.3(react@19.2.8)
@@ -904,8 +904,8 @@ packages:
       react:
         optional: true
 
-  '@hanzo/ui@8.0.48':
-    resolution: {integrity: sha512-oF45NtJrhiTH6SrjUXCtuFQUj6QBzyvRpjzCeo0QggUthDLmkjTtuXsP90N24ghfZn28dJC0DwSLXZjvHfeW7Q==}
+  '@hanzo/ui@8.0.52':
+    resolution: {integrity: sha512-Tqh5Un2Ry5lFfTzWecmBOyTaOkNNlT3sWd6mKjOrj3W+0TILg8QqNKp3xnjk0VmQUkgqlTW5c6E0zVEX9JWwcg==}
     peerDependencies:
       '@hanzo/canvas': '>=0.1.0'
       '@hanzo/cd': '>=0.1.0'
@@ -967,11 +967,6 @@ packages:
 
   '@hanzogui/alert-dialog@8.1.0':
     resolution: {integrity: sha512-MsM2HzkS/BqBr7stTZuprrNQDuWyAbsvi7qeL1z1DwK599AunMgy/QDUU/Vtr/3viHRyba1Kcnk62orFEKXuxg==}
-    peerDependencies:
-      react: '>=19'
-
-  '@hanzogui/animate-presence@8.0.0':
-    resolution: {integrity: sha512-dGGiVSHlKjBMLkLdhoOl6zseWXvV/Q5UD1dCnlEAHa0xtaCwTo8z7ECnH4WZMvPsI12UOf5f/c4HAtt7q1Xeqw==}
     peerDependencies:
       react: '>=19'
 
@@ -1054,11 +1049,6 @@ packages:
     peerDependencies:
       react: '>=19'
 
-  '@hanzogui/collection@8.0.1':
-    resolution: {integrity: sha512-HTaXk2c/kPpRUDiHjcUEOtnVzOvQ22llp19JWz3qeILlj8jYveSYNzIuQUqsgERsA4yjClz/4ZXemvlq+TTnIw==}
-    peerDependencies:
-      react: '>=19'
-
   '@hanzogui/collection@8.1.0':
     resolution: {integrity: sha512-aEtU36tlNGk7z6RVX1LmDt5XEvHtWOwpF+DcN4q+frpFBgD3R8IboW0dabhNkBvbnwJYz6anb3bvgu8rJjddqg==}
     peerDependencies:
@@ -1066,11 +1056,6 @@ packages:
 
   '@hanzogui/colors@8.0.0':
     resolution: {integrity: sha512-dYQAleAP/WlUs8/5rQNErXrt0P6i9dsLebgANL0uEzqoo2cZwpL+LESfGlttpl2UXoasslGeeqlUWt8zqPTceQ==}
-
-  '@hanzogui/component-helpers@8.0.0':
-    resolution: {integrity: sha512-J9p64XATkn/6sjpZgOTmf1Gt7RkrY29kmAmEB7aatLrmKkEDfihYUb92Q1GN6Glk06H70xj48L/94SOHZAj96g==}
-    peerDependencies:
-      react: '>=19'
 
   '@hanzogui/component-helpers@8.1.0':
     resolution: {integrity: sha512-hb9aT0CI3xcfEqyy8exvyacvB0i5Yo9K8NZaKV7Y5QufQLY0dtkRFJf/bnNSIJqv1PF1ZuSYlDONu+RpYe4izQ==}
@@ -1123,11 +1108,6 @@ packages:
     peerDependencies:
       react: '>=19'
 
-  '@hanzogui/create-context@8.0.0':
-    resolution: {integrity: sha512-00PiznrSiX26iNFlly/DqGOwt2mqXmiVqApnrvL9u1CuT7c2vSuWojvjce79iu/0rqAxNWaBYXECXNUrXA9O2g==}
-    peerDependencies:
-      react: '>=19'
-
   '@hanzogui/create-context@8.1.0':
     resolution: {integrity: sha512-qB0cfNUYBRSEHfuWKSX0SXjpf8m7Li22Fsq7o93P1wOIXkGbq0Gimi813F1xlQx5kmSzE9YFDhk5i3EK1/i+3A==}
     peerDependencies:
@@ -1151,12 +1131,6 @@ packages:
     resolution: {integrity: sha512-dOUEcO5X/JLuJN+0L+bttgt51oShtGhil+SJMzylWvb2KdA+aXmuVMkGfHWe1SEHRktnMVexKWYVr44PUZzoEQ==}
     peerDependencies:
       react: '>=19'
-
-  '@hanzogui/dismissable@8.0.1':
-    resolution: {integrity: sha512-D/aqEV0Va/qqiDfhPTPNI+SMN9SQZI6uJ3bmsAN7ZczNtlyif9mRnFSro1bLdvLo1tQxAqiTHycr9bXqhENa5Q==}
-    peerDependencies:
-      react: '>=19'
-      react-dom: '*'
 
   '@hanzogui/dismissable@8.1.0':
     resolution: {integrity: sha512-FQDOe2AYtDdpN7E8SXd30c4p29C4vjm+rBWB2lOnNsdcbEEu68oLGxF+3QraSFAGzVsVlVqFpi3uVmgKwG502w==}
@@ -1216,28 +1190,13 @@ packages:
     peerDependencies:
       react: '>=19'
 
-  '@hanzogui/get-button-sized@8.0.0':
-    resolution: {integrity: sha512-kE7rpjGYFIS9S1kGSfSaXxTikYbVGQBO3h5Az9/6rOgexTPmkFcSALYeTyc58Gp+R9khhcInunAezn0UTVEOJQ==}
-    peerDependencies:
-      react: '>=19'
-
   '@hanzogui/get-button-sized@8.1.0':
     resolution: {integrity: sha512-I57K4L9APlmEzClyt0cNM2P2OeRwcX1SppmCnNb8U9UwtzjfH56/cCNPjafiLdrdXg2HevvFnbMFeBitmWkcEw==}
     peerDependencies:
       react: '>=19'
 
-  '@hanzogui/get-font-sized@8.0.0':
-    resolution: {integrity: sha512-y8y7rkjAu7DXFXoRScEyn/uitgV8LPRa/nMoL8y5ExnNAnre895qdIJiCN3rSuPlo3cud+JzEWOg1qhWJdYblA==}
-    peerDependencies:
-      react: '>=19'
-
   '@hanzogui/get-font-sized@8.1.0':
     resolution: {integrity: sha512-v+PYPhyDQHIqkkl2jqG8CI7J/oXFP+jqj58+KsO6Rf5Tc/wfGOgTR6zcyzqwtSI1MVH5vLJRRqimgXpQUNpfAw==}
-    peerDependencies:
-      react: '>=19'
-
-  '@hanzogui/get-token@8.0.0':
-    resolution: {integrity: sha512-C7FqWqZLjIIndvF/7wqrAVxrX34MWBElhAkEYEeXnrWxpwz8y8EL/Tmor1teI1/uJFittRbYU/ZX0SPnWtXsjw==}
     peerDependencies:
       react: '>=19'
 
@@ -1251,8 +1210,8 @@ packages:
     peerDependencies:
       react: '>=19'
 
-  '@hanzogui/helpers-icon@8.0.1':
-    resolution: {integrity: sha512-6tJMjA6eyZWVmt2jTUL0X6nIxXW71Es7zWuAQe6SOlxcAv6ISuqTwCv+2BpKTvw13gJEnP1rRqe7PPKAMuWY+w==}
+  '@hanzogui/helpers-icon@8.1.0':
+    resolution: {integrity: sha512-37ZUUNpWoUWAEea5CPHATydPXHlDSo7IZFsWejSGjEQlaclQ79YOtsZDj0qTigC6H3l2vEjHeHlBxNZUVbhJIA==}
     peerDependencies:
       react: '>=19'
 
@@ -1301,10 +1260,11 @@ packages:
     peerDependencies:
       react: '>=19'
 
-  '@hanzogui/lucide-icons-2@8.0.1':
-    resolution: {integrity: sha512-j3Bm0pWYJAW1oMdjR64fPrI0TsBPV3vL7+x70n0qGtaov6zjzIoRPglUi8cFfftt1jL1faJePcAyx+iTwv+Vmg==}
+  '@hanzogui/lucide-icons-2@8.1.0':
+    resolution: {integrity: sha512-YU9JGfDw4u0gOp6dMbBlCWjiZI6W2ODu07ZxheWubLLBak7xDSuqbsxJtpHZ4WENMpK0bY5NH1L5D3RrsE36uw==}
     peerDependencies:
       react: '>=19'
+      react-native-svg: '>=12'
 
   '@hanzogui/menu@8.1.0':
     resolution: {integrity: sha512-bFtcLqFUJuJzf38s5vwCmb4sSTQDxG9x4pUg6Gzt3Cr4wZqruBVE05r7NOFvnVGzWW/jYXTAj1cNd6rPioX0DQ==}
@@ -1324,9 +1284,6 @@ packages:
   '@hanzogui/normalize-css-color@8.0.0':
     resolution: {integrity: sha512-hIjICsq0tG7+kk/7MhoAgGnwCBZfUiKQVB42WrFWRJHkGY9hdtv7LRjQ/pxuIzveZWwJdOCrdXjN+R1sBzSXyQ==}
 
-  '@hanzogui/polyfill-dev@8.0.0':
-    resolution: {integrity: sha512-h4Bjxc11qeE4AfGmqg76WbQKXKzHedjaHf2KALSuolTfl3mW5Mw4ze2bvmqAu8mkpZGqPZOPwClKxMQ/8TqGsA==}
-
   '@hanzogui/polyfill-dev@8.1.0':
     resolution: {integrity: sha512-VighnNZd/tHf7UJQD2WhSCPTP3ZJPjmrhGsISbTzW0ztrPdp2a/SF2gxRkShXEQWqY9cxJ/6JLSx16LU5sqVTg==}
 
@@ -1339,12 +1296,6 @@ packages:
     resolution: {integrity: sha512-nutlFWqMDW9obkJUqoHZfoi9I5ZbUD6Q4tw1cHQUfhIAjM+6hzaoDLQA5kIL7yw9y+tw+pK7GVAc4THzBWVlpw==}
     peerDependencies:
       react: '>=19'
-
-  '@hanzogui/portal@8.0.1':
-    resolution: {integrity: sha512-IeSRQCTkccokdu6bLuq+0EwkCvqvoVMcXYZC6H7Xnx/ZbimPHV4sUWlW/Nt9aUDCTPknSPWQ+sq/FJcfbYRlNQ==}
-    peerDependencies:
-      react: '>=19'
-      react-dom: '*'
 
   '@hanzogui/portal@8.1.0':
     resolution: {integrity: sha512-3jsuAybGPUCjGKUp/9jc9WFpR0PppgEuJ6r8cLnZH6p45DaODAWefrs/NgAIDe06YghS0awIzQx4iEYxbF4xzA==}
@@ -1437,11 +1388,6 @@ packages:
   '@hanzogui/simple-hash@8.1.0':
     resolution: {integrity: sha512-ic9+NuUDxSnIX8PdFZz2KWsQIIv8bW9jWPsW732y4vbP+gkUSPT9FaMW3C+AX5ss8cHng/GGMAI/o573QLNoLg==}
 
-  '@hanzogui/sizable-context@8.0.1':
-    resolution: {integrity: sha512-A2EwV4pkIsZc/U00GDTmlicgA/NttXtorxSrFA+1XAet8SHKeyeASxIRjfZzZ8IS95HYl/iAvp7fV0UrOlRwzQ==}
-    peerDependencies:
-      react: '>=19'
-
   '@hanzogui/sizable-context@8.1.0':
     resolution: {integrity: sha512-jswpQQ7Sn6AKaVys+GGLI7bdg6/XAdt+S9hkBZEE/uLLhM/r+2edT2PEs05DSip/fC6cMA2h1khG5yw98uD+/g==}
     peerDependencies:
@@ -1462,18 +1408,8 @@ packages:
     peerDependencies:
       react: '>=19'
 
-  '@hanzogui/stacks@8.0.1':
-    resolution: {integrity: sha512-lE67WA66GXkiXRyNWNnPqnEui0UE/QzQ+n43cSRZUeYx1onZ7Z9Ub/90w4i1vj641ITq6/pZ60tqjWDGZlZgiw==}
-    peerDependencies:
-      react: '>=19'
-
   '@hanzogui/stacks@8.1.0':
     resolution: {integrity: sha512-tW7hzCMcgnq+22cGIOtf/uhoXahaExqk1TXPSSmvu2a0t0WRe2y4UfHwNLmpdHF5Y+NWkebTYo8c8vi2rcslUw==}
-    peerDependencies:
-      react: '>=19'
-
-  '@hanzogui/start-transition@8.0.0':
-    resolution: {integrity: sha512-lBv+r/IJBYZILN/L79UGZ26x+0ie5K28eGG0sm+VhIWBfd+wkJ9d2JXdlMvFhRPRSFsmkex/+ak+MLUrXtEWTQ==}
     peerDependencies:
       react: '>=19'
 
@@ -1502,10 +1438,10 @@ packages:
     peerDependencies:
       react: '>=18'
 
-  '@hanzogui/text@8.0.0':
-    resolution: {integrity: sha512-+aIV/H2iML/KT8gbAMNHEKAlhn1P0ppCLf5jfXDsE2NZCtH3VHpTe3rcyBdMTKF1QDMVQ9mC9xyG2qxed3jVRw==}
+  '@hanzogui/telemetry@8.1.0':
+    resolution: {integrity: sha512-h1ZwNjXoLp8414QS+VhrKDeT3lz4xUvGJ1Q7urVu2gH/ApjozMYkkXPmP4F0uyFHxjlh+uX5CRHJWuMiTC/OvA==}
     peerDependencies:
-      react: '>=19'
+      react: '>=18'
 
   '@hanzogui/text@8.1.0':
     resolution: {integrity: sha512-Lz3tQHZx6eFIhMz9SuZMuYXg4rz4pZxnmkZ4cP7cxAnA5/JG8c7fYgAX5Ty3TFGsKBjstJIEH9h3p5dWjV/Slw==}
@@ -1525,11 +1461,6 @@ packages:
 
   '@hanzogui/timer@8.0.0':
     resolution: {integrity: sha512-s8KjSwNGq1Yaie5iF17fAD+mgajCbzMfq8S4Obao0kMVnrbMRzA1XRpEFZXdcdN69DC1GO7uyCtj9SrSCLMS/g==}
-
-  '@hanzogui/toast@8.0.1':
-    resolution: {integrity: sha512-4skB7toCBB8asiTNUVwwYRytHXj4jg7lkgi5xVBH3Wyv2MhvW+9OKaMK9/nXx0x9VmDY8iJ8cQYjqNcySrzY1w==}
-    peerDependencies:
-      react: '>=19'
 
   '@hanzogui/toast@8.1.0':
     resolution: {integrity: sha512-titdK44L7QUh5bKGbHDPSzQ6zUuBh5S3FlDIsZblubKrQ6wv2Q+YsOviQGmfAwcUC21ZEOq2NOKWoAlRiZlQLw==}
@@ -1554,28 +1485,13 @@ packages:
     peerDependencies:
       react: '>=19'
 
-  '@hanzogui/use-callback-ref@8.0.0':
-    resolution: {integrity: sha512-t7JBHsku3krL9nXVpF6KXecc6iunxjh+UZfSb4VXPMWTwjWWCqaNEIRn9BRKEiboaMX9/9XiHxKu+TZqCKtPtg==}
-    peerDependencies:
-      react: '>=19'
-
   '@hanzogui/use-callback-ref@8.1.0':
     resolution: {integrity: sha512-mI8JxkYM9Ci5y9HUG9wcbEUiCqr4AySgSRmrnH5h6n3zia9dd3LoKNvlwilSab6sx5BNbBHwCcciuk/E5UXTUg==}
     peerDependencies:
       react: '>=19'
 
-  '@hanzogui/use-constant@8.0.0':
-    resolution: {integrity: sha512-wLLN3quxZK9Ckjl1m6tZgEJJe46c4NTA1uGvFGZbWLNZI6cDxzNz57PSVfDSg9ba8sD3tXc2X7E0yOVTcWyXyw==}
-    peerDependencies:
-      react: '>=19'
-
   '@hanzogui/use-constant@8.1.0':
     resolution: {integrity: sha512-iPtnVimIxYtzsS2yeSYcwoluuAVhgOJ8oVm2WrHmeAF77KBExm7hTe8ThdHABOwweKXR1bqcGdGhsFzkK6FH+A==}
-    peerDependencies:
-      react: '>=19'
-
-  '@hanzogui/use-controllable-state@8.0.0':
-    resolution: {integrity: sha512-3Q2mDi+xhguPcfSsTyXdskYKKJaCYeN3ty3HBvtnMb35cIY/Qn4K8lPzOP3uwCBNB8CdEQ7QPZXzo5mHuZaFdg==}
     peerDependencies:
       react: '>=19'
 
@@ -1611,11 +1527,6 @@ packages:
 
   '@hanzogui/use-element-layout@8.1.0':
     resolution: {integrity: sha512-gzoeTP13vZ/U6uy+frRdQ3qK6rGv3qi9PUtcL1cDyyNa3NdIqb9ksysGc9uj9LXPNeyMnm4C40zanzElx5HTKg==}
-    peerDependencies:
-      react: '>=19'
-
-  '@hanzogui/use-escape-keydown@8.0.0':
-    resolution: {integrity: sha512-huHqQVSaKl+60Jw7eQFkDQOTWOKDF1h3NjdUjHWnHgzTgpXyekwG9zYQc+XyFePtlbaUszoELw2RYBvapSWlvQ==}
     peerDependencies:
       react: '>=19'
 
@@ -1669,11 +1580,6 @@ packages:
     peerDependencies:
       react: '>=19'
 
-  '@hanzogui/visually-hidden@8.0.0':
-    resolution: {integrity: sha512-lY1UdruUKWc1n4nBvoW3jGebSejSDrssAnQIlD44QHtMQ2s4JRc0B6JxWu0WFL2QjEpXIIPzQb0IIBdMTrrFUA==}
-    peerDependencies:
-      react: '>=19'
-
   '@hanzogui/visually-hidden@8.1.0':
     resolution: {integrity: sha512-a1dAl0wvMgFSncLvqLV7Qwf93TkeFYTHejnIMjwYiRGTDuJLQqlZtOUv0FHZ3SuQA7rW8DK+dk8KYcmnVyb5Qg==}
     peerDependencies:
@@ -1684,11 +1590,6 @@ packages:
     peerDependencies:
       react: '>=19'
       react-dom: '*'
-
-  '@hanzogui/z-index-stack@8.0.0':
-    resolution: {integrity: sha512-J5hgLHmNCodHf65k+m6NjnYS/6B+dN1YqHmXwulWvHJvfmtXJbXNXU7IsVJBW3U93tksBttzsNS0cdpwXUqv7Q==}
-    peerDependencies:
-      react: '>=19'
 
   '@hanzogui/z-index-stack@8.1.0':
     resolution: {integrity: sha512-ybWDjZ2RCn7q3fk6FfZyYBqzyReuKiCVIl9fwssbrYEUlJMYCa61Arhu2RIGYxCplwrgBxKL2ZAoyljMptEU3Q==}
@@ -2197,15 +2098,12 @@ packages:
 
   '@oslojs/asn1@1.0.0':
     resolution: {integrity: sha512-zw/wn0sj0j0QKbIXfIlnEcTviaCzYOY3V5rAyjR6YtOByFtJiT574+8p9Wlach0lZH9fddD4yb9laEAIl4vXQA==}
-    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   '@oslojs/binary@1.0.0':
     resolution: {integrity: sha512-9RCU6OwXU6p67H4NODbuxv2S3eenuQ4/WFLrsq+K/k682xrznH5EVWA7N4VFk9VYVcbFtKqur5YQQZc0ySGhsQ==}
-    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   '@oslojs/crypto@1.0.1':
     resolution: {integrity: sha512-7n08G8nWjAr/Yu3vu9zzrd0L9XnrJfpMioQcvCMxBIiF5orECHe5/3J0jmXRVvgfqMm/+4oxlQ+Sq39COYLcNQ==}
-    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   '@oslojs/encoding@0.4.1':
     resolution: {integrity: sha512-hkjo6MuIK/kQR5CrGNdAPZhS01ZCXuWDRJ187zh6qqF2+yMHZpD9fAYpX8q2bOO6Ryhl3XpCT6kUX76N8hhm4Q==}
@@ -2215,7 +2113,6 @@ packages:
 
   '@oslojs/jwt@0.2.0':
     resolution: {integrity: sha512-bLE7BtHrURedCn4Mco3ma9L4Y1GR2SMBuIvjWr7rmQ4/W/4Jy70TIAgZ+0nIlk0xHz1vNP8x8DCns45Sb2XRbg==}
-    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   '@playwright/test@1.62.0':
     resolution: {integrity: sha512-9zOJ6ZQRAena31MpOH9VSzIz8Ou3YJ/wtY/eQm5T2uhfhG7/U3COrMS8xOtUrZrp9OgdmzEnIYODye3nY1VqzA==}
@@ -3376,7 +3273,6 @@ packages:
 
   arctic@2.3.4:
     resolution: {integrity: sha512-+p30BOWsctZp+CVYCt7oAean/hWGW42sH5LAcRQX56ttEkFJWbzXBhmSpibbzwSJkRrotmsA+oAoJoVsU0f5xA==}
-    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   arg@4.1.3:
     resolution: {integrity: sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==}
@@ -8223,34 +8119,36 @@ snapshots:
     optionalDependencies:
       react: 19.2.8
 
-  '@hanzo/products@0.2.0(@hanzogui/lucide-icons-2@8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)':
+  '@hanzo/products@0.2.0(@hanzogui/lucide-icons-2@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8))(react@19.2.8)':
     optionalDependencies:
-      '@hanzogui/lucide-icons-2': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@hanzogui/lucide-icons-2': 8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8)
       react: 19.2.8
 
-  '@hanzo/ui@8.0.48(7f28daf0593ae1b766f6fd933bda153e)':
+  '@hanzo/ui@8.0.52(5d6ff80e0d753a34f975d30cfda0bc71)':
     dependencies:
       '@hanzo/data': 1.2.2(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8)
       '@hanzo/design': 0.4.6
       '@hanzo/gui': 8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8)
       '@hanzo/logo': 1.0.14(react@19.2.8)
-      '@hanzo/products': 0.2.0(@hanzogui/lucide-icons-2@8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
+      '@hanzo/products': 0.2.0(@hanzogui/lucide-icons-2@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8))(react@19.2.8)
       '@hanzogui/config': 8.0.1(react-dom@19.2.8(react@19.2.8))(react-native-reanimated@4.5.1(react-native-worklets@0.10.2(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8)
-      '@hanzogui/lucide-icons-2': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/telemetry': 8.0.0(react@19.2.8)
-      '@hanzogui/toast': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@hanzogui/lucide-icons-2': 8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8)
+      '@hanzogui/telemetry': 8.1.0(react@19.2.8)
+      '@hanzogui/toast': 8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       clsx: 2.1.1
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
     optionalDependencies:
-      '@hanzo/usage': 0.1.6(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(@hanzogui/lucide-icons-2@8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
+      '@hanzo/usage': 0.1.6(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(@hanzogui/lucide-icons-2@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8))(react@19.2.8)
       next-themes: 0.4.6(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react-native-web: 0.21.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+    transitivePeerDependencies:
+      - react-native-svg
 
-  '@hanzo/usage@0.1.6(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(@hanzogui/lucide-icons-2@8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)':
+  '@hanzo/usage@0.1.6(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(@hanzogui/lucide-icons-2@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8))(react@19.2.8)':
     optionalDependencies:
       '@hanzo/gui': 8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8)
-      '@hanzogui/lucide-icons-2': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@hanzogui/lucide-icons-2': 8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8)
       react: 19.2.8
 
   '@hanzo/voice@0.1.3(react@19.2.8)':
@@ -8306,18 +8204,6 @@ snapshots:
       '@hanzogui/stacks': 8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@hanzogui/text': 8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@hanzogui/use-controllable-state': 8.1.0(react@19.2.8)
-      '@hanzogui/web': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      react: 19.2.8
-    transitivePeerDependencies:
-      - react-dom
-
-  '@hanzogui/animate-presence@8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
-    dependencies:
-      '@hanzogui/constants': 8.0.0(react@19.2.8)
-      '@hanzogui/helpers': 8.0.0(react@19.2.8)
-      '@hanzogui/use-constant': 8.0.0(react@19.2.8)
-      '@hanzogui/use-force-update': 8.0.0(react@19.2.8)
-      '@hanzogui/use-presence': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@hanzogui/web': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react: 19.2.8
     transitivePeerDependencies:
@@ -8500,19 +8386,6 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@hanzogui/collection@8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
-    dependencies:
-      '@hanzogui/compose-refs': 8.0.0(react@19.2.8)
-      '@hanzogui/constants': 8.0.0(react@19.2.8)
-      '@hanzogui/core': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/create-context': 8.0.0(react@19.2.8)
-      '@hanzogui/polyfill-dev': 8.0.0
-      '@hanzogui/stacks': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/use-controllable-state': 8.0.0(react@19.2.8)
-      react: 19.2.8
-    transitivePeerDependencies:
-      - react-dom
-
   '@hanzogui/collection@8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@hanzogui/compose-refs': 8.1.0(react@19.2.8)
@@ -8527,14 +8400,6 @@ snapshots:
       - react-dom
 
   '@hanzogui/colors@8.0.0': {}
-
-  '@hanzogui/component-helpers@8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
-    dependencies:
-      '@hanzogui/helpers': 8.0.0(react@19.2.8)
-      '@hanzogui/web': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      react: 19.2.8
-    transitivePeerDependencies:
-      - react-dom
 
   '@hanzogui/component-helpers@8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
@@ -8633,10 +8498,6 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@hanzogui/create-context@8.0.0(react@19.2.8)':
-    dependencies:
-      react: 19.2.8
-
   '@hanzogui/create-context@8.1.0(react@19.2.8)':
     dependencies:
       react: 19.2.8
@@ -8702,16 +8563,6 @@ snapshots:
       react: 19.2.8
     transitivePeerDependencies:
       - react-dom
-
-  '@hanzogui/dismissable@8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
-    dependencies:
-      '@hanzogui/compose-refs': 8.0.0(react@19.2.8)
-      '@hanzogui/core': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/helpers': 8.0.0(react@19.2.8)
-      '@hanzogui/use-escape-keydown': 8.0.0(react@19.2.8)
-      '@hanzogui/use-event': 8.0.0(react@19.2.8)
-      react: 19.2.8
-      react-dom: 19.2.8(react@19.2.8)
 
   '@hanzogui/dismissable@8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
@@ -8809,14 +8660,6 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@hanzogui/get-button-sized@8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
-    dependencies:
-      '@hanzogui/get-token': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/web': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      react: 19.2.8
-    transitivePeerDependencies:
-      - react-dom
-
   '@hanzogui/get-button-sized@8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@hanzogui/get-token': 8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -8825,24 +8668,9 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@hanzogui/get-font-sized@8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
-    dependencies:
-      '@hanzogui/constants': 8.0.0(react@19.2.8)
-      '@hanzogui/web': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      react: 19.2.8
-    transitivePeerDependencies:
-      - react-dom
-
   '@hanzogui/get-font-sized@8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@hanzogui/constants': 8.1.0(react@19.2.8)
-      '@hanzogui/web': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      react: 19.2.8
-    transitivePeerDependencies:
-      - react-dom
-
-  '@hanzogui/get-token@8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
-    dependencies:
       '@hanzogui/web': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react: 19.2.8
     transitivePeerDependencies:
@@ -8868,10 +8696,10 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@hanzogui/helpers-icon@8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@hanzogui/helpers-icon@8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
-      '@hanzogui/core': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/sizable-context': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@hanzogui/core': 8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@hanzogui/sizable-context': 8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react: 19.2.8
     transitivePeerDependencies:
       - react-dom
@@ -8961,11 +8789,12 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@hanzogui/lucide-icons-2@8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@hanzogui/lucide-icons-2@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8)':
     dependencies:
-      '@hanzogui/core': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/helpers-icon': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@hanzogui/core': 8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@hanzogui/helpers-icon': 8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react: 19.2.8
+      react-native-svg: 15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8)
     transitivePeerDependencies:
       - react-dom
 
@@ -8996,8 +8825,6 @@ snapshots:
   '@hanzogui/normalize-css-color@8.0.0':
     dependencies:
       '@react-native/normalize-color': 2.1.0
-
-  '@hanzogui/polyfill-dev@8.0.0': {}
 
   '@hanzogui/polyfill-dev@8.1.0': {}
 
@@ -9044,19 +8871,6 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
       - react-native
-
-  '@hanzogui/portal@8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
-    dependencies:
-      '@hanzogui/constants': 8.0.0(react@19.2.8)
-      '@hanzogui/core': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/native': 8.0.0(react@19.2.8)
-      '@hanzogui/polyfill-dev': 8.0.0
-      '@hanzogui/start-transition': 8.0.0(react@19.2.8)
-      '@hanzogui/use-event': 8.0.0(react@19.2.8)
-      '@hanzogui/web': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/z-index-stack': 8.0.0(react@19.2.8)
-      react: 19.2.8
-      react-dom: 19.2.8(react@19.2.8)
 
   '@hanzogui/portal@8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
@@ -9269,13 +9083,6 @@ snapshots:
 
   '@hanzogui/simple-hash@8.1.0': {}
 
-  '@hanzogui/sizable-context@8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
-    dependencies:
-      '@hanzogui/core': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      react: 19.2.8
-    transitivePeerDependencies:
-      - react-dom
-
   '@hanzogui/sizable-context@8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@hanzogui/core': 8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -9316,15 +9123,6 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@hanzogui/stacks@8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
-    dependencies:
-      '@hanzogui/core': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/get-button-sized': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/web': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      react: 19.2.8
-    transitivePeerDependencies:
-      - react-dom
-
   '@hanzogui/stacks@8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@hanzogui/core': 8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -9333,10 +9131,6 @@ snapshots:
       react: 19.2.8
     transitivePeerDependencies:
       - react-dom
-
-  '@hanzogui/start-transition@8.0.0(react@19.2.8)':
-    dependencies:
-      react: 19.2.8
 
   '@hanzogui/start-transition@8.1.0(react@19.2.8)':
     dependencies:
@@ -9397,14 +9191,11 @@ snapshots:
       '@hanzo/observe': 0.1.1(react@19.2.8)
       react: 19.2.8
 
-  '@hanzogui/text@8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@hanzogui/telemetry@8.1.0(react@19.2.8)':
     dependencies:
-      '@hanzogui/component-helpers': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/get-font-sized': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/web': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@hanzo/event': 0.3.9(react@19.2.8)
+      '@hanzo/observe': 0.1.1(react@19.2.8)
       react: 19.2.8
-    transitivePeerDependencies:
-      - react-dom
 
   '@hanzogui/text@8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
@@ -9445,28 +9236,6 @@ snapshots:
       - react-dom
 
   '@hanzogui/timer@8.0.0': {}
-
-  '@hanzogui/toast@8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
-    dependencies:
-      '@hanzogui/animate-presence': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/collection': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/compose-refs': 8.0.0(react@19.2.8)
-      '@hanzogui/constants': 8.0.0(react@19.2.8)
-      '@hanzogui/core': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/create-context': 8.0.0(react@19.2.8)
-      '@hanzogui/dismissable': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/helpers': 8.0.0(react@19.2.8)
-      '@hanzogui/native': 8.0.0(react@19.2.8)
-      '@hanzogui/polyfill-dev': 8.0.0
-      '@hanzogui/portal': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/stacks': 8.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/start-transition': 8.0.0(react@19.2.8)
-      '@hanzogui/text': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@hanzogui/use-controllable-state': 8.0.0(react@19.2.8)
-      '@hanzogui/visually-hidden': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      react: 19.2.8
-    transitivePeerDependencies:
-      - react-dom
 
   '@hanzogui/toast@8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
@@ -9536,26 +9305,12 @@ snapshots:
     dependencies:
       react: 19.2.8
 
-  '@hanzogui/use-callback-ref@8.0.0(react@19.2.8)':
-    dependencies:
-      react: 19.2.8
-
   '@hanzogui/use-callback-ref@8.1.0(react@19.2.8)':
-    dependencies:
-      react: 19.2.8
-
-  '@hanzogui/use-constant@8.0.0(react@19.2.8)':
     dependencies:
       react: 19.2.8
 
   '@hanzogui/use-constant@8.1.0(react@19.2.8)':
     dependencies:
-      react: 19.2.8
-
-  '@hanzogui/use-controllable-state@8.0.0(react@19.2.8)':
-    dependencies:
-      '@hanzogui/start-transition': 8.0.0(react@19.2.8)
-      '@hanzogui/use-event': 8.0.0(react@19.2.8)
       react: 19.2.8
 
   '@hanzogui/use-controllable-state@8.1.0(react@19.2.8)':
@@ -9590,11 +9345,6 @@ snapshots:
     dependencies:
       '@hanzogui/constants': 8.1.0(react@19.2.8)
       '@hanzogui/is-equal-shallow': 8.1.0(react@19.2.8)
-      react: 19.2.8
-
-  '@hanzogui/use-escape-keydown@8.0.0(react@19.2.8)':
-    dependencies:
-      '@hanzogui/use-callback-ref': 8.0.0(react@19.2.8)
       react: 19.2.8
 
   '@hanzogui/use-escape-keydown@8.1.0(react@19.2.8)':
@@ -9645,13 +9395,6 @@ snapshots:
       '@hanzogui/constants': 8.1.0(react@19.2.8)
       react: 19.2.8
 
-  '@hanzogui/visually-hidden@8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
-    dependencies:
-      '@hanzogui/web': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      react: 19.2.8
-    transitivePeerDependencies:
-      - react-dom
-
   '@hanzogui/visually-hidden@8.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@hanzogui/web': 8.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -9674,10 +9417,6 @@ snapshots:
       '@hanzogui/use-force-update': 8.0.0(react@19.2.8)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
-
-  '@hanzogui/z-index-stack@8.0.0(react@19.2.8)':
-    dependencies:
-      react: 19.2.8
 
   '@hanzogui/z-index-stack@8.1.0(react@19.2.8)':
     dependencies:

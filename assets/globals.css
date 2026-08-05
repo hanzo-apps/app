@@ -1112,31 +1112,14 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
    is gone rather than duplicated, because two copies of a material is how the
    surfaces that wear it stop matching.
 
-   Two tokens have to be restated here, and it is a COLLISION, not a preference.
-   The ladder reads `var(--shadow-sm, …)` and `var(--shadow-lg, …)`, whose own
-   fallbacks are the values we want. But those names are generic enough that
-   `@hanzo/brand` — loaded one line earlier in `app/layout.tsx` — also declares
-   them, as the stock light-canvas values (0.05 and 0.1 alpha). A declared
-   variable beats a fallback, so brand won and rungs 1 and 2 lost their cast
-   shadow: measured 0.4 → 0.05 and 0.55 → 0.1, which on a #080808 page is no
-   shadow at all. The ladder still had its lit edge, so it did not vanish — it
-   went FLAT, all three rungs reading alike, which is the one thing a ladder
-   may not do.
-
-   The values below are the package's own fallbacks, which are @hanzo/design's
-   values. Delete this block the moment `@hanzo/ui/glass.css` stops reaching for
-   names it does not own (hanzoai/ui — namespace the shadow tokens); nothing
-   else here should be kept. --edge-highlight and --shadow-floating collide with
-   nothing and are deliberately left to the package.
-
-   `html:root`, not `:root`, for the reason the typography block below already
-   documents: Next emits brand as its own chunk AFTER this sheet, so an
-   equal-specificity override loses on source order. Measured — the first
-   attempt used `:root` and changed nothing. */
-html:root {
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.55), 0 4px 6px -4px rgb(0 0 0 / 0.55);
-}
+   Nothing about the ladder is restated here any more. It used to be: the rungs
+   read `var(--shadow-sm, …)` / `var(--shadow-lg, …)`, and `@hanzo/brand` —
+   loaded one line earlier in `app/layout.tsx` — declares those same generic
+   names at stock light-canvas values, so brand won on source order and rungs 1
+   and 2 lost their cast shadow on a #080808 page. This sheet restated the two
+   tokens to win them back. @hanzo/ui 8.0.52 gave the ladder names of its own
+   (--glass-shadow-1/2/3, declared by glass.css for both themes), so there is
+   nothing left to collide over and the override is gone. */
 
 /* Stretched link — the whole positioned ancestor becomes the anchor's hit
    area (catalog cards). */

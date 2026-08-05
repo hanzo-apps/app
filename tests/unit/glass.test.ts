@@ -47,8 +47,8 @@ const rel = (f: string) => f.replace(repoRoot + "/", "");
 const offendersOf = (re: RegExp) =>
   files.filter((f) => re.test(readFileSync(f, "utf8"))).map(rel);
 
-// The app's own sheet. It no longer holds the material — only the two tokens
-// that have to outrank @hanzo/brand — so it is asserted on for exactly that.
+// The app's own sheet. It holds neither the material nor any part of the ladder
+// now, so it is asserted on for what must NOT be here.
 const appCss = readFileSync(join(repoRoot, "assets", "globals.css"), "utf8");
 
 // The material itself. It moved to `@hanzo/ui/glass.css`, so the law is asserted
@@ -159,7 +159,7 @@ describe("Depth is a ladder, and it has three rungs", () => {
       const rule = pkgCss.slice(pkgCss.indexOf(`.elevation-${level}`));
       const body = rule.slice(0, rule.indexOf("}"));
       expect(body).toContain("--edge-highlight");
-      expect(body).toMatch(/--shadow-(sm|lg|floating)/);
+      expect(body).toContain(`--glass-shadow-${level}`);
     }
   });
 
@@ -170,22 +170,19 @@ describe("Depth is a ladder, and it has three rungs", () => {
     expect(Number("0." + sheen![1])).toBeGreaterThan(0.06);
   });
 
-  it("the ladder's cast shadows outrank @hanzo/brand's light-canvas ones", () => {
-    // The ladder reads --shadow-sm/--shadow-lg, and @hanzo/brand declares both
-    // at the stock 0.05/0.1 for a WHITE page. Next emits brand after this app's
-    // sheet, so a plain `:root` override loses on source order and the ladder
-    // goes flat — measured, in a browser, at 0.4 → 0.05 and 0.55 → 0.1.
+  it("the ladder's cast shadows are out of @hanzo/brand's reach", () => {
+    // The rungs used to read --shadow-sm/--shadow-lg, which @hanzo/brand also
+    // declares, at the stock 0.05/0.1 for a WHITE page. Next emits brand after
+    // this app's sheet, so brand won on source order and the ladder went flat —
+    // measured, in a browser, at 0.4 → 0.05 and 0.55 → 0.1. This app answered by
+    // restating both tokens at `html:root`, which worked and left the real
+    // defect in place: a package reading names anyone may declare.
     //
-    // Two things have to hold, and each failed once: the override exists, and
-    // it is anchored high enough to win.
-    // Anchored on the declaration, not on the first `html:root` in the file —
-    // the typography block is also anchored that way and comes first.
-    const at = appCss.indexOf("--shadow-sm:");
-    expect(at).toBeGreaterThan(-1);
-    const block = appCss.slice(at - 300, at + 300);
-    expect(block).toContain("html:root");
-    expect(block).toMatch(/--shadow-sm:\s*0 1px 2px 0 rgb\(0 0 0 \/ 0\.4\)/);
-    expect(block).toMatch(/--shadow-lg:.*rgb\(0 0 0 \/ 0\.55\)/);
+    // @hanzo/ui 8.0.52 gave the ladder names of its own and declares them, so
+    // there is nothing left to collide over. Both halves are asserted, because
+    // the override is only safe to be missing while the package owns the names.
+    for (const rung of ["1", "2", "3"]) expect(pkgCss).toMatch(new RegExp(`--glass-shadow-${rung}:\\s*\\S`));
+    expect(appCss).not.toMatch(/^\s*--shadow-(sm|md|lg|xl|2xl)?:/m);
   });
 
   it("glass offers no level 1 — a floating thing is never at rest", () => {
