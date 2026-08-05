@@ -6,6 +6,7 @@
 // repo's `minimatch: ">=3.1.4"` pnpm override forces exactly that version, so
 // `pnpm lint` crashed before it reached a single file. One less dependency, and
 // a flat config has no use for a legacy-config bridge anyway.
+//
 // eslint stays on 9.x, and that is the ecosystem's ceiling, not ours: eslint 10
 // removed the deprecated `context.getFilename()`, and three of the five plugins
 // `eslint-config-next` pulls in still call it or still cap their peer range at
