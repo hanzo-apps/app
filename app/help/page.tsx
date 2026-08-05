@@ -45,7 +45,7 @@ const channels: Channel[] = [
     title: "Community",
     description:
       "Join the Hanzo Discord to ask questions, share what you built, and talk to other builders.",
-    href: "https://discord.gg/hanzoai",
+    href: "https://discord.gg/XthHQQj",
     external: true,
     cta: "Open Discord",
   },

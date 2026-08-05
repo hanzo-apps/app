@@ -31,7 +31,7 @@ Topics covered:
 Resources:
 - Documentation: https://hanzo.ai/docs
 - GitHub: https://github.com/hanzoai/ui
-- Discord: https://discord.gg/hanzoai
+- Discord: https://discord.gg/XthHQQj
 
 Timestamps:
 00:00 Introduction
