@@ -64,9 +64,9 @@ that IS typed may not behave the way the DOM one does:
 
 ### The gui 8 line: two things moved, and only one is visible
 
-`@hanzo/gui` 7.3.1 → 8.0.1 changed no export this app touches — the barrel and
-the `GuiProvider` props are API-identical. Two packaging facts did change, and
-both are landmines:
+`@hanzo/gui` 7.3.1 → 8.0.1 changed no export this app touches — the barrel, the
+`GuiProvider` props, `@hanzogui/shell` and `@hanzogui/telemetry` are all
+API-identical. Two packaging facts did change, and both are landmines:
 
 - **gui no longer depends on `react-native-web`.** 7.3.1 declared
   `react-native-web: ^0.21.0`; 8.0.1 declares none, while ~44 of its own dist
@@ -99,17 +99,6 @@ build on them yet.
 `@hanzogui/loader` (the renamed `hanzogui-loader`) is the webpack loader for the
 gui optimizing compiler, consumed only by `@hanzogui/next-plugin`. This app uses
 neither — plain `transpilePackages` — so it is not a dependency here.
-
-**Three `@hanzogui/*` pins sit in `dependencies`, and no file imports any of
-them.** Only one has to be there: `@hanzogui/config` is a PEER of `@hanzo/ui`,
-so the app is the one that must satisfy it, and it is reached through
-`@hanzo/ui/gui-config`. `@hanzogui/telemetry` is a plain dependency of
-`@hanzo/ui` and would install without being named here. `@hanzogui/shell` has
-neither excuse — nothing in the tree depends on it and nothing imports it, so
-bumping it moves bytes on disk and changes no rendered pixel. The shell's
-product list does reach this app, but as `SURFACES` in `@hanzo/ui`, which is a
-collapse of the shell's `HANZO_APPS` — a copy, not a link. Either wire the
-shell in or drop the pin; it is currently doing neither.
 
 That last rule has teeth: `@types/hanzo-ui.d.ts` used to declare every export as
 `any`. "Zero type errors" then meant no types existed to check. Deleting it
