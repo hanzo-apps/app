@@ -24,7 +24,13 @@ const eslintConfig = [
   // `.claude/**` holds nested git worktrees with their own node_modules and
   // their own (legacy) eslint configs — lint each checkout from its own root,
   // never through this one.
-  { ignores: ['.next/**', 'public/**', 'coverage/**', '.claude/**'] },
+  //
+  // `.hanzogui/**` is the gui toolchain's generated component manifest — ~7 MB
+  // of bundled output, gitignored and untracked, in the same category as
+  // `.next/**`. Linting it reported 622 problems (128 of them errors) about
+  // code nobody wrote and nobody can edit: every `react-hooks/rules-of-hooks`
+  // hit in the repo was a bundler artifact in these five files.
+  { ignores: ['.next/**', 'public/**', 'coverage/**', '.claude/**', '.hanzogui/**'] },
   ...nextCoreWebVitals,
   ...nextTypescript,
   {
