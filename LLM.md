@@ -273,10 +273,25 @@ load-bearing: `:is(a, button, …):focus-visible` is (0,2,0), a dead tie with
 every atomic class gui compiles, decided by load order, and `gui.css` is
 imported last. gui therefore won, and the way each author silenced gui's own
 outline was `focusVisibleStyle={{ outlineWidth: 0 }}` on the element — which
-does not restore the rule, it deletes the indicator. That reached 37 controls,
+does not restore the rule, it deletes the indicator. That reached 37 call sites,
 eleven in the builder chrome. **Never write that prop.** If a control rings
 wrongly, the answer is in globals.css or in `@hanzo/ui`'s gui theme, never at
 the call site.
+
+Measured by tabbing every focusable control on `/` — live production before,
+local build after:
+
+| indicator | before | after |
+|---|---:|---:|
+| a real ring (`2px`, `--focus-ring` or the old opaque `--ring`) | 23 | 83 |
+| `0px` — the rule's colour resolved, its width suppressed | 56 | 0 |
+| `2px rgba(69,69,69,.6)` — present, ~1.4:1, invisible | 11 | 0 |
+| the box rings instead (`[data-field-box]`) | 0 | 2 |
+| **controls with no visible indicator** | **67 of 90** | **0 of 85** |
+
+(The commit that landed this said "48 of 85" for the before column. That number
+was never measured — the real one is 23 of 90, above. The counts differ by five
+because the landing page gained controls between the two measurements.)
 
 ### Work items live in the cloud tracker, and "task" is the wrong word
 
