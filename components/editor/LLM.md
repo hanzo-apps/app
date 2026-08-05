@@ -55,7 +55,7 @@ files), so the register + tokens are staged in the app's ONE CSS token layer
 first in `app/layout.tsx`). Canonical v2 tokens:
 - Accent (the ONE — purple): `--hanzo-accent #8b5cf6` / hover `#7c3aed` / muted
   `#a78bfa` / soft `rgba(139,92,246,.12)`. Purple = links/active/focus/selection
-  ONLY. **Primary action stays WHITE** (monochrome) — never purple.
+  ONLY. **Primary action is the macOS pushbutton** ($color5 fill, $color6 hairline, white label — lib/chrome.ts `accent`) — never a white slab, never purple.
 - Layered blacks (no gray panels): `--surface-0 #080808` (bg) / `-1 #0d0d0d`
   (panels) / `-2 #111` (raised) / `-3 #171717` (controls/hover).
 - Hairline border `--border-hairline rgba(255,255,255,.06)`.
