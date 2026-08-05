@@ -61,7 +61,7 @@ function overrideKey(name: string): string {
 
 /**
  * The user's client-side emoji override for org `name`, or '' when unset.
- * A stopgap the OrgSwitcher writes and OrgAvatar reads FIRST, so a user can set
+ * A stopgap the org settings page writes and `display` reads FIRST, so a user can set
  * "their org emoji" today — retired once `/v1/orgs` carries a real `logo`.
  * `name` may be the slug or the (title-cased) display name — they normalize to
  * the same key (`orgDisplayName` is exactly `titleCase(slug)`).

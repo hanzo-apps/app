@@ -28,7 +28,7 @@ import {
 import { ImportGitPanel } from "@/components/import-git-panel";
 import { useUser } from "@/hooks/useUser";
 import { OrgProvider } from "@/lib/org/client";
-import { OrgGate } from "@/components/org-switcher";
+import { OrgGate } from "@/components/org-gate";
 import { isGitUrl, gitUrlGateMessage } from "@/lib/git/url";
 import { useProjectImport } from "@/lib/import/use-project-import";
 import { Spinner } from "@/components/ui/spinner";

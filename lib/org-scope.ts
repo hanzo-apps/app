@@ -13,6 +13,8 @@
  * admin — a normal user is pinned to their home org).
  */
 
+import { resolveOrgLogo } from '@/lib/avatar';
+
 const KEY = 'hanzo.app.org';
 
 /** The user's home org (`orgs[0].org`), seeded from /v1/orgs. Module-level default. */
@@ -100,3 +102,61 @@ export function orgDisplayName(
 ): string {
   return id ? titleCase(id) : '';
 }
+
+/**
+ * An org as the CHROME shows it — the one place the app's org row is turned
+ * into the value `OrgSwitcher` and `OrgMark` read.
+ *
+ * It exists to enforce two rules the package cannot know:
+ *
+ *  - the label is the title-cased SLUG, never the server's `displayName`. The
+ *    cloud fills that field from the signed-in *user's* display-name claim, so
+ *    handing the row through untouched paints a person's name where an org's
+ *    belongs. `OrgMark` reads `displayName || name` and `OrgSwitcher` reads it
+ *    for every row, so the rule has to hold HERE or it holds nowhere.
+ *  - the logo is `resolveOrgLogo`'s answer, which layers the user's local emoji
+ *    override and the known defaults over whatever `/v1/orgs` supplied — IAM
+ *    does not carry the field yet, and the override is how a workspace gets a
+ *    mark today.
+ */
+export function display(org: { name: string; logo?: string }): {
+  name: string;
+  displayName: string;
+  logo?: string;
+} {
+  return {
+    name: org.name,
+    displayName: titleCase(org.name),
+    logo: resolveOrgLogo(org.name, org.logo),
+  };
+}
+
+/**
+ * The active-org contract `@hanzo/ui`'s `OrgSwitcher` reads, bound to this app's
+ * scope.
+ *
+ * It is an object over the functions above rather than a call to the package's
+ * `orgScope` factory, and the reason is timing: the factory fixes `brandOrg` at
+ * construction, while hanzo.app's default scope is the signed-in user's HOME org
+ * — which arrives LATE, from `/v1/orgs`, via `setHomeOrg`. Reading through these
+ * functions defers every answer to call time, so the switcher is correct on the
+ * first paint after the session resolves instead of pinned to whatever was known
+ * when the module loaded.
+ */
+export const scope = {
+  currentOrg,
+  setCurrentOrg,
+  isScopedAway,
+  switchOrg,
+  /** A scope resolves as soon as a home org is seeded; this app has no picker. */
+  hasSelectedOrg: (): boolean => Boolean(currentOrg()),
+  enterOrg(org: string): void {
+    setCurrentOrg(org);
+    if (typeof window !== 'undefined') window.location.assign('/');
+  },
+  /** Back to the home org — the de-scope this app can honestly offer. */
+  leaveOrg(): void {
+    setCurrentOrg('');
+    if (typeof window !== 'undefined') window.location.assign('/');
+  },
+};

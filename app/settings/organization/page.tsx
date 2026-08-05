@@ -4,7 +4,7 @@ import { LoadingScreen } from "@/components/ui/loading-screen";
 /**
  * Organization settings — the proper home for the org's identity mark (moved
  * OUT of the OrgSwitcher dropdown, which stays a switcher). Shows the current
- * org and an emoji picker that live-previews via <OrgAvatar> and persists via
+ * org and an emoji picker that live-previews via <OrgMark> and persists via
  * the shared `lib/avatar` override (localStorage) until IAM carries a real org
  * `logo` through `/v1/orgs`. Monochrome; matches the dashboard chrome.
  */
@@ -15,9 +15,9 @@ import { useRouter } from "next/navigation";
 
 import { AppShell } from "@/components/app-shell";
 import { panel } from "@/lib/chrome";
-import { OrgAvatar } from "@/components/org-switcher";
+import { OrgMark } from "@hanzo/ui/product";
 import { useOrg } from "@/lib/org/client";
-import { currentOrg, orgDisplayName } from "@/lib/org-scope";
+import { currentOrg, display, orgDisplayName } from "@/lib/org-scope";
 import { readOrgLogoOverride, setOrgLogoOverride, isEmoji } from "@/lib/avatar";
 import { useUser } from "@/hooks/useUser";
 import { Spinner } from "@/components/ui/spinner";
@@ -33,7 +33,7 @@ function OrganizationSettingsInner() {
   const serverLogo = org?.logo;
 
   // The client-side emoji override (localStorage) — the value of the picker.
-  // Seeded from storage when the scope changes; OrgAvatar reads the same
+  // Seeded from storage when the scope changes; OrgMark reads the same
   // override FIRST, so the preview updates the moment a valid emoji is set.
   const [emoji, setEmoji] = useState("");
   useEffect(() => setEmoji(readOrgLogoOverride(currentId)), [currentId]);
@@ -50,7 +50,7 @@ function OrganizationSettingsInner() {
         <YStack {...panel} padding="$5">
           {/* Current org — avatar live-previews the picked emoji. */}
           <XStack alignItems="center" gap="$4">
-            <OrgAvatar name={name} logo={serverLogo} size={48} />
+            <OrgMark org={display({ name: currentId, logo: serverLogo })} size={48} />
             <YStack minWidth={0}>
               <SizableText numberOfLines={1} fontWeight="500" color="$color">{name}</SizableText>
               {currentId && (

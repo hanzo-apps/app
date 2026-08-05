@@ -1,347 +1,97 @@
 'use client';
 
 /**
- * OrgSwitcher + OrgGate — this app's render of the shared org-switcher contract.
- * The CANONICAL component is `OrgSwitcher` in `@hanzo/ui@8` (`@hanzo/gui`-based,
- * hoisted per hanzoai/ui#36); this stays a LOCAL render (recorded
- * debt) because the
- * identity bar needs `direction="up"` + the personal badge/settings affordances
- * the hoisted popover doesn't carry. The LOGIC (`lib/org-scope.ts`) matches the
- * hoisted `orgScope` contract.
+ * The org selector for the builder/dashboard chrome — `OrgSwitcher` from
+ * `@hanzo/ui/product`, given this app's scope, list and create hook.
  *
- * OrgSwitcher: shows the org the builder is scoped to, filters the orgs the user
- * can see, switches IN PLACE (`switchOrg` persists + reloads so every module
- * refetches under the new X-Org-Id), and CREATEs a new org (→ `/onboard`). The org
- * list comes from `/v1/orgs` (a normal user sees their own org; a global admin
- * sees the switchable set) — never fabricated.
+ * This file used to BE the switcher: a hand-rolled popover kept local for two
+ * capabilities the hoisted one lacked — a panel that opens UPWARD (it sits in the
+ * bottom identity bar, where a downward panel opens off the viewport) and rows of
+ * its own below the list. Both now exist upstream as `direction` and `footer`, so
+ * the reason to keep a copy is gone and what is left here is the binding: which
+ * orgs, named how, and what creating one does.
  *
- * OrgGate: a zero-org user is sent to onboarding (personal workspace default)
- * BEFORE building — a project is never created org-less; and a normal user is
- * hard-pinned to their home org (a stale switched scope is reset), matching the
- * server which pins them to their bearer owner.
+ * The list is already in hand — `/v1/orgs` returns the whole set the user may act
+ * in (one row for a normal user, the tenant list for a global admin) — so the
+ * pager below pages an array rather than the server. That is the honest shape for
+ * this app: the loader contract exists so a surface with thousands of orgs can
+ * ask for them a page at a time, and hanzo.app is not that surface.
  */
-import { Image, SizableText, YStack, Paragraph, XStack, H1 } from '@hanzo/gui';
-import { glass } from "@/lib/chrome";
-import React, { useEffect, useMemo, useState } from 'react';
+import { XStack, SizableText, YStack } from '@hanzo/gui';
 import Link from 'next/link';
-import { Building2, Check, ChevronsUpDown, Plus, Search, Settings, Sparkles } from 'lucide-react';
-import { Button, Input } from '@hanzo/ui';
+import { Settings } from 'lucide-react';
+import { OrgSwitcher as Switcher, type Org as Shown } from '@hanzo/ui/product';
 
 import { useOrg } from '@/lib/org/client';
-import { currentOrg, switchOrg, filterOrgs, isScopedAway, setCurrentOrg, getHomeOrg, orgDisplayName, titleCase } from '@/lib/org-scope';
-import type { Org } from '@/lib/org/types';
-import { resolveOrgLogo, isEmoji, isImageUrl } from '@/lib/avatar';
-import { Spinner } from '@/components/ui/spinner';
+import { currentOrg, display, filterOrgs, scope, titleCase } from '@/lib/org-scope';
 
-/**
- * The org's identity mark for the chrome. Renders, in priority (see
- * `resolveOrgLogo`): (a) an image if the resolved logo is a URL; (b) an emoji if
- * it's a short emoji string (full color — monochrome-safe); (c) the org's
- * initial in a neutral rounded square. `logo` is the server-supplied mark (from
- * `/v1/orgs`); a client-side override / known-default is layered on top of it.
- * ONE avatar, reused by the switcher AND the account menu.
- */
-export function OrgAvatar({
-  name,
-  logo,
-  size = 20,
-}: {
-  name: string;
-  logo?: string;
-  /** Square box in px; the initial scales with it. */
-  size?: number;
-}) {
-  const box = { width: size, height: size, fontSize: Math.round(size * 0.55) } as const;
-  const resolved = resolveOrgLogo(name, logo);
-  const [imgError, setImgError] = useState(false);
-  // Reset the image-failed flag when the mark changes (list rows reuse instances).
-  useEffect(() => setImgError(false), [resolved]);
+/** Rows per page — the whole list arrives at once, so this only bounds a page. */
+const PAGE = 20;
 
-  // (a) image logo — a rounded, cover-fit <img>; on load failure fall through.
-  if (resolved && isImageUrl(resolved) && !imgError) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element -- arbitrary remote org logo, not a bundled asset
-      <Image
-        src={resolved}
-        alt=""
-        aria-hidden={true}
-        onError={() => setImgError(true)}
-        flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" objectFit="cover" width={box.width} height={box.height}
-  />
-    );
-  }
-  // (b) emoji logo — centered + a touch larger, in full color. The glyph carries
-  //     the color; the box stays borderless here (inline size beats the class).
-  if (resolved && isEmoji(resolved)) {
-    return (
-      <XStack
-        flexShrink={0} alignItems="center" justifyContent="center" width={box.width} height={box.height}
-        aria-hidden={true}
-      >
-        <SizableText lineHeight="1" style={{ fontSize: "1.05rem" }}>{resolved}</SizableText>
-      </XStack>
-    );
-  }
-  // (c) fallback — the org's initial in a neutral rounded square (monochrome).
-  const initial = (name || "").trim().charAt(0).toUpperCase() || "•";
-  return (
-    <XStack
-      flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" width={box.width} height={box.height}
-      aria-hidden={true}
-    >
-      <SizableText fontWeight="600" color="$color" fontSize={box.fontSize}>{initial}</SizableText>
-    </XStack>
-  );
-}
-
-/** The org selector for the builder/dashboard chrome. */
-export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" } = {}) {
+export function OrgSwitcher({ direction = 'down' }: { direction?: 'up' | 'down' } = {}) {
   const { ctx, loading, createOrg } = useOrg();
-  const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState('');
-  const [creating, setCreating] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
 
   const currentId = currentOrg() || ctx?.currentOrg || '';
 
-  // Always include the current org so the switcher is meaningful even when the
-  // list is a single entry (a normal user). Same shape as console2.
-  const allOrgs = useMemo<Org[]>(() => {
-    const orgs = ctx?.orgs ?? [];
-    if (currentId && !orgs.some((o) => o.name === currentId)) {
-      return [{ name: currentId, displayName: titleCase(currentId), isPersonal: false }, ...orgs];
-    }
-    return orgs;
-  }, [ctx, currentId]);
-
-  const currentName = orgDisplayName(allOrgs, currentId) || '…';
-  const currentLogo = allOrgs.find((o) => o.name === currentId)?.logo;
-  const filtered = useMemo(() => filterOrgs(allOrgs, query), [allOrgs, query]);
-
-  const select = (org: Org) => {
-    setOpen(false);
-    switchOrg(org.name); // persists + reloads
-  };
-
-  const create = async () => {
-    const name = newName.trim();
-    if (!name) return;
-    setBusy(true);
-    setErr(null);
-    try {
-      // createOrg switches into an additional org (or re-auths a zero-org user).
-      await createOrg({ name });
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : 'Could not create the organization.');
-      setBusy(false);
-    }
-  };
-
   if (loading) {
     return (
-      <XStack alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5">
-        <Building2 size={16} />
-        <SizableText display="none" $sm={{ display: "inline" }} fontSize="$3" color="$color11">…</SizableText>
+      <XStack alignItems="center" gap="$2" height={44} paddingHorizontal="$2">
+        <SizableText fontSize="$3" color="$color11">…</SizableText>
       </XStack>
     );
   }
   if (!ctx) return null; // signed out — no org chrome
 
-  return (
-    <YStack position="relative">
-      <Button
-        onClick={() => setOpen((o) => !o)}
-        variant="outline"
-        alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color3" }}
-        title="Active organization"
-      >
-        <OrgAvatar name={currentName} logo={currentLogo} />
-        <SizableText maxWidth="7.5rem" numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{currentName}</SizableText>
-        {isScopedAway() && <SizableText borderRadius="$2" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$1" fontSize={10} color="$color11">scoped</SizableText>}
-        <ChevronsUpDown size={14} />
-      </Button>
+  // Always include the org the surface is scoped to, so the switcher names the
+  // right workspace even when the list has not resolved it.
+  const rows =
+    !currentId || ctx.orgs.some((o) => o.name === currentId)
+      ? ctx.orgs
+      : [{ name: currentId, displayName: titleCase(currentId), isPersonal: false }, ...ctx.orgs];
 
-      {open && (
-        <>
-          <YStack position="fixed" top={0} right={0} bottom={0} left={0} zIndex={40} onClick={() => setOpen(false)} />
-          <YStack
-            {...glass(2)} position="absolute" left="$0" zIndex={50} width={288} borderRadius="$6" borderWidth={1} padding="$2" {...{ bottom: direction === "up" ? "100%" : undefined, marginBottom: direction === "up" ? "$2" : undefined, marginTop: direction === "up" ? undefined : "$2" }}
-          >
-            {creating ? (
-              <YStack rowGap="$2">
-                <Paragraph fontSize="$3" fontWeight="500" color="$color">Create organization</Paragraph>
-                <Input
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value.slice(0, 60))}
-                  placeholder="Organization name"
-                  width="100%" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="transparent" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$3" outlineWidth={0} focusStyle={{ borderColor: "$color8" }}
-                  onKeyDown={(e) => e.key === 'Enter' && void create()}
-                  disabled={busy}
-  />
-                {err && <Paragraph fontSize="$1" color="$red8">{err}</Paragraph>}
-                <XStack justifyContent="flex-end" gap="$2">
-                  <Button size="sm" variant="ghost" onClick={() => { setCreating(false); setErr(null); }} disabled={busy}>
-                    Cancel
-                  </Button>
-                  <Button size="sm" onClick={() => void create()} disabled={busy || !newName.trim()}>
-                    {busy ? <Spinner size={16} /> : 'Create'}
-                  </Button>
-                </XStack>
-              </YStack>
-            ) : (
-              <YStack rowGap="$1">
-                <XStack alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$1">
-                  <Search size={14} />
-                  <Input
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Filter organizations…"
-                    flex={1} backgroundColor="transparent" fontSize="$3" borderWidth={0} outlineWidth={0} placeholderTextColor="$color11"
-  />
-                </XStack>
-                <Paragraph paddingHorizontal="$2" paddingVertical="$1" fontSize={10} fontWeight="500" letterSpacing={0.4} color="$color11">
-                  Organizations · {allOrgs.length}
-                </Paragraph>
-                <YStack maxHeight={256} overflow="scroll">
-                  {filtered.length === 0 ? (
-                    <Paragraph paddingHorizontal="$2" paddingVertical="$2" fontSize="$3" color="$color11">No organizations match &quot;{query}&quot;.</Paragraph>
-                  ) : (
-                    filtered.map((org) => {
-                      const isCurrent = org.name === currentId;
-                      return (
-                        <Button
-                          key={org.name}
-                          onClick={() => select(org)}
-                          variant="ghost"
-                          width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$2" {...{ backgroundColor: isCurrent ? "$color3" : undefined }}
-                        >
-                          <OrgAvatar name={orgDisplayName(allOrgs, org.name)} logo={org.logo} />
-                          <SizableText flex={1} numberOfLines={1} textAlign="left" fontSize="$3" color="$color">
-                            {orgDisplayName(allOrgs, org.name)}
-                          </SizableText>
-                          {org.isPersonal && (
-                            <SizableText borderRadius="$2" backgroundColor="$color3" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} color="$color11">personal</SizableText>
-                          )}
-                          {isCurrent && <Check size={16} />}
-                        </Button>
-                      );
-                    })
-                  )}
-                </YStack>
-                {/* The org's avatar/emoji picker lives on its own settings page
-                    now (the switcher stays a switcher). */}
-                <Link
-                  href="/settings/organization"
-                  onClick={() => setOpen(false)}
-                ><XStack marginTop="$1" width="100%" alignItems="center" gap="$2" borderRadius="$3" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2" hoverStyle={{ backgroundColor: "$color3" }}>
-                  <Settings size={16} />
-                  <SizableText fontSize="$3" color="$color">Organization settings</SizableText>
-                  <SizableText marginLeft="auto" color="$color11">→</SizableText>
-                </XStack></Link>
-                <Button
-                  onClick={() => { setCreating(true); setErr(null); }}
-                  variant="ghost"
-                  marginTop="$1" width="100%" alignItems="center" gap="$2" borderRadius="$3" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2"
-                >
-                  <Plus size={16} />
-                  <SizableText fontSize="$3" color="$color">Create organization</SizableText>
-                </Button>
-              </YStack>
-            )}
-          </YStack>
-        </>
-      )}
-    </YStack>
-  );
-}
-
-/**
- * Gate that requires an org before rendering children. Mirrors console2's OrgGate:
- * a zero-org user gets onboarding; a signed-in user with an org proceeds, and a
- * stale switched scope is reset for a non-global-admin (they can only build in
- * their own org). While loading it renders a spinner; signed out → children.
- */
-export function OrgGate({ children }: { children: React.ReactNode }) {
-  const { ctx, loading } = useOrg();
-
-  // Hard-pin a non-global-admin to their home org (reset a stale switched scope),
-  // matching the server which pins them to their bearer owner. The reload is
-  // guarded on `currentOrg() !== owner`, so it never loops.
-  useEffect(() => {
-    if (!ctx || !ctx.homeOrg) return;
-    if (!ctx.isSuperAdmin && isScopedAway()) {
-      setCurrentOrg(ctx.homeOrg);
-      if (typeof window !== 'undefined' && currentOrg() !== getHomeOrg()) window.location.reload();
-    }
-  }, [ctx]);
-
-  if (loading) {
-    return (
-      <XStack alignItems="center" justifyContent="center" paddingVertical="$12">
-        <Spinner size={32} />
-      </XStack>
-    );
-  }
-
-  if (!ctx) return <>{children}</>; // signed out — caller's auth handles it
-  if (ctx.needsOnboarding) return <OnboardingPanel />;
-  return <>{children}</>;
-}
-
-/** First-run onboarding: create a personal org (personal billing) to start. */
-function OnboardingPanel() {
-  const { createOrg } = useOrg();
-  const [name, setName] = useState('');
-  const [busy, setBusy] = useState<'personal' | 'named' | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const run = async (opts: { name?: string; personal?: boolean }) => {
-    setBusy(opts.personal ? 'personal' : 'named');
-    setError(null);
-    try {
-      await createOrg(opts);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to create organization');
-      setBusy(null);
-    }
-  };
+  const current = ctx.orgs.find((o) => o.name === currentId);
 
   return (
-    <YStack alignSelf="center" maxWidth={448} paddingHorizontal="$4" paddingVertical="$10">
-      <XStack alignSelf="center" marginBottom="$5" height="$9" width="$9" alignItems="center" justifyContent="center" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
-        <Sparkles size={28} />
-      </XStack>
-      <H1 marginBottom="$2" fontSize="$8" fontWeight="500" textAlign="center">Set up your workspace</H1>
-      <Paragraph marginBottom="$6" fontSize="$3" color="$color11" textAlign="center">
-        Every project belongs to an organization — that&apos;s where it&apos;s billed and
-        shared. Start with a personal workspace, or name a team organization.
-      </Paragraph>
-
-      <Button width="100%" onClick={() => run({ personal: true })} disabled={busy !== null}>
-        {busy === 'personal' ? <Spinner size={16} /> : 'Continue with a personal workspace'}
-      </Button>
-
-      <SizableText marginVertical="$4" textAlign="center" fontSize="$1" letterSpacing={0.4} color="$color11">or</SizableText>
-
-      <Input
-        value={name}
-        onChange={(e) => setName(e.target.value.slice(0, 60))}
-        placeholder="Team organization name"
-        marginBottom="$2" width="100%" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="transparent" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" outlineWidth={0} focusStyle={{ borderColor: "$color8" }}
-        disabled={busy !== null}
-  />
-      <Button
-        variant="outline"
-        width="100%"
-        onClick={() => run({ name: name.trim() })}
-        disabled={busy !== null || name.trim().length < 2}
-      >
-        {busy === 'named' ? <Spinner size={16} /> : 'Create team organization'}
-      </Button>
-
-      {error && <Paragraph marginTop="$4" fontSize="$3" color="$red8" textAlign="center">{error}</Paragraph>}
-    </YStack>
+    <Switcher
+      scope={scope}
+      direction={direction}
+      current={currentId ? display({ name: currentId, logo: current?.logo }) : undefined}
+      orgs={async (page: number, query: string): Promise<Shown[]> =>
+        filterOrgs(rows, query)
+          .slice(page * PAGE, (page + 1) * PAGE)
+          .map(display)
+      }
+      pageSize={PAGE}
+      // `createOrg` already lands the user in the new org — it re-auths a
+      // zero-org user (their JWT `owner` changed) or scopes into an additional
+      // one. Handing back the org we are now in makes the switcher's own
+      // follow-up switch a no-op rather than a second navigation.
+      create={async (name: string) => {
+        await createOrg({ name });
+        return currentOrg();
+      }}
+      footer={
+        <YStack>
+          {current?.isPersonal && (
+            <SizableText paddingHorizontal="$2" paddingVertical="$1" fontSize={10} color="$color11">
+              Personal workspace
+            </SizableText>
+          )}
+          {/* The org's mark and emoji picker live on their own settings page —
+              the switcher stays a switcher. */}
+          <Link href="/settings/organization">
+            <XStack
+              marginTop="$1" width="100%" alignItems="center" gap="$2" borderRadius="$3"
+              borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2"
+              hoverStyle={{ backgroundColor: '$color3' }}
+            >
+              <Settings size={16} />
+              <SizableText fontSize="$3" color="$color">Organization settings</SizableText>
+              <SizableText marginLeft="auto" color="$color11">→</SizableText>
+            </XStack>
+          </Link>
+        </YStack>
+      }
+    />
   );
 }

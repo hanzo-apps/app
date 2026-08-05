@@ -35,7 +35,7 @@ async function getOrgContext(): Promise<OrgContext | null> {
   if (!res.ok) throw new Error(`Failed to load orgs (${res.status})`);
   const raw = (await res.json()) as OrgContext & { orgs?: RawOrg[] };
   // Reshape each row defensively: carry a server-supplied logo through under one
-  // name (`logo`/`icon`/`avatar` — IAM hasn't settled it), so OrgAvatar renders
+  // name (`logo`/`icon`/`avatar` — IAM hasn't settled it), so OrgMark renders
   // real identity when present. Absent → undefined (avatar falls back to an
   // override / known-default / initial). Never fabricated.
   const orgs: Org[] = (raw.orgs ?? []).map((o: RawOrg) => ({

@@ -41,8 +41,8 @@ import {
 
 import { useUser } from "@/hooks/useUser";
 import { useOrg } from "@/lib/org/client";
-import { currentOrg, orgDisplayName, switchOrg } from "@/lib/org-scope";
-import { OrgAvatar } from "@/components/org-switcher";
+import { currentOrg, display, orgDisplayName, switchOrg } from "@/lib/org-scope";
+import { OrgMark } from "@hanzo/ui/product";
 import { gravatarUrl } from "@/lib/avatar";
 import { useCloudBalance, spendableCents } from "@/lib/billing/live-balance";
 import { updateProject } from "@/lib/api/projects";
@@ -182,7 +182,7 @@ export function WorkspaceMenu({
             title="Workspace"
             minWidth={0} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$color02", backgroundColor: "$color3" }}
           >
-            <OrgAvatar name={orgName} logo={activeOrg?.logo} />
+            <OrgMark org={display({ name: orgId, logo: activeOrg?.logo })} size={20} />
             <SizableText maxWidth="9rem" numberOfLines={1} fontWeight="500" color="$color">
               {projectName}
             </SizableText>
@@ -227,7 +227,7 @@ export function WorkspaceMenu({
           {canSwitch ? (
             <DropdownMenuSub>
               <DropdownMenuSubTrigger display="flex" alignItems="center" gap="$2.5" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" focusStyle={{ backgroundColor: "$color3" }}>
-                <OrgAvatar name={orgName} logo={activeOrg?.logo} size={28} />
+                <OrgMark org={display({ name: orgId, logo: activeOrg?.logo })} size={28} />
                 <YStack minWidth={0} flex={1}>
                   <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{orgName}</SizableText>
                   <SizableText fontSize={11} color="$color11">Switch workspace</SizableText>
@@ -245,7 +245,7 @@ export function WorkspaceMenu({
                       onSelect={() => !isCurrent && switchOrg(o.name)}
                       cursor="pointer" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$2" focusStyle={{ backgroundColor: "$color3" }}
                     >
-                      <OrgAvatar name={orgDisplayName(orgs, o.name)} logo={o.logo} />
+                      <OrgMark org={display(o)} size={20} />
                       <SizableText minWidth={0} flex={1} numberOfLines={1} fontSize="$3" color="$color">{orgDisplayName(orgs, o.name)}</SizableText>
                       {isCurrent && <Check size={16} />}
                     </DropdownMenuItem>
@@ -255,7 +255,7 @@ export function WorkspaceMenu({
             </DropdownMenuSub>
           ) : (
             <XStack alignItems="center" gap="$2.5" paddingHorizontal="$2" paddingVertical="$1.5">
-              <OrgAvatar name={orgName} logo={activeOrg?.logo} size={28} />
+              <OrgMark org={display({ name: orgId, logo: activeOrg?.logo })} size={28} />
               <YStack minWidth={0} flex={1}>
                 <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{orgName}</SizableText>
                 <SizableText fontSize={11} color="$color11">Workspace</SizableText>
