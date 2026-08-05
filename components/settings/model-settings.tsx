@@ -6,7 +6,8 @@ import { configManager } from '@/lib/config/storage';
 import { validateApiKey as checkApiKey } from '@/lib/llm/llm-client';
 import { Button, Label, Switch, toast, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator } from '@hanzo/ui';
 import { SecretInput } from '@hanzo/ui/product';
-import { Check, X, ExternalLink, Loader2, Lightbulb } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
+import { Check, X, ExternalLink, Lightbulb } from 'lucide-react';
 import { ModelSelector } from '@/components/model-selector';
 import { useProviderModels } from '@/lib/hooks/use-provider-models';
 import { ProviderId } from '@/lib/llm/providers/types';
@@ -284,7 +285,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
               >
                 {validatingKey ? (
                   <>
-                    <Loader2 size={12} />
+                    <Spinner size={12} />
                     Connecting...
                   </>
                 ) : (

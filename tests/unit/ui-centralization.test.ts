@@ -297,19 +297,17 @@ describe("Full-screen states measure the screen", () => {
  * the motion, and therefore no way to forget it.
  */
 describe("Spinners spin", () => {
-  // NOT an exemption — a ratchet, in the shape TAILWIND_DEBT uses above. This
-  // file was held by another agent during the sweep. The two assertions let the
-  // set only SHRINK: a new raw loader fails because it is not listed, and
-  // converting this one fails until it is removed from here.
-  const RAW_LOADER_DEBT = ["components/settings/model-settings.tsx"];
-
   it("no raw lucide loader glyph — the motion comes with it", () => {
-    // The one home renders the arc; everywhere else asks the home for it.
-    const offenders = offendersOf(/<Loader(?:2|Circle)\b/).filter(
-      (f) => f !== "components/ui/spinner.tsx",
-    );
-    expect(offenders.filter((f) => !RAW_LOADER_DEBT.includes(f))).toEqual([]);
-    expect(RAW_LOADER_DEBT.filter((f) => !offenders.includes(f))).toEqual([]);
+    // The one home renders the arc; everywhere else asks the home for it. The
+    // RAW_LOADER_DEBT ratchet that used to sit here held exactly one file,
+    // components/settings/model-settings.tsx, whose API-key panel moved to
+    // SecretInput and whose Connecting… loader moved to Spinner in the same
+    // pass. The debt is paid, so the list is gone rather than kept at zero
+    // length — a shrink-only list that has finished shrinking is just a name
+    // for the empty set, and the assertion below already states the law.
+    expect(
+      offendersOf(/<Loader(?:2|Circle)\b/).filter((f) => f !== "components/ui/spinner.tsx"),
+    ).toEqual([]);
   });
 
   it("the one spinner is the one that carries `.spin`", () => {
@@ -319,6 +317,34 @@ describe("Spinners spin", () => {
     expect(offendersOf(/className=(?:"spin"|'spin'|\{'spin'\})/)).toEqual([
       "components/ui/spinner.tsx",
     ]);
+  });
+
+  /**
+   * The second mark, and why the home stays LOCAL.
+   *
+   * `@hanzo/gui` exports a `Spinner` too, and `components/loading` used it —
+   * so the app shipped two different spinners: react-native's
+   * `ActivityIndicator` (a faint full ring under a dashed arc) on the
+   * preview/save overlays, lucide's three-quarter arc everywhere else.
+   *
+   * It cannot simply replace the local one. gui types its `size` as
+   * `'small' | 'large'`, so it cannot take the pixel sizes all ~83 call sites
+   * pass, and its `color` defaults to `#1976D2` — Material blue, in a
+   * monochrome app — unless every caller remembers to say otherwise. An
+   * app-wide opt-in that every call site must remember is the exact failure
+   * `components/ui/spinner` was written to end.
+   *
+   * So the home is local and the ban is on reaching PAST it. This is the
+   * assertion that keeps the second mark from coming back; it goes when gui's
+   * Spinner can take a number and inherits its colour.
+   */
+  it("nothing reaches for gui's Spinner directly", () => {
+    const offenders = files.filter((f) => {
+      const src = readFileSync(f, "utf8");
+      // A gui import naming Spinner — the barrel import is the only way in.
+      return /import\s*\{[^}]*\bSpinner\b[^}]*\}\s*from\s*['"]@hanzo\/gui['"]/.test(src);
+    });
+    expect(offenders.map(rel)).toEqual([]);
   });
 });
 
