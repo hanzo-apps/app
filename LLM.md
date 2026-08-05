@@ -229,15 +229,16 @@ say it in one voice, and no longer toasts errors itself — `ask-ai`'s
 `handleError` already toasts every result exactly once, so the hook doing it too
 was two toasts per failure.
 
-**Landmine — the install is broken at HEAD, and it is not this change.**
-`pnpm install --frozen-lockfile` (the CI default) FAILS: the lockfile says
-`@hanzo/ui@^8.0.31` and `react-resizable-panels@^4.7.4` while package.json says
-`^8.0.33` and dropped the panels dep. Regenerating the lock resolves
-`@hanzo/ui@8.0.39`, which peer-requires `@hanzo/gui >= 8.0.0` — but this app
-pins `@hanzo/gui@7.3.0`, so pnpm installs a SECOND `@hanzogui/*@8.0.0` tree and
-two Tamagui runtimes crash prerender with `Cannot create proxy with a non-object
-as target or handler` on `/_not-found`. There is no lockfile state that builds:
-either the manifest goes back to `^8.0.31` or `@hanzo/gui` moves to 8.x (the
-phased migration in `components/editor/CLAUDE.md`). Three unit suites
-(`control-scale`, `hanzo-ui-button-aschild`, `overlay`) fail under 8.0.39 for
-the same reason.
+### The 8.x line, resolved
+
+The two-runtime landmine that used to live here is closed: the app runs
+`@hanzo/ui@^8.0.52` on `@hanzo/gui@^8.1.0`, ONE shared gui runtime (app and
+`@hanzo/ui` resolve the same physical path — verified), and
+`pnpm install --frozen-lockfile` passes at HEAD. If a fresh install produces
+two `@hanzogui/*` trees, that is a regression, not the documented state.
+
+The glass material and recipes come FROM the package — `@hanzo/ui/glass` +
+`@hanzo/ui/glass.css` imported in `app/layout.tsx`; the app's old local copies
+are deleted. The elevation ladder owns `--glass-shadow-1/2/3` (declared per
+canvas upstream since 8.0.52) — glass rules never read brand's generic
+`--shadow-*` names; `tests/unit/glass.test.ts` bites on exactly that.
