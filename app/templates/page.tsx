@@ -150,7 +150,15 @@ function ResourcesBrowser() {
                 width="100%" borderColor="$borderColor" backgroundColor="$background" paddingLeft={36} color="$color" $sm={{ width: 256 }}
   />
             </YStack>
-            <XStack flexWrap="nowrap" alignItems="center" gap="$1.5" overflow="scroll" $sm={{ flexWrap: "wrap" }} className="no-scrollbar">
+            {/* `flexShrink={1}` is load-bearing. gui's base rule gives every
+                View `flex-shrink: 0`, so this row sat at its max-content
+                1380px inside a 1232px content box and pushed the DOCUMENT
+                wide at every width — +1014px at 390, +44px at 1440. Nothing
+                could shrink it, so `flexWrap: wrap` (already on from 640 up)
+                never had a reason to wrap and `overflow="scroll"` never had
+                anything to scroll: the box was never smaller than its content.
+                Letting it shrink is what turns both of those back on. */}
+            <XStack flexWrap="nowrap" alignItems="center" gap="$1.5" flexShrink={1} overflow="scroll" $sm={{ flexWrap: "wrap" }} className="no-scrollbar">
               {categories.map((cat) => (
                 <Button
                   key={cat}
@@ -161,9 +169,15 @@ function ResourcesBrowser() {
                 </Button>
               ))}
             </XStack>
-            <Badge variant="secondary" className="ml-auto">
-              {filtered.length} shown{loading ? ' · syncing…' : ''}
-            </Badge>
+            {/* `className="ml-auto"` here matched no rule in any stylesheet —
+                Tailwind is gone, so the count was never right-aligned. A Badge
+                is typed as span props and takes no layout of its own, so the
+                margin belongs to a stack around it. */}
+            <YStack marginLeft="auto">
+              <Badge variant="secondary">
+                {filtered.length} shown{loading ? ' · syncing…' : ''}
+              </Badge>
+            </YStack>
           </XStack>
         </YStack>
 
