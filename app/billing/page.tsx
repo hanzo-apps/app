@@ -5,7 +5,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
 import { AppShell } from '@/components/app-shell';
-import { accent, panel, selected, screen } from '@/lib/chrome';
+import { LoadingScreen } from '@/components/ui/loading-screen';
+import { accent, panel, selected } from '@/lib/chrome';
 import { CryptoPayment, CRYPTO_PAYMENTS_ENABLED } from '@/components/crypto-payment';
 import { WalletBoundary } from '@/components/providers/WalletBoundary';
 import { TopUp, Subscribe } from '@/components/billing/purchase';
@@ -16,7 +17,6 @@ import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription, Badg
 
 // Icons
 import { Wallet, Download, Plus, ExternalLink, Sparkles, TrendingUp, Clock, Activity, Database, Brain, FileText, CreditCard, ArrowRight, CheckCircle2, XCircle } from 'lucide-react';
-import { Spinner } from '@/components/ui/spinner';
 
 // Types
 
@@ -211,11 +211,7 @@ export default function BillingPage() {
   };
 
   if (authLoading || loading) {
-    return (
-      <XStack {...screen} backgroundColor="$background">
-        <Spinner size={32} />
-      </XStack>
-    );
+    return <LoadingScreen>Loading billing…</LoadingScreen>;
   }
 
   return (
