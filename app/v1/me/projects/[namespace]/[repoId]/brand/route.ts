@@ -13,29 +13,13 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 
-import { session } from "@/lib/iam";
-import { getProject, spaceId } from "@/lib/db/projects";
 import { getBrand, listAssets, putBrand } from "@/lib/db/assets";
 import { drop, empty, fold, isField, read, READ_PROMPT } from "@/lib/source/brand";
 import { requireSameOrigin } from "@/lib/org/csrf";
-
-type Ctx = { params: Promise<{ namespace: string; repoId: string }> };
+import { scope, type Ctx } from "../scope";
 
 const HANZO_AI_BASE_URL = process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai/v1";
 const VISION_MODEL = process.env.HANZO_VISION_MODEL || "enso";
-
-async function scope(req: NextRequest, ctx: Ctx) {
-  const user = await session(req);
-  if (user instanceof NextResponse || !user) {
-    return { fail: NextResponse.json({ ok: false, error: "Sign in first." }, { status: 401 }) };
-  }
-  const { namespace, repoId } = await ctx.params;
-  const key = spaceId(namespace, repoId);
-  if (!(await getProject(user.token, user.sub, key))) {
-    return { fail: NextResponse.json({ ok: false, error: "Project not found." }, { status: 404 }) };
-  }
-  return { user, key };
-}
 
 export async function GET(req: NextRequest, ctx: Ctx) {
   const s = await scope(req, ctx);

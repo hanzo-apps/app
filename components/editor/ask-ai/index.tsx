@@ -18,6 +18,7 @@ import { Settings } from "@/components/editor/ask-ai/settings";
 import { LoginModal } from "@/components/login-modal";
 import { ReImagine } from "@/components/editor/ask-ai/re-imagine";
 import { imageFilesFrom, uploadProjectImages } from "@/lib/upload-project-images";
+import { space } from "@/lib/dev/draft";
 import {
   addReferenceImages,
   mergeReferenceImages,
@@ -246,15 +247,13 @@ export function AskAI({
   };
 
   // Drop / paste ingest: reuse the ONE upload path + the "Uploading images..."
-  // affordance, then attach the references to the current prompt.
+  // affordance, then attach the references to the current prompt. A draft has
+  // somewhere to put them too (lib/dev/draft), so this no longer asks anyone to
+  // publish before they can show the model a picture.
   const ingestFiles = async (imgs: File[]) => {
     if (imgs.length === 0) return;
-    if (!project?.space_id) {
-      toast.error("Publish your project first to attach reference images.");
-      return;
-    }
     setIsUploading(true);
-    const urls = await uploadProjectImages(project.space_id, imgs);
+    const urls = await uploadProjectImages(space(project?.space_id), imgs);
     if (urls.length) attachRefs(urls);
     else toast.error("Couldn't upload image(s). Please try again.");
     setIsUploading(false);

@@ -69,6 +69,34 @@ export async function createProject(
   });
 }
 
+/**
+ * The user's project row, created if this is the first time anything asked for it.
+ *
+ * NOTHING ELSE CREATES IT. Publishing goes to the cloud projects service, and
+ * the only other writer here demands a published static space first — so every
+ * per-project feature (reference images, imported assets, brand guidelines) was
+ * gated behind a row that neither drafting NOR publishing ever wrote. The gate
+ * read as "publish first", but publishing did not help.
+ *
+ * A row is a user id, a key, and an empty prompt list. It is cheap, it belongs
+ * to the caller, and refusing to make one buys nothing — so this makes it and
+ * the feature simply works. A concurrent first request may win the create; that
+ * is a success, so the row it made is returned rather than an error.
+ */
+export async function ensureProject(
+  token: string,
+  userId: string,
+  space_id: string
+): Promise<Project | null> {
+  const existing = await getProject(token, userId, space_id);
+  if (existing) return existing;
+  try {
+    return await createProject(token, { userId, spaceId: space_id, prompts: [] });
+  } catch {
+    return getProject(token, userId, space_id);
+  }
+}
+
 export async function updateProject(
   token: string,
   userId: string,

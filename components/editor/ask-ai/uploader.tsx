@@ -1,7 +1,7 @@
 'use client';
 
 import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CircleCheck, Plus, Sparkles, Upload } from "lucide-react";
 import Image from "next/image";
 
@@ -10,8 +10,8 @@ import { Page, Project } from "@/types";
 import Loading from "@/components/loading";
 import { useUser } from "@/hooks/useUser";
 import { LoginModal } from "@/components/login-modal";
-import { DeployButtonContent } from "../deploy-button/content";
 import { imageFilesFrom, uploadProjectImages } from "@/lib/upload-project-images";
+import { space } from "@/lib/dev/draft";
 import { References } from "@/components/references";
 
 export const Uploader = ({
@@ -39,20 +39,29 @@ export const Uploader = ({
   const [open, setOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [generating, setGenerating] = useState(false);
-  const [genError, setGenError] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Where these images go: the open project, or this session's draft. Resolved
+  // after mount because a draft's key is minted in the browser — so it is one
+  // value here rather than a condition the render and the handlers each guess at.
+  const [target, setTarget] = useState("");
+  useEffect(() => setTarget(space(project?.space_id)), [project?.space_id]);
 
   // Persist image File(s) to the project's own storage and hand the returned
   // durable URLs to the bar. Shared by upload + AI generation, via the ONE
   // upload path in lib/upload-project-images.
   const persistFiles = async (images: File[]) => {
-    const urls = await uploadProjectImages(project?.space_id, images);
+    if (images.length === 0) return;
+    const urls = await uploadProjectImages(target, images);
     if (urls.length) onFiles(urls);
+    else setErr("Couldn't upload image(s). Please try again.");
   };
 
   const uploadFiles = async (files: FileList | null) => {
-    if (!files || !project) return;
+    if (!files) return;
     onLoading(true);
+    setErr(null);
     await persistFiles(imageFilesFrom(files));
     onLoading(false);
   };
@@ -60,9 +69,9 @@ export const Uploader = ({
   // Generate an image from a prompt via the per-user metered /v1/images BFF, then
   // persist it to the project so the published site embeds a durable Hanzo asset.
   const generateImage = async () => {
-    if (!prompt.trim() || !project?.space_id) return;
+    if (!prompt.trim()) return;
     setGenerating(true);
-    setGenError(null);
+    setErr(null);
     onLoading(true);
     try {
       const res = await fetch("/v1/images", {
@@ -85,7 +94,7 @@ export const Uploader = ({
       await persistFiles([file]);
       setPrompt("");
     } catch (e) {
-      setGenError(e instanceof Error ? e.message : "Generation failed.");
+      setErr(e instanceof Error ? e.message : "Generation failed.");
     } finally {
       setGenerating(false);
       onLoading(false);
@@ -111,8 +120,6 @@ export const Uploader = ({
           sideOffset={8}
           overflow="hidden" padding="$0" minWidth={320}
         >
-          {project?.space_id ? (
-            <>
               <YStack backgroundColor="$color3" padding="$5" borderBottomWidth={1} borderColor="$borderColor">
                 <XStack alignItems="center" justifyContent="center" columnGap="$4" marginBottom="$3">
                   <XStack width={36} height={36} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center">
@@ -192,9 +199,9 @@ export const Uploader = ({
                       Generate
                     </Button>
                   </XStack>
-                  {genError && (
+                  {err && (
                     <Paragraph fontSize="$1" textAlign="left" color="$red9" marginTop="$1.5">
-                      {genError}
+                      {err}
                     </Paragraph>
                   )}
                 </div>
@@ -236,18 +243,8 @@ export const Uploader = ({
                 borderTopWidth={1}
                 borderColor="$borderColor"
               >
-                <References project={project.space_id} />
+                <References project={target} />
               </YStack>
-            </>
-          ) : (
-            <DeployButtonContent
-              pages={pages}
-              prompts={[]}
-              options={{
-                description: "Publish your project first to add custom images.",
-              }}
-  />
-          )}
         </PopoverContent>
       </form>
     </Popover>

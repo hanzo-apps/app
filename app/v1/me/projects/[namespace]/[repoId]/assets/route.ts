@@ -13,8 +13,6 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 
-import { session } from "@/lib/iam";
-import { getProject, spaceId } from "@/lib/db/projects";
 import type { Asset } from "@/lib/db/assets";
 import {
   getBrand,
@@ -29,23 +27,7 @@ import { forget } from "@/lib/source/brand";
 import * as drive from "@/lib/source/drive";
 import * as pinterest from "@/lib/source/pinterest";
 import { requireSameOrigin } from "@/lib/org/csrf";
-
-type Ctx = { params: Promise<{ namespace: string; repoId: string }> };
-
-/** The signed-in user AND their own project, or the response that refuses. */
-async function scope(req: NextRequest, ctx: Ctx) {
-  const user = await session(req);
-  if (user instanceof NextResponse || !user) {
-    return { fail: NextResponse.json({ ok: false, error: "Sign in to import images." }, { status: 401 }) };
-  }
-  const { namespace, repoId } = await ctx.params;
-  const key = spaceId(namespace, repoId);
-  const project = await getProject(user.token, user.sub, key);
-  if (!project) {
-    return { fail: NextResponse.json({ ok: false, error: "Project not found." }, { status: 404 }) };
-  }
-  return { user, key };
-}
+import { scope, type Ctx } from "../scope";
 
 export async function GET(req: NextRequest, ctx: Ctx) {
   const s = await scope(req, ctx);

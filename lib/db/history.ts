@@ -10,18 +10,15 @@
  *                      rich metadata (prompt, model, timestamp, files-changed,
  *                      the AI-clean message …) as a JSON blob.
  *
- * Collections are ensured idempotently on first use (additive, like
- * `lib/base/provision.ts`). If Base is unconfigured OR the ensure/CRUD fails, the
+ * Both are named in `lib/base/collections` and PROVISIONED AS DECLARED STATE
+ * (a Base migration in the deployment) — the app cannot create a collection,
+ * so it does not pretend to. If Base is unconfigured OR the CRUD fails, the
  * caller (the BFF) reports `durable:false` and the client falls back to
  * localStorage — Base is primary, localStorage is the fallback, never both.
  */
 
-import type { BaseClient } from '@hanzo/base';
-
 import { baseAs, isBaseConfigured } from '@/lib/base';
-
-export const BOOKMARKS_COLLECTION = 'app_bookmarks';
-export const REVISIONS_COLLECTION = 'app_revisions';
+import { BOOKMARKS, REVISIONS } from '@/lib/base/collections';
 
 /** A persisted revision row's payload (the panel's rich metadata). */
 export interface RevisionRecordInput {
@@ -59,75 +56,6 @@ type RevisionRow = {
 /** Escape single quotes for a Base filter literal (mirrors lib/db/projects). */
 const lit = (s: string) => (s || '').replace(/'/g, "\\'");
 
-const authed = "@request.auth.id != ''";
-
-// Per-process guard so we attempt collection creation at most once per boot.
-let ensured: Promise<boolean> | null = null;
-
-async function ensureCollections(client: BaseClient): Promise<boolean> {
-  if (ensured) return ensured;
-  ensured = (async () => {
-    try {
-      const existing = new Set<string>();
-      try {
-        const list = await client.send<{ items: Array<{ name: string }> }>('/v1/collections', {
-          method: 'GET',
-          query: { perPage: '200' },
-        });
-        for (const c of list.items ?? []) existing.add(c.name);
-      } catch {
-        /* listing may be restricted; attempt creates and tolerate duplicates */
-      }
-
-      const specs = [
-        {
-          name: BOOKMARKS_COLLECTION,
-          fields: [
-            { name: 'app', type: 'text', required: true },
-            { name: 'user_id', type: 'text', required: true },
-            { name: 'rev_key', type: 'text', required: true },
-          ],
-        },
-        {
-          name: REVISIONS_COLLECTION,
-          fields: [
-            { name: 'app', type: 'text', required: true },
-            { name: 'user_id', type: 'text', required: true },
-            { name: 'rev_key', type: 'text', required: true },
-            { name: 'data', type: 'json' },
-          ],
-        },
-      ];
-
-      for (const spec of specs) {
-        if (existing.has(spec.name)) continue;
-        try {
-          await client.send('/v1/collections', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              name: spec.name,
-              type: 'base',
-              fields: spec.fields,
-              listRule: authed,
-              viewRule: authed,
-              createRule: authed,
-              updateRule: authed,
-              deleteRule: authed,
-            }),
-          });
-        } catch {
-          /* a concurrent create / duplicate name is fine — verified by use below */
-        }
-      }
-      return true;
-    } catch {
-      return false;
-    }
-  })();
-  return ensured;
-}
-
 /** Whether the durable store can be used at all (Base configured). */
 export function historyDurable(): boolean {
   return isBaseConfigured();
@@ -137,8 +65,7 @@ export function historyDurable(): boolean {
 
 export async function listBookmarks(token: string, userId: string, app: string): Promise<string[]> {
   const client = baseAs(token);
-  await ensureCollections(client);
-  const res = await client.collection(BOOKMARKS_COLLECTION).getList<BookmarkRow>(1, 500, {
+  const res = await client.collection(BOOKMARKS).getList<BookmarkRow>(1, 500, {
     filter: `user_id='${lit(userId)}' && app='${lit(app)}'`,
   });
   return res.items.map((r) => r.rev_key);
@@ -152,8 +79,7 @@ export async function toggleBookmarkDurable(
   revKey: string,
 ): Promise<string[]> {
   const client = baseAs(token);
-  await ensureCollections(client);
-  const col = client.collection(BOOKMARKS_COLLECTION);
+  const col = client.collection(BOOKMARKS);
   const filter = `user_id='${lit(userId)}' && app='${lit(app)}' && rev_key='${lit(revKey)}'`;
   let existingId: string | null = null;
   try {
@@ -178,8 +104,7 @@ export async function listRevisions(
   app: string,
 ): Promise<RevisionRecordInput[]> {
   const client = baseAs(token);
-  await ensureCollections(client);
-  const res = await client.collection(REVISIONS_COLLECTION).getList<RevisionRow>(1, 500, {
+  const res = await client.collection(REVISIONS).getList<RevisionRow>(1, 500, {
     filter: `user_id='${lit(userId)}' && app='${lit(app)}'`,
   });
   return res.items.map((r) => r.data).filter(Boolean);
@@ -193,8 +118,7 @@ export async function upsertRevision(
   input: RevisionRecordInput,
 ): Promise<void> {
   const client = baseAs(token);
-  await ensureCollections(client);
-  const col = client.collection(REVISIONS_COLLECTION);
+  const col = client.collection(REVISIONS);
   const filter = `user_id='${lit(userId)}' && app='${lit(app)}' && rev_key='${lit(input.revKey)}'`;
   try {
     const found = await col.getFirstListItem<RevisionRow>(filter);
