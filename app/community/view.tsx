@@ -43,7 +43,12 @@ export default function CommunityPageView() {
             <Link
               href="/dev"
             ><XStack height={44} alignItems="center" gap="$1.5" borderRadius="$6" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$4.5" hoverStyle={{ backgroundColor: "$color6" }}>
-              <SizableText fontSize="$3" fontWeight="500" color="$color">Start building</SizableText> <ArrowUpRight size={16} />
+              {/* No literal space between these two: a raw text node is not a
+                  legal child of a View, and the row already spaces them with
+                  `gap`. Written inline it logged "Unexpected text node" on every
+                  load of this page. */}
+              <SizableText fontSize="$3" fontWeight="500" color="$color">Start building</SizableText>
+              <ArrowUpRight size={16} />
             </XStack></Link>
             <Link
               href="/templates"

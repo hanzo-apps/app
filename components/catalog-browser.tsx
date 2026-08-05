@@ -274,6 +274,34 @@ export function CatalogBrowser({
     return [...known, ...rest].map((o) => [o, counts[o]] as [string, number]);
   }, [facets]);
 
+  // The dimensions the corpus actually has, read once each — `template` used to
+  // be computed twice on every render, and the rails below all ask the same
+  // question of the same object.
+  const kinds = buckets(facets, "kind");
+  const forkables = buckets(facets, "forkable");
+  const officials = buckets(facets, "official");
+  const parents = buckets(facets, "template");
+  const archetypes = buckets(facets, "archetype");
+  const languages = buckets(facets, "language");
+
+  // A rail earns its line when the corpus gave it something to choose — or when
+  // it is the rail currently constraining the view, so the control that CLEARS a
+  // filter can never be the control that filter removed.
+  //
+  // Every rail used to draw unconditionally, which is why an EMPTY corpus read
+  // as a layout fault: "All orgs", "Any kind" and "Any language" are three
+  // separate XStacks, so with no facets each collapsed to its lone pill and the
+  // three sat one per line. Nothing was stacking inside a row — measured, the
+  // row is `flex-direction: row; flex-wrap: wrap` and its pills are
+  // content-width — there were simply three rows of one. The honest shape of
+  // nothing is a search box over its own count, not three dead controls.
+  const whose = orgs.length > 0 || org !== ALL;
+  const what =
+    kinds.length + forkables.length + officials.length > 0 ||
+    kind !== ALL ||
+    forkable !== ALL ||
+    official !== ALL;
+
   return (
     <YStack alignSelf="center" width="100%" maxWidth={1280} paddingHorizontal="$4" paddingVertical="$7" $sm={{ paddingHorizontal: "$5", paddingVertical: "$9" }}>
       <H1 fontSize="$8" fontWeight="500" letterSpacing={-0.4} color="$color" $sm={{ fontSize: "$10" }} lineHeight="1.1">
@@ -291,16 +319,18 @@ export function CatalogBrowser({
         )}
       </Paragraph>
 
-      <YStack position="relative" marginTop="$5">
-        <Search
-          size={16}
-          strokeWidth={1.6}
-  />
+      {/* The magnifier belongs to the FIELD, not to the page: `startAdornment`
+          places it in the field's own well and reserves the room for it. Written
+          as a loose sibling it was laid out by the surrounding column — a 16px
+          glyph floating above the input's top-left corner, with the field
+          holding a `paddingLeft` gutter for an icon that was never in it. */}
+      <YStack marginTop="$5">
         <Input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search across every org…"
-          width="100%" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingVertical="$2.5" paddingLeft="$7" paddingRight="$4" fontSize="$3" color="$color" outlineWidth={0} placeholderTextColor="$color11" focusStyle={{ borderColor: "$color" }}
+          startAdornment={<Search size={16} strokeWidth={1.6} />}
+          width="100%" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingVertical="$2.5" paddingRight="$4" fontSize="$3" color="$color" outlineWidth={0} placeholderTextColor="$color11" focusStyle={{ borderColor: "$color" }}
   />
       </YStack>
 
@@ -325,10 +355,10 @@ export function CatalogBrowser({
       {/* Lineage as a rail: the parents this lane's apps were built from, biggest
           family first. This is what turns "a pile of forks" into something a
           person can read. */}
-      {buckets(facets, "template").length > 1 && (
+      {(parents.length > 1 || parent !== ALL) && (
         <XStack marginTop="$2" flexWrap="wrap" gap="$2">
           <Pill label="Any parent" active={parent === ALL} onClick={() => setParent(ALL)} />
-          {buckets(facets, "template")
+          {parents
             .slice(0, 10)
             .map(([tmpl, n]) => (
               <Pill
@@ -342,67 +372,80 @@ export function CatalogBrowser({
         </XStack>
       )}
 
-      <XStack marginTop="$4" flexWrap="wrap" gap="$2">
-        <Pill label="All orgs" active={org === ALL} onClick={() => setOrg(ALL)} />
-        {orgs.map(([o, n]) => (
-          <Pill key={o} label={o} count={n} active={org === o} onClick={() => setOrg(o)} />
-        ))}
-        <SizableText marginHorizontal="$1" alignSelf="center" color="$borderColor">|</SizableText>
-        {buckets(facets, "kind").map(([k, n]) => (
-          <Pill
-            key={k}
-            label={k}
-            count={n}
-            active={kind === k}
-            onClick={() => setKind(kind === k ? ALL : k)}
+      {(whose || what) && (
+        <XStack marginTop="$4" flexWrap="wrap" gap="$2">
+          {whose && (
+            <>
+              <Pill label="All orgs" active={org === ALL} onClick={() => setOrg(ALL)} />
+              {orgs.map(([o, n]) => (
+                <Pill key={o} label={o} count={n} active={org === o} onClick={() => setOrg(o)} />
+              ))}
+            </>
+          )}
+          {/* The divider separates two questions — whose, and what — so it is
+              only ever drawn BETWEEN them. Unconditional, it trailed "All orgs"
+              with nothing on its right. */}
+          {whose && what && (
+            <SizableText marginHorizontal="$1" alignSelf="center" color="$borderColor">|</SizableText>
+          )}
+          {kinds.map(([k, n]) => (
+            <Pill
+              key={k}
+              label={k}
+              count={n}
+              active={kind === k}
+              onClick={() => setKind(kind === k ? ALL : k)}
   />
-        ))}
-        {/* forkable is a rail, not a toggle: the server counts both sides, so
-            "what can I NOT fork" is as clickable as "what can I". */}
-        {buckets(facets, "forkable").map(([f, n]) => (
-          <Pill
-            key={f}
-            label={f === "true" ? "forkable" : "not forkable"}
-            count={n}
-            active={forkable === f}
-            onClick={() => setForkable(forkable === f ? ALL : f)}
+          ))}
+          {/* forkable is a rail, not a toggle: the server counts both sides, so
+              "what can I NOT fork" is as clickable as "what can I". */}
+          {forkables.map(([f, n]) => (
+            <Pill
+              key={f}
+              label={f === "true" ? "forkable" : "not forkable"}
+              count={n}
+              active={forkable === f}
+              onClick={() => setForkable(forkable === f ? ALL : f)}
   />
-        ))}
-        {/* Authorship is a rail for the same reason: once a reader knows the
-            catalog carries other people's work, "show me what is NOT ours" is
-            the next question, and it has to be as clickable as the first. */}
-        {buckets(facets, "official").map(([f, n]) => (
-          <Pill
-            key={f}
-            // NOT "third-party": that is now a LANE with its own count, and one
-            // word meaning two different numbers on one screen is worse than the
-            // flattening it came from. Authorship's negative is "not ours".
-            label={f === "true" ? OFFICIAL_LABEL : "not ours"}
-            count={n}
-            active={official === f}
-            onClick={() => setOfficial(official === f ? ALL : f)}
+          ))}
+          {/* Authorship is a rail for the same reason: once a reader knows the
+              catalog carries other people's work, "show me what is NOT ours" is
+              the next question, and it has to be as clickable as the first. */}
+          {officials.map(([f, n]) => (
+            <Pill
+              key={f}
+              // NOT "third-party": that is now a LANE with its own count, and
+              // one word meaning two different numbers on one screen is worse
+              // than the flattening it came from. Authorship's negative is
+              // "not ours".
+              label={f === "true" ? OFFICIAL_LABEL : "not ours"}
+              count={n}
+              active={official === f}
+              onClick={() => setOfficial(official === f ? ALL : f)}
   />
-        ))}
-      </XStack>
+          ))}
+        </XStack>
+      )}
 
-      <XStack marginTop="$2" flexWrap="wrap" gap="$2">
-        <Pill label="Any kind" active={archetype === ALL} onClick={() => setArchetype(ALL)} />
-        {buckets(facets, "archetype").map(([a, n]) => (
-          <Pill
-            key={a}
-            label={a}
-            count={n}
-            active={archetype === a}
-            onClick={() => setArchetype(a)}
+      {(archetypes.length > 0 || archetype !== ALL) && (
+        <XStack marginTop="$2" flexWrap="wrap" gap="$2">
+          <Pill label="Any kind" active={archetype === ALL} onClick={() => setArchetype(ALL)} />
+          {archetypes.map(([a, n]) => (
+            <Pill
+              key={a}
+              label={a}
+              count={n}
+              active={archetype === a}
+              onClick={() => setArchetype(a)}
   />
-        ))}
-      </XStack>
+          ))}
+        </XStack>
+      )}
 
-      <XStack marginTop="$2" flexWrap="wrap" gap="$2">
-        <Pill label="Any language" active={language === ALL} onClick={() => setLanguage(ALL)} />
-        {buckets(facets, "language")
-          .slice(0, 12)
-          .map(([l, n]) => (
+      {(languages.length > 0 || language !== ALL) && (
+        <XStack marginTop="$2" flexWrap="wrap" gap="$2">
+          <Pill label="Any language" active={language === ALL} onClick={() => setLanguage(ALL)} />
+          {languages.slice(0, 12).map(([l, n]) => (
             <Pill
               key={l}
               label={l}
@@ -411,7 +454,8 @@ export function CatalogBrowser({
               onClick={() => setLanguage(l)}
   />
           ))}
-      </XStack>
+        </XStack>
+      )}
 
       <Paragraph marginTop="$5" fontFamily="$mono" fontSize={11} color="$color11">
         {err
