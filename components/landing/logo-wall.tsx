@@ -26,7 +26,7 @@ const partners = [
 
 export default function LogoWall() {
   return (
-    <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
+    <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
       <YStack alignSelf="center" maxWidth={1152}>
         <Reveal>
           <Paragraph fontFamily="$mono" fontSize={11} color="$color11" textAlign="center">

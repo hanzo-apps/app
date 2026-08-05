@@ -321,7 +321,7 @@ export default function LandingPage() {
 
         {/* ── Continue building (logged-in) ── */}
         {user && projects.length > 0 && (
-          <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
+          <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
             <YStack alignSelf="center" maxWidth={1152}>
               <XStack marginBottom="$7" alignItems="flex-end" justifyContent="space-between">
                 <div>
@@ -371,7 +371,7 @@ export default function LandingPage() {
         )}
 
         {/* ── Final CTA — the SAME composer as the hero, ready to type ── */}
-        <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$12" $md={{ paddingHorizontal: "$6", paddingVertical: "$14" }}>
+        <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
           <Reveal alignSelf="center" width="100%" maxWidth={672}>
             <YStack>
               <H2 fontSize="$10" fontWeight="500" textAlign="center" letterSpacing={-0.4} $md={{ fontSize: "$12" }} lineHeight="1.1">

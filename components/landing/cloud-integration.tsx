@@ -75,7 +75,7 @@ const capabilities: Capability[] = [
 
 export default function CloudIntegration() {
   return (
-    <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
+    <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
       <YStack alignSelf="center" maxWidth={1152}>
         <Reveal alignSelf="center" width="100%" maxWidth={672}>
           <Paragraph textAlign="center" fontFamily="$mono" fontSize={11} color="$color11">
@@ -90,7 +90,14 @@ export default function CloudIntegration() {
           </Paragraph>
         </Reveal>
 
-        <YStack marginTop="$9" gap="$4">
+        {/* A grid, not a column. These six were a plain `YStack` at every
+            width, so at 1440 the section was six full-bleed 1152px cards
+            stacked head to toe — 2,209px for six icons, six lines of prose and
+            six code rows, and the owner read it as "enormous boxes holding one
+            icon + two lines". `.card-grid` is the app's ONE card grid
+            (auto-fill/minmax, so the column count follows the width and there
+            are no breakpoints to keep in sync); it is what /templates uses. */}
+        <div className="card-grid" style={{ marginTop: 36 }}>
           {capabilities.map((c, i) => {
             const Icon = c.icon;
             return (
@@ -99,7 +106,7 @@ export default function CloudIntegration() {
                 href={c.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                group position="relative" height="100%" flexDirection="column" borderRadius="$8" borderWidth={1} backgroundColor="$color2" {...{ borderColor: c.primary ? "$color02" : "$borderColor" }} padding="$5" hoverStyle={{ borderColor: "$color06" }}
+                group position="relative" height="100%" flexDirection="column" borderRadius="$8" borderWidth={1} backgroundColor="$color2" {...{ borderColor: c.primary ? "$color02" : "$borderColor" }} padding="$4" hoverStyle={{ borderColor: "$color06" }}
                display="flex" textDecorationLine="none">
                 <XStack alignItems="center" justifyContent="space-between">
                   <XStack height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
@@ -110,21 +117,21 @@ export default function CloudIntegration() {
                   </SizableText>
                 </XStack>
 
-                <H3 marginTop="$4.5" fontSize="$6" fontWeight="500" letterSpacing={-0.4} color="$color">
+                <H3 marginTop="$3" fontSize="$6" fontWeight="500" letterSpacing={-0.4} color="$color">
                   {c.name}
                 </H3>
                 <Paragraph marginTop="$2" flex={1} fontSize="$3" lineHeight="1.625" color="$color11">
                   {c.desc}
                 </Paragraph>
 
-                <SizableText marginTop="$4.5" numberOfLines={1} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" fontFamily="$mono" fontSize={11} color="$color11" $group-hover={{ color: "$color" }}>
+                <SizableText marginTop="$3" numberOfLines={1} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" fontFamily="$mono" fontSize={11} color="$color11" $group-hover={{ color: "$color" }}>
                   {c.snippet}
                 </SizableText>
               </Anchor>
               </Reveal>
             );
           })}
-        </YStack>
+        </div>
 
         <Reveal delay={120} marginTop={40}>
           <Paragraph fontFamily="$mono" fontSize={12} color="$color11" textAlign="center">
