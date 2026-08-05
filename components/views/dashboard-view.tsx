@@ -1,6 +1,7 @@
 'use client';
 
 import { YStack, XStack, H3, SizableText, Paragraph, H1 } from '@hanzo/gui';
+import { panel } from "@/lib/chrome";
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -285,7 +286,7 @@ function QuickActionsBar({
   };
 
   return (
-    <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4" marginBottom="$5">
+    <YStack {...panel} padding="$4" marginBottom="$5">
       <XStack flexWrap="wrap" gap="$2">
         <Button variant="default" size="sm" asChild gap="$1.5">
           <Link href={projectsHref} onClick={handleProjectsClick}>
@@ -355,7 +356,7 @@ function WhatsNewCard({
   const docsHref = isServerMode ? '/admin/docs?doc=whats-new' : '#';
 
   return (
-    <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
+    <YStack {...panel} padding="$4">
       <XStack alignItems="flex-start" justifyContent="space-between" gap="$4" marginBottom="$3">
         <XStack alignItems="center" gap="$2">
           <Newspaper size={16} />
@@ -412,7 +413,7 @@ function CompactOverview({
   const rightColumn = stats.slice(half);
 
   return (
-    <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
+    <YStack {...panel} padding="$4">
       <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
         <H3 fontSize="$3" fontWeight="500" color="$color11">System Overview</H3>
         <Button
@@ -473,7 +474,7 @@ function BrowserOverview({
   const rightColumn = stats.slice(half);
 
   return (
-    <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
+    <YStack {...panel} padding="$4">
       <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
         <H3 fontSize="$3" fontWeight="500" color="$color11">Content Overview</H3>
         <Button
@@ -535,7 +536,7 @@ function RecentProjectsCard({
   const viewAllHref = isServerMode ? '/admin/projects' : '#';
 
   return (
-    <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
+    <YStack {...panel} padding="$4">
       <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
         <XStack alignItems="center" gap="$2">
           <FolderOpen size={16} />
@@ -577,7 +578,7 @@ function RecentProjectsCard({
 // Recent Deployments Card
 function RecentDeploymentsCard({ deployments }: { deployments: DashboardData['recentDeployments'] }) {
   return (
-    <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
+    <YStack {...panel} padding="$4">
       <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
         <XStack alignItems="center" gap="$2">
           <Globe size={16} />
@@ -624,7 +625,7 @@ function TrafficLists({ data }: { data: DashboardData }) {
   return (
     <YStack gap="$4">
       {/* Top Deployments */}
-      <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
+      <YStack {...panel} padding="$4">
         <XStack alignItems="center" gap="$2" marginBottom="$3">
           <Globe size={16} />
           <H3 fontSize="$3" fontWeight="500" color="$color11">Top Deployments (24h)</H3>
@@ -652,7 +653,7 @@ function TrafficLists({ data }: { data: DashboardData }) {
       </YStack>
 
       {/* Recent Errors */}
-      <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
+      <YStack {...panel} padding="$4">
         <XStack alignItems="center" gap="$2" marginBottom="$3">
           <AlertTriangle size={16} />
           <H3 fontSize="$3" fontWeight="500" color="$color11">Recent Errors</H3>
