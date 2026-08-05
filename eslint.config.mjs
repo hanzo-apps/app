@@ -49,6 +49,28 @@ const eslintConfig = [
       'prefer-const': 'warn',
     },
   },
+  {
+    // CJS territory, by NECESSITY rather than habit: jest.config.js must stay
+    // requireable by next/jest, transpile.js is shared with it, mocks/ are
+    // jest module factories, and scripts/ + tests/performance run under plain
+    // node. In these files require() IS the module system, so the rule that
+    // forbids it is asserting the wrong world. It stays ON for app/lib/
+    // components source, where a require is either a bundling mistake or needs
+    // its reason written down (see lib/logging/request-logger.ts).
+    files: ['*.js', 'scripts/**/*.js', 'mocks/**/*.js', 'tests/performance/**/*.js'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+  {
+    // Jest's own lazy-loading idiom: require() INSIDE a test grabs a module
+    // after jest.mock/doMock has rewired it, which a hoisted static import
+    // cannot do. The tests that do this do it for exactly that reason.
+    files: ['tests/**/*.test.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
 ];
 
 export default eslintConfig;

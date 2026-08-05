@@ -27,8 +27,7 @@ export type CodeEditorLanguage =
   | "javascript"
   | "typescript"
   | "sql"
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  | (string & {});
+  | (string & Record<never, never>);
 
 // Imperative handle for the few callers that need to drive the document
 // (the builder's visual editor + "scroll to bottom"). Monaco exposed an

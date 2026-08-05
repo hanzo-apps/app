@@ -41,6 +41,17 @@ test:
       corepack enable pnpm
       pnpm install --frozen-lockfile
       pnpm exec tsc --noEmit
+  # Lint is a RATCHET, not a binary: ~300 react-hooks compiler findings need
+  # per-site judgment and a red-for-months gate teaches everyone to ignore it.
+  # .lint-ceiling is the count already reached; any NEW error fails the push,
+  # and a push that fixes some must lower the ceiling with it (the script says
+  # how). Zero is the end state; this is how the road there stays one-way.
+  - name: lint-ratchet
+    run: |
+      set -e
+      corepack enable pnpm
+      pnpm install --frozen-lockfile
+      node scripts/lint-ratchet.mjs
   - name: unit-integration-security
     run: |
       set -e

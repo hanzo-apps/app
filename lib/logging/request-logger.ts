@@ -20,7 +20,10 @@ let db: ReturnType<typeof import('../vfs/adapters/sqlite-connection').getCoreDat
  */
 function getDB() {
   if (!db) {
-    // Dynamic import to avoid issues in non-server contexts
+    // Lazy CJS require ON PURPOSE: this must not be a static import, or the
+    // sqlite native binding loads in edge/client bundles that only import the
+    // logger's types. import() would make every caller async for no reason.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { getCoreDatabase } = require('../vfs/adapters/sqlite-connection');
     db = getCoreDatabase();
   }

@@ -20,7 +20,8 @@
     "test:e2e:public": "playwright test --project=public",
     "qc": "node scripts/visual-qc.mjs",
     "sync:design-skill": "node scripts/sync-design-skill.mjs",
-    "lint:design": "hanzo-design-lint components app"
+    "lint:design": "hanzo-design-lint components app",
+    "lint:gate": "node scripts/lint-ratchet.mjs"
   },
   "dependencies": {
     "@codemirror/lang-css": "^6.3.1",
@@ -140,7 +141,7 @@
       "better-sqlite3"
     ]
   },
-  "description": "Hanzo App — AI web & app builder on Hanzo Cloud",
+  "description": "Hanzo App \u2014 AI web & app builder on Hanzo Cloud",
   "author": "Hanzo AI, Inc.",
   "repository": {
     "type": "git",
