@@ -343,6 +343,18 @@ export default function Comparison() {
         </Reveal>
 
         {/* ── Desktop / tablet-wide: sliding matrix ─────────────── */}
+        {/* Hidden by default, shown from $lg up — the exact complement of the
+            mobile card list below, which is hidden FROM $lg up. `$lg` is
+            MIN-WIDTH 1024 here: @hanzogui/config/v5 defines every bare
+            breakpoint key as minWidth (sm 640, md 768, lg 1024, xl 1280), the
+            same direction as Tailwind. Max-width needs the explicit `$max-lg`
+            key. The `maxWidth` in @hanzogui/config's types/config.d.ts is stale
+            and contradicts both runtime maps — reading it is how this guard's
+            direction gets misread.
+
+            This line previously had `display="none"` and no responsive prop at
+            all, so the matrix rendered at NO width, and above 1024 (where the
+            card list hides) the section was nothing but its own heading. */}
         <YStack marginTop="$7" display="none" $lg={{ display: "flex" }}>
           <Reveal delay={80}>
             <XStack marginBottom="$3" alignItems="center" justifyContent="space-between" gap="$4">
