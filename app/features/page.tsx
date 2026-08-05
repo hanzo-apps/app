@@ -5,7 +5,7 @@ import { Button, Badge, Card, CardContent, CardDescription, CardHeader, CardTitl
 import { accent } from '@/lib/chrome';
 import Link from "next/link";
 import SiteFooter from "@/components/landing/site-footer";
-import { ArrowRight, Check, X, Sparkles, Zap, Brain, Code, Globe, Shield, Database, Rocket, Users, Server, Cloud, Settings, BarChart, Cpu, Layers, GitBranch, MonitorPlay, Package } from "lucide-react";
+import { ArrowRight, Check, Sparkles, Zap, Brain, Code, Globe, Shield, Database, Rocket, Users, Server, Cloud, Settings, BarChart, Cpu, Layers, GitBranch, MonitorPlay, Package } from "lucide-react";
 import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
 import Header from "@/components/layout/header";
@@ -73,73 +73,6 @@ export default function FeaturesPage() {
       icon: <Package size={32} />,
       title: "Component Intelligence",
       description: "AI understands popular frameworks and libraries, automatically selecting the best components and patterns for your use case."
-    }
-  ];
-
-  const pricingPlans = [
-    {
-      name: "Starter",
-      price: "Free",
-      period: "",
-      description: "Perfect for learning and small projects",
-      features: [
-        "5 projects",
-        "Basic AI assistance",
-        "Community templates",
-        "Standard deployment",
-        "Community support"
-      ],
-      notIncluded: [
-        "Advanced AI models",
-        "Priority support",
-        "Custom domains",
-        "Team collaboration"
-      ],
-      cta: "Start Building",
-      popular: false
-    },
-    {
-      name: "Pro",
-      price: "$29",
-      period: "/month",
-      description: "For professional developers and teams",
-      features: [
-        "Unlimited projects",
-        "Advanced AI models",
-        "Premium templates",
-        "Custom domains",
-        "Priority deployment",
-        "Email support",
-        "Team collaboration",
-        "Advanced analytics"
-      ],
-      notIncluded: [
-        "24/7 phone support",
-        "Enterprise SSO",
-        "Custom integrations"
-      ],
-      cta: "Start Pro Trial",
-      popular: true
-    },
-    {
-      name: "Enterprise",
-      price: "Custom",
-      period: "",
-      description: "For large organizations with specific needs",
-      features: [
-        "Everything in Pro",
-        "Custom AI training",
-        "Dedicated support",
-        "Enterprise SSO",
-        "Custom integrations",
-        "SLA guarantees",
-        "Advanced security",
-        "Audit logs",
-        "Priority features"
-      ],
-      notIncluded: [],
-      cta: "Contact Sales",
-      popular: false
     }
   ];
 
@@ -312,75 +245,35 @@ export default function FeaturesPage() {
           </YStack>
         </YStack>
 
-        {/* Pricing Comparison */}
+        {/* Pricing — the LINK, never the numbers.
+            This section used to render a hardcoded three-plan table with its
+            own tier names, its own monthly figures and a trial button. None of
+            it came from the catalog (`/v1/billing/plans`), so it matched
+            neither the real plans nor the real prices, and it went on selling
+            a free tier that is retired. A price written down twice has two
+            sources and only one of them is ever right — /pricing is the one
+            pricing surface, so this points at it and quotes no figure. */}
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
-          <YStack maxWidth={1280} alignSelf="center">
-            <YStack marginBottom="$10" alignItems="center">
-              <Badge variant="outline" className="mb-4 px-4 py-1.5">
+          <YStack maxWidth={896} alignSelf="center" alignItems="center">
+            {/* A Badge is typed as span props — it carries no layout, so the
+                spacing lives on a stack around it. The sibling sections still
+                write `className="mb-4 px-4 py-1.5"` here, which has matched no
+                rule since Tailwind was removed. */}
+            <YStack marginBottom="$4">
+              <Badge variant="outline">
                 <BarChart size={16} />
-                Simple Pricing
+                Pricing
               </Badge>
-              <H2 fontSize="$10" fontWeight="500" marginBottom="$4" textAlign="center" $md={{ fontSize: "$11" }} lineHeight="1.1">Choose your plan</H2>
-              <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center" textAlign="center">
-                Start free, scale as you grow. No hidden fees or surprises.
-              </Paragraph>
             </YStack>
-
-            <YStack gap="$6">
-              {pricingPlans.map((plan, index) => (
-                <Card
-                  key={index}
-                  position="relative" backgroundColor="$color002" {...{ borderColor: plan.popular ? "$color" : "$borderColor", scale: plan.popular ? 1.05 : undefined, hoverStyle: plan.popular ? undefined : {"borderColor":"$color06"} }}
-                >
-                  {plan.popular && (
-                    <YStack position="absolute" top="$-3" left="50%" x="-50%">
-                      <Badge className="px-4 py-1">
-                        Most Popular
-                      </Badge>
-                    </YStack>
-                  )}
-                  <CardHeader alignItems="center" paddingBottom="$5">
-                    <CardTitle fontSize="$8" color="$color">{plan.name}</CardTitle>
-                    <YStack marginTop="$4">
-                      <SizableText fontSize="$11" fontWeight="500" color="$color">{plan.price}</SizableText>
-                      {plan.period && <SizableText color="$color11" marginLeft="$1">{plan.period}</SizableText>}
-                    </YStack>
-                    <CardDescription color="$color11" marginTop="$2">
-                      {plan.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent rowGap="$4">
-                    <Button
-                      width="100%" {...{ color: plan.popular ? "$background" : "$color", backgroundColor: plan.popular ? undefined : "$color002", borderWidth: plan.popular ? undefined : 1, borderColor: plan.popular ? undefined : "$borderColor", hoverStyle: plan.popular ? undefined : {"borderColor":"$color06","backgroundColor":"$color005"} }}
-                      onClick={() => plan.name === 'Enterprise' ? router.push('/enterprise') : (user ? router.push('/dev') : openLoginWindow())}
-                    >
-                      {plan.cta}
-                    </Button>
-                    <YStack rowGap="$3">
-                      {plan.features.map((feature, idx) => (
-                        <XStack key={idx} alignItems="center" gap="$3">
-                          <Check size={16} />
-                          <SizableText fontSize="$3" color="$color">{feature}</SizableText>
-                        </XStack>
-                      ))}
-                      {plan.notIncluded.map((feature, idx) => (
-                        <XStack key={idx} alignItems="center" gap="$3">
-                          <X size={16} />
-                          <SizableText fontSize="$3" color="$color11">{feature}</SizableText>
-                        </XStack>
-                      ))}
-                    </YStack>
-                  </CardContent>
-                </Card>
-              ))}
-            </YStack>
-
-            <YStack marginTop="$8" alignItems="center">
-              <Paragraph color="$color11" marginBottom="$4" textAlign="center">All plans include free SSL certificates and 99.9% uptime SLA</Paragraph>
-              <Link href="/pricing"><SizableText color="$color11" fontSize="$3" fontWeight="500" textAlign="center" hoverStyle={{ color: "$color" }}>
-                View detailed pricing comparison →
-              </SizableText></Link>
-            </YStack>
+            <H2 fontSize="$10" fontWeight="500" marginBottom="$4" textAlign="center" $md={{ fontSize: "$11" }} lineHeight="1.1">
+              Plans and pricing
+            </H2>
+            <Paragraph fontSize="$6" color="$color11" marginBottom="$6" maxWidth={672} alignSelf="center" textAlign="center">
+              Every plan and what it includes, on one page.
+            </Paragraph>
+            <Link href="/pricing">
+              <Button {...accent}>View pricing</Button>
+            </Link>
           </YStack>
         </YStack>
 
