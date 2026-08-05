@@ -21,6 +21,7 @@
  * server which pins them to their bearer owner.
  */
 import { Image, SizableText, YStack, Paragraph, XStack, H1 } from '@hanzo/gui';
+import { glass } from "@/lib/chrome";
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Building2, Check, ChevronsUpDown, Plus, Search, Settings, Sparkles } from 'lucide-react';
@@ -166,7 +167,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
         <>
           <YStack position="fixed" top={0} right={0} bottom={0} left={0} zIndex={40} onClick={() => setOpen(false)} />
           <YStack
-            position="absolute" left="$0" zIndex={50} width={288} borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$2" elevation={6} {...{ bottom: direction === "up" ? "100%" : undefined, marginBottom: direction === "up" ? "$2" : undefined, marginTop: direction === "up" ? undefined : "$2" }}
+            {...glass(2)} position="absolute" left="$0" zIndex={50} width={288} borderRadius="$6" borderWidth={1} padding="$2" {...{ bottom: direction === "up" ? "100%" : undefined, marginBottom: direction === "up" ? "$2" : undefined, marginTop: direction === "up" ? undefined : "$2" }}
           >
             {creating ? (
               <YStack rowGap="$2">

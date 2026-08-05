@@ -109,6 +109,24 @@ export const glass = (level: 2 | 3 = 2) =>
   }) as const;
 
 /**
+ * The scrim under anything modal — the dim that makes a floating panel read as
+ * floating rather than as more page.
+ *
+ * Three hand-rolled modals (the share sheet, the session viewer, the record
+ * drawer) each wrote `backgroundColor="black"`, with no alpha. That does not
+ * dim the page behind them, it DELETES it — and a glass panel over a solid
+ * black wall has nothing left to be translucent about. Dialogs meanwhile got
+ * their scrim from CSS, so the two never agreed.
+ *
+ * The value is a CSS variable, not a literal, because both languages need it
+ * and only one of them can hold the copy: `[data-slot="dialog-overlay"]` reads
+ * `--hz-scrim` in globals.css and this reads the same variable, so the dim
+ * behind a gui dialog and the dim behind a hand-rolled one are the same dim by
+ * construction rather than by two people remembering 0.55.
+ */
+export const scrim = { backgroundColor: 'var(--hz-scrim)' } as const;
+
+/**
  * A group of rows — the settings card, and the reason /settings had four cards
  * where it wanted one.
  *

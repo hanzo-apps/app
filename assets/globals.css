@@ -1208,6 +1208,14 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
    sitting at the wrong level. */
 :root {
   --hz-sheen: rgba(255, 255, 255, 0.09);
+
+  /* The scrim under anything modal, declared ONCE because both languages need
+     it: the dialog overlay reaches it from CSS below, and the three hand-rolled
+     modals reach it from `scrim` in lib/chrome. Those three each wrote
+     `backgroundColor="black"` — opaque, no alpha — so the page did not dim
+     behind them, it VANISHED, and a translucent panel over a solid wall is a
+     panel with nothing to be translucent about. */
+  --hz-scrim: rgba(0, 0, 0, 0.55);
 }
 
 .hz-elevation-1 {
@@ -1273,7 +1281,7 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
    out of step with the material again. */
 [data-slot="dialog-overlay"] {
   opacity: 1;
-  background-color: rgba(0, 0, 0, 0.55);
+  background-color: var(--hz-scrim);
 }
 
 /* Stretched link — the whole positioned ancestor becomes the anchor's hit

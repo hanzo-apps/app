@@ -1,6 +1,7 @@
 "use client";
 
 import { SizableText, YStack, XStack, H3 } from '@hanzo/gui';
+import { glass } from "@/lib/chrome";
 import { useState, useEffect, useCallback } from "react";
 import {
   Wand2,
@@ -700,7 +701,7 @@ export function VisualEditor({
 
       {/* Properties Panel */}
       {!isHidden && !isMinimized && isEnabled && showPanel && selectedElement && (
-        <YStack position="absolute" top="$11" right="$4" zIndex={50} width={320} backgroundColor="$background" backdropFilter="blur(4px)" borderRadius="$5" borderWidth={1} borderColor="$borderColor" maxHeight={600} overflow="hidden">
+        <YStack {...glass(2)} position="absolute" top="$11" right="$4" zIndex={50} width={320} borderRadius="$5" borderWidth={1} maxHeight={600} overflow="hidden">
           <YStack padding="$4" borderBottomWidth={1} borderColor="$borderColor">
             <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
               <H3 fontSize="$3" fontWeight="500" color="$color">Element Properties</H3>

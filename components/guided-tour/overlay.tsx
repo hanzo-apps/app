@@ -1,6 +1,7 @@
 'use client';
 
 import { YStack, XStack, H3, SizableText } from '@hanzo/gui';
+import { glass } from "@/lib/chrome";
 import { useEffect, useMemo, useState } from 'react';
 import { useGuidedTour } from './context';
 import { Button } from '@hanzo/ui';
@@ -111,7 +112,7 @@ export function GuidedTourOverlay({ location }: GuidedTourOverlayProps) {
       )}
 
       <YStack position="absolute" bottom="$7" left="50%" width="100%" maxWidth={576} x="-50%" gap="$4" paddingHorizontal="$4">
-        <YStack pointerEvents="auto" borderRadius="$8" borderWidth={1} backgroundColor="$background" padding="$5" elevation={6}>
+        <YStack {...glass(3)} pointerEvents="auto" borderRadius="$8" borderWidth={1} padding="$5">
           <XStack alignItems="flex-start" justifyContent="space-between" gap="$4">
             <YStack flex={1}>
               <XStack alignItems="center" justifyContent="space-between" gap="$4">
