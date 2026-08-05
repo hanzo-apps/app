@@ -83,7 +83,6 @@ export default function PricingPage() {
           <YStack position="relative" alignSelf="center" maxWidth={768}>
             <Reveal>
               <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$3" paddingVertical="$1.5">
-                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color5" />
                 <SizableText fontFamily="$mono" fontSize={11} color="$color11">
                   One plan · every Hanzo app
                 </SizableText>

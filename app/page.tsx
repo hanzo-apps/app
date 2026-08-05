@@ -187,7 +187,6 @@ export default function LandingPage() {
           <YStack alignSelf="center" maxWidth={768}>
             <Reveal>
               <XStack alignSelf="center" marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color0025" paddingHorizontal="$3" paddingVertical="$1.5">
-                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color06" />
                 <SizableText fontFamily="$mono" fontSize={11} color="$color11">
                   Apps, wired to real data &amp; AI
                 </SizableText>

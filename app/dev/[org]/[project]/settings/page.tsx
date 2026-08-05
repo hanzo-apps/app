@@ -157,7 +157,9 @@ export default function ProjectSettingsPage() {
             {/* General */}
             <Section icon={Pencil} title="General">
               <Field label="Project name">
-                <Input value={name} onChange={(e) => setName(e.target.value)} />
+                {/* The field emits text, not a change event — the DOM spelling
+                    never fires on @hanzo/ui Input, so this rename box was inert. */}
+                <Input value={name} onChangeText={setName} />
               </Field>
               <Field label="Framework">
                 <Select value={framework} onValueChange={setFramework}>

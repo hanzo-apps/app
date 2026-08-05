@@ -19,17 +19,16 @@ import {
   Boxes,
 } from "lucide-react";
 import Link from "next/link";
-import { HanzoBrand } from "@/components/HanzoLogo";
+import Header from "@/components/layout/header";
 import {
   fetchGalleryTemplates,
   templateBuilderLink,
   type GalleryTemplate,
 } from "@/lib/api/templates";
 import { ImportGitPanel } from "@/components/import-git-panel";
-import { UserMenu } from "@/components/user-menu";
 import { useUser } from "@/hooks/useUser";
 import { OrgProvider } from "@/lib/org/client";
-import { OrgGate, OrgSwitcher } from "@/components/org-switcher";
+import { OrgGate } from "@/components/org-switcher";
 import { isGitUrl, gitUrlGateMessage } from "@/lib/git/url";
 import { useProjectImport } from "@/lib/import/use-project-import";
 import { Spinner } from "@/components/ui/spinner";
@@ -194,46 +193,11 @@ function NewProjectInner() {
 
   return (
     <YStack minHeight="100%" backgroundColor="$background">
-      {/* Header */}
-      <YStack {...glass(2)} position="sticky" top="$0" zIndex={20} borderBottomWidth={1}>
-        <XStack alignSelf="center" height="$9" maxWidth={1152} alignItems="center" justifyContent="space-between" paddingHorizontal="$4" $sm={{ paddingHorizontal: "$5" }}>
-          <XStack alignItems="center" gap="$5">
-            <Link href="/"><XStack alignItems="center" gap="$2">
-              <HanzoBrand markSize={28} wordmarkFromSm />
-            </XStack></Link>
-            <XStack display="none" $md={{ display: "flex" }} alignItems="center" gap="$1">
-              {[
-                { href: "/dashboard", label: "Dashboard" },
-                { href: "/projects", label: "Projects" },
-                { href: "/gallery", label: "Gallery" },
-              ].map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                ><SizableText borderRadius="$3" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}>
-                  {l.label}
-                </SizableText></Link>
-              ))}
-            </XStack>
-          </XStack>
-
-          <XStack alignItems="center" gap="$3">
-            {user ? (
-              <>
-                <OrgSwitcher />
-                <UserMenu />
-              </>
-            ) : (
-              <XStack alignItems="center" gap="$2">
-                <Button variant="ghost" onClick={() => router.push("/login")}>
-                  Log In
-                </Button>
-                <Button onClick={() => router.push("/login")}>Sign Up</Button>
-              </XStack>
-            )}
-          </XStack>
-        </XStack>
-      </YStack>
+      {/* The ONE header. This page carried its own — a text-logo bar with a
+          retired nav (Gallery, a /projects that redirects, separate Log In and
+          Sign Up) drifting further from the shell every week. Its unique value
+          is the content below (deploy-from-git, drag-drop import), not chrome. */}
+      <Header />
 
       {/* Hero + composer */}
       <YStack position="relative" alignSelf="center" maxWidth={1152} paddingHorizontal="$4" paddingBottom="$12" $sm={{ paddingHorizontal: "$5" }}>
