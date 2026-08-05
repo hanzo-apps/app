@@ -4,13 +4,14 @@ AI-driven web app builder: Next.js 16 / React 19 / TypeScript, with the
 generated preview at `/dev`. Stack, scripts and layout are in `package.json`
 and the tree — this file carries only what those cannot tell you.
 
-Typecheck is `pnpm typecheck` → `tsgo` (`@typescript/native-preview`, the Go
-compiler). It agrees with `tsc` on every diagnostic this tree produces except
-`TS2783` ("specified more than once"), which it does not implement yet — two
-benign call sites in `components/table-of-contents`. It is ~8x faster, so it is
-the one typecheck entry point; `typescript` stays installed because Next, ESLint
-and `ts-node` each load it themselves. Neither is a build gate:
-`typescript.ignoreBuildErrors` is on, and behind it sit ~676 real errors.
+Typecheck is `pnpm typecheck` → plain `tsc --noEmit`, and CI runs the same
+two gates (`tsc --noEmit`, `pnpm test`) — an earlier `tsgo` experiment is gone
+from the scripts; if a doc or agent still says tsgo, the scripts are the truth.
+It is not a build gate: `typescript.ignoreBuildErrors` is on. Lint runs eslint
+9 (`pnpm lint`, exit 1 = findings, exit 2 = crashed) — eslint 10 is
+uninstallable until `eslint-plugin-react` ships support; ~336 real errors
+(mostly react-hooks 7 compiler rules) are tracked backlog, so there is no lint
+CI gate yet on purpose.
 
 Data plane: Hanzo Base (SQLite) locally, cloud `/v1/` APIs as the source of
 truth for shared state. Never Redis; Hanzo KV if a key/value store is needed.
