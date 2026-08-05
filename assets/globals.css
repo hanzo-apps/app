@@ -1181,25 +1181,29 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   }
 }
 
-/* Card grids — a hairline-gap grid of equal cells (template highlights,
-   how-it-works). gui stacks are flex; a real CSS grid is the one honest way
-   to get N equal columns with 1px gaps, so it lives here. */
-.card-grid {
+/* Cell grid — a hairline-gap grid of a FIXED number of equal columns, where
+   the 1px gap is the divider between touching cells (the template-detail
+   highlights). gui stacks are flex; a real CSS grid is the one honest way to
+   get N equal columns with 1px gaps, so it lives here.
+
+   It is NOT `.card-grid`, and the two must not share a name: this used to be a
+   second `.card-grid { gap: 1px }` block declared 400 lines AFTER the real one,
+   so it won the cascade and silently replaced that grid's 18px gutter with a
+   hairline for every bare consumer. Measured on /templates: four columns of
+   307px with `gap: 1px` — the cards were touching. Column counts come from the
+   modifiers, so the base sets none; a bare `.cell-grid` is one column on
+   purpose. */
+.cell-grid {
   display: grid;
   gap: 1px;
 }
 @media (min-width: 640px) {
-  .card-grid-sm-2 {
+  .cell-grid-sm-2 {
     grid-template-columns: repeat(2, 1fr);
   }
 }
-@media (min-width: 768px) {
-  .card-grid-md-3 {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
 @media (min-width: 1024px) {
-  .card-grid-lg-3 {
+  .cell-grid-lg-3 {
     grid-template-columns: repeat(3, 1fr);
   }
 }

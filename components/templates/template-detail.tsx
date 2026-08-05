@@ -195,7 +195,7 @@ export function TemplateDetail({
               <Reveal
                 delay={80}
                 marginTop="$9" overflow="hidden" borderRadius={16} borderWidth={1} borderColor="$borderColor" backgroundColor="var(--muted)"
-                className="card-grid card-grid-sm-2 card-grid-lg-3"
+                className="cell-grid cell-grid-sm-2 cell-grid-lg-3"
               >
                 {t.keyHighlights.map((h, i) => {
                   const Icon = HIGHLIGHT_ICONS[i % HIGHLIGHT_ICONS.length];
