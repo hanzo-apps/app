@@ -17,7 +17,7 @@ import { currentOrg } from '@/lib/org-scope';
  *  Passed explicitly because THIS is the name the build sets; when it is unset the
  *  package still resolves its own NEXT_PUBLIC_HANZO_INGEST_KEY, and with neither the
  *  authed-bearer path is used and anonymous events are best-effort. */
-const INGEST_KEY = process.env.NEXT_PUBLIC_EVENT_INGEST_KEY || undefined;
+const INGEST_KEY = process.env.NEXT_PUBLIC_PUBLISHABLE_KEY || undefined;
 
 /**
  * The ONE place this app binds telemetry identity. It is the only part of the

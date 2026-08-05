@@ -29,10 +29,10 @@ ARG IAM_APPLICATION=app-hanzo
 # Next at BUILD time, so this has to be a build arg; setting it on the pod is too
 # late. Write-only and safe to ship in the bundle: pk_ is ingest-only by
 # construction and cannot read. Mint per org with POST /v1/ingest/keys.
-ARG NEXT_PUBLIC_EVENT_INGEST_KEY
+ARG NEXT_PUBLIC_PUBLISHABLE_KEY
 
 ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
-ENV NEXT_PUBLIC_EVENT_INGEST_KEY=$NEXT_PUBLIC_EVENT_INGEST_KEY
+ENV NEXT_PUBLIC_PUBLISHABLE_KEY=$NEXT_PUBLIC_PUBLISHABLE_KEY
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN corepack enable pnpm && pnpm build

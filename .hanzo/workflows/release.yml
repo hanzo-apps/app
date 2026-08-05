@@ -134,7 +134,7 @@ jobs:
           username: hanzo-dev
           password: ${{ secrets.GH_PAT }}
       # The publishable ingest key, from KMS — the only store secrets come from.
-      # It used to read `secrets.EVENT_INGEST_KEY`, a repo secret, which put the
+      # It used to read `secrets.PUBLISHABLE_KEY`, a repo secret, which put the
       # same credential in a second place with its own rotation story.
       #
       # Same KMS surface and same key name the shared hanzoai/ci reusable uses for
@@ -183,10 +183,10 @@ jobs:
             echo "::error::KMS login failed at $KMS_ENDPOINT/v1/kms/auth/login — refusing to ship a bundle with no ingest key"; exit 1
           fi
           # Embedded KMS (HIP-0106): org from the token, flat {"value"}.
-          V=$(curl -sS -m 30 "$KMS_ENDPOINT/v1/kms/secrets/deploy/EVENT_INGEST_KEY?env=prod" \
+          V=$(curl -sS -m 30 "$KMS_ENDPOINT/v1/kms/secrets/deploy/PUBLISHABLE_KEY?env=prod" \
             -H "Authorization: Bearer $TOKEN" 2>/dev/null | jq -r '.value // empty' || true)
           if [ -z "$V" ]; then
-            echo "::error::EVENT_INGEST_KEY absent from KMS (path deploy, env prod) — refusing to ship a bundle with no ingest key"; exit 1
+            echo "::error::PUBLISHABLE_KEY absent from KMS (path deploy, env prod) — refusing to ship a bundle with no ingest key"; exit 1
           fi
           echo "::add-mask::$V"
           echo "key=$V" >> "$GITHUB_OUTPUT"
@@ -206,7 +206,7 @@ jobs:
           # group, and still answers 200. Build-time by necessity: Next inlines
           # NEXT_PUBLIC_* into the client bundle.
           build-args: |
-            EVENT_INGEST_KEY=${{ steps.ingest.outputs.key }}
+            PUBLISHABLE_KEY=${{ steps.ingest.outputs.key }}
       - name: Verify the pushed image is pullable (guard the image ⇔ tag invariant)
         # build-push-action can exit 0 while the manifest isn't yet resolvable at the
         # registry (or a partial push). If we tag git anyway, the CR bump lands on a
