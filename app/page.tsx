@@ -253,7 +253,7 @@ export default function LandingPage() {
                                 startFromTemplate(t);
                               }
                             }}
-                            cursor="pointer" width={280} flexShrink={0} group className="zoom-scope hz-strip-card" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" hoverStyle={{ borderColor: "$color02", backgroundColor: "$color005" }} focusVisibleStyle={{ outlineWidth: 0 }}
+                            cursor="pointer" width={280} flexShrink={0} group className="zoom-scope hz-strip-card" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" hoverStyle={{ borderColor: "$color02", backgroundColor: "$color005" }}
                           >
                             <YStack position="relative" overflow="hidden" height={175} backgroundColor="$color002">
                               <TemplateThumb

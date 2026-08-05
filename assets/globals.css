@@ -458,68 +458,47 @@ a {
   }
 }
 
+/* WHAT REMAINS HERE IS WHAT @hanzo/design DOES NOT SHIP, and nothing else.
+   ────────────────────────────────────────────────────────────────────────────
+   This block used to restate design's whole semantic palette — surface ladder,
+   ground, card, popover, primary, secondary, muted, accent, destructive,
+   border, input, ring, the chart ramp, the sidebar set — twenty-odd names a
+   published package already owns. A copy is not a decision, it is a fork
+   waiting to happen, and this one had already happened: ground #080808 against
+   canon #0a0a0a, foreground #ededed against #fafafa, popover LIGHTER than card,
+   a solid #262626 hairline where design's border is deliberately alpha, and an
+   opaque `--ring` where design's is translucent so it lifts with whatever
+   surface it lands on. None of it was wrong on purpose; it simply drifted,
+   because nothing compared the two.
+
+   `@hanzo/ui/theme.css` (app/layout.tsx) is design's sheet, so the names arrive
+   from the one place that decides them. Only two survive here: the focus pair,
+   which is this app's own composition rule (see the focus block below) and
+   which design does not name, and `--tint`, the app's own lift channel. */
 .dark {
-  /* Layered blacks (v2) — every panel a subtly different near-black, no gray
-     panels: bg #080808 · card #0d0d0d · popover #111 · muted #171717. */
-  --surface-0: #080808;
-  --surface-1: #0d0d0d;
-  --surface-2: #111111;
-  --surface-3: #171717;
-  --background: #080808;
-  --foreground: #ededed;
-  --card: #0d0d0d;
-  --card-foreground: oklch(0.985 0 0);
-  --popover: #111111;
-  --popover-foreground: oklch(0.985 0 0);
-  /* Primary action stays monochrome (white); purple is accent-only. */
-  --primary: #ffffff;
-  --primary-foreground: #0a0a0a;
-  --secondary: #171717;
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: #171717;
-  --muted-foreground: #8a8a8f;
-  --accent: #1c1c1f;
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  /* Hairline borders — 1px rgba(255,255,255,.06), no thick outlines. */
-  --border: rgba(255, 255, 255, 0.06);
-  --input: rgba(255, 255, 255, 0.08);
-  --ring: var(--brand-accent);
   /* The ONE keyboard-focus ring, per theme — white on the dark ground. This is the
      value the landing page already proved legible; it is now the whole app's. */
   --focus-ring: rgba(255, 255, 255, 0.72);
   --focus-edge: rgba(255, 255, 255, 0.6);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: #0a0a0a;
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.922 0 0);
-  --sidebar-primary-foreground: oklch(0.205 0 0);
-  --sidebar-accent: #1c1c1f;
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: rgba(255, 255, 255, 0.06);
-  --sidebar-ring: var(--brand-accent);
   /* The lift inverts with the ground: white on black, black on white. The accent
      does not — it is one value, and the app has one ground. */
   --tint: 255 255 255;
 }
 
 /* The app is dark-only — `dark` is a literal class the server renders onto <html>
-   (app/layout.tsx), so this block is simply "the app's palette", and there is no
-   light counterpart because there is no light theme to serve one.
+   (app/layout.tsx), so the block above is simply "what this app adds", and there
+   is no light counterpart because there is no light theme to serve one.
 
-   It exists because of TOKEN-VALUE precedence, not theming: Tamagui's runtime CSS
-   sets its own `--background` (dark hsla(0,0%,8%) ≈ #141414) and wins source-order
-   over this palette (verified: removing this → bg becomes #141414). We want the v2
-   layered-black spec (#080808), so re-assert it here. `!important` is the clean win
-   over Tamagui's runtime CSS; --background is a root palette token never overridden
-   per-element, so it is safe. */
+   `--background: #080808 !important` used to live here, and it was the clearest
+   symptom in the whole sheet: a fourth value for the ground that existed only to
+   win a fight. gui's generated theme declares `--background` at bare `:root`,
+   ties design's `:root` on specificity and wins on load order (gui.css is
+   imported last), so the app pinned its own number over the top with the only
+   weapon that beats both. The fight is settled at the source instead —
+   scripts/gen-gui-css.mjs now drops the names design owns out of gui's root
+   themes, the same prune @hanzo/ui runs on its own sheet — so design's #0a0a0a
+   simply resolves, and there is nothing left here to override. */
 html.dark {
-  --background: #080808 !important;
-
   /* The ONE accent, and it has no hue. hanzo.app is the white-label monochrome
      override of @hanzo/brand's violet — the brand package documents
      `--hanzo-accent` as the per-host knob, so overriding THAT (rather than only
@@ -613,8 +592,25 @@ html.dark ::selection {
    would have been invisible in light mode, which is why the landing rule could get
    away with hardcoding one and a global rule cannot. Pointer focus stays quiet (the
    composer's own border cue handles it); the outline follows each element's
-   border-radius so pills, cards and buttons ring cleanly. */
-:is(a, button, summary, [role="button"], [tabindex]):focus-visible {
+   border-radius so pills, cards and buttons ring cleanly.
+
+   ── `html:root` is what makes this rule the law ─────────────────────────────
+   It was not, and 37 call sites are the proof. `:is(a, button, …)` takes the
+   specificity of its loudest argument — `[role="button"]`, (0,1,0) — plus
+   `:focus-visible` (0,1,0), so this landed at (0,2,0): a dead tie with every
+   atomic class gui compiles, decided by load order, and gui.css is imported
+   after this sheet. So gui's own default outline won on every gui component,
+   and the way each author silenced it was to write `focusVisibleStyle={{
+   outlineWidth: 0 }}` on the element — which does not restore this rule, it
+   deletes the indicator. Thirty-seven controls ended up with no keyboard focus
+   at all, eleven of them in the builder chrome.
+
+   `html:root` is (0,1,1), the same anchor the font tokens below use and for the
+   same reason, and it puts both rules at (0,3,1) — above gui's atomics, decided
+   by specificity rather than by which file a bundler happened to order last. The
+   law now lives HERE, in one place, and a call site cannot quietly opt out of
+   it: the 37 props are gone and none is needed again. */
+html:root :is(a, button, summary, [role="button"], [tabindex]):focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
@@ -638,11 +634,42 @@ html.dark ::selection {
    the brighten at the component, which is what makes one line enough.
 
    `--focus-edge` against a hairline rest is ~5:1, so the edge alone carries the
-   indicator (WCAG 2.4.13). This now governs only bare DOM controls; every
-   @hanzo/ui field cues itself, in the same value. */
-:is(input, textarea, select):focus-visible {
+   indicator (WCAG 2.4.13).
+
+   Anchored on `html:root` for the reason given above, and here it is the half
+   that matters most: this rule is the ONLY thing standing between a text field
+   and the 2px offset box. Losing the tie to gui's atomic default is what put
+   one around every field in the product the first time. */
+html:root :is(input, textarea, select):focus-visible {
   outline: none;
   border-color: var(--focus-edge);
+}
+
+/* A field with no edge of its own is not the control — the box around it is.
+   The composers, the search rows and the palette put a borderless <textarea> or
+   <input> inside a bordered box, so the rule above has nothing to brighten: the
+   field's `border-width` is 0 and a colour on a zero-width border draws no
+   pixels. Six of those fields carried `focusStyle={{ outlineWidth: 0 }}` and
+   were therefore the only controls in the app with NO focus state whatsoever,
+   pointer or keyboard.
+
+   `:focus-within` is what says "the control that contains focus", and it reads
+   the same `--focus-edge` the field rule does, so a bordered field and a
+   borderless one inside a box light up in the same value. Marked by
+   `data-field-box` rather than inferred: whether a box IS the control is a fact
+   about the design, not something a selector can work out, and `:has()` cannot
+   walk up to an arbitrary ancestor anyway.
+
+   Drawn as an inset outline rather than by brightening `border-color`, because
+   half these boxes have no border to brighten — the chat composer and the build
+   composer are a background and a gradient ring, and a colour on a zero-width
+   border paints nothing. `outline-offset: -1px` lays the line exactly where a
+   1px edge would be, follows the box's radius, and costs no layout, so a box
+   that HAS a hairline lights that hairline and a box that has none gets one.
+   One line either way, which is the same promise the field rule above makes. */
+html:root [data-field-box]:focus-within {
+  outline: 1px solid var(--focus-edge);
+  outline-offset: -1px;
 }
 
 .background__noisy {

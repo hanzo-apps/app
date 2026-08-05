@@ -180,7 +180,7 @@ export function WorkspaceMenu({
           <Button
             type="button"
             title="Workspace"
-            minWidth={0} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$color02", backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
+            minWidth={0} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$color02", backgroundColor: "$color3" }}
           >
             <OrgAvatar name={orgName} logo={activeOrg?.logo} />
             <SizableText maxWidth="9rem" numberOfLines={1} fontWeight="500" color="$color">

@@ -8,12 +8,22 @@ import TanstackProvider from "@/components/providers/tanstack-query-provider";
 // Tamagui `--background !important` fix. One import, at the root, once.
 import "@hanzo/brand/styles/variables.css";
 import "@/assets/globals.css";
-// The frosted material, the elevation ladder, the dialog scrim, the row
-// separators. Defined in this app first and packaged from it, so it sits in the
-// cascade slot its own copy used to hold: after the app's tokens, which it
-// reads, and before gui.css, whose atomic background it outranks with the
-// !important it carries for exactly that reason.
-import "@hanzo/ui/glass.css";
+// THE TOKEN LAYER AND THE MATERIAL, in one import. `@hanzo/ui/theme.css` is
+// @hanzo/design's whole sheet composed with this package's own remainder and
+// glass.css inlined, so the colours, the radius ramp, the type rungs, the
+// frosted material, the elevation ladder, the dialog scrim and the row
+// separators all arrive together and cannot disagree about which version they
+// are. This app used to import only the material half and hand-declare the
+// token half in assets/globals.css — twenty semantic names design already
+// publishes, drifted: ground #080808 against canon #0a0a0a, a solid #262626
+// border against an alpha hairline, an opaque ring, and @hanzo/brand's radius
+// ramp a full rung low because nothing ever challenged it.
+//
+// It sits exactly where the material used to: after the app's own sheet, whose
+// remaining tokens are the ones design does NOT ship, and before gui.css, whose
+// atomic background it outranks with the !important glass carries for that
+// reason.
+import "@hanzo/ui/theme.css";
 // The full @hanzo/gui atomic sheet as a REAL stylesheet (scripts/gen-gui-css.mjs).
 // GuiProvider gets disableInjectCSS so the same 350KB is no longer inlined into
 // every HTML document, uncacheable.

@@ -184,7 +184,7 @@ export const Uploader = ({
                       }}
                       placeholder="Describe an image…"
                       disabled={generating}
-                      flex={1} minWidth={0} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0, borderColor: "$color8" }}
+                      flex={1} minWidth={0} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color8" }}
   />
                     <Button
                       flexShrink={0}

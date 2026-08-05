@@ -251,7 +251,7 @@ export default function GameDetail() {
                 placeholder="e.g. add a second enemy type and a score multiplier…"
                 rows={2}
                 data-testid="builder-prompt"
-                flex={1} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color8", outlineWidth: 0 }}
+                flex={1} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color8" }}
   />
               <Button
                 gap="$2" alignSelf="flex-end"

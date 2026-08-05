@@ -216,7 +216,7 @@ export function BuildComposer({
 
       {/* The gradient bubble: padded gradient host + opaque inner panel. */}
       <YStack borderRadius="$8" elevation={6} className="hz-composer">
-        <YStack borderRadius={14} backgroundColor="$background">
+        <YStack data-field-box borderRadius={14} backgroundColor="$background">
           <Textarea
             ref={textareaRef}
             value={idea}
@@ -232,7 +232,7 @@ export function BuildComposer({
             onBlur={() => setFocused(false)}
             placeholder={placeholder}
             aria-label="Ask Hanzo to build"
-            width="100%" backgroundColor="transparent" borderWidth={0} paddingHorizontal="$4" paddingBottom="$2" paddingTop="$4" fontSize={15} lineHeight="1.625" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0, borderWidth: 0 }}
+            width="100%" backgroundColor="transparent" borderWidth={0} paddingHorizontal="$4" paddingBottom="$2" paddingTop="$4" fontSize={15} lineHeight="1.625" color="$color" placeholderTextColor="$color11" focusStyle={{ borderWidth: 0 }}
   />
           <XStack alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$2.5" paddingBottom="$2.5">
             <XStack alignItems="center" gap="$1">
@@ -331,7 +331,7 @@ export function BuildComposer({
                   submit(s);
                 }
               }}
-              cursor="pointer" flexShrink={0} whiteSpace="nowrap" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$color5", backgroundColor: "$color4", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+              cursor="pointer" flexShrink={0} whiteSpace="nowrap" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$color5", backgroundColor: "$color4", color: "$color" }}
             >
               {s}
             </SizableText>

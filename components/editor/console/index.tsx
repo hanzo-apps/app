@@ -141,7 +141,7 @@ export function Console({
             else return;
             e.preventDefault();
           }}
-          position="absolute" top={0} right={0} bottom={0} left={0} cursor="row-resize" userSelect="none" borderTopWidth={1} borderColor="$borderColor" focusVisibleStyle={{ outlineWidth: 0 }} group
+          position="absolute" top={0} right={0} bottom={0} left={0} cursor="row-resize" userSelect="none" borderTopWidth={1} borderColor="$borderColor" group
         >
           {/* The affordance: a hairline that lifts and a grip that fades in on
               hover, focus or drag. Nothing is drawn while the bar is at rest. */}
@@ -162,7 +162,7 @@ export function Console({
             aria-expanded={!sidebarCollapsed}
             variant="ghost"
             group
-            width="$4.5" height="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
+            width="$4.5" height="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}
           >
             <SizableText color="$color11" $group-hover={{ color: "$color" }}>
               {sidebarCollapsed ? (

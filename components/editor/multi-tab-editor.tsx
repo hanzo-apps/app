@@ -368,14 +368,14 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
       
       {openFiles.size === 0 ? (
         <YStack flex={1} minHeight={0}>
-          <XStack alignItems="center" gap="$2" borderBottomWidth={1} paddingHorizontal="$3" paddingVertical="$2">
+          <XStack data-field-box alignItems="center" gap="$2" borderBottomWidth={1} paddingHorizontal="$3" paddingVertical="$2">
             <Search size={14} />
             <Input
               value={browseQuery}
               onChange={(e) => setBrowseQuery(e.target.value)}
               placeholder="Search files…"
               aria-label="Search files"
-              width="100%" backgroundColor="transparent" paddingVertical="$0.5" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
+              width="100%" backgroundColor="transparent" paddingVertical="$0.5" fontSize="$3" color="$color" placeholderTextColor="$color11"
   />
             <SizableText flexShrink={0} fontFamily="$mono" fontSize={10} color="$color11">
               {browseFiltered.length}
@@ -409,7 +409,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                       type="button"
                       onClick={() => openFile(file)}
                       title={file.path}
-                      width="100%" alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" justifyContent="flex-start" hoverStyle={{ backgroundColor: "$color3" }} focusStyle={{ outlineWidth: 0 }} {...{ paddingLeft: group.folder ? 28 : undefined }}
+                      width="100%" alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" justifyContent="flex-start" hoverStyle={{ backgroundColor: "$color3" }} {...{ paddingLeft: group.folder ? 28 : undefined }}
                     >
                       {getFileType(file.path).type === 'image' ? (
                         <ImageIcon size={14} />

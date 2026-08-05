@@ -126,7 +126,7 @@ export default function PricingPage() {
                       setGroup(id);
                     }
                   }}
-                  cursor="pointer" whiteSpace="nowrap" borderRadius="$10" paddingHorizontal="$4" paddingVertical="$1.5" fontSize="$3" fontWeight="500" {...{ backgroundColor: group === id ? "$color5" : "transparent", color: group === id ? "$color12" : "$color11" }} focusVisibleStyle={{ outlineWidth: 0 }}
+                  cursor="pointer" whiteSpace="nowrap" borderRadius="$10" paddingHorizontal="$4" paddingVertical="$1.5" fontSize="$3" fontWeight="500" {...{ backgroundColor: group === id ? "$color5" : "transparent", color: group === id ? "$color12" : "$color11" }}
                 >
                   {GROUPS[id].title}
                 </SizableText>

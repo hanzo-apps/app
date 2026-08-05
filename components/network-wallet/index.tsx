@@ -56,7 +56,7 @@ function WalletInner() {
           title="Disconnect wallet"
           aria-label="Disconnect wallet"
           group
-          width={28} height={28} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
+          width={28} height={28} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" hoverStyle={{ backgroundColor: "$color3" }}
         >
           <SizableText color="$color11" $group-hover={{ color: "$color" }}>
             <LogOut size={14} />
@@ -71,7 +71,7 @@ function WalletInner() {
       type="button"
       onClick={() => injectedConnector && connect({ connector: injectedConnector })}
       disabled={isPending || !injectedConnector}
-      width="100%" alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }} disabledStyle={{ opacity: 0.5 }} focusVisibleStyle={{ outlineWidth: 0 }}
+      width="100%" alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }} disabledStyle={{ opacity: 0.5 }}
     >
       {isPending ? (
         <Spinner size={16} />

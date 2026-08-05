@@ -41,7 +41,7 @@ function AppCell({ app }: { app: AppEntry }) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`${ACTION_LABEL[app.action]} ${app.name}`}
-      group focusVisibleStyle={{ outlineWidth: 0 }}
+      group
     >
       <XStack alignItems="center" gap="$2.5">
         <Icon

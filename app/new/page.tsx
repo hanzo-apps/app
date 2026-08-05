@@ -222,7 +222,7 @@ function NewProjectInner() {
               onDrop={onComposerDrop}
               onDragOver={onComposerDragOver}
               onDragLeave={onComposerDragLeave}
-              group position="relative" borderRadius="$8" borderWidth={1} padding="$2" elevation={6} focusStyle={{ borderColor: "$color" }} {...{ borderColor: dragActive ? "$color" : "$borderColor", backgroundColor: dragActive ? "$color3" : "$color005" }}
+              data-field-box group position="relative" borderRadius="$8" borderWidth={1} padding="$2" elevation={6} {...{ borderColor: dragActive ? "$color" : "$borderColor", backgroundColor: dragActive ? "$color3" : "$color005" }}
             >
               {dragActive && (
                 <XStack {...glass(2)} pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} zIndex={10} alignItems="center" justifyContent="center" borderRadius="$8" borderWidth={2} borderStyle="dashed" borderColor="$color">
@@ -244,7 +244,7 @@ function NewProjectInner() {
                   }
                 }}
                 placeholder="Describe the app you want, or paste a GitHub / GitLab repository URL…"
-                maxHeight="$17" minHeight={52} width="100%" backgroundColor="transparent" paddingHorizontal="$3" paddingTop="$2" fontSize={15} lineHeight="1.625" color="$color" placeholderTextColor="$color11" borderWidth={0} focusStyle={{ outlineWidth: 0 }}
+                maxHeight="$17" minHeight={52} width="100%" backgroundColor="transparent" paddingHorizontal="$3" paddingTop="$2" fontSize={15} lineHeight="1.625" color="$color" placeholderTextColor="$color11" borderWidth={0}
   />
               <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$2" paddingBottom="$1" paddingTop="$1">
                 <XStack alignItems="center" gap="$1">
@@ -385,7 +385,7 @@ function NewProjectInner() {
                   value={repoFilter}
                   onChange={(e) => setRepoFilter(e.target.value)}
                   placeholder="Filter"
-                  height="$6" width="100%" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingLeft="$6" paddingRight="$2" fontSize="$1" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color", outlineWidth: 0 }}
+                  height="$6" width="100%" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingLeft="$6" paddingRight="$2" fontSize="$1" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color" }}
   />
               </YStack>
             </XStack>

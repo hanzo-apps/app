@@ -288,7 +288,7 @@ export default function HeroPreview() {
               variant="ghost"
               aria-label="Replay the demo build"
               onClick={() => run()}
-              height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$color005" hoverStyle={{ borderColor: "$color06" }} focusVisibleStyle={{ outlineWidth: 0 }}
+              height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$color005" hoverStyle={{ borderColor: "$color06" }}
             >
               <SizableText color="$color"><RotateCcw size={12} /></SizableText>
             </Button>

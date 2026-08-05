@@ -839,7 +839,7 @@ export function ChatPanel({
             </XStack>
           )}
 
-          <XStack position="relative" backgroundColor="$background" borderRadius="$5">
+          <XStack data-field-box position="relative" backgroundColor="$background" borderRadius="$5">
             <Textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
@@ -854,7 +854,7 @@ export function ChatPanel({
               }}
               onPaste={handlePaste}
               placeholder={!providerReady ? "Select a provider to start..." : supportsVision ? "Describe what you want to build... (paste or drop images)" : "Describe what you want to build..."}
-              flex={1} paddingHorizontal="$3" paddingVertical="$2" backgroundColor="transparent" borderWidth={0} fontSize="$3" placeholderTextColor="$color11" color="$color" focusStyle={{ outlineWidth: 0 }}
+              flex={1} paddingHorizontal="$3" paddingVertical="$2" backgroundColor="transparent" borderWidth={0} fontSize="$3" placeholderTextColor="$color11" color="$color"
               rows={3}
               disabled={generating || isTourLockingInput || !providerReady}
   />

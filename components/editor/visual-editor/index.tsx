@@ -609,7 +609,7 @@ export function VisualEditor({
           onClick={() => setIsHidden(false)}
           title="Show visual editor"
           aria-label="Show visual editor"
-          {...glass(2)} position="absolute" bottom="$3" right="$3" zIndex={50} width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
+          {...glass(2)} position="absolute" bottom="$3" right="$3" zIndex={50} width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }}
           style={anchorStyle}
         >
           <Wand2 size={16} />
@@ -622,7 +622,7 @@ export function VisualEditor({
             onClick={() => setIsMinimized(false)}
             title="Expand visual editor"
             aria-label="Expand visual editor"
-            {...glass(2)} width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
+            {...glass(2)} width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }}
           >
             {isVertical ? <GripVertical size={16} /> : <GripHorizontal size={16} />}
           </Button>

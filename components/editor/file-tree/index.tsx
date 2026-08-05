@@ -54,7 +54,7 @@ export function FileTree({
           type="button"
           onClick={onNewPage}
           title="New file"
-          height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
+          height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }}
         >
           <Plus size={14} />
         </Button>

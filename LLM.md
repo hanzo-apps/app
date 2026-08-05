@@ -232,16 +232,51 @@ was two toasts per failure.
 ### The 8.x line, resolved
 
 The two-runtime landmine that used to live here is closed: the app runs
-`@hanzo/ui@^8.0.52` on `@hanzo/gui@^8.1.0`, ONE shared gui runtime (app and
+`@hanzo/ui@^8.0.55` on `@hanzo/gui@^8.1.0`, ONE shared gui runtime (app and
 `@hanzo/ui` resolve the same physical path — verified), and
 `pnpm install --frozen-lockfile` passes at HEAD. If a fresh install produces
 two `@hanzogui/*` trees, that is a regression, not the documented state.
 
-The glass material and recipes come FROM the package — `@hanzo/ui/glass` +
-`@hanzo/ui/glass.css` imported in `app/layout.tsx`; the app's old local copies
-are deleted. The elevation ladder owns `--glass-shadow-1/2/3` (declared per
-canvas upstream since 8.0.52) — glass rules never read brand's generic
-`--shadow-*` names; `tests/unit/glass.test.ts` bites on exactly that.
+### The token layer arrives from the package, in one import
+
+`app/layout.tsx` imports **`@hanzo/ui/theme.css`** — @hanzo/design's whole
+sheet, this package's remainder and `glass.css` composed into one file. It
+replaced the material-only `@hanzo/ui/glass.css` import and the twenty-odd
+semantic names `assets/globals.css` used to declare beside it, which had
+drifted from canon on every one: ground `#080808` vs `#0a0a0a`, foreground
+`#ededed` vs `#fafafa`, popover LIGHTER than card, a solid `#262626` hairline
+where design's border is alpha, an opaque ring, and @hanzo/brand's radius ramp
+a full rung low because nothing challenged it. **Do not re-declare a name
+design publishes.** What globals.css still owns is what design does not ship:
+`--focus-ring`/`--focus-edge` and `--tint`.
+
+`html.dark { --background: … !important }` is gone with it. It existed because
+gui's generated theme declares `--background` at bare `:root`, ties design on
+specificity and wins on load order — `scripts/gen-gui-css.mjs` now drops the
+names design owns out of gui's root themes (the same prune @hanzo/ui runs on
+its own sheet), so design's value simply resolves. **Regenerate `app/gui.css`
+after any `@hanzo/ui` bump** (`node scripts/gen-gui-css.mjs`): it is a build
+product of `lib/gui.ts`, and a stale one silently keeps the old theme.
+
+The elevation ladder owns `--glass-shadow-1/2/3` (declared per canvas upstream
+since 8.0.52) — glass rules never read brand's generic `--shadow-*` names;
+`tests/unit/glass.test.ts` bites on exactly that.
+
+### Focus is decided in ONE place, and it is not a prop
+
+`assets/globals.css` states the whole law: a link/button/`[role=button]`/
+`[tabindex]` rings (`2px solid var(--focus-ring)`, offset 2), a text field
+brightens its own edge and draws no ring, and a `[data-field-box]` — a box whose
+field has no edge of its own, the composers and the search rows — lights up on
+`:focus-within`. All three are anchored on **`html:root`**, and that is
+load-bearing: `:is(a, button, …):focus-visible` is (0,2,0), a dead tie with
+every atomic class gui compiles, decided by load order, and `gui.css` is
+imported last. gui therefore won, and the way each author silenced gui's own
+outline was `focusVisibleStyle={{ outlineWidth: 0 }}` on the element — which
+does not restore the rule, it deletes the indicator. That reached 37 controls,
+eleven in the builder chrome. **Never write that prop.** If a control rings
+wrongly, the answer is in globals.css or in `@hanzo/ui`'s gui theme, never at
+the call site.
 
 ### Work items live in the cloud tracker, and "task" is the wrong word
 

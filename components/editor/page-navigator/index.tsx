@@ -106,7 +106,7 @@ export function PagePanel({
 
   return (
     <YStack maxHeight="min(60vh,24rem)" width="100%">
-      <XStack alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingBottom="$2" paddingTop="$0.5">
+      <XStack data-field-box alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingBottom="$2" paddingTop="$0.5">
         <Search size={14} />
         <Input
           ref={inputRef}
@@ -115,7 +115,7 @@ export function PagePanel({
           onKeyDown={handleKeyDown}
           placeholder="Search pages…"
           aria-label="Search pages"
-          width="100%" backgroundColor="transparent" paddingVertical="$1" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
+          width="100%" backgroundColor="transparent" paddingVertical="$1" fontSize="$3" color="$color" placeholderTextColor="$color11"
   />
         <SizableText flexShrink={0} fontFamily="$mono" fontSize={10} color="$color11">
           {filteredPaths.length}
@@ -144,7 +144,7 @@ export function PagePanel({
                     type="button"
                     onClick={() => select(item.path)}
                     title={item.path}
-                    width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$1.5" justifyContent="flex-start" focusStyle={{ outlineWidth: 0 }} {...{ paddingLeft: group.folder ? "$5" : undefined, backgroundColor: active ? "$color3" : undefined, hoverStyle: active ? undefined : {"backgroundColor":"$color3"} }}
+                    width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$1.5" justifyContent="flex-start" {...{ paddingLeft: group.folder ? "$5" : undefined, backgroundColor: active ? "$color3" : undefined, hoverStyle: active ? undefined : {"backgroundColor":"$color3"} }}
                   >
                     <FileCode size={14} />
                     <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">

@@ -199,7 +199,7 @@ export function SchemaEditor({ projectId, enabled, onSchemaChange }: SchemaEdito
             </XStack>
             <Textarea
               data-schema-editor
-              flex={1} width="100%" borderRadius="$3" borderWidth={1} borderColor="$color2" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" fontFamily="$mono" placeholderTextColor="$color11" focusVisibleStyle={{ outlineWidth: 0 }}
+              flex={1} width="100%" borderRadius="$3" borderWidth={1} borderColor="$color2" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" fontFamily="$mono" placeholderTextColor="$color11"
               placeholder={`-- Create or modify tables\nCREATE TABLE IF NOT EXISTS example (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  name TEXT NOT NULL,\n  created_at DATETIME DEFAULT CURRENT_TIMESTAMP\n);`}
               value={ddl}
               onChangeText={(t) => setDdl(t)}

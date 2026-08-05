@@ -1081,7 +1081,7 @@ export function AskAI({
               nudgeComposer(-24);
             }
           }}
-          position="absolute" top="$-1.5" left="50%" zIndex={20} height="$3" width="$7" x="-50%" cursor="ns-resize" alignItems="center" justifyContent="center" borderRadius="$10" opacity={0} $group-hover={{ opacity: 1 }} focusVisibleStyle={{ opacity: 1, outlineWidth: 0 }}
+          position="absolute" top="$-1.5" left="50%" zIndex={20} height="$3" width="$7" x="-50%" cursor="ns-resize" alignItems="center" justifyContent="center" borderRadius="$10" opacity={0} $group-hover={{ opacity: 1 }} focusVisibleStyle={{ opacity: 1 }}
         >
           <SizableText height="$0.5" width="$5" borderRadius="$10" backgroundColor="$color11" />
         </Button>
@@ -1330,7 +1330,7 @@ export function AskAI({
                       : "Build: generate and modify your app"
                   }
                   onClick={() => setMode(m)}
-                  borderRadius="$10" paddingHorizontal="$2.5" paddingVertical="$1" focusVisibleStyle={{ outlineWidth: 0 }} {...sel}
+                  borderRadius="$10" paddingHorizontal="$2.5" paddingVertical="$1" {...sel}
                 >
                   <SizableText fontWeight="500" fontSize="$1" textTransform="capitalize" color={sel.color}>{m}</SizableText>
                 </Button>

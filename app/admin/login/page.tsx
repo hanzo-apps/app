@@ -100,7 +100,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChangeText={(value) => setPassword(value)}
-              width="100%" paddingHorizontal="$4" paddingVertical="$3" backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$5" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0, borderColor: "transparent" }}
+              width="100%" paddingHorizontal="$4" paddingVertical="$3" backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$5" color="$color" placeholderTextColor="$color11"
               placeholder="Enter your password"
               required
               autoFocus

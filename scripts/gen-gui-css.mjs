@@ -42,6 +42,28 @@ const splitRules = (s) => {
 const keepSelector = (sel) =>
   !(sel.match(/\.[A-Za-z0-9_-]+/g) || []).some((c) => DROP.test(c.slice(1)))
 
+// Names @hanzo/design owns, dropped out of gui's ROOT themes. gui's generated
+// theme declares `--background` (and `--black`/`--white`) at bare `:root`,
+// which ties design's own `:root` on specificity and wins on load order,
+// because this sheet is imported last. The app used to answer that with
+// `html.dark { --background: #080808 !important }` — a fourth value for the
+// ground whose only job was to win a fight. Settling it here means design's
+// value simply resolves and nobody has to remember the override.
+//
+// SUB-THEMES ARE LEFT ALONE. `.t_accent`, `.t_dark_Button` and the rest
+// legitimately scope their own background — that is what a nested theme IS —
+// so only a selector that is exactly `:root`, `:root.t_dark` or `:root.t_light`
+// counts as root. @hanzo/ui runs the same prune over its own dist/styles.css
+// (pkg/ui/scripts/gen-css.mjs); each sheet prunes itself, and both defer to the
+// same owner.
+const OWNED = ['background', 'black', 'white']
+const ROOT_THEME = /^:root(\.t_(dark|light))?$/
+
+const unshadow = (sel, body) =>
+  sel.split(',').some((s) => ROOT_THEME.test(s.trim()))
+    ? OWNED.reduce((b, name) => b.replace(new RegExp(`(^|;)\\s*--${name}\\s*:[^;}]*;?`, 'g'), '$1'), body)
+    : body
+
 const pruneRules = (rules) => {
   const out = []
   for (const rule of rules) {
@@ -59,7 +81,9 @@ const pruneRules = (rules) => {
     const kept = [...new Set(sel.split(',').map((s) => s.trim()))].filter(keepSelector)
     // a lone `.tm_xxt` survivor is an unused theme's hydration sentinel: dead
     if (!kept.length || kept.every((s) => s === '.tm_xxt')) continue
-    out.push(kept.join(', ') + rule.slice(open))
+    const body = unshadow(kept.join(', '), rule.slice(open + 1, rule.lastIndexOf('}')))
+    if (!body.replace(/[\s;]/g, '')) continue
+    out.push(`${kept.join(', ')}{${body}}`)
   }
   return out
 }

@@ -355,7 +355,7 @@ export default function AgentsPage() {
   />
                   <Textarea
                     placeholder="Instructions — the agent's system prompt (optional)"
-                    minHeight="$12" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
+                    minHeight="$12" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$3" fontSize="$3" color="$color" placeholderTextColor="$color11"
                     value={form.instructions}
                     disabled={submitting}
                     onChangeText={(t) =>

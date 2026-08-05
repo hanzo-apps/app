@@ -328,7 +328,7 @@ export const Preview = ({
         aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
         aria-pressed={isFullscreen}
         group
-        position="absolute" right="$3" zIndex={20} width={36} height={36} alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$background" backdropFilter="blur(8px)" hoverStyle={{ backgroundColor: "$color3" }} {...{ top: isFullscreen ? "$3" : "$5", opacity: isFullscreen ? 1 : 0, "$group-preview-hover": isFullscreen ? undefined : {"opacity":1}, focusVisibleStyle: isFullscreen ? { outlineWidth: 0 } : {"opacity":1} }}
+        position="absolute" right="$3" zIndex={20} width={36} height={36} alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$background" backdropFilter="blur(8px)" hoverStyle={{ backgroundColor: "$color3" }} {...{ top: isFullscreen ? "$3" : "$5", opacity: isFullscreen ? 1 : 0, "$group-preview-hover": isFullscreen ? undefined : {"opacity":1}, focusVisibleStyle: isFullscreen ? undefined : {"opacity":1} }}
       >
         <SizableText color="$color11" $group-hover={{ color: "$color" }}>
           {isFullscreen ? (

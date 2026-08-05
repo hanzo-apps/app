@@ -196,7 +196,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
               What do you want to change?{" "}
               <SizableText textTransform="none" letterSpacing={0} color="$color11">(optional)</SizableText>
             </Label>
-            <YStack borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color005" focusStyle={{ borderColor: "$color" }}>
+            <YStack data-field-box borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color005">
               <Textarea
                 id="tpl-first-msg"
                 value={firstMessage}
@@ -211,7 +211,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                 rows={2}
                 placeholder="e.g. rename the brand to Bean & Bloom and rewrite the hero copy…"
                 className="resize-none"
-                width="100%" backgroundColor="transparent" paddingHorizontal="$3.5" paddingVertical="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" borderWidth={0} focusStyle={{ outlineWidth: 0 }}
+                width="100%" backgroundColor="transparent" paddingHorizontal="$3.5" paddingVertical="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" borderWidth={0}
   />
             </YStack>
             <Paragraph marginTop="$1.5" fontSize="$1" color="$color11">
