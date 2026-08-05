@@ -217,7 +217,7 @@ export function ModelSelector({
         padding="$0"
         overflow="hidden"
         width={Math.min(Math.max(triggerWidth, MIN_WIDTH), MAX_WIDTH)}
-        className="frosted"
+        className="glass"
         borderWidth={1}
         borderColor="$borderColor"
       >

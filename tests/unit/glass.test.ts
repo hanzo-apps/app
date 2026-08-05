@@ -1,6 +1,12 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
+// The recipes come from `@hanzo/ui/glass` now, so these assert the VALUES the
+// app actually spreads rather than the text of the file that used to define
+// them. A source grep over a re-export proves nothing — and the values are what
+// the defects were measured in.
+import { glass, panel, row, rows, scrim } from "@/lib/chrome";
+
 /**
  * ONE glass.
  *
@@ -9,7 +15,7 @@ import { join } from "node:path";
  * in the flow has nothing behind it to soften, so it is not. That distinction
  * survives only if the material stays attached to the slot and the depth stays
  * on one ladder, and both had already drifted once: of 135 floating surfaces
- * exactly one had reached for `.frosted`, while a dozen dialogs pinned an
+ * exactly one had reached for the material, while a dozen dialogs pinned an
  * opaque fill by hand.
  *
  * These are the invariants that keep the drift from starting again. Each one
@@ -42,7 +48,6 @@ const offendersOf = (re: RegExp) =>
   files.filter((f) => re.test(readFileSync(f, "utf8"))).map(rel);
 
 const css = readFileSync(join(repoRoot, "assets", "globals.css"), "utf8");
-const chrome = readFileSync(join(repoRoot, "lib", "chrome.ts"), "utf8");
 
 describe("The material attaches to the slot, not to who remembered", () => {
   it("scans a non-trivial number of source files", () => {
@@ -60,17 +65,17 @@ describe("The material attaches to the slot, not to who remembered", () => {
     "dropdown-menu-sub-content",
     "menu-content",
     "tooltip-content",
-  ])("%s wears the frosted material", (slot) => {
-    const frostedBlock = css.slice(
+  ])("%s wears the material", (slot) => {
+    const material = css.slice(
       css.indexOf("@supports (backdrop-filter"),
       css.indexOf("/* Depth —"),
     );
-    expect(frostedBlock).toContain(`[data-slot="${slot}"]`);
+    expect(material).toContain(`[data-slot="${slot}"]`);
   });
 
   it("the blur is stated ONCE — no second radius anywhere in the sheet", () => {
     // Eight sticky bars once carried four different radii (8px, 12px, 24px and
-    // the frosted 20px nobody had told them about). A second backdrop-filter
+    // the 20px nobody had told them about). A second backdrop-filter
     // DECLARATION here is how that starts over.
     //
     // The `@supports (backdrop-filter: blur(8px))` condition is not one — it is
@@ -123,7 +128,7 @@ describe("The material attaches to the slot, not to who remembered", () => {
 
 describe("Depth is a ladder, and it has three rungs", () => {
   it("exactly three elevation levels exist", () => {
-    const levels = [...css.matchAll(/\.hz-elevation-(\d)\s*\{/g)].map((m) => m[1]);
+    const levels = [...css.matchAll(/\.elevation-(\d)\s*\{/g)].map((m) => m[1]);
     expect(levels).toEqual(["1", "2", "3"]);
   });
 
@@ -131,7 +136,7 @@ describe("Depth is a ladder, and it has three rungs", () => {
     // The lip is the half that reads on #080808 — black-on-near-black moves no
     // pixels, so a rung with only a shadow is a rung that does nothing.
     for (const level of ["1", "2", "3"]) {
-      const rule = css.slice(css.indexOf(`.hz-elevation-${level} {`));
+      const rule = css.slice(css.indexOf(`.elevation-${level} {`));
       const body = rule.slice(0, rule.indexOf("}"));
       expect(body).toContain("inset 0 1px 0 0 var(--hz-sheen)");
       expect(body).toMatch(/rgba\(0, 0, 0, 0\.\d+\)/);
@@ -146,7 +151,8 @@ describe("Depth is a ladder, and it has three rungs", () => {
   });
 
   it("glass offers no level 1 — a floating thing is never at rest", () => {
-    expect(chrome).toMatch(/export const glass = \(level: 2 \| 3/);
+    expect(glass(2).className).toBe("glass elevation-2");
+    expect(glass(3).className).toBe("glass elevation-3");
   });
 
   it("a surface never carries both the ladder and Tamagui's own elevation", () => {
@@ -170,15 +176,18 @@ describe("Depth is a ladder, and it has three rungs", () => {
   it("`rows` derives its level from `panel` instead of restating it", () => {
     // Restated, moving the panel up or down the ladder leaves its groups pinned
     // to a level they no longer share.
-    expect(chrome).toContain("`${panel.className} hz-rows`");
+    // Spread WHOLE, so there is no string to keep in step: move the panel up
+    // or down the ladder and its groups move with it.
+    for (const [k, v] of Object.entries(panel))
+      expect([k, rows[k as keyof typeof rows]]).toEqual([k, v]);
   });
 });
 
 describe("A scrim dims the page — it does not delete it", () => {
   it("the dim is declared once, in CSS, and read from both languages", () => {
-    expect(css).toMatch(/--hz-scrim:\s*rgba\(0, 0, 0, 0\.55\)/);
-    expect(css).toContain("background-color: var(--hz-scrim)");
-    expect(chrome).toContain("backgroundColor: 'var(--hz-scrim)'");
+    expect(css).toMatch(/--surface-scrim:\s*rgba\(0, 0, 0, 0\.55\)/);
+    expect(css).toContain("background-color: var(--surface-scrim)");
+    expect(scrim.backgroundColor).toContain("var(--surface-scrim");
   });
 
   it("nothing hardcodes the scrim value — there is one copy and it is not here", () => {
@@ -200,7 +209,7 @@ describe("A scrim dims the page — it does not delete it", () => {
 
 describe("Glass is for chrome; the flow gets a panel", () => {
   /*
-   * There is no "in-flow surfaces are never frosted" test here, and the reason
+   * There is no "in-flow surfaces are never glass" test here, and the reason
    * is worth writing down: it cannot be decided from the source. Whether a
    * thing floats is a fact about the RUNTIME — a `DropdownMenuContent` floats
    * because gui portals it, with no `position` prop anywhere in the file. The
@@ -211,19 +220,19 @@ describe("Glass is for chrome; the flow gets a panel", () => {
    */
 
   it("the settings row rhythm is stated once, in `row`", () => {
-    expect(chrome).toMatch(/export const row = \{[\s\S]*?paddingHorizontal: '\$4'/);
-    expect(chrome).toMatch(/export const row = \{[\s\S]*?justifyContent: 'space-between'/);
+    expect(row.paddingHorizontal).toBe("$4");
+    expect(row.justifyContent).toBe("space-between");
   });
 
   it("a grouped card clips its separators", () => {
     // Without the clip the topmost separator runs through the rounded corner.
-    expect(chrome).toMatch(/export const rows = \{[\s\S]*?overflow: 'hidden'/);
+    expect(rows.overflow).toBe("hidden");
   });
 
   it("separators use the card's OWN hairline token, not the sheet's", () => {
     // --border and --borderColor are two different greys (rgb(38,38,38) vs
     // rgb(36,36,36)); the card's edge is drawn with the second, so the first
     // put two hairlines two units apart inside one card.
-    expect(css).toMatch(/\.hz-rows > \* \+ \* \{\s*border-top: 1px solid var\(--borderColor/);
+    expect(css).toMatch(/\[data-slot="rows"\] > \* \+ \* \{\s*border-top: 1px solid var\(--borderColor/);
   });
 });

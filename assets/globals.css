@@ -193,16 +193,6 @@ a {
   --hz-spectrum: rgba(8, 148, 255, 0.45), rgba(201, 89, 221, 0.48),
     rgba(255, 46, 84, 0.4), rgba(255, 144, 4, 0.4), rgba(8, 148, 255, 0.45);
 
-  /* Product hues — the same prism, cut per product. Category accents for
-     marks, badges and cards; chrome stays monochrome, these are ACCENTS. */
-  --hz-product-chat: #0894ff;
-  --hz-product-app: #ff9004;
-  --hz-product-dev: #c959dd;
-  --hz-product-bot: #ff2e54;
-  --hz-product-cloud: #22c1ee;
-  --hz-product-team: #2ecc71;
-  --hz-product-base: #10b981;
-  --hz-product-studio: #f5c518;
 }
 
 @keyframes hzComposerSpin {
@@ -1126,7 +1116,7 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
    Every one of these is floating chrome by construction — a popover is over
    the page or it is nothing — so which of them is glass was never a decision
    a call site should get to make. It was making it anyway: of 135 floating
-   surfaces in this app exactly ONE (the user menu) had reached for `.frosted`,
+   surfaces in this app exactly ONE (the user menu) had reached for the class,
    and a dozen dialogs had gone the other way and pinned an opaque fill by
    hand. Reaching them one by one would be 134 edits that agree today and drift
    apart on the next one somebody adds.
@@ -1142,7 +1132,8 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
    and over the ~12 call sites that pass `backgroundColor="$background"`
    explicitly. Those become no-ops instead of holes in the glass. */
 @supports (backdrop-filter: blur(8px)) {
-  .frosted,
+  .glass,
+  [data-slot="glass"],
   [data-slot="dialog-content"],
   [data-slot="popover-content"],
   [data-slot="select-content"],
@@ -1198,7 +1189,7 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
    inset shadow paints INSIDE the border, the two stack into a ~2px lit lip
    rather than fighting for the same pixel.
 
-   `!important` for the same reason `.frosted` needs it: gui's atomic classes
+   `!important` for the same reason the material needs it: gui's atomic classes
    land in an inline <style> that Next orders AFTER this sheet, so a component
    carrying its own `elevate` shadow would otherwise win on source order and
    silently drop the lip. Same trick, same reason, one line apart.
@@ -1215,22 +1206,22 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
      `backgroundColor="black"` — opaque, no alpha — so the page did not dim
      behind them, it VANISHED, and a translucent panel over a solid wall is a
      panel with nothing to be translucent about. */
-  --hz-scrim: rgba(0, 0, 0, 0.55);
+  --surface-scrim: rgba(0, 0, 0, 0.55);
 }
 
-.hz-elevation-1 {
+.elevation-1 {
   box-shadow:
     inset 0 1px 0 0 var(--hz-sheen),
     0 1px 2px rgba(0, 0, 0, 0.4) !important;
 }
 
-.hz-elevation-2 {
+.elevation-2 {
   box-shadow:
     inset 0 1px 0 0 var(--hz-sheen),
     0 8px 24px -6px rgba(0, 0, 0, 0.55) !important;
 }
 
-.hz-elevation-3 {
+.elevation-3 {
   box-shadow:
     inset 0 1px 0 0 var(--hz-sheen),
     0 24px 64px -12px rgba(0, 0, 0, 0.7) !important;
@@ -1260,7 +1251,7 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
    hairline is meant to be. It also re-bases with the theme scope the way the
    card's border does, so the two stay equal inside a nested theme instead of
    only matching at the root. */
-.hz-rows > * + * {
+[data-slot="rows"] > * + * {
   border-top: 1px solid var(--borderColor, var(--border));
 }
 
@@ -1271,17 +1262,17 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
    blur behind a translucent panel only reads as depth when the ground behind
    it is genuinely darker.
 
-   This used to ask `body:has([data-slot="dialog-content"].frosted)` — is a
+   This used to ask `body:has([data-slot="dialog-content"].glass)` — is a
    FROSTED dialog open? — back when frosting was opt-in and one dialog had
    opted in. Now the slot rule above makes every dialog glass, so the question
    has exactly one answer and asking it is worse than not: the guard would keep
-   matching on `.frosted`, quietly leaving the deep scrim to whichever dialogs
+   matching on `.glass`, quietly leaving the deep scrim to whichever dialogs
    still carry the class by hand and giving the other 42 the quarter-black
    default under a translucent panel. One condition fewer, and it cannot fall
    out of step with the material again. */
 [data-slot="dialog-overlay"] {
   opacity: 1;
-  background-color: var(--hz-scrim);
+  background-color: var(--surface-scrim);
 }
 
 /* Stretched link — the whole positioned ancestor becomes the anchor's hit

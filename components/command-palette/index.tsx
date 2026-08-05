@@ -158,7 +158,7 @@ export function CommandPalette({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {/* Glass, one hairline, one scrim. `frosted` (assets/globals.css) is the
+      {/* Glass, one hairline, one scrim. `glass` (assets/globals.css) is the
           ONE glass material and it only engages where the browser can really
           blur what is behind it, so `backgroundColor` stays as the opaque
           ground everywhere else — the @supports guard is why it is not
@@ -166,7 +166,7 @@ export function CommandPalette({
           `borderColor: "$borderColor"` default; restating it here just gave
           two places to change one line. */}
       <DialogContent
-        className="frosted"
+        className="glass"
         showCloseButton={false}
         maxWidth={672} overflow="hidden" backgroundColor="$background" padding="$0" gap="$0"
       >

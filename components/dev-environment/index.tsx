@@ -65,7 +65,7 @@ export function DevEnvironment({ projectId }: DevEnvironmentProps) {
   return (
     <YStack height="100%">
       {/* Toolbar */}
-      <XStack borderBottomWidth={1} backgroundColor="$background" backdropFilter="blur(8px)" padding="$2" alignItems="center" justifyContent="space-between" className="frosted">
+      <XStack borderBottomWidth={1} backgroundColor="$background" backdropFilter="blur(8px)" padding="$2" alignItems="center" justifyContent="space-between" className="glass">
         <XStack alignItems="center" gap="$2">
           <H2 fontSize="$3" fontWeight="500">Development Environment</H2>
           <SizableText fontSize="$1" color="$color11">Project: {projectId}</SizableText>

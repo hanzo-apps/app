@@ -39,7 +39,7 @@ export const UserMenu = ({ className }: { className?: string }) => {
           <SizableText display="none" $sm={{ display: "inline" }} maxWidth="12rem" numberOfLines={1}>{displayName}</SizableText>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent width={224} className="frosted" borderWidth={1} borderColor="$borderColor">
+      <DropdownMenuContent width={224} className="glass" borderWidth={1} borderColor="$borderColor">
         <DropdownMenuLabel>
           <YStack rowGap="$1">
             <Paragraph fontSize="$3" fontWeight="500" lineHeight="1">{displayName}</Paragraph>

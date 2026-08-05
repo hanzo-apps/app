@@ -85,7 +85,7 @@ export function Console({
       // translucent ground + backdrop blur, with the separator's hairline
       // finishing the top edge. Opaque `$background` made it read as a second
       // page stacked under the first.
-      className="frosted"
+      className="glass"
       position="relative" zIndex={20} flexShrink={0} overflow="hidden" backgroundColor="$background"
       style={{ height }}
     >
