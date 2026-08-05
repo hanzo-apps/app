@@ -279,7 +279,7 @@ function SidebarContent({
       {/* Mobile backdrop */}
       {mobileOpen && (
         <YStack
-          position="fixed" top={0} right={0} bottom={0} left={0} backgroundColor="black" zIndex={40} $md={{ display: "none" }}
+          position="fixed" top={0} right={0} bottom={0} left={0} {...scrim} zIndex={40} $md={{ display: "none" }}
           onClick={() => onMobileOpenChange?.(false)}
   />
       )}
