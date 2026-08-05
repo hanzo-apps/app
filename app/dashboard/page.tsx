@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Tabs, TabsList, TabsTrigger, TabsContent, Button } from '@hanzo/ui';
+import { EmptyState, type IconLike } from '@hanzo/ui/product';
 import {
   FolderOpen,
   Clock,
@@ -26,6 +27,18 @@ import { relativeTime } from "@/lib/projects-view";
 import { statusOf } from "@/lib/project-status";
 import { markProjectOpened, orderByRecentlyOpened } from "@/lib/recent-projects";
 import Reveal from "@/components/landing/reveal";
+
+/**
+ * `EmptyState` types its glyph for gui's icon set, whose `color` is a theme
+ * token; lucide types the same prop as a plain string, so a lucide glyph is not
+ * assignable even though `EmptyState` only ever asks it for a `size`. These name
+ * that one prop and pass it through — a component, not a cast, so nothing is
+ * asserted that isn't true. They go when `IconLike` widens `color` to the string
+ * both icon sets actually accept.
+ */
+const Folder: IconLike = ({ size }) => <FolderOpen size={size} />;
+const Recent: IconLike = ({ size }) => <Clock size={size} />;
+const Traffic: IconLike = ({ size }) => <BarChart3 size={size} />;
 import {
   snapshotCatalog,
   popularTemplates,
@@ -175,10 +188,10 @@ export default function DashboardPage() {
                     <ProjectsSkeleton />
                   ) : recentlyViewed.length === 0 ? (
                     <EmptyState
-                      icon={Clock}
+                      icon={Recent}
                       title="No recently viewed projects"
-                      body="Projects you open will show up here, most recent first."
-  />
+                      description="Projects you open will show up here, most recent first."
+                    />
                   ) : (
                     <ProjectGrid projects={recentlyViewed} onOpen={openProject} />
                   )}
@@ -188,11 +201,11 @@ export default function DashboardPage() {
                     wired into this list yet, so we don't fabricate numbers. */}
                 <TabsContent value="visitors">
                   <EmptyState
-                    icon={BarChart3}
+                    icon={Traffic}
                     title="Visitor analytics coming to your dashboard"
-                    body="Once your apps are published and receiving traffic, your busiest projects today will rank here. Live traffic is captured per deployment."
-                    action={{ label: "View analytics", href: "https://analytics.hanzo.ai" }}
-  />
+                    description="Once your apps are published and receiving traffic, your busiest projects today will rank here. Live traffic is captured per deployment."
+                    secondary={{ label: "View analytics", href: "https://analytics.hanzo.ai" }}
+                  />
                 </TabsContent>
 
                 {/* Templates — a peek at the gallery; Browse all → /templates. */}
@@ -299,42 +312,10 @@ function ProjectsSkeleton() {
 function EmptyProjects() {
   return (
     <EmptyState
-      icon={FolderOpen}
+      icon={Folder}
       title="No projects yet"
-      body="Describe what you want to build in the composer above and Hanzo will generate it. Your projects appear here."
-  />
+      description="Describe what you want to build in the composer above and Hanzo will generate it. Your projects appear here."
+    />
   );
 }
 
-function EmptyState({
-  icon: Icon,
-  title,
-  body,
-  action,
-}: {
-  icon: React.ElementType;
-  title: string;
-  body: string;
-  action?: { label: string; href: string };
-}) {
-  return (
-    <YStack borderRadius="$8" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" backgroundColor="$background" padding="$8">
-      <XStack alignSelf="center" marginBottom="$4" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$6" backgroundColor="$color3">
-        <Icon size={24} color="var(--muted-foreground)" />
-      </XStack>
-      <H3 fontWeight="500" color="$color" textAlign="center">{title}</H3>
-      <Paragraph alignSelf="center" marginTop="$1" maxWidth={448} fontSize="$3" color="$color11" textAlign="center">{body}</Paragraph>
-      {action && (
-        <Anchor display="inline-flex"
-          href={action.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          marginTop="$4" alignItems="center" gap="$1.5" fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}
-        >
-          {action.label}
-          <ArrowUpRight size={14} />
-        </Anchor>
-      )}
-    </YStack>
-  );
-}
