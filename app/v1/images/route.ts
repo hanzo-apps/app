@@ -26,7 +26,14 @@ const HANZO_AI_BASE_URL =
 
 // Zen-brand default image model. The gateway maps it to the actual diffusion
 // backend; the upstream is never named here or surfaced to the client.
-const DEFAULT_IMAGE_MODEL = "zen3-image";
+//
+// This MUST be an id the gateway serves. It was `zen3-image`, which it does not:
+// the catalog carries `zen-image`. The failure was the expensive kind — an unknown
+// model cannot be priced, so the balance authorization refuses it and the caller
+// gets "Insufficient balance. Add credits to your wallet", sending a user to top up
+// an account that was never the problem. Verified against the live gateway:
+// `zen-image` returns a PNG, `zen3-image` returns that billing error.
+const DEFAULT_IMAGE_MODEL = "zen-image";
 
 const unauthorized = () =>
   NextResponse.json(
