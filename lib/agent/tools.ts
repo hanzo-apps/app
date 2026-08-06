@@ -14,7 +14,7 @@
  * returned as strings too (never thrown) so a bad tool call never kills the run.
  */
 
-import type { PatchOp, ProjectFs } from "./fs";
+import { canExec, type PatchOp, type ProjectFs } from "./fs";
 
 /** OpenAI-compatible tool definition (what we send in `tools`). */
 export interface OpenAITool {
@@ -180,12 +180,70 @@ const TOOLS: AgentTool[] = [
       return res.applied ? ok(res.summary + warn) : err(res.summary + warn);
     }
   ),
+
+  // Offered ONLY when the filesystem is a box (see `agentToolDefs`). Listing it
+  // unconditionally would advertise a capability an in-memory project does not
+  // have, and a model that believes it can run the tests it just wrote will
+  // report a green suite it never ran.
+  tool(
+    "run_command",
+    "Run a shell command in the project directory and return its exit code, stdout and stderr. Use it to install dependencies, build, run tests, and check your work. Only available when the project is a real checkout in a box.",
+    {
+      type: "object",
+      properties: {
+        command: { type: "string", description: "Shell command, e.g. `pnpm test`" },
+        timeoutSec: { type: "number", description: "Seconds before the command is killed (default 120)" },
+      },
+      required: ["command"],
+    },
+    async (fs, args) => {
+      const command = asString(args.command);
+      if (!command) return err("`command` (string) is required");
+      if (!canExec(fs)) return err("this project has no box, so there is nothing to run commands on");
+      const timeoutSec =
+        typeof args.timeoutSec === "number" && Number.isFinite(args.timeoutSec)
+          ? Math.max(1, Math.min(args.timeoutSec, 900))
+          : undefined;
+
+      const r = await fs.exec(command, timeoutSec);
+      // Tail, not head: a failing build says why at the END of its output, and
+      // the first 4 KB of a webpack log is the part nobody needs.
+      const body = [
+        r.stdout.trim() && `stdout:\n${tail(r.stdout)}`,
+        r.stderr.trim() && `stderr:\n${tail(r.stderr)}`,
+      ]
+        .filter(Boolean)
+        .join("\n\n");
+      const head = r.timedOut
+        ? `Command timed out (exit ${r.exitCode})`
+        : `Exit code ${r.exitCode}`;
+      // A non-zero exit is NOT a tool error: the call worked and the program
+      // failed. Reporting it as an error would tell the model its command was
+      // malformed when the truth is that its code is.
+      return ok(`${head}\n\n${body || "(no output)"}`);
+    }
+  ),
 ];
 
 const BY_NAME = new Map<string, AgentTool>(TOOLS.map((t) => [t.def.function.name, t]));
 
-/** The tool schemas to send to the gateway in the `tools` field. */
-export const AGENT_TOOL_DEFS: OpenAITool[] = TOOLS.map((t) => t.def);
+/** Last `max` characters — where a failing build actually explains itself. */
+function tail(s: string, max = 4000): string {
+  const t = s.trimEnd();
+  return t.length <= max ? t : `…(${t.length - max} bytes trimmed)…\n${t.slice(-max)}`;
+}
+
+/**
+ * The tool schemas to send to the gateway, for THIS filesystem.
+ *
+ * A function rather than a constant because the toolset is not a fixed fact
+ * about the agent — it is a fact about where the agent is running. A box gets
+ * `run_command`; an in-memory project does not, and never sees it.
+ */
+export function agentToolDefs(fs: ProjectFs): OpenAITool[] {
+  const exec = canExec(fs);
+  return TOOLS.filter((t) => exec || t.def.function.name !== "run_command").map((t) => t.def);
+}
 
 /**
  * Execute a tool call against the project FS. `argsJson` is the raw arguments

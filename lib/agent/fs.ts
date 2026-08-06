@@ -58,6 +58,38 @@ export interface ProjectFs {
   changedFiles(): Promise<AgentFile[]>;
 }
 
+/** One finished command, shaped exactly like the box's `wire.ExecResult`. */
+export interface ExecResult {
+  /** Non-zero is a SUCCESSFUL call carrying a FAILED program. The two are
+   *  different facts and a caller that cannot tell them apart retries the
+   *  wrong one. */
+  exitCode: number;
+  stdout: string;
+  stderr: string;
+  timedOut?: boolean;
+  durationMs?: number;
+}
+
+/**
+ * Running a command is a capability, NOT a filesystem method.
+ *
+ * A box can build, test and commit; a map in this process cannot, and cannot
+ * honestly pretend to. Bolting `exec` onto `ProjectFs` would force
+ * `InMemoryProjectFs` to implement a method whose only correct body is a
+ * failure, and would offer the model a tool that is dead exactly where most
+ * runs happen. Kept separate, the capability is discovered rather than assumed
+ * — `agentToolDefs` shows `run_command` only to a filesystem that has it, so
+ * the model never sees an affordance that is not there.
+ */
+export interface ProjectExec {
+  exec(command: string, timeoutSec?: number): Promise<ExecResult>;
+}
+
+/** Does this filesystem also run commands? */
+export function canExec(fs: ProjectFs): fs is ProjectFs & ProjectExec {
+  return typeof (fs as Partial<ProjectExec>).exec === "function";
+}
+
 export class InMemoryProjectFs implements ProjectFs {
   private files = new Map<string, string>();
   private changed = new Set<string>();

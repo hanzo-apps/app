@@ -1,176 +1,240 @@
 /**
- * A `ProjectFs` backed by a real directory on a Hanzo Runtime sandbox.
+ * A `ProjectFs` backed by a real directory in a real box.
  *
- * `hanzoai/runtime` runs a daemon inside every sandbox that already exposes the
- * toolbox this needs — `/files` (list, download, upload, search, find),
- * `/process/execute`, `/git`, `/lsp`, `/computeruse`, `/port` — so this file is
- * a client, not a filesystem. Nothing here reimplements what the daemon does.
+ * The box is a pod running `boxd` (`hanzoai/cloud`, `cmd/boxd`); we never reach
+ * it directly. Boxes have no public address, and terminating auth anywhere but
+ * the IAM edge would be a second auth path, so every call goes through cloud:
  *
- * The difference from `InMemoryProjectFs` that actually matters: there is a
- * real tree here, usually a checkout. `list()` therefore returns the project's
- * files rather than a handful the caller supplied, `search()` is ripgrep on the
- * box rather than a substring scan in Node, and `changedFiles()` reports only
- * the delta — the tree is far too large to ship back.
+ *     hanzo.app  ──Bearer──▶  cloud /v1/sandbox/boxes/:id/fs/*
+ *                             └─X-API-Key─▶  boxd /v1/box/fs/*
  *
- * Patch semantics are identical to the in-memory implementation on purpose:
- * read, apply in memory, write back. Applying the edit here rather than through
- * a remote patch endpoint keeps ONE definition of what `update`/`rewrite` mean,
- * so a model cannot get different behaviour depending on where it happens to be
- * running.
+ * We hold the user's IAM bearer and nothing else. The service key on the second
+ * hop is cloud's, injected there, and never present in this process.
+ *
+ * The previous version of this file spoke to a Daytona-fork daemon (`/files`,
+ * `/process/execute`) that was deleted with the fork — every route 404'd. The
+ * contract it now speaks is `apps/sandbox/wire`, declared once in Go and
+ * consumed by both boxd and cloud, so the shapes below are not a guess.
+ *
+ * Two things this deliberately does NOT do, both because the box already does
+ * them and doing them twice means doing them differently:
+ *
+ *   filtering    `node_modules`, `.git`, `dist`, `target`… are dropped by boxd's
+ *                own `skip` set before the listing crosses the network. A second
+ *                regex here would be a second definition of "what an agent
+ *                should not read", drifting from the first.
+ *   path mapping the wire is project-relative by construction (`/src/App.tsx`).
+ *                The box's workdir is the box's business; there is no prefix to
+ *                strip and no `projectDir` to configure.
+ *
+ * What it DOES do here rather than on the box is apply patches: read, apply,
+ * write. `wire.PatchNote` states the reason — what `update` means when `oldStr`
+ * appears twice is ONE fact, it is defined in `patch.ts`, and
+ * `tests/integration/sandbox-fs.test.ts` asserts both filesystems answer it
+ * identically. A Go reimplementation across the network would be a second
+ * definition that no test on either side can see disagreeing. One extra round
+ * trip is the cheaper half of that trade.
  */
 
 import type { AgentFile } from "./types";
-import type { PatchOp, PatchResult, ProjectFs, SearchMatch } from "./fs";
+import type {
+  ExecResult,
+  PatchOp,
+  PatchResult,
+  ProjectExec,
+  ProjectFs,
+  SearchMatch,
+} from "./fs";
 import { applyPatchOps, normalizePath } from "./patch";
 
+/** `class` in the wire: what toolchain the box carries. */
+export type BoxClass = "exec" | "dev" | "desktop";
+
+/** A box, as `/v1/sandbox/boxes` reports it. */
+export interface Box {
+  id: string;
+  org?: string;
+  project?: string;
+  class?: BoxClass;
+  status?: "pending" | "running" | "suspended" | "error";
+  image?: string;
+  ref?: string;
+  url?: string;
+}
+
 export interface SandboxFsOptions {
-  /** Daemon base URL for this sandbox, e.g. `http://10.1.2.3:2280`. */
+  /** Gateway base URL, e.g. `https://api.hanzo.ai/v1` — the same one the rest
+   *  of the run already uses. */
   baseUrl: string;
-  /** Absolute path of the project root inside the sandbox. */
-  projectDir: string;
-  /** Bearer token authorizing calls to this sandbox's daemon. */
-  token?: string;
+  /** The box to edit in. */
+  boxId: string;
+  /** The caller's verified IAM bearer. There is no shared server key here. */
+  token: string;
   /** Per-request timeout. A wedged box must not hang the agent turn. */
   timeoutMs?: number;
 }
 
-/** Paths that are never the agent's business, and would swamp any listing. */
-const IGNORED = /(^|\/)(\.git|node_modules|\.next|dist|build|target|\.venv|__pycache__)(\/|$)/;
-
-interface DaemonFileInfo {
-  name?: string;
-  path?: string;
-  isDir?: boolean;
-  is_dir?: boolean;
+/**
+ * Get a box for a project, creating one if there is none.
+ *
+ * Box lifetime is cloud's problem, not ours: it owns the warm pool, the
+ * per-(org, project) volume, and the lease that suspends an idle box. This is
+ * the whole client — one POST — and it is here rather than in a module of its
+ * own because it is the one call that has to happen before a `SandboxProjectFs`
+ * can exist, and holding it beside the filesystem keeps one file to read.
+ *
+ * Returns null when the sandbox service is unreachable or refuses, so a caller
+ * can fall back to an in-memory project instead of failing the user's run.
+ */
+export async function openBox(opts: {
+  baseUrl: string;
+  token: string;
+  project: string;
+  boxClass?: BoxClass;
+  ref?: string;
+  timeoutMs?: number;
+}): Promise<Box | null> {
+  try {
+    const res = await fetch(`${opts.baseUrl.replace(/\/+$/, "")}/sandbox/boxes`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${opts.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        project: opts.project,
+        class: opts.boxClass ?? "dev",
+        ...(opts.ref ? { ref: opts.ref } : {}),
+      }),
+      signal: AbortSignal.timeout(opts.timeoutMs ?? 30_000),
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const box = (await res.json()) as Box;
+    return box?.id ? box : null;
+  } catch {
+    return null;
+  }
 }
 
-export class SandboxProjectFs implements ProjectFs {
+export class SandboxProjectFs implements ProjectFs, ProjectExec {
   private readonly changed = new Set<string>();
   private readonly timeoutMs: number;
+  private readonly base: string;
 
   constructor(private readonly opts: SandboxFsOptions) {
     this.timeoutMs = opts.timeoutMs ?? 20_000;
+    this.base = `${opts.baseUrl.replace(/\/+$/, "")}/sandbox/boxes/${encodeURIComponent(opts.boxId)}`;
   }
 
-  /** Project-relative path (`/src/App.tsx`) → absolute path in the sandbox. */
-  private abs(path: string): string {
-    return `${this.opts.projectDir.replace(/\/+$/, "")}${normalizePath(path)}`;
+  /** The box this filesystem edits — the id a caller shows or reuses. */
+  get boxId(): string {
+    return this.opts.boxId;
   }
 
   private async call(
     method: "GET" | "POST" | "DELETE",
     path: string,
-    init: { query?: Record<string, string>; body?: unknown } = {}
+    init: { query?: Record<string, string>; body?: unknown; timeoutMs?: number } = {}
   ): Promise<Response> {
-    const url = new URL(`${this.opts.baseUrl.replace(/\/+$/, "")}${path}`);
+    const url = new URL(`${this.base}${path}`);
     for (const [k, v] of Object.entries(init.query ?? {})) url.searchParams.set(k, v);
 
-    const headers: Record<string, string> = {};
-    if (this.opts.token) headers.Authorization = `Bearer ${this.opts.token}`;
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${this.opts.token}`,
+    };
     if (init.body !== undefined) headers["Content-Type"] = "application/json";
 
-    // A sandbox can wedge; an agent turn that never returns is worse than one
-    // that reports a failed tool call and lets the model try something else.
-    const signal = AbortSignal.timeout(this.timeoutMs);
+    // A box can wedge; an agent turn that never returns is worse than one that
+    // reports a failed tool call and lets the model try something else.
     return fetch(url, {
       method,
       headers,
       body: init.body === undefined ? undefined : JSON.stringify(init.body),
-      signal,
+      signal: AbortSignal.timeout(init.timeoutMs ?? this.timeoutMs),
       cache: "no-store",
     });
   }
 
   /**
-   * Run a command in the project directory. Exposed because the useful things
-   * a sandbox adds over a map — build, test, git — are all commands, and the
-   * caller should reach them through the same client that holds the auth.
+   * Run a command in the project directory.
+   *
+   * This is the capability a box has and a map does not, and it is why
+   * `ProjectExec` is a separate interface: `build`, `test` and `git` are the
+   * reason to pay for a box at all, and an in-memory project cannot pretend to
+   * offer them. A non-zero `exitCode` is a SUCCESSFUL call carrying a failed
+   * program — the same distinction `wire.ExecResult` draws, kept here so the
+   * model can tell "your tests failed" from "the box is broken".
    */
-  async exec(command: string, timeoutSec = 120): Promise<{ stdout: string; exitCode: number }> {
-    const res = await this.call("POST", "/process/execute", {
-      body: { command, cwd: this.opts.projectDir, timeout: timeoutSec },
+  async exec(command: string, timeoutSec = 120): Promise<ExecResult> {
+    // Give the HTTP call the box's own deadline plus a margin, so a command
+    // that legitimately runs for two minutes is not cut off by a 20s default.
+    const res = await this.call("POST", "/proc/exec", {
+      body: { command, timeoutSec },
+      timeoutMs: (timeoutSec + 10) * 1000,
     });
     if (!res.ok) {
-      return { stdout: `daemon returned ${res.status}`, exitCode: -1 };
+      return { exitCode: -1, stdout: "", stderr: `box returned ${res.status}`, timedOut: false };
     }
-    const out = (await res.json()) as { result?: string; stdout?: string; exitCode?: number; exit_code?: number };
+    const out = (await res.json()) as ExecResult;
     return {
-      stdout: out.result ?? out.stdout ?? "",
-      exitCode: out.exitCode ?? out.exit_code ?? 0,
+      exitCode: out.exitCode ?? 0,
+      stdout: out.stdout ?? "",
+      stderr: out.stderr ?? "",
+      timedOut: out.timedOut ?? false,
+      durationMs: out.durationMs,
     };
   }
 
   async list(): Promise<string[]> {
-    const res = await this.call("GET", "/files", { query: { path: this.opts.projectDir } });
+    const res = await this.call("GET", "/fs/list");
     if (!res.ok) return [];
-    const entries = (await res.json()) as DaemonFileInfo[] | { files?: DaemonFileInfo[] };
-    const rows = Array.isArray(entries) ? entries : (entries.files ?? []);
-
-    const root = this.opts.projectDir.replace(/\/+$/, "");
-    return rows
-      .filter((f) => !(f.isDir ?? f.is_dir))
-      .map((f) => f.path ?? f.name ?? "")
-      .filter(Boolean)
-      .map((p) => (p.startsWith(root) ? p.slice(root.length) : p))
-      .map(normalizePath)
-      .filter((p) => !IGNORED.test(p))
+    const body = (await res.json()) as { entries?: Array<{ path?: string; isDir?: boolean }> };
+    return (body.entries ?? [])
+      .filter((e) => !e.isDir && e.path)
+      .map((e) => e.path as string)
       .sort();
   }
 
+  /**
+   * A read that throws the bytes away. There is no `HEAD` and no `stat` on the
+   * wire on purpose: boxd answers a missing file with 404 specifically so that
+   * "not there" has ONE representation, and inventing a second endpoint to ask
+   * the same question more cheaply would be a second answer to maintain.
+   */
   async exists(path: string): Promise<boolean> {
-    const res = await this.call("GET", "/files/info", { query: { path: this.abs(path) } });
+    const res = await this.call("GET", "/fs/read", { query: { path: normalizePath(path) } });
+    await res.body?.cancel().catch(() => {});
     return res.ok;
   }
 
   async read(path: string): Promise<string | null> {
-    const res = await this.call("GET", "/files/download", { query: { path: this.abs(path) } });
+    const res = await this.call("GET", "/fs/read", { query: { path: normalizePath(path) } });
     if (!res.ok) return null;
     return res.text();
   }
 
   async write(path: string, content: string): Promise<void> {
     const p = normalizePath(path);
-    const res = await this.call("POST", "/files/upload", {
-      body: { path: this.abs(p), content },
-    });
+    const res = await this.call("POST", "/fs/write", { body: { path: p, content } });
     if (!res.ok) {
-      throw new Error(`write ${p} failed: daemon returned ${res.status}`);
+      throw new Error(`write ${p} failed: box returned ${res.status}`);
     }
     this.changed.add(p);
   }
 
   /**
-   * Search the checkout. This is the one operation where the sandbox is not
-   * merely equivalent to the in-memory store but categorically better: the
-   * daemon greps on the box, so the tree never crosses the network.
+   * Grep the checkout. The one operation where a box is not merely equivalent
+   * to an in-process map but categorically better: the tree is searched where
+   * it lives and only the hits cross the network. Substring, not regex, on both
+   * sides — a model should not be able to wedge its own box with `(a+)+$`.
    */
   async search(query: string, limit = 50): Promise<SearchMatch[]> {
     if (!query) return [];
-    const res = await this.call("GET", "/files/find", {
-      query: { path: this.opts.projectDir, pattern: query },
-    });
+    const res = await this.call("GET", "/fs/search", { query: { q: query, limit: String(limit) } });
     if (!res.ok) return [];
-
-    const rows = (await res.json()) as
-      | Array<{ file?: string; path?: string; line?: number; content?: string; text?: string }>
-      | { matches?: Array<{ file?: string; line?: number; content?: string }> };
-    const matches = Array.isArray(rows) ? rows : (rows.matches ?? []);
-
-    const root = this.opts.projectDir.replace(/\/+$/, "");
-    const out: SearchMatch[] = [];
-    for (const m of matches) {
-      const raw = (m as { file?: string; path?: string }).file ?? (m as { path?: string }).path ?? "";
-      if (!raw) continue;
-      const rel = normalizePath(raw.startsWith(root) ? raw.slice(root.length) : raw);
-      if (IGNORED.test(rel)) continue;
-      out.push({
-        path: rel,
-        line: m.line ?? 0,
-        text: ((m as { content?: string; text?: string }).content ?? (m as { text?: string }).text ?? "").trim().slice(0, 200),
-      });
-      if (out.length >= limit) break;
-    }
-    return out;
+    const body = (await res.json()) as { matches?: SearchMatch[] };
+    return (body.matches ?? []).slice(0, limit);
   }
 
   async applyPatch(path: string, ops: PatchOp[]): Promise<PatchResult> {
@@ -185,6 +249,11 @@ export class SandboxProjectFs implements ProjectFs {
     return [...this.changed].sort();
   }
 
+  /**
+   * Only what this run wrote. The tree on a real checkout is thousands of files
+   * the caller already has; the delta is both the affordable answer and the
+   * honest one.
+   */
   async changedFiles(): Promise<AgentFile[]> {
     const paths = [...this.changed].sort();
     const files: AgentFile[] = [];

@@ -20,7 +20,7 @@
 import type { AgentFile, EmitEvent } from "./types";
 import { InMemoryProjectFs, type ProjectFs } from "./fs";
 import type { AgentSession, ControlDecision } from "./session";
-import { AGENT_TOOL_DEFS, executeAgentTool } from "./tools";
+import { agentToolDefs, executeAgentTool, type OpenAITool } from "./tools";
 
 export interface RunAgentOptions {
   /** The caller's verified IAM bearer, forwarded to the gateway. */
@@ -51,16 +51,37 @@ export interface RunAgentOptions {
   session?: AgentSession;
 }
 
-const SYSTEM_PROMPT = `You are Hanzo's coding agent. You edit a small web project by CALLING TOOLS — never paste file contents in prose.
+/**
+ * The system prompt, DERIVED from the tools actually being sent.
+ *
+ * The tool list used to be typed out here as well as declared in `tools.ts`,
+ * which is one fact in two places — and the two now genuinely differ per run,
+ * because a box gets `run_command` and an in-memory project does not. A prompt
+ * that promises a tool the model was never given produces a model that keeps
+ * calling it; a prompt that omits one it WAS given produces a box whose tests
+ * are never run. Deriving the sentence from the array makes both impossible.
+ */
+function systemPrompt(tools: OpenAITool[]): string {
+  const names = tools.map((t) => t.function.name);
+  const canRun = names.includes("run_command");
+  return `You are Hanzo's coding agent. You edit a small web project by CALLING TOOLS — never paste file contents in prose.
 
-Available tools: list_files, read_file, search_files, write_file, apply_patch.
+Available tools: ${names.join(", ")}.
 
 Workflow:
 1. Call list_files to see the project, and read_file on anything you will change.
 2. Make the change with write_file (new/whole file) or apply_patch (surgical edit — oldStr must be an exact, unique substring).
-3. When the task is fully done, STOP calling tools and reply with a one-paragraph summary of what you changed.
+${
+  canRun
+    ? `3. Verify with run_command — this project is a real checkout in a box, so build it and run its tests rather than assuming they pass.
+4. When the task is fully done, STOP calling tools and reply with a one-paragraph summary of what you changed.`
+    : `3. When the task is fully done, STOP calling tools and reply with a one-paragraph summary of what you changed.`
+}
 
-Rules: make the smallest change that satisfies the request; keep existing structure and style; do not invent files the user did not ask for; verify with read_file after a non-trivial edit.`;
+Rules: make the smallest change that satisfies the request; keep existing structure and style; do not invent files the user did not ask for; verify with read_file after a non-trivial edit.${
+    canRun ? "" : " You cannot run commands here — do not claim you built or tested anything."
+  }`;
+}
 
 type ToolCallAccum = { id: string; name: string; args: string };
 
@@ -88,6 +109,7 @@ interface TurnResult {
 async function streamTurn(
   opts: RunAgentOptions,
   messages: ChatMsg[],
+  tools: OpenAITool[],
   emit: EmitEvent
 ): Promise<TurnResult> {
   const res = await fetch(`${opts.baseUrl}/chat/completions`, {
@@ -99,7 +121,7 @@ async function streamTurn(
     body: JSON.stringify({
       model: opts.model,
       messages,
-      tools: AGENT_TOOL_DEFS,
+      tools,
       tool_choice: "auto",
       max_tokens: opts.maxTokens ?? 8000,
       stream: true,
@@ -233,9 +255,12 @@ async function waitOutPause(
 export async function runAgent(opts: RunAgentOptions, emit: EmitEvent): Promise<void> {
   const maxTurns = Math.max(1, Math.min(opts.maxTurns ?? 8, 24));
   const fs: ProjectFs = opts.fs ?? new InMemoryProjectFs(opts.files ?? []);
+  // The toolset is a fact about WHERE this run happens, not about the agent, so
+  // it is resolved once from the filesystem we were handed.
+  const tools = agentToolDefs(fs);
 
   const messages: ChatMsg[] = [
-    { role: "system", content: SYSTEM_PROMPT },
+    { role: "system", content: systemPrompt(tools) },
     { role: "user", content: opts.prompt },
   ];
 
@@ -261,7 +286,7 @@ export async function runAgent(opts: RunAgentOptions, emit: EmitEvent): Promise<
 
       await emit({ type: "turn", turn, maxTurns });
 
-      const { content, toolCalls, finishReason: fr } = await streamTurn(opts, messages, emit);
+      const { content, toolCalls, finishReason: fr } = await streamTurn(opts, messages, tools, emit);
 
       if (toolCalls.length === 0) {
         // No tools requested → the model answered. Done.

@@ -25,8 +25,9 @@ import { NextResponse } from "next/server";
 import { session } from "@/lib/iam";
 import { requireSameOrigin } from "@/lib/org/csrf";
 import { resolveModelId } from "@/lib/providers";
-import { runAgent, type AgentEvent, type AgentFile } from "@/lib/agent";
+import { runAgent, type AgentEvent, type AgentFile, type ProjectFs } from "@/lib/agent";
 import { AgentSession } from "@/lib/agent/session";
+import { SandboxProjectFs, openBox } from "@/lib/agent/sandbox-fs";
 
 const HANZO_AI_BASE_URL = process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai/v1";
 
@@ -41,6 +42,51 @@ interface AgentRequestBody {
   model?: unknown;
   files?: unknown;
   maxTurns?: unknown;
+  /** Run in this existing box. */
+  boxId?: unknown;
+  /** Run in a box for this project, creating one if there is none. */
+  project?: unknown;
+}
+
+/**
+ * Where this run edits.
+ *
+ * Three cases, in order of how specific the caller was:
+ *
+ *   boxId    a box the caller already holds — reuse it, do not create a second.
+ *   project  a named project — cloud gets or creates its box, and the agent
+ *            edits a REAL checkout with a real toolchain it can run.
+ *   neither  the scratch case: a handful of files in this process. Most runs.
+ *            It stays in memory deliberately — a throwaway HTML page does not
+ *            need a pod, and paying for one would make the fast path slow.
+ *
+ * A box that cannot be reached falls back to memory rather than failing the
+ * user's run: the agent does less (no `run_command`, and it is told so), but
+ * the work still happens. `agentToolDefs` derives the toolset from whichever
+ * filesystem comes back, so the model is never offered a capability that the
+ * fallback does not have.
+ */
+async function resolveFs(
+  token: string,
+  body: AgentRequestBody,
+  files: AgentFile[]
+): Promise<{ fs?: ProjectFs; boxId?: string }> {
+  const boxId = typeof body.boxId === "string" ? body.boxId.trim() : "";
+  if (boxId) {
+    return { fs: new SandboxProjectFs({ baseUrl: HANZO_AI_BASE_URL, boxId, token }), boxId };
+  }
+
+  const project = typeof body.project === "string" ? body.project.trim() : "";
+  if (project) {
+    const box = await openBox({ baseUrl: HANZO_AI_BASE_URL, token, project });
+    if (box) {
+      return { fs: new SandboxProjectFs({ baseUrl: HANZO_AI_BASE_URL, boxId: box.id, token }), boxId: box.id };
+    }
+  }
+
+  // No box: the loop builds an in-memory project from `files` itself.
+  void files;
+  return {};
 }
 
 /** Validate and normalize the incoming project file list. */
@@ -92,11 +138,16 @@ export async function POST(request: NextRequest) {
   // fleet views, and its control queue is what pause/resume/stop/message from
   // any surface arrive through. Unreachable registry => `open()` returns null
   // and the run proceeds exactly as it did before, private to this caller.
+  const { fs, boxId } = await resolveFs(token, body, files);
+
   const agentSession = new AgentSession({
     baseUrl: HANZO_AI_BASE_URL,
     token,
     agent: "hanzo-app",
     title: prompt.slice(0, 120),
+    // Where it runs, so the fleet views show a box run as a box run rather than
+    // as an anonymous stream from a browser tab.
+    ...(boxId ? { host: boxId, repo: typeof body.project === "string" ? body.project : undefined } : {}),
   });
   await agentSession.open();
 
@@ -131,6 +182,7 @@ export async function POST(request: NextRequest) {
           model,
           prompt,
           files,
+          fs,
           maxTurns,
           signal: request.signal,
           session: agentSession,
