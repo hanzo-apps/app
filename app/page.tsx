@@ -305,7 +305,7 @@ export default function LandingPage() {
           {/* Hero focal visual — the builder building an app, live. Lazy: it sits
               just below the composer, so it mounts the moment it nears view. */}
           <YStack marginTop="$10" $md={{ marginTop: "$11" }}>
-            <LazySection minHeight={520} rootMargin="900px 0px">
+            <LazySection minHeight={440} rootMargin="900px 0px">
               <Reveal delay={240}>
                 <HeroPreview />
               </Reveal>
