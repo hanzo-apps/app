@@ -217,33 +217,76 @@ a {
   padding: 1.5px;
 }
 
+/* The ring DRAWS A RING. It used to draw a filled DISC and rely on the panel
+   above it being opaque to cover the middle — which made the panel's opacity
+   load-bearing for something that was never about the panel. The moment the
+   composer became glass the whole spectrum washed up through it, and that is
+   exactly what happened here: the builder's composer is glass, and its interior
+   came out a blue-to-orange smear.
+
+   `padding` is the ring's own thickness; the two-layer mask keeps paint outside
+   it — `content-box` is the hole, the full box is the plate, `exclude` leaves
+   the lip. So the ring is a rim BY CONSTRUCTION and the panel is free to be any
+   material at all.
+
+   hanzo.chat fixed this and hanzo.app's copy never got it, which is the whole
+   argument for the two not being copies: the same class, declared twice, drifted
+   until one of them was simply wrong. */
 .hz-composer::before {
   content: "";
   position: absolute;
   inset: 0;
+  padding: 1.5px;
   border-radius: inherit;
   background: conic-gradient(from var(--hz-angle), var(--hz-spectrum));
   animation: hzComposerSpin 10s linear infinite;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  /* After the standard shorthand: WebKit aliases `mask` onto `-webkit-mask`, so
+     declaring this first lets the shorthand reset it to `source-over` — the
+     filled disc again, on exactly the browsers too old to have `mask-composite`
+     at all. */
+  -webkit-mask-composite: xor;
   z-index: 0;
   pointer-events: none;
 }
 
+/* The glow is a HALO, masked like the ring so it lights the air around the box
+   and nothing behind it. The LOUD version — 0.5 resting, pulsing via
+   hzComposerGlow — was killed in chat on purpose: over an animated backdrop it
+   read as a purple wash. A fifth of the alpha, a tighter spread, and no opacity
+   pulse; only the same slow spin the ring runs, so the two stay in phase. */
 .hz-composer::after {
   content: "";
   position: absolute;
-  inset: -12px;
-  border-radius: inherit;
+  inset: -6px;
+  padding: 6px;
+  /* Concentric with the box, NOT `inherit`: the halo lives 6px outside the
+     composer, so an inherited corner on this larger box curves too tight and
+     reads as a second, mismatched rounding just outside the panel. */
+  border-radius: calc(1.5rem + 6px);
   background: conic-gradient(from var(--hz-angle), var(--hz-spectrum));
-  filter: blur(28px);
-  opacity: 0.5;
+  filter: blur(16px);
+  opacity: 0.22;
+  animation: hzComposerSpin 10s linear infinite;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
   z-index: -1;
   pointer-events: none;
-  animation:
-    hzComposerSpin 10s linear infinite,
-    hzComposerGlow 10s ease-in-out infinite;
 }
 
-/* Direct children (the opaque inner panel) sit above the ring + glow. */
+/* Direct children (the inner panel) sit above the ring + glow. */
 .hz-composer > * {
   position: relative;
   z-index: 1;

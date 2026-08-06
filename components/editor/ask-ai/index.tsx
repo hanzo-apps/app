@@ -1064,16 +1064,7 @@ export function AskAI({
         </XStack>
       )}
 
-      {/* NOT YET CONFIRMED IN A BROWSER. The structure below is correct by
-          construction and typechecks, but `.hz-composer` did not appear in the
-          DOM on a local dev server that was demonstrably serving stale bytes for
-          THIS module (the rendered panel still carried the `focusStyle` atomic
-          classes removed here, after a touch and a forced rebuild, with no
-          compile error). Other classes on the same page render fine
-          (glass=3, md=1, no-scrollbar=3), so the mechanism works. Verify against
-          a fresh server before trusting this.
-
-          THE SAME COMPOSER AS EVERYWHERE ELSE YOU TALK TO HANZO.
+      {/* THE SAME COMPOSER AS EVERYWHERE ELSE YOU TALK TO HANZO.
           `.hz-composer` is the prism — a 1.5px-padded host carrying the slow
           conic ring (::before) and its blurred halo (::after) — and the panel
           inside it is glass. `/new` (components/build-composer) and hanzo.chat
