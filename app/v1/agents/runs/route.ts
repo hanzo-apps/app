@@ -42,9 +42,9 @@ interface AgentRequestBody {
   model?: unknown;
   files?: unknown;
   maxTurns?: unknown;
-  /** Run in this existing box. */
+  /** Run in this existing sandbox. */
   id?: unknown;
-  /** Run in a box for this project, creating one if there is none. */
+  /** Run in a sandbox for this project, creating one if there is none. */
   project?: unknown;
 }
 
@@ -53,22 +53,22 @@ interface AgentRequestBody {
  *
  * Three cases, in order of how specific the caller was:
  *
- *   id    a box the caller already holds — reuse it, do not create a second.
- *   project  a named project — cloud gets or creates its box, and the agent
+ *   id    a sandbox the caller already holds — reuse it, do not create a second.
+ *   project  a named project — cloud gets or creates its sandbox, and the agent
  *            edits a REAL checkout with a real toolchain it can run.
  *   neither  the scratch case: a handful of files in this process. Most runs.
  *            It stays in memory deliberately — a throwaway HTML page does not
  *            need a pod, and paying for one would make the fast path slow.
  *
- * A box that cannot be reached falls back to memory rather than failing the
+ * A sandbox that cannot be reached falls back to memory rather than failing the
  * user's run: the agent does less (no `run_command`, and it is told so), but
  * the work still happens. `agentToolDefs` derives the toolset from whichever
  * filesystem comes back, so the model is never offered a capability that the
  * fallback does not have.
  *
- * `opened` records which of the two box cases we are in, because it decides who
- * hangs the box up at the end. A caller-supplied `id` belongs to the caller
- * and must outlive the run; a box opened here for `project` has no other owner.
+ * `opened` records which of the two sandbox cases we are in, because it decides who
+ * hangs the sandbox up at the end. A caller-supplied `id` belongs to the caller
+ * and must outlive the run; a sandbox opened here for `project` has no other owner.
  */
 async function resolveFs(
   token: string,
@@ -82,17 +82,17 @@ async function resolveFs(
 
   const project = typeof body.project === "string" ? body.project.trim() : "";
   if (project) {
-    const box = await openSandbox({ baseUrl: HANZO_AI_BASE_URL, token, project });
-    if (box) {
+    const sandbox = await openSandbox({ baseUrl: HANZO_AI_BASE_URL, token, project });
+    if (sandbox) {
       return {
-        fs: new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id: box.id, token }),
-        id: box.id,
+        fs: new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id: sandbox.id, token }),
+        id: sandbox.id,
         opened: true,
       };
     }
   }
 
-  // No box: the loop builds an in-memory project from `files` itself.
+  // No sandbox: the loop builds an in-memory project from `files` itself.
   void files;
   return {};
 }
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
     token,
     agent: "hanzo-app",
     title: prompt.slice(0, 120),
-    // Where it runs, so the fleet views show a box run as a box run rather than
+    // Where it runs, so the fleet views show a sandbox run as a sandbox run rather than
     // as an anonymous stream from a browser tab.
     ...(id ? { host: id, repo: typeof body.project === "string" ? body.project : undefined } : {}),
   });
@@ -209,10 +209,10 @@ export async function POST(request: NextRequest) {
       }
       await agentSession.close("error");
     } finally {
-      // Give back only what this run took out. Nothing else releases a box:
-      // `apps/sandbox` has no reaper, so a box leaked here holds a pod and an
+      // Give back only what this run took out. Nothing else releases a sandbox:
+      // `apps/sandbox` has no reaper, so a sandbox leaked here holds a pod and an
       // RWO volume until a human notices. Suspending frees the pod and keeps
-      // the checkout, which is also what clears the one-live-box-per-project
+      // the checkout, which is also what clears the one-live-sandbox-per-project
       // rule for the next run.
       if (opened && id) {
         await releaseSandbox({ baseUrl: HANZO_AI_BASE_URL, token, id });
