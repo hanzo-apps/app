@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from '@hanzo/ui';
 import { SizableText, YStack, XStack, H1, Paragraph, H2, H3 } from '@hanzo/ui';
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
@@ -340,33 +339,50 @@ export default function LandingPage() {
                 </SizableText></Link>
               </XStack>
 
-              <YStack gap="$4">
+              {/* The ONE card grid (auto-fill/minmax — four across at desktop,
+                  fewer as the width shrinks). These were full-width Buttons in a
+                  column: the size variant's pinned height cropped every preview
+                  to a ~30px band (the same landmine the template strip names),
+                  so the section read as four broken bars. A clickable stack
+                  sizes from content; the thumb box crops a REAL preview —
+                  ProjectThumb renders the deployed site scaled into the box, and
+                  a draft gets the honest monogram tile, never fake content. */}
+              <div className="card-grid">
                 {projects.slice(0, 4).map((project) => (
-                  <Button
+                  <YStack
                     key={project.slug}
-                    variant="ghost"
+                    role="button"
+                    tabIndex={0}
                     onClick={() => router.push(builderLink(project.slug, project.org))}
-                    group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" hoverStyle={{ borderColor: "$color5", backgroundColor: "$color3" }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        router.push(builderLink(project.slug, project.org));
+                      }
+                    }}
+                    cursor="pointer" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color3" }}
                   >
-                    <ProjectThumb name={project.name} liveUrl={project.liveUrl} />
-                    <YStack padding="$4.5">
-                      <H3 fontSize="$3" fontWeight="500" color="$color" $md={{ fontSize: "$4" }} lineHeight="1.15">
+                    <YStack position="relative" overflow="hidden" height={175} backgroundColor="$color002">
+                      <ProjectThumb name={project.name} liveUrl={project.liveUrl} />
+                    </YStack>
+                    <YStack paddingHorizontal="$3" paddingVertical="$2.5">
+                      <H3 numberOfLines={1} fontSize="$3" fontWeight="500" color="$color" lineHeight="1.15">
                         {project.name}
                       </H3>
-                      <Paragraph marginTop="$1" numberOfLines={2} fontSize="$1" color="$color11" $md={{ fontSize: "$3" }} lineHeight="1.5">
-                        {project.status === "live" ? "Live" : "Draft"}
-                      </Paragraph>
-                      {project.updatedAtIso && (
-                        <YStack marginTop="$3">
-                          <SizableText fontFamily="$mono" fontSize={11} color="$color11">
+                      <XStack marginTop="$1" alignItems="center" gap="$2">
+                        <Paragraph fontSize={11} color="$color10">
+                          {project.status === "live" ? "Live" : "Draft"}
+                        </Paragraph>
+                        {project.updatedAtIso && (
+                          <SizableText fontFamily="$mono" fontSize={11} color="$color10">
                             {new Date(project.updatedAtIso).toLocaleDateString()}
                           </SizableText>
-                        </YStack>
-                      )}
+                        )}
+                      </XStack>
                     </YStack>
-                  </Button>
+                  </YStack>
                 ))}
-              </YStack>
+              </div>
             </YStack>
           </YStack>
         )}
