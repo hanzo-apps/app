@@ -275,14 +275,16 @@ export function BuildComposer({
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Base backend toggle — spawn a Hanzo Base for this app. */}
+              {/* Base backend toggle — spawn a Hanzo Base for this app. Active
+                  is said by the BORDER alone (white, monochrome) — a fill made
+                  the chip read as a pressed gray slab. */}
               <Button
                 type="button"
                 variant="ghost"
                 onClick={toggleBase}
                 aria-pressed={withBase}
                 title="Hanzo Base backend — database, auth, realtime for this app"
-                group alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} {...{ borderColor: withBase ? "$color6" : "$borderColor", backgroundColor: withBase ? "$color5" : "$color005" }} paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$color06" }}
+                group alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} backgroundColor="$color005" {...{ borderColor: withBase ? "$color" : "$borderColor" }} paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: withBase ? "$color" : "$color06" }}
               >
                 <XStack alignItems="center" gap="$1.5">
                   <Database size={14} />

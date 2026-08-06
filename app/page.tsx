@@ -60,12 +60,13 @@ interface LandingProject {
 }
 
 // Honest app-type starters (not fabricated products) — shown as pills.
+// Exactly FOUR: they read as one row under the composer at desktop widths;
+// a fifth wrapped alone onto a second line and looked stranded.
 const STARTERS = [
   "Internal admin dashboard",
   "AI support chatbot",
   "SaaS app with billing",
   "Marketplace with auth",
-  "Realtime chat app",
 ];
 
 // Typewriter phrases for the composer — the same honest app types, phrased as
