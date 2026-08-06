@@ -120,9 +120,21 @@ export default function Header() {
     { id: "help", label: "Help", href: "/help" },
   ];
 
+  // `primaryCTA` is overridden for the same reason `localNav` is: the shared
+  // registry describes hanzo.app from the OUTSIDE, so its "+ New project" points
+  // at `U.app` — this site's own root. On every other surface that is a link to
+  // the builder; here it is a self-link, and the most action-oriented control on
+  // the page reloads the marketing page instead of starting anything. Verified
+  // on production HTML: href="https://hanzo.app".
+  //
+  // `/new` rather than `/dev`: it matches the label, and it is the route that
+  // mounts OrgGate, so a first-time visitor with no organization is onboarded
+  // instead of meeting that requirement later at deploy.
+  const primaryCTA = { id: "newproject", label: "+ New project", href: "/new" };
+
   return (
     <HanzoHeader
-      surface={{ ...surface, localNav: nav }}
+      surface={{ ...surface, localNav: nav, primaryCTA }}
       currentHref="https://hanzo.app"
       identitySlot={
         <XStack alignItems="center" gap="$2">
