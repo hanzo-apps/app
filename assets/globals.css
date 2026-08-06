@@ -787,23 +787,38 @@ code, pre, kbd, samp, .font-mono, [class~="font-mono"] {
   font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-/* A <kbd> is always a keycap in this app (palette hints, sidebar shortcut).
+/* A <kbd> is a HINT, not a keycap: the row states the action, the shortcut
+   trails it in muted text. That is how hanzo.chat renders one (its
+   `DropdownPopup` kbd is `ml-auto … text-xs text-black/50 dark:text-white/50`,
+   no box) and how the desktop app it is aligned to does, and it is the same
+   shape read two ways — `margin-left: auto` IS the "label left, shortcut right"
+   law, stated once here instead of at each call site.
+
+   It used to draw a bordered, filled, monospace keycap. Inside the sidebar's
+   Search row — a row that already carries its own fill and hairline on hover —
+   that made the ⌘K a second bordered object competing with the row for the
+   eye, reading as a control you press rather than a footnote about the one you
+   are already looking at.
+
+   The colour is design's `--text-tertiary` and the size design's `--text-xs`,
+   both from `@hanzo/ui/theme.css` — the same token layer hanzo.chat imports, so
+   the two surfaces mute a hint by the same rung and not by two similar numbers.
+   `font-family: inherit` overrides the mono rule above (same specificity, later
+   in the file): a shortcut is chrome, so it wears the chrome's face.
    One element rule — no per-call chrome. */
 kbd {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  padding: 2px 6px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background-color: var(--muted);
-  font-size: 10px;
-  color: var(--muted-foreground);
+  margin-left: auto;
+  font-family: inherit;
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
 }
 
 /* cmdk (the command palette) exposes attribute hooks, not components — the
    two rules its chrome needs live here. */
-/* Header-search keycap — the kbd element rule above styles it; this only
+/* Header-search hint — the kbd element rule above styles it; this only
    gates visibility: the ⌘K hint is desktop chrome, hidden below lg. */
 .hs-kbd { display: none; margin-left: 4px; }
 @media (min-width: 1024px) { .hs-kbd { display: inline-flex; } }

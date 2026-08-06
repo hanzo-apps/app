@@ -294,6 +294,34 @@ local build after:
 was never measured — the real one is 23 of 90, above. The counts differ by five
 because the landing page gained controls between the two measurements.)
 
+### The left panel has ONE glyph, and a shortcut is not a keycap
+
+Two chrome laws this app shares with hanzo.chat rather than decides for itself.
+Both are stated where they apply and pinned by `tests/unit/panel-affordance.test.ts`;
+this is only the pointer.
+
+**`PanelLeft`, open or shut, everywhere a column on the left shows and hides.**
+The rule is written into hanzo.chat's own copy of the mark
+(`packages/client/src/svgs/Sidebar.tsx` — "Unified across hanzo.chat, hanzo.app,
+and hanzo console so the open/close affordance is the SAME icon everywhere"), and
+this app had three answers at once: `PanelLeft` alone in the sidebar, a
+`PanelLeft`↔`PanelLeftClose` swap in the builder console and on `/chat`, and the
+Hanzo mark standing in for the toggle on the collapsed rail. Two of them were
+visible together — on `/chat` the shell's toggle and the conversation rail's sit
+~330px apart and wore different shapes. State belongs to `aria-expanded`; a
+second glyph says nothing extra and costs the eye a shape to re-learn.
+
+**A `<kbd>` is a hint, not a keycap** — one element rule in `assets/globals.css`,
+`margin-left: auto` + `var(--text-tertiary)` + `var(--text-xs)`, no box. Same
+shape hanzo.chat draws (`DropdownPopup.tsx`), and the colour and size come from
+`@hanzo/ui/theme.css`, the token layer both surfaces already import, so the two
+mute a hint by the same rung rather than by two similar numbers.
+
+The icon library needs no decision: both surfaces are already lucide (this app
+`lucide-react` direct, chat the same package plus the gui-wrapped
+`@hanzogui/lucide-icons-2`), so parity here is a matter of picking the same
+NAMES, never of adding a dependency.
+
 ### Work items live in the cloud tracker, and "task" is the wrong word
 
 `/dev/:org/:project/issues` is the project's board. It stores NOTHING: rows come

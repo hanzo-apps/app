@@ -3,7 +3,7 @@
 import { Button } from '@hanzo/ui';
 import { SizableText, YStack, XStack, Paragraph } from '@hanzo/ui';
 import { useEffect, useRef } from "react";
-import { Check, GitBranch, PanelLeft, PanelLeftClose } from "lucide-react";
+import { Check, GitBranch, PanelLeft } from "lucide-react";
 
 import { Voice } from "@hanzo/voice";
 
@@ -164,12 +164,11 @@ export function Console({
             group
             width="$4.5" height="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}
           >
+            {/* ONE glyph for the left panel — `PanelLeft`, open or shut (the
+                fleet rule; see components/sidebar). `aria-expanded` above already
+                says which it is. */}
             <SizableText color="$color11" $group-hover={{ color: "$color" }}>
-              {sidebarCollapsed ? (
-                <PanelLeft size={14} />
-              ) : (
-                <PanelLeftClose size={14} />
-              )}
+              <PanelLeft size={14} />
             </SizableText>
           </Button>
         </XStack>

@@ -17,7 +17,6 @@ import {
   ArrowUp,
   MessageCircle,
   PanelLeft,
-  PanelLeftClose,
   Plus,
   RefreshCw,
   Search,
@@ -325,15 +324,21 @@ export default function ChatPage() {
         {/* Thread */}
         <YStack flex={1} minWidth={0}>
           <XStack alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" padding="$3">
+            {/* ONE glyph for the left panel — `PanelLeft`, open or shut (the
+                fleet rule; see components/sidebar). This rail toggle sits ~330px
+                from the shell sidebar's own toggle, so while it swapped in
+                `PanelLeftClose` the two controls that mean "show/hide the column
+                on your left" were two different shapes on screen at once. */}
             <Button
               variant="ghost"
               size="sm"
               group
               onClick={() => setRailOpen((o) => !o)}
               aria-label={railOpen ? 'Hide conversations' : 'Show conversations'}
+              aria-expanded={railOpen}
             >
               <SizableText color="$color11" $group-hover={{ color: "$color" }}>
-                {railOpen ? <PanelLeftClose size={16} /> : <PanelLeft size={16} />}
+                <PanelLeft size={16} />
               </SizableText>
             </Button>
             <Select value={model} onValueChange={setModel}>

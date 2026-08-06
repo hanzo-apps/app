@@ -300,7 +300,20 @@ function SidebarContent({
         x={mobileOpen ? "$0" : "-100%"}
         $md={{ position: "relative", left: "unset", x: "$0", zIndex: 1 }}
       >
-        {/* Top: brand mark + collapse toggle. */}
+        {/* Top: brand mark + collapse toggle.
+
+            ONE glyph for the left panel, both ways: `PanelLeft`, open or shut.
+            That is the fleet rule, written down in hanzo.chat's own copy of the
+            mark (`packages/client/src/svgs/Sidebar.tsx`: "Canonical Hanzo
+            sidebar-toggle glyph: lucide PanelLeft. Unified across hanzo.chat,
+            hanzo.app, and hanzo console so the open/close affordance is the SAME
+            icon everywhere"). Collapsed, this button used to be the Hanzo mark —
+            so the rail's one control looked like a logo, and the affordance the
+            user is hunting for (the thing that brings the nav back) was the one
+            thing on screen that did not look like a button. State is carried by
+            `aria-expanded`, which is what a screen reader reads anyway; swapping
+            in a second glyph to say the same thing only costs the eye a shape it
+            has to re-learn. */}
         <XStack
           alignItems="center" height={54} borderBottomWidth={1} paddingHorizontal="$2" {...{ justifyContent: collapsed ? "center" : "space-between", gap: collapsed ? undefined : "$2" }}
         >
@@ -309,10 +322,11 @@ function SidebarContent({
               onClick={toggleCollapsed}
               title="Expand sidebar"
               aria-label="Expand sidebar"
+              aria-expanded={false}
               variant="ghost"
               height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$3"
             >
-              <HanzoLogo size={20} color="var(--foreground)" />
+              <PanelLeft size={16} />
             </Button>
           ) : (
             <>
@@ -335,6 +349,7 @@ function SidebarContent({
                 onClick={toggleCollapsed}
                 title="Collapse sidebar"
                 aria-label="Collapse sidebar"
+                aria-expanded={true}
                 variant="ghost"
                 display="none" $md={{ display: "flex" }} height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" {...{ color: "$color11" }}
               >
