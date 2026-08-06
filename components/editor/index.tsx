@@ -37,11 +37,9 @@ import { Preview } from "@/components/editor/preview";
 import { useEditor } from "@/hooks/useEditor";
 import { AskAI } from "@/components/editor/ask-ai";
 import { DeployButton } from "./deploy-button";
-import { GitSyncButton } from "./git-sync-button";
 import { Page, Project } from "@/types";
 import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signal";
 import { SaveButton } from "./save-button";
-import { LoadProject } from "../my-projects/load-project";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { useAutosave } from "@/hooks/useAutosave";
 import { commitTurn } from "@/lib/git/commit-turn";
@@ -106,6 +104,19 @@ export const AppEditor = ({
   // docked on the left; this drives what the RIGHT pane shows — preview or the
   // code editor — and, on mobile, which single pane is visible.
   const [currentTab, setCurrentTab] = useState("chat");
+  /**
+   * What the RIGHT pane shows. Per the comment above, `currentTab` carries two
+   * meanings, and `chat` belongs to only one of them: the right pane shows
+   * preview or code, never chat.
+   *
+   * Reading `currentTab` directly here made `chat` a third right-pane value
+   * that renders NOTHING. On desktop that is the state you start in — `chat` is
+   * the initial value and its segment is hidden above `lg` — so the visual
+   * editor never mounted and there was no visible control to say why. Clicking
+   * an element in the preview sets the tab back to `chat` (it opens the chat to
+   * ask about that element), which disarmed editing again on every use.
+   */
+  const rightView = currentTab === "code" ? "code" : "preview";
   // The left pane is ALWAYS the chat composer; a history/rollback ICON in the
   // header toggles the version-history panel as an OVERLAY over it (item 10).
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -336,24 +347,23 @@ export const AppEditor = ({
         }}
         project={project}
       >
-        {/* Secondary actions (Share / Load / Push) share ONE treatment so the
-            action cluster reads as a set; Publish is the sole solid primary. */}
+        {/* Two lean actions, Codex-minimal: Share (a preview link) and Publish
+            (the sole solid primary). ONE secondary treatment — a quiet glass
+            toolbar button — so the cluster reads as a set. Git push is NOT a
+            header verb: every finished turn already commits to git.hanzo.ai
+            (onSuccess → commitTurn), so a manual Push button was a third size
+            competing for the corner while doing, on demand, exactly what happens
+            on its own. Load is gone too — you are already inside a project
+            editing it, so "load a project" here was a door to nowhere. */}
         <Button
           variant="outline"
           size="sm"
           onClick={() => setIsShareModalOpen(true)}
-          height={28} gap="$1.5" paddingHorizontal="$2.5" borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ backgroundColor: "$color3" }}
+          height={28} gap="$1.5" paddingHorizontal="$2.5" borderRadius="$4" borderColor="$color06" backgroundColor="$color04" hoverStyle={{ backgroundColor: "$color08", borderColor: "$color8" }}
         >
           <Share2 size={14} />
           <SizableText display="none" $md={{ display: "inline" }}>Share</SizableText>
         </Button>
-        <LoadProject
-          onSuccess={(project: Project) => {
-            router.push(`/projects/${project.space_id}`);
-          }}
-  />
-        {/* for these buttons pass the whole pages */}
-        <GitSyncButton pages={pages} prompts={prompts} disabled={isAiWorking} />
         {project?._id ? (
           <SaveButton pages={pages} prompts={prompts} />
         ) : (
@@ -498,13 +508,14 @@ export const AppEditor = ({
           // desktop. It was exactly inverted.
           display="none" $lg={{ display: "flex" }} className="group/resizer"
         >
-          {/* A REAL, grabbable handle: an always-present hairline seam (so the
-              divider is never invisible — you can see where the panes meet and
-              where to grab) that strengthens on hover/drag, a wide-enough hit
-              target (w-3) to grab from either panel's edge, and an always-visible
-              centered grip pill for the affordance. */}
-          <YStack pointerEvents="none" position="absolute" top="$0" bottom="$0" left="50%" width={1} x="-50%" backgroundColor="$borderColor" $group-resizer-hover={{ backgroundColor: "$color06" }} $group-resizer-press={{ backgroundColor: "$color" }} />
-          <YStack pointerEvents="none" position="relative" height="$8" width="$1" borderRadius="$10" backgroundColor="$color5" $group-resizer-hover={{ backgroundColor: "$color8" }} $group-resizer-press={{ backgroundColor: "$color" }} />
+          {/* macOS split view: NO visible divider at rest — the panes simply
+              meet. The wide (w-3) hit target still grabs from either edge, and a
+              single hairline seam FADES IN only on hover/drag, so the affordance
+              appears exactly when you reach for it and the chrome stays quiet
+              otherwise. The old always-on grip pill (a fat gray lozenge down the
+              middle) is gone: it read as a heavy structural divider, which is the
+              opposite of the one-continuous-surface the workspace wants. */}
+          <YStack pointerEvents="none" position="absolute" top="$3" bottom="$3" left="50%" width={1} x="-50%" borderRadius="$10" backgroundColor="transparent" $group-resizer-hover={{ backgroundColor: "$color06" }} $group-resizer-press={{ backgroundColor: "$color8" }} />
         </XStack>
         {/* RIGHT — Preview OR Code as a RAISED, rounded card that fills the whole
             remaining width to the viewport's right edge (flex-1, min-w-0). The
@@ -535,7 +546,7 @@ export const AppEditor = ({
                 setCurrentTab("chat");
               }}
   />
-            {currentTab === "preview" && (
+            {rightView === "preview" && (
               <VisualEditor
                 iframeRef={iframeRef}
                 editorRef={editorRef}
@@ -556,7 +567,7 @@ export const AppEditor = ({
             )}
             {/* CODE view — the CodeMirror editor overlaid inside the card when the
                 header switches to Code. The left panel stays chat; code lives here. */}
-            {currentTab === "code" && (
+            {rightView === "code" && (
               <XStack position="absolute" top={0} right={0} bottom={0} left={0} zIndex={10} backgroundColor="$background">
                 {/* File browser rail — see + navigate every project file. */}
                 <FileTree

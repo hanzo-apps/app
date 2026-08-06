@@ -1060,7 +1060,14 @@ export function AskAI({
       )}
 
       <YStack
-        position="relative" backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$6" zIndex={10} width="100%" group focusStyle={{ borderColor: "$color8" }}
+        // Liquid glass, the SAME material hanzo.chat's composer is made of
+        // (@hanzo/ui/theme.css .glass: translucent fill + backdrop blur, so it
+        // reads as one lifted pane, not an opaque black box ringed by a hard
+        // gray border). The border is now a whisper hairline that only brightens
+        // on focus — the "ugly border" was `$borderColor` at full strength on a
+        // pure-black fill, which drew the box louder than its contents.
+        className="glass"
+        position="relative" borderWidth={1} borderColor="$color06" borderRadius="$5" elevation={2} zIndex={10} width="100%" group focusStyle={{ borderColor: "$color8" }}
         onDragOver={handleDragOver}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
@@ -1114,83 +1121,20 @@ export function AskAI({
           </YStack>
         )}
         <XStack width="100%" position="relative" alignItems="center" justifyContent="space-between">
-          {(isAiWorking || isUploading) && (
-            <XStack position="absolute" top="$0" left="$4" right="$8" height="$6" zIndex={10} alignItems="center" justifyContent="space-between" pointerEvents="none">
-              <XStack alignItems="center" justifyContent="flex-start" gap="$2">
+          {/* ONLY the composer's OWN transient state (an image upload) overlays
+              the input. The AI's "working / thinking / building" state does NOT
+              live here \u2014 it belongs in the THREAD, where the answer is going to
+              appear (the "Generating \u00B7 Applying edits" activity above, plus the
+              status bar). Parking it on top of the input hijacked the one box you
+              need free to queue a follow-up or steer \u2014 exactly what a coding
+              agent should never take from you mid-run. The input stays live and
+              inviting the whole time; typing while it works queues (or, with the
+              queued row's "Send now", pre-empts) the next turn. */}
+          {isUploading && (
+            <XStack position="absolute" top="$0" left="$4" right="$8" height="$6" zIndex={10} alignItems="center" pointerEvents="none">
+              <XStack alignItems="center" gap="$2">
                 <Loading overlay={false} size={12} />
-                <Paragraph color="$color11" fontSize="$1">
-                  {isUploading ? (
-                    "Uploading images..."
-                  ) : isAiWorking && !isSameHtml ? (
-                    <>
-                      AI is working...
-                      {messageQueue.length > 0 && (
-                        <SizableText marginLeft="$1" color="$color11">
-                          ({messageQueue.length} queued)
-                        </SizableText>
-                      )}
-                    </>
-                  ) : (
-                    <SizableText>
-                      {[
-                        "H",
-                        "a",
-                        "n",
-                        "z",
-                        "o",
-                        " ",
-                        "i",
-                        "s",
-                        " ",
-                        "T",
-                        "h",
-                        "i",
-                        "n",
-                        "k",
-                        "i",
-                        "n",
-                        "g",
-                        ".",
-                        ".",
-                        ".",
-                        " ",
-                        "W",
-                        "a",
-                        "i",
-                        "t",
-                        " ",
-                        "a",
-                        " ",
-                        "m",
-                        "o",
-                        "m",
-                        "e",
-                        "n",
-                        "t",
-                        ".",
-                        ".",
-                        ".",
-                      ].map((char, index) => (
-                        <SizableText
-                          key={index}
-                          backgroundClip="text" color="transparent"
-                          style={{
-                            animationDelay: `${index * 0.1}s`,
-                            animationDuration: "1.3s",
-                            animationIterationCount: "infinite",
-                          }}
-                        >
-                          {char === " " ? "\u00A0" : char}
-                        </SizableText>
-                      ))}
-                      {messageQueue.length > 0 && (
-                        <SizableText marginLeft="$2" color="$color11">
-                          ({messageQueue.length} queued)
-                        </SizableText>
-                      )}
-                    </SizableText>
-                  )}
-                </Paragraph>
+                <Paragraph color="$color11" fontSize="$1">Uploading images\u2026</Paragraph>
               </XStack>
             </XStack>
           )}
@@ -1198,14 +1142,15 @@ export function AskAI({
             ref={textareaRef}
             disabled={isUploading}
             style={{ height: composerH, maxHeight: "40dvh" }}
-            width="100%" backgroundColor="transparent" fontSize="$3" borderWidth={0} outlineWidth={0} color="$color" placeholderTextColor="$color11" padding="$4" overflow="scroll" {...{ paddingTop: selectedElement && !isAiWorking ? "$2.5" : undefined, opacity: isAiWorking && !isUploading ? 1 : undefined }}
+            width="100%" backgroundColor="transparent" fontSize="$3" borderWidth={0} outlineWidth={0} color="$color" placeholderTextColor="$color11" padding="$4" overflow="scroll" {...{ paddingTop: selectedElement && !isAiWorking ? "$2.5" : undefined }}
             placeholder={
               isAiWorking
-                ? // Empty while working (unless queueing) so no text sits UNDER
-                  // the "AI is working…" pill overlaying the top of the box.
+                ? // Live while it works: the composer is never dead time. Type to
+                  // queue the next turn, or send to steer — the working state
+                  // shows in the thread, not here.
                   messageQueue.length > 0
-                  ? "Type your message... (will be queued)"
-                  : ""
+                  ? `Queue another — ${messageQueue.length} waiting`
+                  : "Queue a follow-up, or steer — it runs next"
                 : isFixMode
                 ? "Attach a reference (drop, paste, or pick), then send — or add a note"
                 : isPlan
@@ -1311,7 +1256,11 @@ export function AskAI({
             <XStack
               role="group"
               aria-label="Composer mode"
-              flexShrink={0} alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$0.5"
+              // A compact macOS segmented control — a rounded RECT, not a fat
+              // full-round pill. `$10` rounded it into a lozenge that read as the
+              // loudest thing in the toolbar; `$3` + tighter padding makes it a
+              // quiet inset switch that sits with the icon buttons beside it.
+              flexShrink={0} alignItems="center" borderRadius="$3" borderWidth={1} borderColor="$color06" backgroundColor="$color02" padding="$0.5"
             >
               {(["build", "plan"] as const).map((m) => {
                 // The app's ONE selected look, so the composer's mode agrees
@@ -1334,7 +1283,7 @@ export function AskAI({
                       : "Build: generate and modify your app"
                   }
                   onClick={() => setMode(m)}
-                  borderRadius="$10" paddingHorizontal="$2.5" paddingVertical="$1" {...sel}
+                  height={24} borderRadius="$2" paddingHorizontal="$2" paddingVertical="$0" {...sel}
                 >
                   <SizableText fontWeight="500" fontSize="$1" textTransform="capitalize" color={sel.color}>{m}</SizableText>
                 </Button>
