@@ -79,7 +79,26 @@ export function MarkdownRenderer({ content, muted = false, skipNormalization = f
   }, [headingData]);
 
   return (
-    <YStack className={compact ? "md md-compact" : "md"} {...(muted ? { color: "$color11" } : null)}>
+    // A gui View defaults to React-Native flex semantics — `flexShrink: 0` —
+    // so as a flex ITEM this root takes its MAX-CONTENT width and simply
+    // overflows. Measured in the builder's chat pane: an assistant reply
+    // rendered 1816px wide inside a 592px column, i.e. the entire paragraph on
+    // one unwrapped line, clipped mid-word at the pane edge ("…so its fra").
+    // It reads as truncated text; it is really a flex item that never shrank.
+    //
+    // `minWidth: 0` is the other half and is not optional: a flex item's
+    // automatic minimum size is its content, which pins the width back even
+    // once shrinking is allowed.
+    //
+    // Fixed HERE rather than at the call site because a renderer wider than its
+    // container is wrong for every consumer, and chat is only where it showed.
+    <YStack
+      className={compact ? "md md-compact" : "md"}
+      flexShrink={1}
+      minWidth={0}
+      maxWidth="100%"
+      {...(muted ? { color: "$color11" } : null)}
+    >
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{

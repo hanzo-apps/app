@@ -1,36 +1,105 @@
 import type { NextResponse } from 'next/server';
 
+/**
+ * The CDNs the generation system prompt (lib/prompts.ts) endorses. The /dev
+ * builder previews generated apps in an `about:srcdoc` iframe, which INHERITS
+ * this page's CSP — so a source missing here renders every generated page
+ * unstyled in the preview while the published copy works fine.
+ */
+const CDN = [
+  'https://cdn.jsdelivr.net',
+  'https://cdn.tailwindcss.com',
+  'https://cdnjs.cloudflare.com',
+  'https://unpkg.com',
+];
+
+/**
+ * Our own surfaces. `*.hanzo.app` is where a published project lives, and the
+ * preview pulls that project's HTML into the srcdoc frame — so the frame asks
+ * for the project's OWN scripts and fonts by absolute URL. Allowing them in
+ * `frame-src` alone is not enough, and that gap is what made a template preview
+ * arrive as bare unstyled markup: measured on `/dev?template=hanzo-apps/
+ * prism-react`, four scripts and six fonts from `prism-react.hanzo.app` refused.
+ *
+ * A srcdoc CSP cannot be loosened from inside — policies compose by
+ * intersection, so a `<meta>` in the previewed document can only add
+ * restrictions. The parent's policy is the ceiling, which is why the widening
+ * has to happen here. What keeps it safe is the SANDBOX, not the CSP: the frame
+ * is `sandbox="allow-scripts allow-forms"` with no `allow-same-origin`, so it
+ * runs in an opaque origin and can reach neither this document nor its storage.
+ */
+const OURS = ['https://*.hanzo.ai', 'https://*.hanzo.app'];
+
+/** IdP login domains — NOT under *.hanzo.ai, and each needs naming. */
+const IDP = ['https://hanzo.id', 'https://lux.id', 'https://zoo.id', 'https://pars.id'];
+
+/**
+ * ONE policy, stated once.
+ *
+ * Development used to RESTATE the whole thing instead of deriving it, and the
+ * two drifted exactly as this file's own closing note warns about rate limits:
+ * "two spellings of one budget is how a client ends up trusting whichever it
+ * happened to parse". Dev carried none of the CDNs above, so every generated
+ * preview rendered unstyled on a developer's machine — the precise failure the
+ * production list exists to prevent, reintroduced for the only people in a
+ * position to notice it. The note beside `frame-src` had already drawn the
+ * conclusion ("a preview you cannot see locally is a preview nobody checks")
+ * without anyone applying it to script, style and font.
+ *
+ * So dev no longer gets its own list. It gets this one, plus localhost.
+ */
+const policy = (dev: boolean) => {
+  // The dev server is reached over http, and its hot-reload channel over ws.
+  // They are different kinds of source and belong to different directives —
+  // `ws://` in `font-src` is not stricter or looser, it is meaningless, and a
+  // security header that states untrue things is one nobody reads closely.
+  const http = dev ? ['http://localhost:*'] : [];
+  const socket = dev ? ['ws://localhost:*', 'wss://localhost:*'] : [];
+  const src = (...parts: string[]) => parts.join(' ');
+  return [
+    "default-src 'self'",
+    src("script-src 'self' 'unsafe-inline' 'unsafe-eval'", ...CDN, ...OURS, ...http),
+    src("style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", ...CDN, ...OURS, ...http),
+    src("font-src 'self' data: https://fonts.gstatic.com", ...CDN, ...OURS, ...http),
+    // `http:`/`https:` already cover localhost — naming it again would be noise.
+    src("img-src 'self' data: blob: https: http:"),
+    src("media-src 'self' blob: data:", ...OURS, ...http),
+    // The OIDC discovery + PKCE token exchange (POST hanzo.id/v1/iam/oauth/token)
+    // is cross-origin and MUST be allowed, or the SSO callback silently fails
+    // and the session never persists. This is the one directive a socket
+    // belongs to.
+    src(
+      "connect-src 'self' wss://*.hanzo.ai https://api.openai.com https://api.anthropic.com",
+      ...OURS,
+      ...IDP,
+      ...http,
+      ...socket,
+    ),
+    src("frame-src 'self'", ...OURS, ...IDP, ...http),
+    src(
+      "frame-ancestors 'self' https://hanzo.ai https://hanzo.app https://hanzo.bot https://*.hanzo.bot https://hanzo.team https://*.hanzo.team https://hanzo.chat https://*.hanzo.chat https://s3.hanzo.ai",
+      ...OURS,
+      ...http,
+    ),
+    // A previewed project sets `<base href="https://<slug>.hanzo.app/">` so its
+    // own relative URLs resolve against where it is published. Blocked, every
+    // relative reference resolves against the BUILDER instead — so the fonts
+    // were fetched from localhost and then refused by CORS, since the sandboxed
+    // frame has an opaque origin. Two confusing failures downstream of one.
+    //
+    // This is not the loosening it looks like: `script-src` already carries
+    // 'unsafe-inline', so injecting a `<base>` into this document was never the
+    // cheapest attack available to anyone who could inject into it at all.
+    src("base-uri 'self'", ...OURS),
+    "form-action 'self'",
+    // Never in dev: it would rewrite http://localhost to https and nothing loads.
+    ...(dev ? [] : ['upgrade-insecure-requests']),
+  ].join('; ');
+};
+
 // Security headers configuration
 const securityHeaders = {
-  // Content Security Policy
-  'Content-Security-Policy': [
-    "default-src 'self'",
-    // The /dev builder previews GENERATED apps in an `about:srcdoc` iframe,
-    // which INHERITS this page CSP. The generation system prompt (lib/prompts.ts)
-    // instructs the model to load Tailwind from cdn.tailwindcss.com and commonly
-    // emits cdnjs/unpkg/jsdelivr + Google Fonts references — without these
-    // allowlisted, EVERY generated page renders unstyled (raw links) in the
-    // preview while the published copy works. Keep this list in lockstep with
-    // the CDNs the system prompt endorses; everything else stays strict.
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://unpkg.com https://*.hanzo.ai",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com",
-    "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net data:",
-    "img-src 'self' data: blob: https: http:",
-    "media-src 'self' blob: data:",
-    // IdP login domains (hanzo.id et al) are NOT *.hanzo.ai — the OIDC
-    // discovery + PKCE token exchange (POST https://hanzo.id/v1/iam/oauth/token)
-    // is a cross-origin fetch and MUST be allowed here or the SSO callback
-    // silently fails and the session never persists.
-    "connect-src 'self' https://*.hanzo.ai https://hanzo.id https://lux.id https://zoo.id https://pars.id https://api.openai.com https://api.anthropic.com wss://*.hanzo.ai",
-    // *.hanzo.app = deployed project previews (<slug>.hanzo.app) embedded in the
-    // dashboard/project cards. frame-ancestors already trusts them; frame-src must
-    // too or every project preview iframe is CSP-blocked (silent broken thumbnails).
-    "frame-src 'self' https://*.hanzo.ai https://*.hanzo.app https://hanzo.id https://lux.id https://zoo.id https://pars.id",
-    "frame-ancestors 'self' https://hanzo.ai https://*.hanzo.ai https://hanzo.app https://*.hanzo.app https://hanzo.bot https://*.hanzo.bot https://hanzo.team https://*.hanzo.team https://hanzo.chat https://*.hanzo.chat https://s3.hanzo.ai",
-    "base-uri 'self'",
-    "form-action 'self'",
-    "upgrade-insecure-requests",
-  ].join('; '),
+  'Content-Security-Policy': policy(false),
 
   // Strict Transport Security
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
@@ -70,24 +139,10 @@ const securityHeaders = {
   'X-Permitted-Cross-Domain-Policies': 'none',
 };
 
-// Development-specific CSP relaxations
+// Development = the same policy, plus localhost. Not a second list.
 const devSecurityHeaders = {
   ...securityHeaders,
-  'Content-Security-Policy': [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:* ws://localhost:*",
-    "style-src 'self' 'unsafe-inline'",
-    "font-src 'self' data:",
-    "img-src 'self' data: blob: http: https:",
-    "media-src 'self' blob: data:",
-    "connect-src 'self' http://localhost:* ws://localhost:* wss://localhost:* https://*.hanzo.ai https://hanzo.id https://lux.id https://zoo.id https://pars.id",
-    // Same remote frames as production. Dev used to allow localhost only, so
-    // every live preview — dashboard project thumbs, the template gallery's demo
-    // heroes — rendered a silent blank box locally while working in prod. A
-    // preview you cannot see locally is a preview nobody checks.
-    "frame-src 'self' http://localhost:* https://*.hanzo.ai https://*.hanzo.app",
-    "frame-ancestors 'self' http://localhost:*",
-  ].join('; '),
+  'Content-Security-Policy': policy(true),
 };
 
 // Apply security headers based on environment

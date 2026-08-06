@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger, Button } from '@hanzo/ui';
-import { iconBox, selected } from "@/lib/chrome";
+import { selected } from "@/lib/chrome";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { PagePanel } from "@/components/editor/page-navigator";
 import { WorkspaceMenu } from "@/components/editor/workspace-menu";
@@ -133,7 +133,10 @@ export function Header({
         <Link
           href="/"
           aria-label="Hanzo home"
-        ><XStack marginRight="$0.5" {...iconBox(CONTROL)} borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}>
+        >{/* No marginRight: it sat INSIDE the anchor, so the <a> measured 34x32
+             — the one control in the bar that was not square — while the parent
+             row's `gap="$1.5"` was already doing that spacing. */}
+        <XStack width={CONTROL} height={CONTROL} alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}>
           <HanzoLogo size={20} />
         </XStack></Link>
         <YStack minWidth={0}>
@@ -149,7 +152,7 @@ export function Header({
             aria-label={historyOpen ? "Back to chat" : "Version history"}
             aria-pressed={Boolean(historyOpen)}
             variant="ghost"
-            display="none" $lg={{ display: "flex" }} {...iconBox(CONTROL)} borderRadius="$5" {...{ ...selected(Boolean(historyOpen)), hoverStyle: historyOpen ? undefined : { backgroundColor: "$color3" } }}
+            display="none" $lg={{ display: "flex" }} size="icon-sm" borderRadius="$5" {...{ ...selected(Boolean(historyOpen)), hoverStyle: historyOpen ? undefined : { backgroundColor: "$color3" } }}
           >
             <History size={16} />
           </Button>
@@ -157,7 +160,25 @@ export function Header({
       </XStack>
 
       {/* CENTER — view switcher + device switcher + refresh + page selector +
-          open-in-new-tab, one control cluster. */}
+          open-in-new-tab, one control cluster.
+
+          KNOWN DEFECT, measured and NOT yet fixed: below ~1440px this cluster
+          and the pinned Share/Publish actions OVERLAP — controls painted on top
+          of each other, so a press lands on whichever paints last.
+
+            mobile 390px   4 overlapping pairs, Code ∩ Publish by 42x44px
+            tablet 834px   2 overlapping pairs, Browse pages ∩ Share by 79x32px
+            laptop 1440px  none
+
+          The note on the RIGHT cluster below records an earlier fix for the
+          SAME pair names (`Preview ⨯ Publish`, `Code ⨯ Publish`), so this has
+          regressed once already and the cause named there is not the whole
+          story. Two candidate fixes were tried and MEASURED TO CHANGE NOTHING —
+          `flexShrink: 1` + `minWidth: 0` on this cluster, and the same on the
+          left cluster — so neither is in the tree; do not re-apply them without
+          a measurement. Reproduce with a browser at 390/834/1440 comparing the
+          bounding rects of every control in the top band; the rects overlap,
+          which is not visible in a screenshot at desktop width. */}
       <XStack alignItems="center" gap="$2">
         <XStack
           role="tablist"
@@ -195,10 +216,15 @@ export function Header({
         {/* Preview-frame controls — device, refresh, page selector, external.
             Hidden below `md` where there's no room. */}
         <XStack display="none" $md={{ display: "flex" }} alignItems="center" gap="$2">
+          {/* No padding on the group: its items are `size="icon-sm"` (32), the
+              same as every other icon control in this bar, so the group is
+              exactly one control tall and the row does not gain a step. A
+              bespoke 28 here was the last squashed glyph — 28 minus a Button's
+              24px of label padding left 4, and it painted at 2px. */}
           <XStack
             role="tablist"
             aria-label="Preview device"
-            alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color3" padding="$0.5"
+            alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color3"
           >
             {DEVICES.map((d) => {
               const active = device === d.name;
@@ -212,7 +238,7 @@ export function Header({
                   aria-selected={active}
                   title={`${d.name[0].toUpperCase()}${d.name.slice(1)} preview`}
                   onClick={() => setDevice(d.name as "desktop" | "mobile")}
-                  {...iconBox(28)} borderRadius="$3" {...{ ...sel, hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
+                  size="icon-sm" borderRadius="$3" {...{ ...sel, hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
                 >
                   <SizableText color={sel.color}>
                     <d.icon size={16} />
@@ -226,7 +252,7 @@ export function Header({
             onClick={handleRefreshIframe}
             title="Refresh preview"
             variant="ghost"
-            {...iconBox(CONTROL)} borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
+            size="icon-sm" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
           >
             <RefreshCcw size={14} />
           </Button>
@@ -273,7 +299,7 @@ export function Header({
             title="Open preview in a new tab"
             aria-label="Open preview in a new tab"
             variant="ghost"
-            {...iconBox(CONTROL)} borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
+            size="icon-sm" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
           >
             <ExternalLink size={14} />
           </Button>

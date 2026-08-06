@@ -37,30 +37,36 @@ export type { Lift } from "@hanzo/ui/glass";
 export const RAIL = 960;
 
 /**
- * A square control whose whole content is one glyph.
+ * ICON-ONLY CONTROLS: there is no recipe here, and that is the point.
  *
- * The size IS the padding, so the padding must be ZERO — and that is the part
- * every call site forgot. A Button carries 12px of horizontal padding for its
- * label; pin the box to a fixed width and that padding eats the box from both
- * sides, leaving `size - 24` for the icon. `svg { max-width: 100% }` then
- * shrinks the glyph to fit instead of letting it overflow, so nothing warns and
- * nothing clips — the icon just quietly stops being square.
+ * A Button whose whole content is one glyph takes `size="icon-sm" | "icon" |
+ * "icon-lg"` (32 / 36 / 40) from `@hanzo/ui`. The package already implements it
+ * — `height: 'auto'` plus a `minHeight`/`minWidth` floor, padding zeroed — and
+ * a local copy of that answer is what went wrong here.
  *
- * Measured in the builder toolbar, and the arithmetic is exact: a 28px device
- * toggle rendered its 16px icon at 2px (28-24, less the hairline), the 32px
- * history/refresh/open controls at 6px, a 36px control at 10px. Six icons in one
- * bar, each a different sliver, which is what "the icons look wrong" was.
+ * The copy was `iconBox(size)`, spreading `width`/`height` plus
+ * `paddingHorizontal: 0`. It worked on an XStack and was SILENTLY DROPPED by a
+ * Button: `paddingHorizontal` is a React-Native shorthand and this app runs
+ * `@hanzogui/config/v5` with `styleCompat: "web"`. So a Button kept its 12px of
+ * label padding, leaving `size - 24` for the glyph, and `svg { max-width: 100% }`
+ * shrank the icon to fit rather than overflowing. Nothing threw, nothing warned,
+ * nothing clipped — measured with `getComputedStyle` in the builder toolbar:
  *
- * Height is not passed: a square is one number.
+ *   Hanzo home        XStack   padding  0/0    glyph 20x20   correct
+ *   Version history   Button   padding 12/12   glyph  6x16   squashed
+ *   Device toggle     Button   padding 12/12   glyph  2x16   squashed
+ *
+ * Six icons in one bar, each a different sliver — that is what "the icons and
+ * buttons look wildly inconsistent" was. Switching the longhands in did fix the
+ * box but NOT the padding, which is the tell that the whole approach was wrong:
+ * the component owns its own padding and will not be argued out of it from a
+ * prop spread.
+ *
+ * The unit test that guarded `iconBox` passed throughout, because the object it
+ * returned was always correct — it simply never reached the DOM. Only a browser
+ * can see this difference, so the guard is
+ * `tests/e2e/authed/editor-toolbar.spec.ts`, which reads rendered geometry.
  */
-export const iconBox = (size: number) => ({
-  width: size,
-  height: size,
-  paddingHorizontal: 0,
-  paddingVertical: 0,
-  alignItems: "center",
-  justifyContent: "center",
-}) as const;
 
 /**
  * What this app learned. It stays here, not in the package, because the
