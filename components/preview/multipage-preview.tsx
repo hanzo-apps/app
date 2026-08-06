@@ -823,6 +823,12 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent<PreviewMessage>) => {
+      // Only OUR frame — see live-preview: a sandbox without `allow-same-origin`
+      // reports origin "null", which every opaque frame shares, so the window
+      // identity is the only thing that distinguishes the sender.
+      if (event.source !== iframeRef.current?.contentWindow) {
+        return;
+      }
       const data = event.data;
       if (!data || typeof data !== 'object') {
         return;
@@ -1121,7 +1127,17 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
               }
             }}
             style={{ width: "100%", height: "100%", borderRadius: 8 }}
-            sandbox="allow-scripts allow-same-origin allow-forms"
+            // NO `allow-same-origin`. With it, `allow-scripts` is the documented
+            // no-op pair: the frame keeps THIS origin, so generated, imported and
+            // forked HTML can read `top.localStorage` — where the IAM access and
+            // refresh tokens live — and can drop its own sandbox. A refresh token
+            // is account takeover, and an <img> beacon exfiltrates it silently
+            // under a CSP that allows img-src https:.
+            //
+            // Nothing here needs it: this preview already talks to the host over
+            // postMessage through an injected bridge, never through
+            // `contentDocument`.
+            sandbox="allow-scripts allow-forms"
             title="Preview"
   />
         </YStack>
