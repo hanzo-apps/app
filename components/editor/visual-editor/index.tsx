@@ -1,5 +1,6 @@
 "use client";
 
+import { command, isFrameEvent, type ElementInfo } from "../preview/bridge";
 import { SizableText, YStack, XStack, H3 } from '@hanzo/gui';
 import { glass } from "@/lib/chrome";
 import { useState, useEffect, useCallback } from "react";
@@ -39,17 +40,14 @@ interface SourceLocation {
   endColumn?: number;
 }
 
-interface SelectedElementInfo {
-  element: HTMLElement;
-  tagName: string;
-  id?: string;
-  className?: string;
-  text?: string;
-  styles: CSSStyleDeclaration;
-  sourceLocation?: SourceLocation;
-  xpath: string;
-  selector: string;
-}
+/**
+ * What the panel edits. The preview frame is isolated (no `allow-same-origin`),
+ * so this is a DESCRIPTION that crossed a postMessage — never a handle into the
+ * other document. `element: HTMLElement` and `styles: CSSStyleDeclaration` were
+ * the two live references that could not survive the boundary; `selector` is how
+ * the frame finds the node again when a change is sent back.
+ */
+type SelectedElementInfo = ElementInfo & { sourceLocation?: SourceLocation };
 
 interface VisualEditorProps {
   iframeRef: React.RefObject<HTMLIFrameElement | null>;
@@ -115,7 +113,7 @@ export function VisualEditor({
   const [selectedElement, setSelectedElement] = useState<SelectedElementInfo | null>(null);
   const [editMode, setEditMode] = useState<"select" | "edit" | "move">("select");
   const [showPanel, setShowPanel] = useState(true);
-  const [highlightedElement, setHighlightedElement] = useState<HTMLElement | null>(null);
+  const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
 
   // Dock chrome (persisted).
   const [dockPosition, setDockPosition] = usePersisted<DockPosition>(LS.dock, "bottom");
@@ -140,20 +138,9 @@ export function VisualEditor({
 
   // Style editing states
   const [elementText, setElementText] = useState("");
-  const [elementStyles, setElementStyles] = useState({
-    color: "",
-    backgroundColor: "",
-    fontSize: "",
-    fontWeight: "",
-    padding: "",
-    margin: "",
-    border: "",
-    borderRadius: "",
-    width: "",
-    height: "",
-    display: "",
-    position: "",
-  });
+  // Whatever the frame reported, not a fixed shape read off a live
+  // CSSStyleDeclaration — the bridge sends the tracked properties.
+  const [elementStyles, setElementStyles] = useState<Record<string, string>>({});
 
   // Generate XPath for element
   const getXPath = (element: HTMLElement): string => {
@@ -208,13 +195,11 @@ export function VisualEditor({
   };
 
   // Find source location in Monaco editor
-  const findSourceLocation = useCallback((element: HTMLElement): SourceLocation | undefined => {
+  const findSourceLocation = useCallback((element: ElementInfo): SourceLocation | undefined => {
     const editor = editorRef.current;
     if (!editor) return undefined;
 
     const htmlContent = editor.getValue();
-    const selector = getCSSSelector(element);
-    const xpath = getXPath(element);
 
     // Try to find by ID first (most precise)
     if (element.id) {
@@ -231,7 +216,7 @@ export function VisualEditor({
     }
 
     // Try to find by outerHTML snippet
-    const outerHTML = element.outerHTML.substring(0, 100);
+    const outerHTML = element.html.substring(0, 100);
     const escapedHTML = outerHTML.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const htmlPattern = new RegExp(escapedHTML);
     const match = htmlPattern.exec(htmlContent);
@@ -244,81 +229,63 @@ export function VisualEditor({
       };
     }
 
-    // Add data attribute for tracking
-    element.setAttribute('data-source-line', '0');
-
+    // A `data-source-line` marker used to be stamped on the node here. It wrote
+    // the literal '0' on the not-found path and nothing anywhere read it, so it
+    // was a write into another document that bought nothing.
     return undefined;
   }, [editorRef]);
 
   // Handle element selection
-  const handleElementClick = useCallback((event: MouseEvent) => {
-    if (!isEnabled || editMode !== "select") return;
+  // Selection and hover ARRIVE now; they are not read off the frame's DOM.
+  // The bridge sends a description, this adds the source location the panel
+  // needs to write the change back into the code, and the outline goes back as
+  // a highlight command so the frame paints it on its own node.
+  useEffect(() => {
+    if (!isEnabled) return;
 
-    event.preventDefault();
-    event.stopPropagation();
+    const onMessage = (event: MessageEvent) => {
+      const frame = iframeRef.current;
+      if (!isFrameEvent(event, frame)) return;
+      const msg = event.data;
 
-    const target = event.target as HTMLElement;
-    if (!target) return;
+      if (msg.type === "preview:select" && editMode === "select") {
+        const info: SelectedElementInfo = {
+          ...msg.info,
+          sourceLocation: findSourceLocation(msg.info),
+        };
+        setSelectedElement(info);
+        setElementStyles(info.styles);
+        setElementText(info.text ?? "");
+        command(frame, { type: "preview:highlight", selector: info.selector });
+        onElementSelect?.(info);
+        return;
+      }
 
-    const info: SelectedElementInfo = {
-      element: target,
-      tagName: target.tagName.toLowerCase(),
-      id: target.id,
-      className: target.className,
-      text: target.textContent || "",
-      styles: window.getComputedStyle(target),
-      xpath: getXPath(target),
-      selector: getCSSSelector(target),
-      sourceLocation: findSourceLocation(target),
+      if (msg.type === "preview:hover" && editMode === "select") {
+        setHighlightedElement(msg.selector);
+      }
     };
 
-    setSelectedElement(info);
-    setElementText(info.text || "");
-    setElementStyles({
-      color: info.styles.color,
-      backgroundColor: info.styles.backgroundColor,
-      fontSize: info.styles.fontSize,
-      fontWeight: info.styles.fontWeight,
-      padding: info.styles.padding,
-      margin: info.styles.margin,
-      border: info.styles.border,
-      borderRadius: info.styles.borderRadius,
-      width: info.styles.width,
-      height: info.styles.height,
-      display: info.styles.display,
-      position: info.styles.position,
-    });
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [isEnabled, editMode, findSourceLocation, onElementSelect, iframeRef]);
 
-    if (onElementSelect) {
-      onElementSelect(info);
-    }
-
-    // Jump to source in the code editor
-    if (info.sourceLocation && editorRef.current) {
-      editorRef.current.revealLine(info.sourceLocation.line);
-    }
-  }, [isEnabled, editMode, findSourceLocation, onElementSelect, editorRef]);
-
-  // Handle element hover
-  const handleElementHover = useCallback((event: MouseEvent) => {
-    if (!isEnabled || editMode !== "select") return;
-
-    const target = event.target as HTMLElement;
-    if (highlightedElement && highlightedElement !== target) {
-      highlightedElement.style.outline = "";
-    }
-
-    target.style.outline = "2px solid #ffffff";
-    target.style.outlineOffset = "2px";
-    setHighlightedElement(target);
-  }, [isEnabled, editMode, highlightedElement]);
+  // Editable mode is what makes the frame report clicks at all.
+  useEffect(() => {
+    command(iframeRef.current, { type: "preview:editable", active: isEnabled });
+  }, [isEnabled, iframeRef]);
 
   // Apply style changes to element
   const applyStyleChange = (property: string, value: string) => {
     if (!selectedElement) return;
 
-    // Apply to element
-    (selectedElement.element.style as any)[property] = value;
+    // A command, not a write into another document's DOM.
+    command(iframeRef.current, {
+      type: "preview:style",
+      selector: selectedElement.selector,
+      property,
+      value,
+    });
 
     // Update in the code editor
     const editor = editorRef.current;
@@ -361,7 +328,11 @@ export function VisualEditor({
   const applyTextChange = () => {
     if (!selectedElement) return;
 
-    selectedElement.element.textContent = elementText;
+    command(iframeRef.current, {
+      type: "preview:text",
+      selector: selectedElement.selector,
+      text: elementText,
+    });
 
     // Update in the code editor
     const editor = editorRef.current;
@@ -380,43 +351,12 @@ export function VisualEditor({
     }
   };
 
-  // Setup iframe event listeners
-  useEffect(() => {
-    if (!iframeRef.current || !isEnabled) return;
-
-    const iframeDoc = iframeRef.current.contentDocument;
-    if (!iframeDoc) return;
-
-    // Add visual editor styles to iframe
-    const styleId = "visual-editor-styles";
-    if (!iframeDoc.getElementById(styleId)) {
-      const style = iframeDoc.createElement("style");
-      style.id = styleId;
-      style.textContent = `
-        .visual-editor-selected {
-          outline: 2px solid #ffffff !important;
-          outline-offset: 2px !important;
-        }
-        .visual-editor-hover {
-          outline: 2px dashed rgba(255, 255, 255, 0.6) !important;
-          outline-offset: 2px !important;
-        }
-        [data-visual-editor-mode="edit"] * {
-          cursor: crosshair !important;
-        }
-      `;
-      iframeDoc.head.appendChild(style);
-    }
-
-    // Add event listeners
-    iframeDoc.addEventListener("click", handleElementClick);
-    iframeDoc.addEventListener("mouseover", handleElementHover);
-
-    return () => {
-      iframeDoc.removeEventListener("click", handleElementClick);
-      iframeDoc.removeEventListener("mouseover", handleElementHover);
-    };
-  }, [iframeRef, isEnabled, handleElementClick, handleElementHover]);
+  // The effect that used to live here bound click/mouseover onto
+  // `iframe.contentDocument` and injected the outline CSS the same way. Both are
+  // gone: the frame is isolated, so it reports events over the bridge instead,
+  // and BRIDGE_STYLES ships `.visual-editor-selected` / `.hovered-element` into
+  // the document itself. Leaving the effect would not have failed loudly — it
+  // would simply have stopped selecting, which is how this nearly shipped.
 
   // Preview theme — wired to the ref'd preview frame (the same frame the edit
   // engine drives). Generated docs hardcode `:root{color-scheme:dark}`; an
@@ -427,15 +367,9 @@ export function VisualEditor({
   useEffect(() => {
     const iframe = iframeRef.current;
     const apply = () => {
-      const root = iframe?.contentDocument?.documentElement;
-      if (!root) return;
-      if (previewTheme === "auto") {
-        root.style.removeProperty("color-scheme");
-        root.removeAttribute("data-theme");
-      } else {
-        root.style.colorScheme = previewTheme;
-        root.setAttribute("data-theme", previewTheme);
-      }
+      // A command: `contentDocument` is exactly what the isolated frame denies,
+      // and this silently stopped applying the moment the flag came off.
+      command(iframe, { type: "preview:theme", mode: previewTheme });
     };
     apply();
     iframe?.addEventListener("load", apply);
