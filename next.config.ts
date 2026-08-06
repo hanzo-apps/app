@@ -81,6 +81,13 @@ const nextConfig: NextConfig = {
     // optimizeCss is deliberately absent. It inlined 350,715 B of "critical"
     // CSS into every HTML response here — larger than the whole 216 KB external
     // stylesheet, uncacheable, render-blocking, re-sent on every navigation.
+    //
+    // cssChunking is absent because it was MEASURED and does nothing here.
+    // The extractor re-emits shared atomic rules into every route chunk that
+    // could produce them (48% of /pricing's linked rules are duplicates of
+    // rules in other chunks), and that duplication is the whole size regression
+    // extraction carries. cssChunking merges FILES, it does not dedupe RULES
+    // across them: 88 files / 935,796 B with it, byte-identical without.
   },
 
   // /help was a dead route (404) linked from the builder footer and marketing
@@ -196,9 +203,16 @@ const nextConfig: NextConfig = {
 // color family in @hanzo/ui's config. gen-gui-css.mjs writes the same sheet
 // pruned to the themes this app mounts: 80,205 B. Swapping one for the other
 // adds 271,406 B of linked CSS to every route.
+// `extractPackages` (loader 8.1.1) names the INSTALLED packages the compiler is
+// allowed to walk into. Before it, the loader skipped every path containing
+// `node_modules` outright — upstream still does — so @hanzo/ui's own components
+// were never flattened and authored their styles at render time instead: 430 of
+// /templates' 501 atomic rules. A design system shipped as a package was exactly
+// the case the blanket skip excluded.
 export default withGui({
   config: './lib/gui.ts',
   components: ['@hanzo/ui', '@hanzo/gui'],
+  extractPackages: ['@hanzo/ui', '@hanzo/gui'],
   disableAliases: true,
   logTimings: true,
 })(nextConfig);
