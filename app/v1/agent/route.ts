@@ -9,9 +9,10 @@
  * back as Server-Sent Events. See docs/AGENTIC-CODING.md for the full harness
  * (per-project sandbox pods + hanzo MCP + hanzo/dev exec-server) this seeds.
  *
- * NOT wired into the live builder UI yet — it is gated behind the server env
- * flag `AGENT_SERVER_ENABLED` (returns 404 when off), so it ships dark until the
- * chat panel opts in behind `NEXT_PUBLIC_AGENT_SERVER`.
+ * Serves unconditionally. It spent its life behind an env flag that was set in
+ * no deployment anywhere, which is not caution — it is an endpoint nobody can
+ * reach, written and reviewed and then never run. Auth and billing already
+ * carry the real weight here; the flag added nothing they do not.
  *
  * Auth mirrors `/v1/generate` exactly: same-origin CSRF guard + the caller's
  * verified IAM bearer forwarded to the gateway. Billing is
@@ -27,14 +28,6 @@ import { resolveModelId } from "@/lib/providers";
 import { runAgent, type AgentEvent, type AgentFile } from "@/lib/agent";
 
 const HANZO_AI_BASE_URL = process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai/v1";
-
-/** D1 ships dark: the loop only serves when explicitly enabled server-side. */
-function agentEnabled(): boolean {
-  const v = (process.env.AGENT_SERVER_ENABLED || "").trim().toLowerCase();
-  return v === "1" || v === "true" || v === "on";
-}
-
-const notFound = () => NextResponse.json({ ok: false, message: "Not found" }, { status: 404 });
 
 const unauthorized = () =>
   NextResponse.json(
@@ -66,7 +59,6 @@ function parseFiles(raw: unknown): AgentFile[] {
 }
 
 export async function POST(request: NextRequest) {
-  if (!agentEnabled()) return notFound();
 
   // Cookie-authenticated + spends AI credit — refuse cross-origin before work.
   const csrf = requireSameOrigin(request);
