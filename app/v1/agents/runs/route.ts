@@ -27,7 +27,7 @@ import { requireSameOrigin } from "@/lib/org/csrf";
 import { resolveModelId } from "@/lib/providers";
 import { runAgent, type AgentEvent, type AgentFile, type ProjectFs } from "@/lib/agent";
 import { AgentSession } from "@/lib/agent/session";
-import { SandboxProjectFs, openBox } from "@/lib/agent/sandbox-fs";
+import { SandboxProjectFs, openBox, releaseBox } from "@/lib/agent/sandbox-fs";
 
 const HANZO_AI_BASE_URL = process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai/v1";
 
@@ -65,12 +65,16 @@ interface AgentRequestBody {
  * the work still happens. `agentToolDefs` derives the toolset from whichever
  * filesystem comes back, so the model is never offered a capability that the
  * fallback does not have.
+ *
+ * `opened` records which of the two box cases we are in, because it decides who
+ * hangs the box up at the end. A caller-supplied `boxId` belongs to the caller
+ * and must outlive the run; a box opened here for `project` has no other owner.
  */
 async function resolveFs(
   token: string,
   body: AgentRequestBody,
   files: AgentFile[]
-): Promise<{ fs?: ProjectFs; boxId?: string }> {
+): Promise<{ fs?: ProjectFs; boxId?: string; opened?: boolean }> {
   const boxId = typeof body.boxId === "string" ? body.boxId.trim() : "";
   if (boxId) {
     return { fs: new SandboxProjectFs({ baseUrl: HANZO_AI_BASE_URL, boxId, token }), boxId };
@@ -80,7 +84,11 @@ async function resolveFs(
   if (project) {
     const box = await openBox({ baseUrl: HANZO_AI_BASE_URL, token, project });
     if (box) {
-      return { fs: new SandboxProjectFs({ baseUrl: HANZO_AI_BASE_URL, boxId: box.id, token }), boxId: box.id };
+      return {
+        fs: new SandboxProjectFs({ baseUrl: HANZO_AI_BASE_URL, boxId: box.id, token }),
+        boxId: box.id,
+        opened: true,
+      };
     }
   }
 
@@ -138,7 +146,7 @@ export async function POST(request: NextRequest) {
   // fleet views, and its control queue is what pause/resume/stop/message from
   // any surface arrive through. Unreachable registry => `open()` returns null
   // and the run proceeds exactly as it did before, private to this caller.
-  const { fs, boxId } = await resolveFs(token, body, files);
+  const { fs, boxId, opened } = await resolveFs(token, body, files);
 
   const agentSession = new AgentSession({
     baseUrl: HANZO_AI_BASE_URL,
@@ -201,6 +209,14 @@ export async function POST(request: NextRequest) {
       }
       await agentSession.close("error");
     } finally {
+      // Give back only what this run took out. Nothing else releases a box:
+      // `apps/sandbox` has no reaper, so a box leaked here holds a pod and an
+      // RWO volume until a human notices. Suspending frees the pod and keeps
+      // the checkout, which is also what clears the one-live-box-per-project
+      // rule for the next run.
+      if (opened && boxId) {
+        await releaseBox({ baseUrl: HANZO_AI_BASE_URL, token, boxId });
+      }
       try {
         await writer.close();
       } catch {
