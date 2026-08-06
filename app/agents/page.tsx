@@ -27,6 +27,7 @@ import {
   Bot,
   Plus,
 } from "lucide-react";
+import { SearchField } from '@/components/search-field';
 import { toast, Button, Input, Badge, Card, CardContent, CardDescription, CardHeader, CardTitle, Textarea } from '@hanzo/ui';
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { AppShell } from "@/components/app-shell";
@@ -388,15 +389,30 @@ export default function AgentsPage() {
               </Card>
             )}
 
-            {/* Stats — responsive: 2 cols on phones, 4 on larger */}
-            <YStack gap="$3" marginBottom="$5" $sm={{ gap: "$4" }}>
+            {/* Stats — 2 up on phones, 4 across on larger.
+                This was a YStack, so four one-line numbers rendered as four
+                full-width blocks and pushed the actual agent list a screen and
+                a half down. The comment already described a grid; only the
+                component was wrong.
+                It wraps on its own rather than by breakpoint: equal flex
+                columns with a minWidth, so four fit when there is room for
+                four and two when there is not, at any width, with no
+                media query to keep in step. */}
+            <XStack flexWrap="wrap" gap="$3" marginBottom="$5" $sm={{ gap: "$4" }}>
               {[
                 { label: "Total", value: stats.total, tone: "text-foreground" },
                 { label: "Ready", value: stats.ready, tone: "text-green-400" },
                 { label: "Runs", value: stats.runs, tone: "text-foreground" },
                 { label: "Models", value: stats.models, tone: "text-foreground" },
               ].map((s) => (
-                <Card key={s.label} backgroundColor="$background" borderColor="$borderColor">
+                <Card
+                  key={s.label}
+                  flexGrow={1}
+                  flexBasis={0}
+                  minWidth={150}
+                  backgroundColor="$background"
+                  borderColor="$borderColor"
+                >
                   <CardHeader paddingBottom="$2">
                     <CardTitle fontSize="$3" color="$color11">
                       {s.label}
@@ -407,20 +423,16 @@ export default function AgentsPage() {
                   </CardContent>
                 </Card>
               ))}
-            </YStack>
+            </XStack>
 
             {/* Search */}
             {agents.length > 0 && (
-              <YStack position="relative" marginBottom="$5" width="100%" maxWidth={448}>
-                <Search size={16} />
-                <Input
+              <YStack marginBottom="$5" width="100%" maxWidth={448}>
+                <SearchField
                   placeholder="Search agents…"
-                  paddingLeft="$7" backgroundColor="$background" borderColor="$borderColor"
                   value={search}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setSearch(e.target.value)
-                  }
-  />
+                  onValueChange={setSearch}
+                />
               </YStack>
             )}
 
