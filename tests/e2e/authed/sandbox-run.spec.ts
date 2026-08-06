@@ -93,6 +93,8 @@ interface Sandbox {
   status?: 'pending' | 'running' | 'suspended' | 'error';
   image?: string;
   volume?: string;
+  /** Why the lease is in `error` — cloud writes the pod's own failure here. */
+  error?: string;
 }
 
 interface ExecResult {
@@ -152,10 +154,77 @@ async function createSandbox(
     failOnStatusCode: false,
   });
   const text = await res.text();
-  expect(res.status(), `POST ${API}/sandboxes -> ${res.status()}: ${text.slice(0, 300)}`).toBe(200);
+
+  // A pod that never becomes ready comes back as 503 from `start sandbox`, and
+  // the message names the pod but not the REASON — "containers with unready
+  // status: [sandbox]" is true of an image that cannot be pulled, a node under
+  // pressure and a crashlooping entrypoint alike. Ask the service what it thinks
+  // the sandbox's image and error are and put both in the failure, because the
+  // one blocker this suite keeps hitting (an unpullable default image) is
+  // otherwise indistinguishable from a slow cold start.
+  if (res.status() === 503) {
+    throw new Error(
+      `POST ${API}/sandboxes -> 503: ${text.slice(0, 200)}\n` +
+        `The sandbox service is LIVE and accepted the request — the POD did not come up.\n` +
+        (await whyNoPod(request, token, body.project)),
+    );
+  }
+
+  // 201 Created. Cloud returns http.StatusCreated for a lease it minted; a
+  // resumed lease answers 200. Both are success and neither is "the other one is
+  // a bug" — asserting 200 alone failed every green run against production.
+  expect(
+    [200, 201],
+    `POST ${API}/sandboxes -> ${res.status()}: ${text.slice(0, 300)}`,
+  ).toContain(res.status());
   const sandbox = JSON.parse(text) as Sandbox;
   expect(sandbox.id, 'sandbox create returned no id').toBeTruthy();
   return sandbox;
+}
+
+/**
+ * What the service knows about the sandbox that would not start.
+ *
+ * The record outlives the failed create (the lease is minted before the pod is
+ * waited on), so its `image` and `error` are readable afterwards and they are
+ * the two facts that separate "our image is not published" from "the cluster is
+ * unwell". Best-effort: this runs inside a failure path and must never throw a
+ * second, less informative error over the first.
+ */
+async function whyNoPod(
+  request: APIRequestContext,
+  token: string,
+  project?: string,
+): Promise<string> {
+  try {
+    const res = await request.get(`${API}/sandboxes`, {
+      headers: { Authorization: `Bearer ${token}` },
+      ...(project ? { params: { project } } : {}),
+      failOnStatusCode: false,
+    });
+    if (!res.ok()) return `(could not list sandboxes to diagnose: HTTP ${res.status()})`;
+    const { sandboxes = [] } = (await res.json()) as { sandboxes?: Sandbox[] };
+    const mine = project ? sandboxes.filter((s) => s.project === project) : sandboxes;
+    if (!mine.length) return '(the service lists no sandbox for this project)';
+    return (
+      mine
+        .map(
+          (s) =>
+            `  sandbox ${s.id} status=${s.status} image=${s.image ?? '?'}` +
+            (s.error ? `\n    error: ${s.error}` : ''),
+        )
+        .join('\n') +
+      '\n\nA lease stuck at status=pending means the POD never became ready, and the first thing\n' +
+      'to check is whether the image above can be pulled AT ALL:\n' +
+      "  kubectl get events -n hanzo-sandboxes --sort-by=.lastTimestamp | grep -i 'pull\\|fail'\n" +
+      'ErrImagePull/ImagePullBackOff there is the answer, and it has two separate causes worth\n' +
+      'telling apart: the bytes are not published (the registry answers NAME_UNKNOWN for the\n' +
+      'repository), or they are published and the pod carries no credential that covers THAT\n' +
+      "registry — an imagePullSecret for a different host is not a credential, it is a no-op."
+    );
+  } catch (e) {
+    return `(diagnosis failed: ${String(e)})`;
+  }
 }
 
 /**
@@ -363,6 +432,57 @@ test.describe('hanzo.app agent runs edit a REAL sandbox', () => {
     await sandboxService(request, await bearer(page));
   });
 
+  /**
+   * THE DEFAULT IMAGE IS PULLABLE — the one thing that separates "the service
+   * answers" from "the product works".
+   *
+   * `openSandbox` in lib/agent/sandbox.ts posts `{project, class:'dev', ttlSec}`
+   * and NAMES NO IMAGE, so every run the app opens gets cloud's default for that
+   * class: `SANDBOX_IMAGE_REPO:dev`, which ships as
+   * `registry.hanzo.ai/hanzoai/sandbox:dev`. If those bytes are not published, or
+   * the pod has no credential to fetch them, the pod sits in ImagePullBackOff,
+   * cloud waits 2 minutes and answers 503 — and `openSandbox` turns EVERY
+   * non-2xx into `return null`, which `resolveFs` turns into `{}`, which
+   * `runAgent` turns into an InMemoryProjectFs. That is the whole trap, reached
+   * without a single line of the app misbehaving.
+   *
+   * It is its own test, before the ones that use a sandbox, because when it is
+   * red every later failure in this file is a rumour of it. This asks for
+   * EXACTLY what the app asks for — same class, same absent image — so it cannot
+   * pass while the app's own calls fail.
+   */
+  test('the default image for the class the app opens (dev) can actually be pulled', async ({
+    page,
+    request,
+  }) => {
+    test.setTimeout(240_000);
+    await page.goto('/dashboard');
+    const token = await bearer(page);
+    await sandboxService(request, token);
+
+    const project = `e2e-image-${uniq()}`;
+    let sandbox: Sandbox | undefined;
+    try {
+      // No `image` key, on purpose: naming one here would test a path the app
+      // never takes and would go green over the exact break it exists to catch.
+      sandbox = await createSandbox(request, token, { class: 'dev', project });
+      const live = await running(request, token, sandbox.id);
+
+      // It is a machine, and the toolchain a coding agent needs is in it.
+      const probe = await exec(request, token, sandbox.id, 'node --version; git --version');
+      expect(
+        probe.exitCode,
+        `the pod started from ${live.image ?? '?'} but has no usable toolchain: ${JSON.stringify(probe)}`,
+      ).toBe(0);
+      expect(probe.stdout, `node missing from ${live.image ?? '?'}`).toMatch(/v\d+\./);
+      expect(probe.stdout, `git missing from ${live.image ?? '?'} — it cannot host a coding agent`).toMatch(
+        /git version/,
+      );
+    } finally {
+      if (sandbox) await destroy(request, token, sandbox.id);
+    }
+  });
+
   test('hanzo.app path convention is one cloud accepts (the /work confinement contract)', async ({
     page,
     request,
@@ -376,32 +496,63 @@ test.describe('hanzo.app agent runs edit a REAL sandbox', () => {
     try {
       await running(request, token, sandbox.id);
 
-      // EXACTLY what lib/agent/sandbox.ts puts on the wire. `normalizePath` in
-      // lib/agent/patch.ts prefixes every path with '/', so a model writing
-      // `proof.txt` produces `POST /fs?path=/proof.txt`. Cloud's `confine`
-      // treats a leading slash as ABSOLUTE and refuses anything outside /work.
-      // If those two disagree the agent's every read and write is a 400 that
-      // `Sandbox.call` raises as a SandboxError — the run reports failed tool
-      // calls and the sandbox stays empty. tests/integration/sandbox.test.ts
-      // cannot see this: its fake server keys a map on whatever string arrives,
-      // so both conventions "work" there.
+      // THE CONTRACT HAS TWO HALVES AND BOTH ARE ASSERTED HERE, because a
+      // regression on either side breaks every agent read and write and neither
+      // side can see the other's half on its own.
+      //
+      // Cloud's `confine` (apps/sandbox/sandbox.go): a path with a LEADING SLASH
+      // is absolute and must already sit under the class root, or it is a 400
+      // "path must be under <root>"; a RELATIVE path is joined to that root.
+      // The root is per class — /mnt/data for `exec`, /work for `dev` — which is
+      // exactly why the app must not name it.
+      //
+      // hanzo.app's half is `wire()` in lib/agent/sandbox.ts:
+      //     const wire = (path) => normalizePath(path).slice(1)
+      // `normalizePath` gives a file one identity inside the app (always leading
+      // slash), and `.slice(1)` drops that slash on the way out so cloud resolves
+      // it against the workdir. Send the identity form unchanged and every write
+      // is a 400 the loop reports as a failed tool call — the run "completes"
+      // with an empty sandbox.
+      //
+      // tests/integration/sandbox.test.ts cannot see any of this: its fake server
+      // keys a map on whatever string arrives, so both conventions "work" there.
       const marker = `path-contract-${uniq()}`;
+      const wire = (p: string) => p.replace(/^\/+/, ''); // what lib/agent/sandbox.ts sends
+
       const res = await request.post(`${API}/sandboxes/${encodeURIComponent(sandbox.id)}/fs`, {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/octet-stream' },
-        params: { path: `/${marker}.txt` },
+        params: { path: wire(`/${marker}.txt`) },
         data: marker,
         failOnStatusCode: false,
       });
       const text = await res.text();
       expect(
         res.status(),
-        `The app writes leading-slash paths ('/${marker}.txt', from normalizePath) and cloud ` +
-          `answered ${res.status()}: ${text.slice(0, 200)}\n` +
+        `The app sends wire('/${marker}.txt') = '${wire(`/${marker}.txt`)}' and cloud answered ` +
+          `${res.status()}: ${text.slice(0, 200)}\n` +
           `hanzo.app and cloud disagree about what a project-relative path is, so every agent ` +
           `read and write against a real sandbox fails.`,
       ).toBe(200);
 
-      // And it landed where a command can see it — the write is not merely accepted.
+      // The other half: the app's INTERNAL identity form must NOT be accepted, and
+      // this is the assertion that keeps `wire()` honest. Delete the `.slice(1)`
+      // and the test above still needs this one to notice — a cloud that quietly
+      // accepted '/foo.txt' by rewriting it would put the file at the filesystem
+      // root, not in the project, and the agent would read back nothing forever.
+      const raw = await request.post(`${API}/sandboxes/${encodeURIComponent(sandbox.id)}/fs`, {
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/octet-stream' },
+        params: { path: `/${marker}-raw.txt` },
+        data: marker,
+        failOnStatusCode: false,
+      });
+      expect(
+        raw.status(),
+        `Cloud accepted the app's un-wired identity path '/${marker}-raw.txt'. Either confine() ` +
+          `stopped confining, or the class root moved to '/'. Both make lib/agent/sandbox.ts's ` +
+          `wire() a no-op guarding nothing.`,
+      ).toBe(400);
+
+      // And the accepted write landed where a command can see it — not merely 200.
       const cat = await exec(request, token, sandbox.id, `cat ${marker}.txt`);
       expect(cat.exitCode, `cat in the pod: ${JSON.stringify(cat)}`).toBe(0);
       expect(cat.stdout).toContain(marker);
