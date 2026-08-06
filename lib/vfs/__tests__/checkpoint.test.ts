@@ -1,8 +1,13 @@
 /**
  * Checkpoint System Tests
  *
- * Run these tests to verify the checkpoint and save management system.
- * Note: These tests require a browser environment with IndexedDB.
+ * The revision history behind the builder: every agent run and manual save
+ * snapshots the project, and restoring one has to bring the files back exactly.
+ *
+ * IndexedDB comes from `fake-indexeddb` in `jest.setup.jsdom.js`. These tests
+ * spent their whole life unrunnable — no Jest project matched `lib/**`, and the
+ * shared `vfs` singleton was never initialized, so every case threw before it
+ * asserted anything.
  */
 
 import { checkpointManager } from '../checkpoint';
@@ -11,6 +16,10 @@ import { vfs } from '../index';
 
 describe('Checkpoint System', () => {
   let projectId: string;
+
+  beforeAll(async () => {
+    await vfs.init();
+  });
 
   beforeEach(async () => {
     // Create a test project
@@ -93,9 +102,10 @@ describe('Checkpoint System', () => {
   });
 
   test('should handle binary files', async () => {
-    // Create a binary file (simulated with ArrayBuffer)
+    // A real supported binary type — '.dat' is not one, and widening the
+    // VFS's allow-list to accommodate a test would change the product.
     const buffer = new Uint8Array([1, 2, 3, 4, 5]).buffer;
-    await vfs.createFile(projectId, '/binary.dat', buffer);
+    await vfs.createFile(projectId, '/binary.png', buffer);
 
     const checkpoint = await checkpointManager.createCheckpoint(
       projectId,
@@ -103,13 +113,13 @@ describe('Checkpoint System', () => {
     );
 
     // Modify file
-    await vfs.updateFile(projectId, '/binary.dat', new Uint8Array([6, 7, 8]).buffer);
+    await vfs.updateFile(projectId, '/binary.png', new Uint8Array([6, 7, 8]).buffer);
 
     // Restore
     await checkpointManager.restoreCheckpoint(checkpoint.id);
 
     // Verify
-    const file = await vfs.readFile(projectId, '/binary.dat');
+    const file = await vfs.readFile(projectId, '/binary.png');
     const restoredArray = new Uint8Array(file.content as ArrayBuffer);
     expect(restoredArray).toEqual(new Uint8Array([1, 2, 3, 4, 5]));
   });
@@ -193,6 +203,10 @@ describe('Save Manager', () => {
 
 describe('VFS', () => {
   let projectId: string;
+
+  beforeAll(async () => {
+    await vfs.init();
+  });
 
   beforeEach(async () => {
     const project = await vfs.createProject('Test Project');

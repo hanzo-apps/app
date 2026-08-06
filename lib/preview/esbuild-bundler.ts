@@ -124,6 +124,70 @@ function getResolveExtensions(sfcExtension?: string): string[] {
   return [sfcExtension, ...BASE_RESOLVE_EXTENSIONS, `/index${sfcExtension}`];
 }
 
+/** The virtual package esbuild's JSX transform is pointed at. */
+const JSX_SHIM = 'hanzo-jsx-source';
+
+/**
+ * Stamps `data-at` onto every element the preview renders.
+ *
+ * `jsxDev: true` makes esbuild pass {fileName, lineNumber} as an argument to
+ * `jsxDEV()`. Reading it back off the fiber as `_debugSource` is a dead end —
+ * React 19 removed that field — so instead of depending on a framework
+ * internal we intercept the call itself: this shim sits where the JSX runtime
+ * would be, wraps `jsxDEV`, and copies the location onto the element as
+ * `data-at` before the runtime ever sees it.
+ *
+ * That is deliberately the SAME attribute the gui compiler emits, so the
+ * click-to-edit path has one contract to read rather than one per framework —
+ * and it works identically for React and Preact, since both are just a JSX
+ * runtime behind this seam.
+ */
+function createJsxSourcePlugin(cdnBase: string, importSource: string) {
+  return {
+    name: 'jsx-source',
+    setup(build: import('esbuild-wasm').PluginBuild) {
+      build.onResolve({ filter: new RegExp(`^${JSX_SHIM}/`) }, (args) => ({
+        path: args.path,
+        namespace: JSX_SHIM,
+      }));
+
+      build.onLoad({ filter: /.*/, namespace: JSX_SHIM }, (args) => {
+        // 'hanzo-jsx-source/jsx-dev-runtime' → 'react/jsx-dev-runtime'
+        const real = `${cdnBase}/${importSource}/${args.path.split('/').pop()}`;
+        return {
+          contents: `
+import * as runtime from ${JSON.stringify(real)};
+export * from ${JSON.stringify(real)};
+
+const at = (source) =>
+  source && source.fileName
+    ? source.fileName.split('/').pop() + ':' + (source.lineNumber || 0)
+    : undefined;
+
+// Only host elements (string type) render to a DOM node that can carry the
+// attribute. A component gets its location from whatever host it renders.
+const tag = (fn) => (type, props, key, isStatic, source, self) => {
+  if (typeof type === 'string' && props && !props['data-at']) {
+    const stamp = at(source);
+    if (stamp) {
+      props = { ...props, 'data-at': stamp, 'data-src': source.fileName };
+    }
+  }
+  return fn(type, props, key, isStatic, source, self);
+};
+
+export const jsxDEV = runtime.jsxDEV ? tag(runtime.jsxDEV) : undefined;
+export const jsx = runtime.jsx;
+export const jsxs = runtime.jsxs;
+export const Fragment = runtime.Fragment;
+`,
+          loader: 'js' as import('esbuild-wasm').Loader,
+        };
+      });
+    },
+  };
+}
+
 function createVfsPlugin(
   fileMap: Map<string, string>,
   cdnBase: string,
@@ -407,11 +471,20 @@ export async function bundleProject(input: BundleInput): Promise<BundleOutput> {
     plugins.unshift(createVuePlugin(fileMap, config.compilerCdnUrl, cdnBase));
   }
 
-  // JSX options — only for JSX-based runtimes
+  // JSX options — only for JSX-based runtimes.
+  //
+  // `jsxDev` is what makes visual select precise. It routes through
+  // `jsxDEV()` instead of `jsx()`, which carries {fileName, lineNumber,
+  // columnNumber} onto the fiber as `_debugSource`. Without it esbuild drops
+  // the location and a click can only report a DOM path — the agent then has
+  // to guess which file it meant. This is the preview bundler; there is no
+  // production build here to pay for it.
   const jsxOptions: Record<string, any> = {};
   if (config.jsxImportSource) {
     jsxOptions.jsx = 'automatic';
-    jsxOptions.jsxImportSource = `${cdnBase}/${config.jsxImportSource}`;
+    jsxOptions.jsxImportSource = JSX_SHIM;
+    jsxOptions.jsxDev = true;
+    plugins.unshift(createJsxSourcePlugin(cdnBase, config.jsxImportSource));
   }
 
   let result;
@@ -427,6 +500,11 @@ export async function bundleProject(input: BundleInput): Promise<BundleOutput> {
       format: 'esm',
       target: ['es2020'],
       outdir: '/',
+      // The VFS is rooted at '/', so anchor esbuild there too. Without this it
+      // relativizes `fileName` against the host's cwd and the source locations
+      // come out as '../../../../src/App.jsx' — different depending on where
+      // the process happens to run.
+      absWorkingDir: '/',
       write: false,
       ...jsxOptions,
       plugins,

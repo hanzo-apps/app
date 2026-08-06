@@ -89,6 +89,7 @@
     "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.2.12",
+    "fake-indexeddb": "^6.2.5",
     "jest": "29.7.0",
     "jest-environment-jsdom": "29.7.0",
     "msw": "2.4.9",
@@ -141,7 +142,7 @@
       "better-sqlite3"
     ]
   },
-  "description": "Hanzo App \u2014 AI web & app builder on Hanzo Cloud",
+  "description": "Hanzo App — AI web & app builder on Hanzo Cloud",
   "author": "Hanzo AI, Inc.",
   "repository": {
     "type": "git",

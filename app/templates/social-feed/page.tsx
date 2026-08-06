@@ -23,7 +23,7 @@ const posts = [
     author: {
       name: "Sarah Chen",
       username: "@sarahchen",
-      avatar: "/api/placeholder/40/40",
+      avatar: "/v1/placeholder/40/40",
       verified: true
     },
     content: "Just shipped a new feature using @hanzo/ui components! The DX is incredible 🚀",
@@ -38,7 +38,7 @@ const posts = [
     author: {
       name: "Alex Rivera",
       username: "@alexdev",
-      avatar: "/api/placeholder/40/40",
+      avatar: "/v1/placeholder/40/40",
       verified: false
     },
     content: "Building with @hanzo/ui has completely changed how I approach UI development. The component system is so well thought out!",
@@ -47,14 +47,14 @@ const posts = [
     comments: 24,
     shares: 15,
     hasImage: true,
-    image: "/api/placeholder/600/400"
+    image: "/v1/placeholder/600/400"
   },
   {
     id: "3",
     author: {
       name: "Jordan Park",
       username: "@jordanpark",
-      avatar: "/api/placeholder/40/40",
+      avatar: "/v1/placeholder/40/40",
       verified: true
     },
     content: "Who else is excited about the new Hanzo AI templates? Just forked one and got started in seconds!",

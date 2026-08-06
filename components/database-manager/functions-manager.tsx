@@ -96,7 +96,7 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
 
   const copyUrl = (fn: EdgeFunction) => {
     if (!deploymentId) return;
-    const url = `${window.location.origin}/api/deployments/${deploymentId}/functions/${fn.name}`;
+    const url = `${window.location.origin}/v1/deployments/${deploymentId}/functions/${fn.name}`;
     navigator.clipboard.writeText(url);
     setCopiedUrl(fn.id);
     setTimeout(() => setCopiedUrl(null), 2000);

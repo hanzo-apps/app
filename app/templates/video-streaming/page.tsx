@@ -10,7 +10,7 @@ const currentVideo = {
   title: "Building Modern UIs with @hanzo/ui Components",
   channel: {
     name: "Hanzo Dev",
-    avatar: "/api/placeholder/40/40",
+    avatar: "/v1/placeholder/40/40",
     subscribers: "42.3k",
     verified: true
   },
@@ -47,7 +47,7 @@ const relatedVideos = [
     id: "2",
     title: "Advanced React Patterns",
     channel: "Code Academy",
-    thumbnail: "/api/placeholder/320/180",
+    thumbnail: "/v1/placeholder/320/180",
     duration: "23:15",
     views: "89k",
     publishedAt: "1 week ago"
@@ -56,7 +56,7 @@ const relatedVideos = [
     id: "3",
     title: "Tailwind CSS Mastery",
     channel: "Design Pro",
-    thumbnail: "/api/placeholder/320/180",
+    thumbnail: "/v1/placeholder/320/180",
     duration: "18:30",
     views: "156k",
     publishedAt: "3 days ago"
@@ -65,7 +65,7 @@ const relatedVideos = [
     id: "4",
     title: "State Management in 2024",
     channel: "React Weekly",
-    thumbnail: "/api/placeholder/320/180",
+    thumbnail: "/v1/placeholder/320/180",
     duration: "31:45",
     views: "45k",
     publishedAt: "5 days ago"
@@ -74,7 +74,7 @@ const relatedVideos = [
     id: "5",
     title: "Building a SaaS from Scratch",
     channel: "Startup School",
-    thumbnail: "/api/placeholder/320/180",
+    thumbnail: "/v1/placeholder/320/180",
     duration: "45:20",
     views: "234k",
     publishedAt: "2 weeks ago"
@@ -86,7 +86,7 @@ const comments = [
     id: "1",
     author: {
       name: "Sarah Chen",
-      avatar: "/api/placeholder/32/32"
+      avatar: "/v1/placeholder/32/32"
     },
     content: "This is exactly what I needed! The @hanzo/ui components are so well designed.",
     likes: 42,
@@ -97,7 +97,7 @@ const comments = [
     id: "2",
     author: {
       name: "Alex Rivera",
-      avatar: "/api/placeholder/32/32"
+      avatar: "/v1/placeholder/32/32"
     },
     content: "Great tutorial! Can you do a video on integrating with Next.js 14?",
     likes: 28,
@@ -108,7 +108,7 @@ const comments = [
     id: "3",
     author: {
       name: "Jordan Park",
-      avatar: "/api/placeholder/32/32"
+      avatar: "/v1/placeholder/32/32"
     },
     content: "The component library looks amazing. Love the dark mode support!",
     likes: 15,
@@ -136,7 +136,7 @@ export default function VideoStreaming() {
                   {/* Video Placeholder */}
                   <XStack position="absolute" top={0} right={0} bottom={0} left={0} alignItems="center" justifyContent="center">
                     <Image
-                      src="/api/placeholder/1280/720"
+                      src="/v1/placeholder/1280/720"
                       alt="Video thumbnail"
                       width="100%" height="100%" objectFit="cover"
   />

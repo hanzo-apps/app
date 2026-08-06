@@ -79,7 +79,13 @@ const customJestConfig = {
   projects: [
     {
       displayName: 'unit',
-      testMatch: ['<rootDir>/tests/unit/**/*.test.{js,jsx,ts,tsx}'],
+      // Colocated `__tests__` count too. They did not until now: everything
+      // under lib/ matched no project and so ran nowhere, which is worse than
+      // having no test at all — it reads as covered.
+      testMatch: [
+        '<rootDir>/tests/unit/**/*.test.{js,jsx,ts,tsx}',
+        '<rootDir>/{lib,hooks,components}/**/__tests__/**/*.test.{js,jsx,ts,tsx}',
+      ],
       testEnvironment: 'jest-environment-jsdom',
       // A project inherits NOTHING from the root config — it IS a config — so
       // the jsdom polyfills have to be named here or they run nowhere.
