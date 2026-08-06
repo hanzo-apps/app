@@ -114,6 +114,29 @@ describe("BuildComposer starters", () => {
     expect(onSubmit).toHaveBeenCalledWith("a todo app", "build");
   });
 
+  // Regression guard for the IME fix: the Enter that ACCEPTS an open IME
+  // candidate (Japanese/Chinese/Korean writers do this on every word) must not
+  // submit the half-typed draft. Browsers signal that keystroke as keyCode 229
+  // (Safari's only honest signal), key "Process", or isComposing — sends() from
+  // @hanzo/ui/chat covers all three, and this asserts the composer routes
+  // through it rather than a bare `key === 'Enter'` that would submit mid-word.
+  it("does not submit while an IME candidate is open — the Enter belongs to the IME", () => {
+    const onSubmit = jest.fn();
+    renderComposer(<BuildComposer onSubmit={onSubmit} />);
+
+    const box = screen.getByLabelText("Ask Hanzo to build");
+    fireEvent.change(box, { target: { value: "日本語のアプリ" } });
+
+    fireEvent.keyDown(box, { key: "Enter", keyCode: 229 });
+    expect(onSubmit).not.toHaveBeenCalled();
+    fireEvent.keyDown(box, { key: "Process" });
+    expect(onSubmit).not.toHaveBeenCalled();
+
+    // Candidate committed, IME closed: a plain Enter now sends.
+    fireEvent.keyDown(box, { key: "Enter" });
+    expect(onSubmit).toHaveBeenCalledWith("日本語のアプリ", "build");
+  });
+
   it("submits the typed draft — not a click event — from the send button", () => {
     const onSubmit = jest.fn();
     renderComposer(<BuildComposer onSubmit={onSubmit} />);
