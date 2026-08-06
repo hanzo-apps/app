@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, SizableText, YStack, Paragraph, H4, H3 } from '@hanzo/gui';
+import { XStack, SizableText, YStack, Paragraph, H4, H3 } from '@hanzo/ui';
 import { useState, useEffect, useCallback } from 'react';
 import { CustomTemplate, BackendFeatures } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';

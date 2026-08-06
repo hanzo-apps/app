@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, H3, Paragraph, XStack, H4, SizableText } from '@hanzo/gui';
+import { YStack, H3, Paragraph, XStack, H4, SizableText } from '@hanzo/ui';
 import { useState, useEffect } from 'react';
 import { configManager, AppSettings, CostSettings } from '@/lib/config/storage';
 import { Button, Input, Label, Switch, toast, Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui';

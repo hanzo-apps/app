@@ -9,7 +9,11 @@
  * and link straight to their existing detail page instead.
  */
 
-import { XStack, YStack, H2, Paragraph, Image, SizableText, Anchor } from '@hanzo/gui';
+import { XStack, YStack, H2, Paragraph, Image, SizableText } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 import { Dialog, DialogContent, DialogTitle, Button } from '@hanzo/ui';
 import { ExternalLink, Sparkles, Gamepad2 } from 'lucide-react';
 import Link from 'next/link';

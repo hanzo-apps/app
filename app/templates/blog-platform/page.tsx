@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, XStack, H1, Image, H2, Paragraph, H3, SizableText } from '@hanzo/gui';
+import { YStack, XStack, H1, Image, H2, Paragraph, H3, SizableText } from '@hanzo/ui';
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Button, Badge, Avatar, AvatarFallback, AvatarImage, Input, Tabs, TabsContent, TabsList, TabsTrigger, AspectRatio } from '@hanzo/ui';
 import {

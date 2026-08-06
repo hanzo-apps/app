@@ -1,7 +1,7 @@
 "use client";
 
 import { command, isFrameEvent, type ElementInfo } from "../preview/bridge";
-import { SizableText, YStack, XStack, H3 } from '@hanzo/gui';
+import { SizableText, YStack, XStack, H3 } from '@hanzo/ui';
 import { glass } from "@/lib/chrome";
 import { useState, useEffect, useCallback } from "react";
 import {

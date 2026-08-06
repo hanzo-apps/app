@@ -9,7 +9,7 @@ import { LoadingScreen } from "@/components/ui/loading-screen";
  * `logo` through `/v1/orgs`. Monochrome; matches the dashboard chrome.
  */
 import { Label, Input } from '@hanzo/ui';
-import { XStack, YStack, Paragraph, SizableText } from '@hanzo/gui';
+import { XStack, YStack, Paragraph, SizableText } from '@hanzo/ui';
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 

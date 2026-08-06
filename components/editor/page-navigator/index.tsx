@@ -1,7 +1,7 @@
 "use client";
 
 import { Input, Button } from '@hanzo/ui';
-import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FileCode, Folder, Search } from "lucide-react";
 /**

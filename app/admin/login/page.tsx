@@ -1,7 +1,7 @@
 'use client';
 
 import { Label, Input, Button } from '@hanzo/ui';
-import { SizableText, XStack, YStack, H1, Paragraph } from '@hanzo/gui';
+import { SizableText, XStack, YStack, H1, Paragraph } from '@hanzo/ui';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { screen } from '@/lib/chrome';

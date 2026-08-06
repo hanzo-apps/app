@@ -1,6 +1,10 @@
 "use client";
 
-import { XStack, SizableText, Paragraph, Anchor } from '@hanzo/gui';
+import { XStack, SizableText, Paragraph } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 import { Zap, ExternalLink } from "lucide-react";
 import { useLocalStorage } from "react-use";
 

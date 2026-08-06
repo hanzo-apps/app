@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@hanzo/ui';
-import { SizableText, YStack, XStack } from '@hanzo/gui';
+import { SizableText, YStack, XStack } from '@hanzo/ui';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

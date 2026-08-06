@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, YStack, Paragraph } from '@hanzo/gui';
+import { SizableText, YStack, Paragraph } from '@hanzo/ui';
 import { Check, Settings as SettingsIcon } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger, Button } from '@hanzo/ui';

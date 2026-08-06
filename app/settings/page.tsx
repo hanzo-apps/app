@@ -1,7 +1,11 @@
 "use client";
 
 import { LoadingScreen } from "@/components/ui/loading-screen";
-import { XStack, SizableText, Paragraph, YStack, Anchor } from '@hanzo/gui';
+import { XStack, SizableText, Paragraph, YStack } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Label, Switch, Tabs, TabsList, TabsTrigger, TabsContent } from '@hanzo/ui';

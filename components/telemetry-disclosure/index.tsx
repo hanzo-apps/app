@@ -1,6 +1,10 @@
 'use client';
 
-import { SizableText, Paragraph, Anchor, YStack } from '@hanzo/gui';
+import { SizableText, Paragraph, YStack } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, Button, Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui';
 import { ChevronDown } from 'lucide-react';
 import { setTelemetryOptIn, track } from '@/lib/telemetry';

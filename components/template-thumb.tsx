@@ -1,6 +1,6 @@
 "use client";
 
-import { Image, YStack, XStack, SizableText } from '@hanzo/gui';
+import { Image, YStack, XStack, SizableText } from '@hanzo/ui';
 // TemplateThumb — a real preview picture when we have one, else an on-brand tile.
 //
 // Image-first: if the slug has a captured, hand-QC'd shot at

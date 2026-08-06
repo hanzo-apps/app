@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
 import { useEffect, useRef, useState } from "react";
 import { CircleCheck, Plus, Sparkles, Upload } from "lucide-react";
 import Image from "next/image";

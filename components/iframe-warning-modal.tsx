@@ -1,6 +1,6 @@
 "use client";
 
-import { XStack, YStack, Paragraph, SizableText } from '@hanzo/gui';
+import { XStack, YStack, Paragraph, SizableText } from '@hanzo/ui';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Button } from '@hanzo/ui';
 import { ExternalLink, AlertTriangle } from "lucide-react";
 import { SITE_URL } from "@/lib/site";

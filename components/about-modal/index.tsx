@@ -1,6 +1,10 @@
 'use client';
 
-import { XStack, YStack, SizableText, H3, Anchor } from '@hanzo/gui';
+import { XStack, YStack, SizableText, H3 } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 import { VERSION } from '@/lib/version';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Button, Badge } from '@hanzo/ui';
 import { Logo } from '@/components/ui/logo';

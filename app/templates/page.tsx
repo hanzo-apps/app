@@ -12,7 +12,7 @@
  * provision + seed) → the builder. Game cards open their existing detail page.
  */
 
-import { SizableText, YStack, XStack, H1, Paragraph, Image, H3 } from '@hanzo/gui';
+import { SizableText, YStack, XStack, H1, Paragraph, Image, H3 } from '@hanzo/ui';
 import { glass } from "@/lib/chrome";
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';

@@ -18,7 +18,7 @@
  * the user is never stranded.
  */
 
-import { H2, Paragraph, YStack, XStack } from '@hanzo/gui';
+import { H2, Paragraph, YStack, XStack } from '@hanzo/ui';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogTitle } from '@hanzo/ui';

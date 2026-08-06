@@ -15,7 +15,7 @@
  * resolves (app/dev/page.tsx). Auth: middleware already gates the /dev prefix.
  */
 
-import { SizableText, YStack, XStack, H1, Paragraph } from '@hanzo/gui';
+import { SizableText, YStack, XStack, H1, Paragraph } from '@hanzo/ui';
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";

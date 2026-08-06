@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from '@hanzo/ui';
-import { SizableText, YStack, XStack, Paragraph } from '@hanzo/gui';
+import { SizableText, YStack, XStack, Paragraph } from '@hanzo/ui';
 import { useEffect, useRef } from "react";
 import { Check, GitBranch, PanelLeft, PanelLeftClose } from "lucide-react";
 

@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { toast, Button } from '@hanzo/ui';
-import { SizableText, View } from '@hanzo/gui';
+import { SizableText, View } from '@hanzo/ui';
 import { useParams } from "next/navigation";
 
 import Loading from "@/components/loading";

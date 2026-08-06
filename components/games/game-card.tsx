@@ -7,7 +7,7 @@
  * when a WebGL build is hosted for the title.
  */
 
-import { YStack, XStack, SizableText, H3, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, SizableText, H3, Paragraph } from '@hanzo/ui';
 import Link from 'next/link';
 import { Badge } from '@hanzo/ui';
 import { Gamepad2, Monitor, Smartphone, Globe, Play } from 'lucide-react';

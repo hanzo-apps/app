@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, H3, SizableText, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, H3, SizableText, Paragraph } from '@hanzo/ui';
 import { Deployment, Project } from '@/lib/vfs/types';
 import { Button, Badge, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@hanzo/ui';
 import { CopyButton } from '@hanzo/ui/product';

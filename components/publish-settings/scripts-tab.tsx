@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, H3, Paragraph, H4 } from '@hanzo/gui';
+import { YStack, XStack, H3, Paragraph, H4 } from '@hanzo/ui';
 import { useState } from 'react';
 import { PublishSettings, ScriptConfig } from '@/lib/vfs/types';
 import { Button, Input, Label, Textarea, Switch, Badge, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';

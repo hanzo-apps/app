@@ -1,6 +1,10 @@
 'use client';
 
-import { YStack, Paragraph, H2, Anchor, XStack, SizableText, H3 } from '@hanzo/gui';
+import { YStack, Paragraph, H2, XStack, SizableText, H3 } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 // Hanzo's own models — the flagship Enso (proprietary) and the open Zen family.
 // Complements ModelsStrip (the gateway / 400+ story); this section is
 // specifically about the models Hanzo builds. Real product links only:

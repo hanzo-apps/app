@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack } from '@hanzo/gui';
+import { YStack } from '@hanzo/ui';
 
 import { Spinner } from '@/components/ui/spinner';
 

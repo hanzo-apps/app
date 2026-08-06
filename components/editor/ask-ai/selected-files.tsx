@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, Image } from '@hanzo/gui';
+import { YStack, XStack, Image } from '@hanzo/ui';
 
 import { Button } from '@hanzo/ui';
 import { Minus } from "lucide-react";

@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, YStack, Paragraph, H3, SizableText } from '@hanzo/gui';
+import { XStack, YStack, Paragraph, H3, SizableText } from '@hanzo/ui';
 import { useState, useEffect } from 'react';
 import { toast, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@hanzo/ui';
 import { ServerFunction } from '@/lib/vfs/types';

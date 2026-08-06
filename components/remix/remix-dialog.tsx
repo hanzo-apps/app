@@ -9,7 +9,7 @@
  * to the progress modal which does the real create + provision + seed.
  */
 
-import { YStack, SizableText, XStack } from '@hanzo/gui';
+import { YStack, SizableText, XStack } from '@hanzo/ui';
 import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, Button, Checkbox, Input, Label } from '@hanzo/ui';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
 import { useState, useEffect, useRef } from 'react';
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label, toast } from '@hanzo/ui';
 

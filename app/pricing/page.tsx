@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from '@hanzo/ui';
-import { SizableText, YStack, XStack, H1, Paragraph, H3 } from '@hanzo/gui';
+import { SizableText, YStack, XStack, H1, Paragraph, H3 } from '@hanzo/ui';
 // Canonical plans page. One subscription = shared AI usage across every Hanzo
 // app (builder, Hanzo Chat, the API at api.hanzo.ai). Monochrome design system:
 // Header + SiteFooter + Reveal, true-black, Geist. Honest feature lists — no

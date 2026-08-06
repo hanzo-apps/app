@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, XStack, H3, Paragraph, SizableText } from '@hanzo/gui';
+import { YStack, XStack, H3, Paragraph, SizableText } from '@hanzo/ui';
 // "Your builds" — the account surface: the agent sessions behind your projects,
 // with the chat each one is, and whether the world can read it.
 //

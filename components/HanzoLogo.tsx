@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, XStack } from '@hanzo/gui';
+import { SizableText, XStack } from '@hanzo/ui';
 import { SVGProps } from "react"
 import { MARK_PATHS, MARK_VIEWBOX } from "@hanzo/logo/logos"
 import { HanzoLogo as BrandMotion } from "@hanzo/logo/react"

@@ -1,7 +1,7 @@
 'use client';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { View, XStack, SizableText } from '@hanzo/gui';
+import { View, XStack, SizableText } from '@hanzo/ui';
 import { useState } from "react";
 
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@hanzo/ui';

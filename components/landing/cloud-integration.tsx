@@ -1,6 +1,10 @@
 'use client';
 
-import { YStack, Paragraph, H2, Anchor, XStack, SizableText, H3 } from '@hanzo/gui';
+import { YStack, Paragraph, H2, XStack, SizableText, H3 } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 // The differentiator — what a generic UI generator can't say.
 //
 // hanzo.app doesn't just draw a screen; it ships a full app on Hanzo Cloud

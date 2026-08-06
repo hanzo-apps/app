@@ -17,7 +17,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { XStack, YStack, SizableText } from '@hanzo/gui';
+import { XStack, YStack, SizableText } from '@hanzo/ui';
 import {
   Button,
   Command,

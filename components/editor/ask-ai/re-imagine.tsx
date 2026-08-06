@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
 import { useState } from "react";
 import { Paintbrush } from "lucide-react";
 import { toast, Button, Popover, PopoverContent, PopoverTrigger, Input } from '@hanzo/ui';

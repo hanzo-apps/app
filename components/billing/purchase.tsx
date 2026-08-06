@@ -28,7 +28,7 @@
  * the current scope differs. Fail closed beats a confident guess about money.
  */
 
-import { Paragraph, YStack, SizableText } from '@hanzo/gui';
+import { Paragraph, YStack, SizableText } from '@hanzo/ui';
 import { useOrg } from '@/lib/org/client';
 import { currentOrg, titleCase } from '@/lib/org-scope';
 import { goToCheckout, billingReturnUrl } from '@/lib/pay';

@@ -12,7 +12,7 @@
 // so callers position it with the same vocabulary as everything else.
 
 import { useEffect, useRef, useState, type ComponentProps } from "react";
-import { YStack } from "@hanzo/gui";
+import { YStack } from "@hanzo/ui";
 
 interface RevealProps extends ComponentProps<typeof YStack> {
   /** Stagger offset in ms. */

@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, Paragraph } from '@hanzo/ui';
 import Link from "next/link";
 import { formatDistance } from "date-fns";
 import { EllipsisVertical, Settings } from "lucide-react";

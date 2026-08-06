@@ -1,6 +1,10 @@
 "use client";
 
-import { XStack, SizableText, YStack, Image, H1, Paragraph, Anchor, H3, H4 } from '@hanzo/gui';
+import { XStack, SizableText, YStack, Image, H1, Paragraph, H3, H4 } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 import { glass } from "@/lib/chrome";
 import { useState, useEffect } from "react";
 import { Button, Label, Textarea } from '@hanzo/ui';

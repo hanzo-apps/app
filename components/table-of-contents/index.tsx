@@ -1,6 +1,10 @@
 'use client';
 
-import { YStack, Paragraph, Anchor } from '@hanzo/gui';
+import { YStack, Paragraph } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 import React, { useEffect } from 'react';
 import type { TocItem } from '@/lib/hooks/use-table-of-contents';
 

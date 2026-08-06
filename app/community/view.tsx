@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, YStack, H2, Paragraph, XStack } from '@hanzo/gui';
+import { SizableText, YStack, H2, Paragraph, XStack } from '@hanzo/ui';
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import Header from "@/components/layout/header";

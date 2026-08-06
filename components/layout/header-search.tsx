@@ -12,7 +12,7 @@
  * triggers its project fetch.
  */
 import { Button } from '@hanzo/ui';
-import { SizableText, XStack } from '@hanzo/gui';
+import { SizableText, XStack } from '@hanzo/ui';
 import { useCallback, useState } from 'react';
 import { Search } from 'lucide-react';
 import { CommandPalette } from '@/components/command-palette';

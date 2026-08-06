@@ -45,7 +45,7 @@
  * would have to go out of its way to build.
  */
 import { Button } from '@hanzo/ui';
-import { YStack, XStack, H1, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, H1, Paragraph } from '@hanzo/ui';
 import React, { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Menu, Search } from 'lucide-react';

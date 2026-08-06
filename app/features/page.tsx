@@ -1,6 +1,6 @@
 "use client";
 
-import { SizableText, YStack, XStack, H1, Paragraph, H2, H3 } from '@hanzo/gui';
+import { SizableText, YStack, XStack, H1, Paragraph, H2, H3 } from '@hanzo/ui';
 import { Button, Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@hanzo/ui';
 import { accent } from '@/lib/chrome';
 import Link from "next/link";

@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, H4, Paragraph, SizableText } from '@hanzo/gui';
+import { YStack, XStack, H4, Paragraph, SizableText } from '@hanzo/ui';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Button, toast, Textarea } from '@hanzo/ui';
 import { Play } from 'lucide-react';

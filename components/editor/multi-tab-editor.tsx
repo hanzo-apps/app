@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, H3, SizableText, Paragraph, Image } from '@hanzo/gui';
+import { YStack, XStack, H3, SizableText, Paragraph, Image } from '@hanzo/ui';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { CodeEditor } from '@/components/code-editor';
 import { VirtualFile, ProjectRuntime } from '@/lib/vfs/types';

@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, XStack, H1, SizableText } from '@hanzo/gui';
+import { YStack, XStack, H1, SizableText } from '@hanzo/ui';
 import { useState } from "react";
 import { Card, CardContent, Button, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator, ScrollArea } from '@hanzo/ui';
 import { Bold, Italic, Link, List, ListOrdered, Quote, Code, Heading1, Heading2, Image, Table, Download, Copy, FileText, Save } from "lucide-react";

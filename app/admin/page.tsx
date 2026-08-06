@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, Paragraph } from '@hanzo/gui';
+import { XStack, Paragraph } from '@hanzo/ui';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { screen } from '@/lib/chrome';

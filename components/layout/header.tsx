@@ -15,7 +15,7 @@
 // the new org); "Sign In" is plain login() for returning users.
 
 import { HanzoHeader, resolveSurface } from "@hanzogui/shell";
-import { SizableText, YStack, Paragraph, XStack } from "@hanzo/gui";
+import { SizableText, YStack, Paragraph, XStack } from "@hanzo/ui";
 import { useRouter } from "next/navigation";
 import { Home, Settings, DollarSign, LogOut } from "lucide-react";
 import {

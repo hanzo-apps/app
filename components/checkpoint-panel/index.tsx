@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
 import { useState, useEffect, useMemo } from 'react';
 import { Button, Badge, Tooltip, TooltipContent, TooltipTrigger } from '@hanzo/ui';
 import { History, RotateCcw, ArrowRight, X, Inbox } from 'lucide-react';

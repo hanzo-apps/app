@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText } from '@hanzo/gui';
+import { SizableText } from '@hanzo/ui';
 // Single source of truth for FAQ copy across the marketing/support surfaces.
 // /pricing renders `billingFaq`; /faq renders every group. Honest answers only —
 // no invented metrics, no upstream model-vendor names (brand policy: Zen + Enso).

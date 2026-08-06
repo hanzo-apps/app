@@ -1,7 +1,12 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ElementInfo } from "../preview/bridge";
-import { YStack, XStack, SizableText, Paragraph, type GuiElement } from '@hanzo/gui';
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
+// `GuiElement` is a TYPE, and @hanzo/ui's dts build drops a two-hop
+// type-only re-export, so it is not on the barrel yet. A type is erased at
+// build and cannot create a second runtime, so this does not reintroduce
+// the two-copies problem the rest of this migration exists to prevent.
+import type { GuiElement } from '@hanzo/gui';
 import { useState, useMemo, useRef, useEffect } from "react";
 import { toast, Button, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';

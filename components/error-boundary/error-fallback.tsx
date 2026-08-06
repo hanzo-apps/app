@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@hanzo/ui';
-import { XStack, YStack, H3, Paragraph, H1, H2, SizableText } from '@hanzo/gui';
+import { XStack, YStack, H3, Paragraph, H1, H2, SizableText } from '@hanzo/ui';
 import { AlertCircle, RefreshCw, Home, Bug } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { screen } from '@/lib/chrome';

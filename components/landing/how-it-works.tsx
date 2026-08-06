@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, Paragraph, H2, SizableText, H3 } from '@hanzo/gui';
+import { YStack, Paragraph, H2, SizableText, H3 } from '@hanzo/ui';
 // Three-step "how it works" — idea → build → ship, in Hanzo's monochrome. The
 // third step is the differentiator: it ships to Hanzo Cloud, not just a preview.
 

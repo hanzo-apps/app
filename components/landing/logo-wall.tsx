@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, Image, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, Image, Paragraph } from '@hanzo/ui';
 // Partner / infrastructure logo wall — REAL assets only, honestly labeled.
 // Hanzo AI is Techstars '17 (real backing); the rest are the real cloud +
 // silicon partners the platform runs on. No fabricated customers.

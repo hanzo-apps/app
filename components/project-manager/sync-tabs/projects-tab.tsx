@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, YStack } from '@hanzo/gui';
+import { SizableText, YStack } from '@hanzo/ui';
 import { useEffect, useRef } from 'react';
 import { SyncableItem } from '@/lib/vfs/sync-types';
 import { SummaryBar } from './summary-bar';

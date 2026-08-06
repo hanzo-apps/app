@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, H3, Paragraph, H4, SizableText, XStack, Image } from '@hanzo/gui';
+import { YStack, H3, Paragraph, H4, SizableText, XStack, Image } from '@hanzo/ui';
 import { useState } from 'react';
 import { PublishSettings, SeoConfig } from '@/lib/vfs/types';
 import { Label, Input, Textarea, Button, Badge, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';

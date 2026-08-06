@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from '@hanzo/ui';
-import { YStack, Paragraph, H2, SizableText } from '@hanzo/gui';
+import { YStack, Paragraph, H2, SizableText } from '@hanzo/ui';
 // One reusable FAQ block for the marketing/support surfaces. Monochrome,
 // keyboard-accessible expand/collapse. DRY: /pricing (billing subset) and /faq
 // (full set) both render THIS — no per-page accordion code. Answers are

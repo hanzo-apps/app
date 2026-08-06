@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, XStack, Image, SizableText, Paragraph, H4 } from '@hanzo/gui';
+import { YStack, XStack, Image, SizableText, Paragraph, H4 } from '@hanzo/ui';
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, Button, Badge, Avatar, AvatarFallback, AvatarImage, AspectRatio, ScrollArea, Tabs, TabsContent, TabsList, TabsTrigger, Textarea, Progress } from '@hanzo/ui';
 import { Play, Pause, SkipForward, SkipBack, Volume2, Maximize, ThumbsUp, ThumbsDown, Share2, Download, Bell, MoreVertical, Eye } from "lucide-react";

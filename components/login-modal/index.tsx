@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, XStack, YStack, Paragraph } from '@hanzo/gui';
+import { SizableText, XStack, YStack, Paragraph } from '@hanzo/ui';
 import { useLocalStorage } from "react-use";
 import { Button, Dialog, DialogContent, DialogTitle } from '@hanzo/ui';
 import { useUser } from "@/hooks/useUser";

@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack } from '@hanzo/gui';
+import { YStack } from '@hanzo/ui';
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
 import { DataBrowser } from './data-browser';

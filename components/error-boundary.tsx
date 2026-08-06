@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@hanzo/ui';
-import { YStack, H2, Paragraph } from '@hanzo/gui';
+import { YStack, H2, Paragraph } from '@hanzo/ui';
 import React, { Component, ReactNode } from 'react';
 import { AlertCircle } from 'lucide-react';
 

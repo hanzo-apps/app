@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, SizableText, YStack } from '@hanzo/gui';
+import { XStack, SizableText, YStack } from '@hanzo/ui';
 import { Children, ReactNode, useState } from "react";
 import Link from "next/link";
 import {

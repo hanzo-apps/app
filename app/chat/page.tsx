@@ -10,7 +10,7 @@
  * markdown rendering, stop + regenerate. No simulated responses — a signed-out
  * visitor gets an honest sign-in prompt.
  */
-import { XStack, YStack, Paragraph, SizableText, H1 } from '@hanzo/gui';
+import { XStack, YStack, Paragraph, SizableText, H1 } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {

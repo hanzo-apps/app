@@ -15,7 +15,11 @@
  * different submit (e.g. the landing's anon-login bounce) pass `onSubmit`.
  */
 
-import { YStack, H1, XStack, Anchor, SizableText, Paragraph } from '@hanzo/gui';
+import { YStack, H1, XStack, SizableText, Paragraph } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { EVENTS } from '@hanzo/event';

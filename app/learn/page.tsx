@@ -1,6 +1,10 @@
 "use client";
 
-import { SizableText, YStack, H1, Paragraph, XStack, H2, H3, Anchor } from '@hanzo/gui';
+import { SizableText, YStack, H1, Paragraph, XStack, H2, H3 } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 import Link from "next/link";
 import { Button, Badge } from '@hanzo/ui';
 import { BookOpen, Video, FileCode, Users, Trophy, Clock, ArrowRight, PlayCircle, Code2, Bot, Rocket } from "lucide-react";

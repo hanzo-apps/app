@@ -16,7 +16,7 @@
  * destructive affordance. No brand hue.
  */
 import { Button } from '@hanzo/ui';
-import { XStack, YStack, SizableText } from '@hanzo/gui';
+import { XStack, YStack, SizableText } from '@hanzo/ui';
 import { LogOut, Wallet } from "lucide-react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText } from '@hanzo/gui';
+import { SizableText } from '@hanzo/ui';
 import { XIcon } from "lucide-react";
 
 import { Button } from '@hanzo/ui';

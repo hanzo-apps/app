@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, YStack } from '@hanzo/gui';
+import { SizableText, YStack } from '@hanzo/ui';
 import { SyncableItem } from '@/lib/vfs/sync-types';
 
 interface SummaryBarProps {

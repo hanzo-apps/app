@@ -1,6 +1,6 @@
 "use client";
 
-import { View, YStack, XStack, H2, Paragraph, Image, SizableText, H3 } from '@hanzo/gui';
+import { View, YStack, XStack, H2, Paragraph, Image, SizableText, H3 } from '@hanzo/ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useIam } from "@hanzo/iam/react";

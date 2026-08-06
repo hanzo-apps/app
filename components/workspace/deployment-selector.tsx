@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, XStack, Paragraph } from '@hanzo/gui';
+import { SizableText, XStack, Paragraph } from '@hanzo/ui';
 import { useEffect, useState } from 'react';
 import { Deployment } from '@/lib/vfs/types';
 import { Server, Database, X } from 'lucide-react';

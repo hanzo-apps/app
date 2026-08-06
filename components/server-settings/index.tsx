@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack } from '@hanzo/gui';
+import { YStack } from '@hanzo/ui';
 import { Deployment } from '@/lib/vfs/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@hanzo/ui';
 import { DatabaseManager } from '@/components/database-manager';

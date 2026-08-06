@@ -1,6 +1,10 @@
 'use client';
 
-import { YStack, H3, Paragraph, SizableText, Anchor, XStack } from '@hanzo/gui';
+import { YStack, H3, Paragraph, SizableText, XStack } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 import { useState, useEffect } from 'react';
 import { configManager } from '@/lib/config/storage';
 import { validateApiKey as checkApiKey } from '@/lib/llm/llm-client';

@@ -1,6 +1,6 @@
 "use client";
 
-import { SizableText, YStack, H1, Paragraph, H2, H3, XStack } from '@hanzo/gui';
+import { SizableText, YStack, H1, Paragraph, H2, H3, XStack } from '@hanzo/ui';
 import { Button, Badge, Input, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Shield, Lock, Users, Zap, Globe, HeadphonesIcon, ArrowRight, CheckCircle2, Building } from "lucide-react";
 import Header from "@/components/layout/header";

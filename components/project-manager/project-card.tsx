@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, SizableText, H3, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, SizableText, H3, Paragraph } from '@hanzo/ui';
 import { useState, useEffect } from 'react';
 import { Project } from '@/lib/vfs/types';
 import { getRuntimeBadge } from '@/lib/runtimes/registry';

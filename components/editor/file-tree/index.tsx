@@ -14,7 +14,7 @@
  */
 
 import { Button, Input } from '@hanzo/ui';
-import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
 import { useState } from "react";
 import { FileCode2, Plus, Trash2, Check, X, Pencil } from "lucide-react";
 import { Page } from "@/types";

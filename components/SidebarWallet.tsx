@@ -15,7 +15,7 @@
  *  - Honest states: loading (—), a real balance, or "—" when unauthenticated /
  *    billing not configured on this deployment.
  */
-import { YStack } from '@hanzo/gui';
+import { YStack } from '@hanzo/ui';
 import {useRouter} from 'next/navigation'
 import {User, Wallet} from 'lucide-react'
 import {UserMenu, resolveIdentity} from '@hanzo/iam/react'

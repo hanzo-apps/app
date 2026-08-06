@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, SizableText, Paragraph, YStack } from '@hanzo/gui';
+import { XStack, SizableText, Paragraph, YStack } from '@hanzo/ui';
 import { Link, Twitter, UserPlus } from "lucide-react";
 import { useCopyToClipboard } from "react-use";
 import { toast, Button, Dialog, DialogContent, DialogTitle, DialogTrigger } from '@hanzo/ui';

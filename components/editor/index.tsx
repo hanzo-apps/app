@@ -1,5 +1,10 @@
 "use client";
-import { SizableText, YStack, XStack, type GuiElement } from '@hanzo/gui';
+import { SizableText, YStack, XStack } from '@hanzo/ui';
+// `GuiElement` is a TYPE, and @hanzo/ui's dts build drops a two-hop
+// type-only re-export, so it is not on the barrel yet. A type is erased at
+// build and cannot create a second runtime, so this does not reintroduce
+// the two-copies problem the rest of this migration exists to prevent.
+import type { GuiElement } from '@hanzo/gui';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast, Button } from '@hanzo/ui';
 import type { CodeEditorHandle } from "@/components/code-editor";

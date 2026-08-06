@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, H2, SizableText } from '@hanzo/gui';
+import { YStack, XStack, H2, SizableText } from '@hanzo/ui';
 import { useState, useEffect, useCallback } from 'react';
 import { MultiTabEditor, openFileInEditor } from '@/components/code-tabs';
 import { FileExplorer } from '@/components/file-explorer';

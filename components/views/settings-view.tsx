@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, Paragraph } from '@hanzo/ui';
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ModelSettingsPanel } from '@/components/settings/model-settings';

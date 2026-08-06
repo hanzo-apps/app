@@ -1,6 +1,10 @@
 'use client';
 
-import { YStack, XStack, Image, H3, SizableText, Paragraph, Anchor } from '@hanzo/gui';
+import { YStack, XStack, Image, H3, SizableText, Paragraph } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 import React from 'react';
 import { CustomTemplate, LICENSE_OPTIONS } from '@/lib/vfs/types';
 import type { BuiltInTemplateMetadata } from '@/lib/vfs/templates/registry';

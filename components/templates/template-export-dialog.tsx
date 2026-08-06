@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, Image, Paragraph, XStack, SizableText } from '@hanzo/gui';
+import { YStack, Image, Paragraph, XStack, SizableText } from '@hanzo/ui';
 import React, { useState } from 'react';
 import { Project, LICENSE_OPTIONS } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';

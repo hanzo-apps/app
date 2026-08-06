@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, XStack, H1, SizableText, Paragraph, H2, Image, H3 } from '@hanzo/gui';
+import { YStack, XStack, H1, SizableText, Paragraph, H2, Image, H3 } from '@hanzo/ui';
 import { glass } from "@/lib/chrome";
 // Ecommerce storefront — the REAL per-org store surface.
 //

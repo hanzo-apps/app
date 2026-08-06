@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, XStack, SizableText, H1, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, SizableText, H1, Paragraph } from '@hanzo/ui';
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Copy, Download, Settings, RefreshCw, Split, Sparkles, Hash, Clock, DollarSign, Share2, History } from "lucide-react";

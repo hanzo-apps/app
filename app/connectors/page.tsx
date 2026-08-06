@@ -23,7 +23,7 @@
  * "connected" signal.
  */
 
-import { SizableText, Paragraph, YStack, XStack, H2 } from '@hanzo/gui';
+import { SizableText, Paragraph, YStack, XStack, H2 } from '@hanzo/ui';
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {

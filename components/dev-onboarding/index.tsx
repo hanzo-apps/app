@@ -1,6 +1,6 @@
 "use client";
 
-import { XStack, YStack, H1, Paragraph, H3, Image } from '@hanzo/gui';
+import { XStack, YStack, H1, Paragraph, H3, Image } from '@hanzo/ui';
 import { useState, useEffect } from "react";
 import {
   Sparkles,

@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, XStack, H1, Paragraph, SizableText } from '@hanzo/gui';
+import { YStack, XStack, H1, Paragraph, SizableText } from '@hanzo/ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button, Badge, Progress, Tabs, TabsContent, TabsList, TabsTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { TrendingUp, TrendingDown, DollarSign, Wallet, ArrowUpRight, ArrowDownRight, PieChart, Activity, Bell, Settings } from "lucide-react";
 

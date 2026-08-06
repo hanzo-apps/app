@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, XStack, SizableText } from '@hanzo/gui';
+import { YStack, XStack, SizableText } from '@hanzo/ui';
 import { ArrowUp, Settings, UserPlus } from "lucide-react";
 
 import { Button, Textarea } from '@hanzo/ui';

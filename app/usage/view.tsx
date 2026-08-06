@@ -2,7 +2,7 @@
 
 /** The usage screen's markup. The page around it stays a server component so it
  *  can read the request's IAM session; only the view needs the client. */
-import { SizableText, YStack, Paragraph, XStack } from '@hanzo/gui';
+import { SizableText, YStack, Paragraph, XStack } from '@hanzo/ui';
 import Link from 'next/link';
 import { Activity, ExternalLink } from 'lucide-react';
 import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription } from '@hanzo/ui';

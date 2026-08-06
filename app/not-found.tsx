@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, XStack, YStack, H1, Paragraph } from '@hanzo/gui';
+import { SizableText, XStack, YStack, H1, Paragraph } from '@hanzo/ui';
 import Link from 'next/link';
 import { HanzoBrand } from '@/components/HanzoLogo';
 import { screen } from '@/lib/chrome';

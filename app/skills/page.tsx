@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack } from '@hanzo/gui';
+import { YStack } from '@hanzo/ui';
 import { AppShell } from '@/components/app-shell';
 import { SkillsView } from '@/components/views/skills-view';
 

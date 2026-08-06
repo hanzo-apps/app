@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, YStack, SizableText } from '@hanzo/gui';
+import { XStack, YStack, SizableText } from '@hanzo/ui';
 import React from 'react';
 import { Button } from '@hanzo/ui';
 import { LogOut } from 'lucide-react';

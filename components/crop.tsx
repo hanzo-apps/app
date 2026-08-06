@@ -17,7 +17,7 @@
  * Hand-rolled on purpose — a pan, a clamp and one multiply are less code than
  * a cropper dependency, and this app's install is not a place to add one.
  */
-import { SizableText, XStack, YStack } from "@hanzo/gui";
+import { SizableText, XStack, YStack } from "@hanzo/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@hanzo/ui";
 

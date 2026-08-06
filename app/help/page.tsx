@@ -1,6 +1,10 @@
 "use client";
 
-import { SizableText, YStack, XStack, H1, Paragraph, Anchor, H3, H2 } from '@hanzo/gui';
+import { SizableText, YStack, XStack, H1, Paragraph, H3, H2 } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 // Support hub for hanzo.app. Monochrome design system (Header + SiteFooter +
 // Reveal). Contact + channels are REAL only: support@hanzo.ai, the community
 // Discord and status page that already ship in the repo footer, docs, FAQ, and

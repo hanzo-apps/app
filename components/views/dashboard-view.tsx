@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, H3, SizableText, Paragraph, H1 } from '@hanzo/gui';
+import { YStack, XStack, H3, SizableText, Paragraph, H1 } from '@hanzo/ui';
 import { panel } from "@/lib/chrome";
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';

@@ -1,7 +1,7 @@
 'use client';
 
 import type { ElementInfo } from "../preview/bridge";
-import { XStack, Paragraph } from '@hanzo/gui';
+import { XStack, Paragraph } from '@hanzo/ui';
 import { Code, XCircle } from "lucide-react";
 
 import { Collapsible, CollapsibleTrigger } from '@hanzo/ui';

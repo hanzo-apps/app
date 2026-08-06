@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack } from '@hanzo/gui';
+import { XStack } from '@hanzo/ui';
 import { Page } from "@/types";
 import { ListPagesItem } from "./page";
 

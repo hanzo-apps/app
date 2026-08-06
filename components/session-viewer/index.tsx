@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, SizableText, H3, XStack, H4, Paragraph } from '@hanzo/gui';
+import { YStack, SizableText, H3, XStack, H4, Paragraph } from '@hanzo/ui';
 import { glass, scrim } from "@/lib/chrome";
 import { useState, useEffect } from 'react';
 import { Button, toast } from '@hanzo/ui';

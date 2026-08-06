@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, Input } from '@hanzo/ui';
-import { YStack, Image, XStack, SizableText } from '@hanzo/gui';
+import { YStack, Image, XStack, SizableText } from '@hanzo/ui';
 import React, { useRef, useState } from 'react';
 import { Camera, ImageUp, X } from 'lucide-react';
 import { compressImage } from '@/lib/utils/image-compress';

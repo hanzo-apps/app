@@ -1,6 +1,10 @@
 'use client';
 
-import { YStack, Paragraph, H2, Anchor, XStack, SizableText, Image } from '@hanzo/gui';
+import { YStack, Paragraph, H2, XStack, SizableText, Image } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 // "One API, 400+ models" — the real Hanzo AI. Provider logos are the
 // actual model providers Hanzo AI routes to (Zen models are Hanzo's own).
 // Rendered monochrome-white on true-black via CSS filter. The endpoint shown

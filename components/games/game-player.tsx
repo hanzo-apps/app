@@ -13,7 +13,7 @@
  * or allow-popups — a game build needs neither.
  */
 
-import { YStack, Paragraph } from '@hanzo/gui';
+import { YStack, Paragraph } from '@hanzo/ui';
 import { useState } from 'react';
 import { webglBuildPath } from '@/data/games-catalog';
 import { Spinner } from '@/components/ui/spinner';

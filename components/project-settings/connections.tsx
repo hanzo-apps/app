@@ -17,7 +17,7 @@
  * Base option is enabled — and deep-links to the builder's data & schema.
  */
 
-import { XStack, YStack, SizableText, Paragraph } from "@hanzo/gui";
+import { XStack, YStack, SizableText, Paragraph } from "@hanzo/ui";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Database, Plug } from "lucide-react";

@@ -18,7 +18,7 @@
  */
 'use client';
 
-import { XStack, SizableText } from '@hanzo/gui';
+import { XStack, SizableText } from '@hanzo/ui';
 
 /** Mono `currentColor` bodies, keyed by their `hanzoai/icons` slug. */
 const MARKS: Record<string, string> = {

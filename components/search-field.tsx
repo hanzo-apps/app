@@ -15,7 +15,7 @@
  * trigger — that one opens a switcher, this one filters a list in place.
  */
 import { Input } from '@hanzo/ui';
-import { YStack } from '@hanzo/gui';
+import { YStack } from '@hanzo/ui';
 import { Search } from 'lucide-react';
 import type { ComponentProps } from 'react';
 

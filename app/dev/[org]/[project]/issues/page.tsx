@@ -14,7 +14,7 @@
  * same page. See `boardFor`.
  */
 
-import { XStack, YStack, SizableText, Paragraph } from "@hanzo/gui";
+import { XStack, YStack, SizableText, Paragraph } from "@hanzo/ui";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Input, toast } from "@hanzo/ui";

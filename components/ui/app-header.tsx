@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, SizableText, H1, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, SizableText, H1, Paragraph } from '@hanzo/ui';
 import React, { useState } from 'react';
 import { Button, Badge } from '@hanzo/ui';
 import { Logo } from '@/components/ui/logo';

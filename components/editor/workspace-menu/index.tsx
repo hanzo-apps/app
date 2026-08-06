@@ -21,7 +21,7 @@
  *
  * Strictly monochrome: black / white / neutral, semantic green/red only.
  */
-import { SizableText, XStack, YStack, Paragraph } from '@hanzo/gui';
+import { SizableText, XStack, YStack, Paragraph } from '@hanzo/ui';
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast, Avatar, AvatarFallback, AvatarImage, Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Input, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '@hanzo/ui';

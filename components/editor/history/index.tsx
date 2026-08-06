@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
 import {
   useCallback,
   useEffect,

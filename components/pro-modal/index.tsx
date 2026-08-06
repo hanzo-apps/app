@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, XStack, YStack, H2, Paragraph } from '@hanzo/gui';
+import { SizableText, XStack, YStack, H2, Paragraph } from '@hanzo/ui';
 import { useLocalStorage } from "react-use";
 import { Button, Dialog, DialogContent, DialogTitle, Separator } from '@hanzo/ui';
 import { CheckCheck } from "lucide-react";

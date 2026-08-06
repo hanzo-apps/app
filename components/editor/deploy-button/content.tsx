@@ -1,6 +1,10 @@
 'use client';
 
-import { YStack, XStack, Paragraph, SizableText, Anchor } from '@hanzo/gui';
+import { YStack, XStack, Paragraph, SizableText } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 import { Rocket, ExternalLink } from "lucide-react";
 import Image from "next/image";
 

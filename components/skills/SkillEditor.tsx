@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, H1, Paragraph, H3, SizableText } from '@hanzo/gui';
+import { YStack, XStack, H1, Paragraph, H3, SizableText } from '@hanzo/ui';
 import { useState, useEffect } from 'react';
 import { Skill } from '@/lib/vfs/skills/types';
 import { skillsService } from '@/lib/vfs/skills';

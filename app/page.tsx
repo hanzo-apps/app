@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from '@hanzo/ui';
-import { SizableText, YStack, XStack, H1, Paragraph, H2, H3 } from '@hanzo/gui';
+import { SizableText, YStack, XStack, H1, Paragraph, H2, H3 } from '@hanzo/ui';
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";

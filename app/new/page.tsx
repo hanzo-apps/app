@@ -1,6 +1,6 @@
 "use client";
 
-import { SizableText, YStack, XStack, H1, Paragraph, H2 } from '@hanzo/gui';
+import { SizableText, YStack, XStack, H1, Paragraph, H2 } from '@hanzo/ui';
 import { glass } from "@/lib/chrome";
 import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";

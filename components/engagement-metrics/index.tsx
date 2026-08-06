@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, Paragraph, YStack, SizableText, H3 } from '@hanzo/gui';
+import { XStack, Paragraph, YStack, SizableText, H3 } from '@hanzo/ui';
 import { useState, useEffect } from 'react';
 import { Button, toast } from '@hanzo/ui';
 

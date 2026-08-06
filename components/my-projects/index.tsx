@@ -1,5 +1,5 @@
 "use client";
-import { YStack, XStack, SizableText, H1, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, SizableText, H1, Paragraph } from '@hanzo/ui';
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";

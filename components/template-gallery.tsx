@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from '@hanzo/ui';
-import { YStack, SizableText, H3, Paragraph, XStack, H1, H2 } from '@hanzo/gui';
+import { YStack, SizableText, H3, Paragraph, XStack, H1, H2 } from '@hanzo/ui';
 // The browsable templates gallery — ONE component over the SEO catalog SOT
 // (lib/templates-catalog): a category rail + a responsive card grid with instant,
 // client-side filtering. Mounted by BOTH `/gallery` (app/gallery/page.tsx) and the

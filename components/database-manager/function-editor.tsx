@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, Paragraph, SizableText, XStack } from '@hanzo/gui';
+import { YStack, Paragraph, SizableText, XStack } from '@hanzo/ui';
 import { useState, useEffect } from 'react';
 import { CodeEditor } from '@/components/code-editor';
 import { EdgeFunction } from '@/lib/vfs/types';

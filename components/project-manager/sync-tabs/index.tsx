@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText } from '@hanzo/gui';
+import { SizableText } from '@hanzo/ui';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
 import { DetailedSyncStatus, SyncableItem } from '@/lib/vfs/sync-types';

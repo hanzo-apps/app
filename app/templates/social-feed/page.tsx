@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, XStack, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, Paragraph } from '@hanzo/ui';
 import { glass } from "@/lib/chrome";
 import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, Button, Avatar, AvatarFallback, AvatarImage, Textarea, Badge, Tabs, TabsList, TabsTrigger, ScrollArea } from '@hanzo/ui';

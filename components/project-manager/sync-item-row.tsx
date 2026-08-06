@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, YStack, SizableText } from '@hanzo/gui';
+import { XStack, YStack, SizableText } from '@hanzo/ui';
 import { SyncableItem } from '@/lib/vfs/sync-types';
 import { SyncStatusBadge } from './sync-status-badge';
 import { Button, Checkbox } from '@hanzo/ui';

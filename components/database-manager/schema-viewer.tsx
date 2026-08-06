@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, YStack, Paragraph, H3, SizableText } from '@hanzo/gui';
+import { XStack, YStack, Paragraph, H3, SizableText } from '@hanzo/ui';
 import { useState, useEffect } from 'react';
 import { TableInfo } from '@/lib/vfs/types';
 import { ChevronRight, ChevronDown, Table2, KeyRound, AlertCircle, Eye, EyeOff } from 'lucide-react';

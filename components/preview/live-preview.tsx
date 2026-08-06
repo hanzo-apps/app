@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@hanzo/ui';
-import { XStack, H3, YStack, SizableText, Paragraph } from '@hanzo/gui';
+import { XStack, H3, YStack, SizableText, Paragraph } from '@hanzo/ui';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { VirtualServer } from '@/lib/preview/virtual-server';
 import { resolveAssets } from '@/lib/preview/rewrite';

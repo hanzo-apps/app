@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, Paragraph, H1 } from '@hanzo/gui';
+import { YStack, XStack, Paragraph, H1 } from '@hanzo/ui';
 import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { MarkdownRenderer } from '@/components/markdown-renderer';

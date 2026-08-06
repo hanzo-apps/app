@@ -1,6 +1,6 @@
 "use client";
 
-import { SizableText, XStack } from '@hanzo/gui';
+import { SizableText, XStack } from '@hanzo/ui';
 import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppEditor } from "@/components/editor";

@@ -14,7 +14,7 @@
  * raise the same modal. Accessibility (focus trap, Esc, aria-labelled title +
  * description) comes from the @hanzo/ui Dialog (Radix).
  */
-import { YStack, XStack, SizableText } from '@hanzo/gui';
+import { YStack, XStack, SizableText } from '@hanzo/ui';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button } from '@hanzo/ui';
 import { Wallet, Sparkles, ArrowRight, type LucideIcon } from 'lucide-react';

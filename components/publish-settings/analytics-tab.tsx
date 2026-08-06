@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, H3, Paragraph, H4, SizableText } from '@hanzo/gui';
+import { YStack, XStack, H3, Paragraph, H4, SizableText } from '@hanzo/ui';
 import { PublishSettings, AnalyticsConfig } from '@/lib/vfs/types';
 import { Label, Input, Textarea, Switch, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Shield, Info } from 'lucide-react';

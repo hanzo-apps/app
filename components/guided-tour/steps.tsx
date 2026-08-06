@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, Paragraph } from '@hanzo/gui';
+import { YStack, Paragraph } from '@hanzo/ui';
 import { GuidedTourStepContent } from './types';
 
 export const GUIDED_TOUR_STEPS: GuidedTourStepContent[] = [

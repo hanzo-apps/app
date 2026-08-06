@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, XStack, H1, Paragraph, SizableText } from '@hanzo/gui';
+import { YStack, XStack, H1, Paragraph, SizableText } from '@hanzo/ui';
 import { useState } from "react";
 
 interface Task {

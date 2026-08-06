@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, SizableText, YStack, Paragraph, H3 } from '@hanzo/gui';
+import { XStack, SizableText, YStack, Paragraph, H3 } from '@hanzo/ui';
 import { useState, useEffect } from 'react';
 import { Deployment } from '@/lib/vfs/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Tabs, TabsContent, TabsList, TabsTrigger, toast } from '@hanzo/ui';

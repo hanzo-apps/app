@@ -24,7 +24,7 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import { Images, Palette, Trash2, X } from "lucide-react";
-import { H3, Paragraph, SizableText, XStack, YStack } from "@hanzo/gui";
+import { H3, Paragraph, SizableText, XStack, YStack } from "@hanzo/ui";
 import { Button, Input, Label } from "@hanzo/ui";
 
 import Loading from "@/components/loading";

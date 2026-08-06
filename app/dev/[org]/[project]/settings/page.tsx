@@ -10,7 +10,11 @@
  * (the same store console.hanzo.ai uses) so config is consistent everywhere.
  */
 
-import { XStack, SizableText, YStack, Paragraph, Anchor, H2 } from '@hanzo/gui';
+import { XStack, SizableText, YStack, Paragraph, H2 } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";

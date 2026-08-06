@@ -1,6 +1,6 @@
 "use client";
 
-import { SizableText, YStack, XStack, H1, Paragraph, H2 } from '@hanzo/gui';
+import { SizableText, YStack, XStack, H1, Paragraph, H2 } from '@hanzo/ui';
 // Full FAQ for hanzo.app. Monochrome design system (Header + SiteFooter +
 // Reveal). Real, answerable questions only — product + billing groups come from
 // the shared faq-data module (DRY: /pricing renders the billing subset).

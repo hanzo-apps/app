@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, H3, YStack, SizableText, Paragraph } from '@hanzo/gui';
+import { XStack, H3, YStack, SizableText, Paragraph } from '@hanzo/ui';
 import React, { useState, useEffect, useRef, useCallback, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { VirtualServer } from '@/lib/preview/virtual-server';
 import { resolveAssets } from '@/lib/preview/rewrite';

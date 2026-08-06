@@ -13,7 +13,7 @@
 // `screen` supplies the measure. Every consumer returns this INSTEAD of
 // <AppShell>, so nothing above it has a height to inherit.
 
-import { Paragraph, YStack } from '@hanzo/gui';
+import { Paragraph, YStack } from '@hanzo/ui';
 import { HanzoLogo } from '@/components/HanzoLogo';
 import { screen } from '@/lib/chrome';
 

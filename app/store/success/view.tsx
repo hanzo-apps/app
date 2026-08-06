@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, YStack, SizableText, H1, Paragraph } from '@hanzo/gui';
+import { XStack, YStack, SizableText, H1, Paragraph } from '@hanzo/ui';
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { screen } from "@/lib/chrome";

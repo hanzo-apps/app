@@ -1,6 +1,6 @@
 'use client';
 
-import { Paragraph } from '@hanzo/gui';
+import { Paragraph } from '@hanzo/ui';
 import { ItemSyncStatus } from '@/lib/vfs/sync-types';
 import { Badge, Tooltip, TooltipContent, TooltipTrigger } from '@hanzo/ui';
 import {

@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, SizableText, Paragraph, YStack } from '@hanzo/gui';
+import { XStack, SizableText, Paragraph, YStack } from '@hanzo/ui';
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Button } from '@hanzo/ui';
 import { Cloud, CloudOff, RefreshCw, AlertTriangle, CheckSquare, ArrowUp, ArrowDown } from 'lucide-react';

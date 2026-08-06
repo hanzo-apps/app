@@ -1,6 +1,10 @@
 'use client';
 
-import { YStack, XStack, SizableText, H3, Paragraph, Anchor } from '@hanzo/gui';
+import { YStack, XStack, SizableText, H3, Paragraph } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 import { useRouter } from 'next/navigation';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, buttonVariants } from '@hanzo/ui';
 import { Pencil, Trash2, MoreVertical, ExternalLink, Globe, Settings } from 'lucide-react';

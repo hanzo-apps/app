@@ -17,7 +17,7 @@
  * this app: the loader contract exists so a surface with thousands of orgs can
  * ask for them a page at a time, and hanzo.app is not that surface.
  */
-import { XStack, SizableText, YStack } from '@hanzo/gui';
+import { XStack, SizableText, YStack } from '@hanzo/ui';
 import Link from 'next/link';
 import { Settings } from 'lucide-react';
 import { OrgSwitcher as Switcher, type Org as Shown } from '@hanzo/ui/product';

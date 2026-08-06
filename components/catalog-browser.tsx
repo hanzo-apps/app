@@ -2,7 +2,11 @@
 
 import { Button, Input } from '@hanzo/ui';
 import { selected } from '@/lib/chrome';
-import { SizableText, YStack, XStack, H3, Anchor, Paragraph, H1 } from '@hanzo/gui';
+import { SizableText, YStack, XStack, H3, Paragraph, H1 } from '@hanzo/ui';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
+// same way it drops the GuiElement type. Tracked; everything else in this
+// file comes from @hanzo/ui.
+import { Anchor } from '@hanzo/gui';
 // The cross-org catalog browser — everything the fleet has built, in one place:
 // hanzo, lux and zoo repos plus every site this platform is serving. ONE component
 // over ONE surface (/v1/catalog); search and browse are the same request, so the

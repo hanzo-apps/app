@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, SizableText, Paragraph, XStack } from '@hanzo/gui';
+import { YStack, SizableText, Paragraph, XStack } from '@hanzo/ui';
 import { useState } from 'react';
 import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label } from '@hanzo/ui';
 import { Spinner } from '@/components/ui/spinner';

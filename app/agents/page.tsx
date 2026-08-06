@@ -9,7 +9,7 @@
  * recorded run output (or the recorded upstream failure).
  */
 
-import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
 import { useCallback, useEffect, useState } from "react";
 import {
   Activity,
