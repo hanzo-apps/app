@@ -4,6 +4,7 @@ import { XStack, SizableText, YStack, Image, H1, Paragraph, Anchor, H3, H4 } fro
 import { glass } from "@/lib/chrome";
 import { useState, useEffect } from "react";
 import { Button, Label, Textarea } from '@hanzo/ui';
+import { sends } from '@hanzo/ui/chat';
 import {
   Sparkles,
   Code,
@@ -201,9 +202,11 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                 id="tpl-first-msg"
                 value={firstMessage}
                 onChangeText={(t) => setFirstMessage(t)}
-                onKeyDown={(e) => {
-                  // Enter (without Shift) proceeds — a chat-like affordance.
-                  if (e.key === "Enter" && !e.shiftKey) {
+                onKeyDown={(e: React.KeyboardEvent) => {
+                  // Enter (without Shift) proceeds — a chat-like affordance, so
+                  // it obeys the same IME rule as every composer: an Enter that
+                  // accepts an open candidate belongs to the IME, not to us.
+                  if (sends(e.key, e.nativeEvent)) {
                     e.preventDefault();
                     if (!loading) handleProceed();
                   }

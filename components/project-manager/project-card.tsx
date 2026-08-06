@@ -7,6 +7,7 @@ import { getRuntimeBadge } from '@/lib/runtimes/registry';
 import { vfs } from '@/lib/vfs';
 import { logger } from '@/lib/utils';
 import { Button, Badge, Input, Textarea, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, toast } from '@hanzo/ui';
+import { sends } from '@hanzo/ui/chat';
 import {
   Trash2,
   Download,
@@ -203,8 +204,8 @@ export function ProjectCard({
                       <Input
                         value={editedName}
                         onChange={(e) => setEditedName(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && !e.shiftKey) {
+                        onKeyDown={(e: React.KeyboardEvent) => {
+                          if (sends(e.key, e.nativeEvent)) {
                             e.preventDefault();
                             saveEdits();
                           }
@@ -420,8 +421,8 @@ export function ProjectCard({
                 <Input
                   value={editedName}
                   onChange={(e) => setEditedName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && e.shiftKey === false) {
+                  onKeyDown={(e: React.KeyboardEvent) => {
+                    if (sends(e.key, e.nativeEvent)) {
                       e.preventDefault();
                       saveEdits();
                     }
