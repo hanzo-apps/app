@@ -268,9 +268,23 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
     const descriptor = describeFocusTarget(target);
     const snippet = truncateHtmlSnippet(target.outerHTML, 1200);
     const domPath = target.domPath || '(unknown path)';
+    const src = target.source;
     return [
       'Focus context:',
       `- Target: ${descriptor}`,
+      // The source line goes FIRST of the locators when we have it, and says so
+      // plainly, because it is the only one that names a file. Without it the
+      // model has a DOM path and an HTML snippet and has to infer which file
+      // drew them — it guesses, and it guesses wrong on any component used more
+      // than once. `at` is exact enough to open and edit directly.
+      ...(src
+        ? [
+            `- Source: ${src.at}${src.component ? ` — <${src.component}>` : ''}${
+              src.usedIn ? ` used in <${src.usedIn}>` : ''
+            }`,
+            '- Edit that file at that line. The DOM path below is for orientation only.',
+          ]
+        : []),
       `- DOM path: ${domPath}`,
       '- HTML snippet:',
       '```html',

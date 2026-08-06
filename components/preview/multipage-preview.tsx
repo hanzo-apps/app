@@ -608,6 +608,53 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
             if (!selectorState.active) {
               return;
             }
+          // Which FILE drew this pixel. domPath answers "where does it sit in the
+          // rendered tree", which is not the same question and cannot be edited:
+          // it changes whenever anyone reorders a wrapper.
+          //
+          // Two sources, tried in order. The gui compiler writes data-at
+          // (file:line), data-is (component) and data-in (call site) during the
+          // same AST pass that flattens the tree. Failing that, React's dev fiber
+          // carries _debugSource from the JSX transform, so a project we did not
+          // generate still resolves.
+          //
+          // Note this walks UP from the target. gatherAttributes reads the clicked
+          // leaf, and a leaf is usually an icon or a text node that carries no
+          // annotation at all — reading the target alone misses the tag on the
+          // component that owns the click.
+          function resolveSource(el) {
+            if (!el) return undefined;
+            const tagged = el.closest && el.closest('[data-at]');
+            if (tagged) {
+              return {
+                at: tagged.getAttribute('data-at') || '',
+                component: tagged.getAttribute('data-is') || '',
+                usedIn: tagged.getAttribute('data-in') || '',
+                via: 'gui'
+              };
+            }
+            const key = Object.keys(el).find(function (k) {
+              return k.indexOf('__reactFiber$') === 0 || k.indexOf('__reactInternalInstance$') === 0;
+            });
+            let fiber = key ? el[key] : null;
+            while (fiber) {
+              const src = fiber._debugSource;
+              if (src && src.fileName) {
+                return {
+                  at: String(src.fileName).split('/').pop() + ':' + (src.lineNumber || 0),
+                  file: src.fileName,
+                  line: src.lineNumber || 0,
+                  component: typeof fiber.type === 'function'
+                    ? (fiber.type.displayName || fiber.type.name || '')
+                    : String(fiber.type || ''),
+                  via: 'react'
+                };
+              }
+              fiber = fiber.return;
+            }
+            return undefined;
+          }
+
             const target = isElement(event.target) ? event.target : (event.target && event.target.parentElement);
             if (!isElement(target) || target === selectorState.lastTarget) {
               return;
@@ -634,6 +681,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
               domPath: buildDomPath(target),
               tagName: target.tagName.toLowerCase(),
               attributes: gatherAttributes(target),
+              source: resolveSource(target),
               outerHTML: target.outerHTML || ''
             };
             if (isInIframe) {
