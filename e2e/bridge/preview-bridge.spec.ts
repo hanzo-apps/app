@@ -80,6 +80,16 @@ test('hover and click cross as selectors, not nodes', async ({ page }) => {
     .poll(() => page.evaluate(() => (window as any).__events.find((e: any) => e.type === 'preview:hover')?.selector))
     .toBe('#title');
 
+  // Geometry travels too. The host draws its hover overlay from a rect it used
+  // to read off the node with getBoundingClientRect() — the one call that cannot
+  // cross an origin — so without this the overlay would silently stop drawing.
+  const hover = await page.evaluate(
+    () => (window as any).__events.find((e: any) => e.type === 'preview:hover'),
+  );
+  expect(hover.tagName).toBe('h1');
+  expect(hover.rect.width).toBeGreaterThan(0);
+  expect(hover.rect.height).toBeGreaterThan(0);
+
   await page.frameLocator('#f').locator('#title').click();
   const info = await page.evaluate(
     () => (window as any).__events.find((e: any) => e.type === 'preview:select')?.info,

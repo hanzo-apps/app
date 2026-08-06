@@ -9,6 +9,9 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: '.',
   fullyParallel: true,
+  // The builder specs boot a Next dev route and wait on a real compile.
+  timeout: 150_000,
+  expect: { timeout: 30_000 },
   reporter: [['list']],
   use: { ...devices['Desktop Chrome'] },
 });
