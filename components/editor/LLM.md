@@ -266,3 +266,49 @@ there was no way to discover — let alone perform — a resize. It is now
 Monochrome throughout except the pre-existing accent "live" dot and `destructive`
 for error lines (console output is content, not chrome). Contract tests:
 `tests/unit/console-dock.test.tsx`.
+
+### Icon-only controls: `size="icon-sm"`, never a local recipe
+
+A Button whose whole content is one glyph takes `@hanzo/ui`'s own
+`size="icon-sm" | "icon" | "icon-lg"` (32 / 36 / 40). The package implements it
+properly — `height: 'auto'` plus a `minHeight`/`minWidth` floor, padding zeroed
+from inside — and a local copy of that answer is what went wrong here.
+
+The copy was `lib/chrome.ts iconBox(size)`, spreading `width`/`height` plus
+`paddingHorizontal: 0`. **It worked on an XStack and was silently dropped by a
+Button**: `paddingHorizontal` is a React-Native shorthand and this app runs
+`@hanzogui/config/v5` with `styleCompat: "web"`. So a Button kept its 12px of
+label padding, leaving `size - 24` for the glyph, and `svg { max-width: 100% }`
+shrank the icon to fit instead of overflowing — nothing threw, nothing warned,
+nothing clipped. Measured with `getComputedStyle`:
+
+| control | element | padding | glyph |
+|---|---|---|---|
+| Hanzo home | XStack | 0 / 0 | 20x20 ✓ |
+| Version history | Button | 12 / 12 | 6x16 ✗ |
+| Device toggle | Button | 12 / 12 | 2x16 ✗ |
+
+Six icons in one bar, each a different sliver — that is what "the buttons and
+icons look wildly inconsistent" was. Swapping in the longhands
+(`paddingLeft/Right`) fixed the BOX but not the padding, which is the tell that
+the whole approach was wrong: the component owns its padding and will not be
+argued out of it from a prop spread. `iconBox` is deleted.
+
+There is no `icon-xs`. A bespoke 28px toggle was the last squashed glyph — do
+not reintroduce one; a size the ladder does not have is the inconsistency.
+
+**The guard is `tests/e2e/authed/editor-toolbar.spec.ts`, not a unit test.** The
+unit test on `iconBox` passed the whole time, because the object it returned was
+always correct — it simply never reached the DOM. Only a browser reading
+rendered geometry can tell a correct recipe from one that arrives. That spec
+pins its own viewport (the bar is breakpoint-gated) and asserts a coverage floor
+BEFORE any geometry: written without one, its assertions pass against the
+hanzo.id login page — measured, not hypothesised.
+
+**KNOWN, unfixed:** below ~1440px the centre cluster and the pinned
+Share/Publish actions OVERLAP (mobile 390px: 4 pairs, `Code ∩ Publish` by
+42x44px; tablet 834px: 2 pairs). A press lands on whichever paints last. Two
+candidate fixes — `flexShrink: 1` + `minWidth: 0` on the centre cluster, and the
+same on the left cluster — were MEASURED to change nothing, so neither is in the
+tree. Reproduce by comparing the bounding rects of every control in the top band
+at 390 / 834 / 1440; the rects overlap, which a desktop screenshot cannot show.
