@@ -26,12 +26,41 @@ const sandboxes = (src: string) =>
 // The previews that render untrusted HTML through an injected postMessage
 // bridge. Neither reaches into `contentDocument`, so neither needs the parent's
 // origin for anything.
+/**
+ * The builder's own pane. It is NOT isolated: `allow-same-origin` is still there,
+ * because hover, click-to-select and in-preview navigation run through
+ * `contentDocument` and the editor holds the clicked node itself
+ * (`selectedElement: HTMLElement`). An opaque origin makes all of that null.
+ *
+ * So this asserts the weaker property that IS true today — a sandbox exists, so
+ * the pane cannot navigate the top frame, open popups or start downloads — and
+ * it deliberately does not assert isolation, because asserting a thing that is
+ * false is how a known hole starts reading as closed. When the instrumentation
+ * moves to the injected bridge, this file is where the move gets proven: delete
+ * this block and add the path to ISOLATED.
+ */
+const HARDENED_NOT_ISOLATED = 'components/editor/preview/index.tsx';
+
 const ISOLATED = [
   'components/preview/live-preview.tsx',
   'components/preview/multipage-preview.tsx',
 ];
 
 describe('preview isolation', () => {
+  it('the builder pane is at least sandboxed, and is still not isolated', () => {
+    const found = sandboxes(read(HARDENED_NOT_ISOLATED));
+
+    // Both frames — the double-buffer means one of them is easy to forget.
+    expect(found).toHaveLength(2);
+    for (const value of found) {
+      expect(value).toContain('allow-scripts');
+    }
+
+    // Recorded, not asserted away. If this ever stops being true the pane has
+    // been isolated, and the test above it should move to ISOLATED.
+    expect(found.every((v) => v.includes('allow-same-origin'))).toBe(true);
+  });
+
   it.each(ISOLATED)('%s sandboxes its iframe away from this origin', (file) => {
     const found = sandboxes(read(file));
 

@@ -374,6 +374,24 @@ export const Preview = ({
             title="output"
             className="preview-frame"
             style={frameStyle}
+            // PARTIAL, and named as partial so nobody reads it as the fix.
+            //
+            // `allow-same-origin` is still here, and it is the whole hole: with
+            // it, previewed code keeps THIS origin and can read the IAM refresh
+            // token out of localStorage. It cannot be dropped from this pane the
+            // way it was dropped from components/preview/* — those talk to the
+            // host over an injected postMessage bridge, while this one drives
+            // hover, click-to-select and in-preview navigation through
+            // `contentDocument`, and the editor holds the clicked node itself as
+            // `selectedElement: HTMLElement`. An opaque origin makes all of that
+            // null, so isolating this pane means moving the instrumentation into
+            // the bridge and making the selection serialisable first.
+            //
+            // What the attribute DOES buy, today: no top-level navigation (a
+            // previewed page cannot redirect the whole builder to a phishing
+            // page), no popups, no downloads, no modals, no pointer/orientation
+            // lock. Real classes of attack, and none of them the token one.
+            sandbox="allow-scripts allow-same-origin allow-forms"
             srcDoc={srcA}
             onLoad={() => handleFrameLoad("a")}
           />
@@ -386,6 +404,8 @@ export const Preview = ({
             aria-hidden={frontA}
             className="preview-frame"
             style={frameStyle}
+            // Same sandbox, same caveat as the frame above.
+            sandbox="allow-scripts allow-same-origin allow-forms"
             srcDoc={srcB}
             onLoad={() => handleFrameLoad("b")}
           />
