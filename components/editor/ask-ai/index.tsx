@@ -1079,8 +1079,11 @@ export function AskAI({
         onDrop={handleDrop}
       >
         {/* Resize grip — drag the input's top edge to grow/shrink it; keyboard
-            accessible (↑/↑ taller, ↓ shorter). Replaces the native textarea
-            resize corner so it matches the rounded chrome. */}
+            accessible (↑ taller, ↓ shorter). The hit-area is the whole top
+            edge, and the handle is INVISIBLE until that edge itself is hovered
+            (or focused) — it used to fade in whenever the pointer was anywhere
+            over the composer, so a near-white notch floated over the bubble
+            every time you reached for the input. */}
         <Button
           type="button"
           role="separator"
@@ -1097,9 +1100,14 @@ export function AskAI({
               nudgeComposer(-24);
             }
           }}
-          position="absolute" top="$-1.5" left="50%" zIndex={20} height="$3" width="$7" x="-50%" cursor="ns-resize" alignItems="center" justifyContent="center" borderRadius="$10" opacity={0} $group-hover={{ opacity: 1 }} focusVisibleStyle={{ opacity: 1 }}
+          // style.height, minHeight AND zero padding: the Button size variant
+          // floors the box at 36px, pads it, and its height wins over the prop —
+          // anything taller is an invisible click-eater over the input's first
+          // line (measured: a 30px strip swallowed clicks meant for the text).
+          style={{ height: 14 }}
+          position="absolute" top={-7} left="$4" right="$4" zIndex={20} minHeight={14} paddingVertical={0} cursor="ns-resize" alignItems="center" justifyContent="center" borderRadius="$10" opacity={0} hoverStyle={{ opacity: 1 }} focusVisibleStyle={{ opacity: 1 }}
         >
-          <SizableText height="$0.5" width="$5" borderRadius="$10" backgroundColor="$color11" />
+          <SizableText height="$0.5" width="$5" borderRadius="$10" backgroundColor="$color8" />
         </Button>
         {isDragging && (
           <XStack position="absolute" top={0} right={0} bottom={0} left={0} zIndex={30} borderRadius="$8" borderWidth={2} borderStyle="dashed" borderColor="$color11" backgroundColor="$background" alignItems="center" justifyContent="center" pointerEvents="none">
@@ -1146,7 +1154,9 @@ export function AskAI({
           <Textarea
             ref={textareaRef}
             disabled={isUploading}
-            style={{ height: composerH, maxHeight: "40dvh" }}
+            // resize:none kills the native corner — its diagonal notches sat in
+            // the bubble's rounded corner; the top-edge grip is the ONE resize.
+            style={{ height: composerH, maxHeight: "40dvh", resize: "none" }}
             width="100%" backgroundColor="transparent" fontSize="$3" borderWidth={0} outlineWidth={0} color="$color" placeholderTextColor="$color11" padding="$4" overflow="scroll" {...{ paddingTop: selectedElement && !isAiWorking ? "$2.5" : undefined }}
             placeholder={
               isAiWorking
