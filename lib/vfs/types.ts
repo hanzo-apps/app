@@ -251,7 +251,13 @@ export const SUPPORTED_EXTENSIONS = {
   text: ['txt', 'md', 'xml', 'svg'],
   template: ['hbs', 'handlebars'],
   image: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'ico', 'bmp'],
-  video: ['mp4', 'webm', 'ogg']
+  video: ['mp4', 'webm', 'ogg'],
+  // A face is a file a project owns like any other. Leaving these out did not
+  // merely skip them — `isFileSupported` rejects an unlisted extension, so
+  // storing one THREW, and a project could not hold its own typography. The
+  // preview then resolved every `@font-face` to nothing, which is the difference
+  // between a template that looks like itself and one that looks like a draft.
+  binary: ['woff', 'woff2', 'ttf', 'otf', 'eot']
 };
 
 export const FILE_SIZE_LIMITS = {
@@ -315,7 +321,16 @@ export function getSpecificMimeType(path: string): string {
     
     'mp4': 'video/mp4',
     'webm': 'video/webm',
-    'ogg': 'video/ogg'
+    'ogg': 'video/ogg',
+
+    // A blob serves with the type it was given, and a browser refuses a face it
+    // is handed as `application/octet-stream`. Naming these is what makes the
+    // font blob usable rather than merely present.
+    'woff': 'font/woff',
+    'woff2': 'font/woff2',
+    'ttf': 'font/ttf',
+    'otf': 'font/otf',
+    'eot': 'application/vnd.ms-fontobject'
   };
   
   return mimeMap[ext || ''] || 'application/octet-stream';

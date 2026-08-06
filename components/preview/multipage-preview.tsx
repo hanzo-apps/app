@@ -3,6 +3,7 @@
 import { XStack, H3, YStack, SizableText, Paragraph } from '@hanzo/gui';
 import React, { useState, useEffect, useRef, useCallback, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { VirtualServer } from '@/lib/preview/virtual-server';
+import { resolveAssets } from '@/lib/preview/rewrite';
 import {
   CompiledProject,
   PreviewMessage,
@@ -401,41 +402,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
       ? htmlFile.content 
       : new TextDecoder().decode(htmlFile.content as ArrayBuffer);
     
-    processedHtml = processedHtml.replace(/href="([^"]+)"/g, (match, href) => {
-      // Skip if not a CSS file or if it's an external URL
-      if (!href.endsWith('.css') || href.startsWith('http') || href.startsWith('//')) {
-        return match;
-      }
-      
-      const normalizedPath = href.startsWith('/') ? href : '/' + href;
-      const blobUrl = projectToUse.blobUrls.get(normalizedPath);
-      
-      if (blobUrl) {
-        return `href="${blobUrl}"`;
-      }
-      return match;
-    });
-    
-    // Replace JavaScript sources
-    processedHtml = processedHtml.replace(/src="([^"]+)"/g, (match, src) => {
-      if (!src.endsWith('.js') || src.startsWith('http') || src.startsWith('//')) {
-        return match;
-      }
-      
-      const normalizedPath = src.startsWith('/') ? src : '/' + src;
-      const blobUrl = projectToUse.blobUrls.get(normalizedPath);
-      
-      if (blobUrl) {
-        return `src="${blobUrl}"`;
-      }
-      return match;
-    });
-    
-    processedHtml = processedHtml.replace(/src="([^"]+\.(png|jpg|jpeg|gif|svg|webp))"/gi, (match, imgPath) => {
-      const normalizedImgPath = imgPath.startsWith('/') ? imgPath : '/' + imgPath;
-      const blobUrl = projectToUse.blobUrls.get(normalizedImgPath);
-      return blobUrl ? `src="${blobUrl}"` : match;
-    });
+    processedHtml = resolveAssets(processedHtml, projectToUse.blobUrls);
 
     const navigationScript = `
       <script>

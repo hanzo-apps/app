@@ -182,7 +182,9 @@ export class VirtualServer {
         continue;
       }
       
-      if (file.type === 'image' || file.type === 'video') {
+      // Binary is carried, not read: an image, a video and a font are all bytes,
+      // and the `as string` below is a claim about them that is simply untrue.
+      if (file.type === 'image' || file.type === 'video' || file.type === 'binary') {
         processedFile = {
           path: file.path,
           content: file.content,
