@@ -314,7 +314,19 @@ function Dev() {
         // The template itself. AskAI greets and waits — NO generation: there is
         // nothing to build, it is already here.
         setTemplatePages(pages);
-        (window as any).__assistantGreeting = `${title} is loaded — tell me what to change.`;
+        // Be honest about what the live preview can actually RUN. This builder
+        // renders a single self-contained HTML document in an iframe — it does
+        // not compile a framework project. So a React/Next/Vue/Svelte template's
+        // published source (uncompiled /src/*.tsx + a bundler entry) paints as
+        // unstyled markup here, which reads to a first-time visitor as "broken."
+        // Rather than greet that garbage with "tell me what to change" (a lie),
+        // name it and offer the path that WORKS: one word rebuilds it as a clean,
+        // fully-editable HTML version the preview runs and the model can patch.
+        const fw = (meta?.framework || "").toLowerCase();
+        const needsBuild = /react|next|vue|svelte|angular|solid|vite|remix|astro|nuxt|preact/.test(fw);
+        (window as any).__assistantGreeting = needsBuild
+          ? `${title} is a ${meta?.framework} template. This live preview runs a single self-contained HTML page, so its framework parts won't render here the way they do in a full build. Tell me what to change — or say “rebuild as HTML” and I'll recreate it as a clean, fully-editable version that runs and previews correctly.`
+          : `${title} is loaded — tell me what to change.`;
       } else {
         // No published source. Say that, then build from the description.
         (window as any).__assistantGreeting =
