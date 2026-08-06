@@ -18,51 +18,51 @@ function sseResponse(chunks: unknown[]): Response {
 }
 
 describe("InMemoryProjectFs", () => {
-  it("applies a unique update and reports it changed", () => {
+  it("applies a unique update and reports it changed", async () => {
     const fs = new InMemoryProjectFs([{ path: "/index.html", content: "<h1>Hi</h1>" }]);
-    const res = fs.applyPatch("/index.html", [{ type: "update", oldStr: "Hi", newStr: "Hello" }]);
+    const res = await fs.applyPatch("/index.html", [{ type: "update", oldStr: "Hi", newStr: "Hello" }]);
     expect(res.applied).toBe(true);
-    expect(fs.read("/index.html")).toBe("<h1>Hello</h1>");
-    expect(fs.changedPaths()).toEqual(["/index.html"]);
+    expect(await fs.read("/index.html")).toBe("<h1>Hello</h1>");
+    expect(await fs.changedPaths()).toEqual(["/index.html"]);
   });
 
-  it("refuses a non-unique update", () => {
+  it("refuses a non-unique update", async () => {
     const fs = new InMemoryProjectFs([{ path: "/a.txt", content: "x x" }]);
-    const res = fs.applyPatch("/a.txt", [{ type: "update", oldStr: "x", newStr: "y" }]);
+    const res = await fs.applyPatch("/a.txt", [{ type: "update", oldStr: "x", newStr: "y" }]);
     expect(res.applied).toBe(false);
     expect(res.warnings.join()).toMatch(/not unique/);
   });
 
-  it("search finds matches with path:line", () => {
+  it("search finds matches with path:line", async () => {
     const fs = new InMemoryProjectFs([{ path: "/a.txt", content: "one\ntwo\nthree" }]);
-    const hits = fs.search("two");
+    const hits = await fs.search("two");
     expect(hits).toEqual([{ path: "/a.txt", line: 2, text: "two" }]);
   });
 });
 
 describe("executeAgentTool", () => {
-  it("write_file creates a file; read_file returns it", () => {
+  it("write_file creates a file; read_file returns it", async () => {
     const fs = new InMemoryProjectFs();
-    const w = executeAgentTool(fs, "write_file", JSON.stringify({ path: "/x.js", content: "1" }));
+    const w = await executeAgentTool(fs, "write_file", JSON.stringify({ path: "/x.js", content: "1" }));
     expect(w.isError).toBe(false);
-    const r = executeAgentTool(fs, "read_file", JSON.stringify({ path: "/x.js" }));
+    const r = await executeAgentTool(fs, "read_file", JSON.stringify({ path: "/x.js" }));
     expect(r.result).toBe("1");
   });
 
-  it("apply_patch tolerates operations passed as a JSON string", () => {
+  it("apply_patch tolerates operations passed as a JSON string", async () => {
     const fs = new InMemoryProjectFs([{ path: "/a.txt", content: "foo" }]);
-    const o = executeAgentTool(
+    const o = await executeAgentTool(
       fs,
       "apply_patch",
       JSON.stringify({ path: "/a.txt", operations: JSON.stringify([{ type: "rewrite", content: "bar" }]) })
     );
     expect(o.isError).toBe(false);
-    expect(fs.read("/a.txt")).toBe("bar");
+    expect(await fs.read("/a.txt")).toBe("bar");
   });
 
-  it("returns an error string (never throws) for an unknown tool", () => {
+  it("returns an error string (never throws) for an unknown tool", async () => {
     const fs = new InMemoryProjectFs();
-    const o = executeAgentTool(fs, "nope", "{}");
+    const o = await executeAgentTool(fs, "nope", "{}");
     expect(o.isError).toBe(true);
     expect(o.result).toMatch(/unknown tool/);
   });

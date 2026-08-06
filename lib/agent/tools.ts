@@ -14,7 +14,7 @@
  * returned as strings too (never thrown) so a bad tool call never kills the run.
  */
 
-import { InMemoryProjectFs, type PatchOp } from "./fs";
+import type { PatchOp, ProjectFs } from "./fs";
 
 /** OpenAI-compatible tool definition (what we send in `tools`). */
 export interface OpenAITool {
@@ -31,7 +31,7 @@ export interface ToolOutcome {
   isError: boolean;
 }
 
-type ToolFn = (fs: InMemoryProjectFs, args: Record<string, unknown>) => ToolOutcome;
+type ToolFn = (fs: ProjectFs, args: Record<string, unknown>) => Promise<ToolOutcome>;
 
 interface AgentTool {
   def: OpenAITool;
@@ -93,8 +93,8 @@ const TOOLS: AgentTool[] = [
     "list_files",
     "List every file path in the project. Call this first to learn the project layout.",
     { type: "object", properties: {}, required: [] },
-    (fs) => {
-      const files = fs.list();
+    async (fs) => {
+      const files = await fs.list();
       return ok(files.length ? files.join("\n") : "(empty project)");
     }
   ),
@@ -107,10 +107,10 @@ const TOOLS: AgentTool[] = [
       properties: { path: { type: "string", description: "File path, e.g. /index.html" } },
       required: ["path"],
     },
-    (fs, args) => {
+    async (fs, args) => {
       const path = asString(args.path);
       if (!path) return err("`path` (string) is required");
-      const content = fs.read(path);
+      const content = await fs.read(path);
       if (content === null) return err(`file not found: ${path}`);
       return ok(content);
     }
@@ -124,10 +124,10 @@ const TOOLS: AgentTool[] = [
       properties: { query: { type: "string", description: "Text to search for" } },
       required: ["query"],
     },
-    (fs, args) => {
+    async (fs, args) => {
       const query = asString(args.query);
       if (!query) return err("`query` (string) is required");
-      const matches = fs.search(query);
+      const matches = await fs.search(query);
       if (!matches.length) return ok(`No matches for "${query}"`);
       return ok(matches.map((m) => `${m.path}:${m.line}: ${m.text}`).join("\n"));
     }
@@ -144,13 +144,13 @@ const TOOLS: AgentTool[] = [
       },
       required: ["path", "content"],
     },
-    (fs, args) => {
+    async (fs, args) => {
       const path = asString(args.path);
       const content = asString(args.content);
       if (!path) return err("`path` (string) is required");
       if (content === null) return err("`content` (string) is required");
-      const existed = fs.exists(path);
-      fs.write(path, content);
+      const existed = await fs.exists(path);
+      await fs.write(path, content);
       return ok(`${existed ? "Overwrote" : "Created"} ${path} (${content.length} bytes)`);
     }
   ),
@@ -170,12 +170,12 @@ const TOOLS: AgentTool[] = [
       },
       required: ["path", "operations"],
     },
-    (fs, args) => {
+    async (fs, args) => {
       const path = asString(args.path);
       if (!path) return err("`path` (string) is required");
       const ops = coerceOps(args.operations);
       if (!ops) return err("`operations` must be an array of {type:'update'|'rewrite', …} objects");
-      const res = fs.applyPatch(path, ops);
+      const res = await fs.applyPatch(path, ops);
       const warn = res.warnings.length ? `\nWarnings:\n${res.warnings.map((w) => `• ${w}`).join("\n")}` : "";
       return res.applied ? ok(res.summary + warn) : err(res.summary + warn);
     }
@@ -193,11 +193,11 @@ export const AGENT_TOOL_DEFS: OpenAITool[] = TOOLS.map((t) => t.def);
  * executor failures all come back as an error `ToolOutcome` the model can read
  * and recover from.
  */
-export function executeAgentTool(
-  fs: InMemoryProjectFs,
+export async function executeAgentTool(
+  fs: ProjectFs,
   name: string,
   argsJson: string
-): ToolOutcome {
+): Promise<ToolOutcome> {
   const t = BY_NAME.get(name);
   if (!t) return err(`unknown tool "${name}". Available: ${[...BY_NAME.keys()].join(", ")}`);
 
@@ -213,7 +213,7 @@ export function executeAgentTool(
   }
 
   try {
-    return t.run(fs, args);
+    return await t.run(fs, args);
   } catch (e) {
     return err(e instanceof Error ? e.message : String(e));
   }

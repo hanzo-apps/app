@@ -18,7 +18,7 @@
  */
 
 import type { AgentFile, EmitEvent } from "./types";
-import { InMemoryProjectFs } from "./fs";
+import { InMemoryProjectFs, type ProjectFs } from "./fs";
 import { AGENT_TOOL_DEFS, executeAgentTool } from "./tools";
 
 export interface RunAgentOptions {
@@ -30,8 +30,13 @@ export interface RunAgentOptions {
   model: string;
   /** The user's instruction. */
   prompt: string;
-  /** Initial project snapshot the agent edits (defaults to empty project). */
+  /** Initial project snapshot the agent edits (defaults to empty project).
+   *  Ignored when `fs` is supplied — a sandbox already has its own files. */
   files?: AgentFile[];
+  /** Where the agent edits. Defaults to an in-memory project built from
+   *  `files`; pass a `SandboxProjectFs` to edit a real checkout on a box. The
+   *  loop is identical either way — that is the whole point of the seam. */
+  fs?: ProjectFs;
   /** Max reason→act turns before the loop stops. Default 8. */
   maxTurns?: number;
   /** Per-completion output cap. Default 8000. */
@@ -190,7 +195,7 @@ async function streamTurn(
  */
 export async function runAgent(opts: RunAgentOptions, emit: EmitEvent): Promise<void> {
   const maxTurns = Math.max(1, Math.min(opts.maxTurns ?? 8, 24));
-  const fs = new InMemoryProjectFs(opts.files ?? []);
+  const fs: ProjectFs = opts.fs ?? new InMemoryProjectFs(opts.files ?? []);
 
   const messages: ChatMsg[] = [
     { role: "system", content: SYSTEM_PROMPT },
@@ -226,7 +231,7 @@ export async function runAgent(opts: RunAgentOptions, emit: EmitEvent): Promise<
       // Execute each tool call and feed the result back as a tool message.
       for (const call of toolCalls) {
         await emit({ type: "tool_call", id: call.id, name: call.name, arguments: call.args });
-        const outcome = executeAgentTool(fs, call.name, call.args);
+        const outcome = await executeAgentTool(fs, call.name, call.args);
         await emit({
           type: "tool_result",
           id: call.id,
@@ -244,8 +249,8 @@ export async function runAgent(opts: RunAgentOptions, emit: EmitEvent): Promise<
       type: "done",
       finishReason,
       turns: Math.min(turn, maxTurns),
-      files: fs.snapshot(),
-      changed: fs.changedPaths(),
+      files: await fs.changedFiles(),
+      changed: await fs.changedPaths(),
     });
   } catch (e) {
     const message =

@@ -8,6 +8,19 @@
 // polyfill placed in the shared setup silently applied to no project at all.
 // Scoping it here makes the omission unrepresentable rather than merely fixed.
 
+// jsdom's AbortSignal has no static `timeout`, which every fetch that must not
+// hang forever depends on. Node's own signal is a foreign realm object here, so
+// build one from the jsdom AbortController the code under test will actually
+// see. `unref` keeps a pending timer from holding the test process open.
+if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout !== 'function') {
+  AbortSignal.timeout = (ms) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(new Error('TimeoutError')), ms);
+    timer?.unref?.();
+    return controller.signal;
+  };
+}
+
 // IndexedDB stores values by structured clone, and jsdom defines neither the
 // algorithm nor the global. Node's is the same algorithm, so borrow it rather
 // than substituting JSON round-tripping, which would quietly turn the Dates on

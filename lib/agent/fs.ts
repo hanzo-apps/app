@@ -1,15 +1,22 @@
 /**
- * Track B — in-memory project file system for the D1 agent loop.
+ * The project file system the agent edits, and the in-memory implementation.
  *
- * A tiny, dependency-free, server-safe file store. It intentionally does NOT
- * pull in `@/lib/vfs` (that is the browser IndexedDB VFS and references DOM
- * globals) — the whole point of D1 is a self-contained server-side loop. The
- * update/rewrite patch semantics mirror `lib/llm/string-patch.ts` so the model
- * sees the same edit contract it already uses client-side; D2+ replaces this
- * class with the real sandbox FS behind the identical method surface.
+ * Two things live behind `ProjectFs`: a map in this process, and a real
+ * directory on a sandbox machine (`sandbox-fs.ts`). The agent loop cannot tell
+ * them apart, which is the point — the same tool contract reaches a scratch
+ * project with no box and a checked-out repo on a box.
+ *
+ * Every method is async because a remote filesystem cannot be otherwise. The
+ * in-memory one answers immediately and is none the worse for the `await`.
+ *
+ * This file deliberately does NOT import `@/lib/vfs` — that is the browser
+ * IndexedDB VFS and touches DOM globals. The update/rewrite patch semantics
+ * mirror `lib/llm/string-patch.ts`, so the model sees the same edit contract it
+ * already uses client-side.
  */
 
 import type { AgentFile } from "./types";
+import { applyPatchOps, normalizePath } from "./patch";
 
 /** A structured edit operation applied to a single file. */
 export type PatchOp =
@@ -28,42 +35,55 @@ export interface SearchMatch {
   text: string;
 }
 
-/** Normalize a path to a single leading slash and collapse `//`. */
-function normalize(path: string): string {
-  const p = path.startsWith("/") ? path : `/${path}`;
-  return p.replace(/\/+/g, "/");
-}
-
 function truncate(s: string, max = 100): string {
   return s.length <= max ? s : `${s.slice(0, max - 1)}…`;
 }
 
-export class InMemoryProjectFs {
+/**
+ * What the agent's tools need from a filesystem, and nothing more.
+ *
+ * `changedFiles` returns only what this run wrote, never the whole tree: on a
+ * real checkout the tree is thousands of files the caller already has, and
+ * shipping it back through an SSE frame would be absurd. The delta is also the
+ * honest answer to "what did the agent do".
+ */
+export interface ProjectFs {
+  list(): Promise<string[]>;
+  exists(path: string): Promise<boolean>;
+  read(path: string): Promise<string | null>;
+  write(path: string, content: string): Promise<void>;
+  search(query: string, limit?: number): Promise<SearchMatch[]>;
+  applyPatch(path: string, ops: PatchOp[]): Promise<PatchResult>;
+  changedPaths(): Promise<string[]>;
+  changedFiles(): Promise<AgentFile[]>;
+}
+
+export class InMemoryProjectFs implements ProjectFs {
   private files = new Map<string, string>();
   private changed = new Set<string>();
 
   constructor(initial: AgentFile[] = []) {
-    for (const f of initial) this.files.set(normalize(f.path), f.content);
+    for (const f of initial) this.files.set(normalizePath(f.path), f.content);
   }
 
   /** All file paths, sorted. */
-  list(): string[] {
+  async list(): Promise<string[]> {
     return [...this.files.keys()].sort();
   }
 
-  exists(path: string): boolean {
-    return this.files.has(normalize(path));
+  async exists(path: string): Promise<boolean> {
+    return this.files.has(normalizePath(path));
   }
 
   /** File content, or null when the file does not exist. */
-  read(path: string): string | null {
-    const c = this.files.get(normalize(path));
+  async read(path: string): Promise<string | null> {
+    const c = this.files.get(normalizePath(path));
     return c === undefined ? null : c;
   }
 
   /** Create or overwrite a file. Records the path as changed. */
-  write(path: string, content: string): void {
-    const p = normalize(path);
+  async write(path: string, content: string): Promise<void> {
+    const p = normalizePath(path);
     this.files.set(p, content);
     this.changed.add(p);
   }
@@ -73,11 +93,11 @@ export class InMemoryProjectFs {
    * `query` is treated as a case-insensitive substring (not a regex) so a
    * model can't wedge the loop with a pathological pattern.
    */
-  search(query: string, limit = 50): SearchMatch[] {
+  async search(query: string, limit = 50): Promise<SearchMatch[]> {
     const needle = query.toLowerCase();
     const out: SearchMatch[] = [];
     if (!needle) return out;
-    for (const path of this.list()) {
+    for (const path of [...this.files.keys()].sort()) {
       const content = this.files.get(path)!;
       const lines = content.split("\n");
       for (let i = 0; i < lines.length; i++) {
@@ -97,72 +117,31 @@ export class InMemoryProjectFs {
    * by a rewrite (or by an update whose `oldStr` is empty). Partial success is
    * allowed — the summary + warnings report exactly what applied.
    */
-  applyPatch(path: string, ops: PatchOp[]): PatchResult {
-    const p = normalize(path);
-    const warnings: string[] = [];
-
-    if (!Array.isArray(ops) || ops.length === 0) {
-      return { applied: false, summary: "No operations provided", warnings: ["operations must be a non-empty array"] };
-    }
-
-    let content = this.files.get(p) ?? "";
-    let applied = 0;
-
-    for (let i = 0; i < ops.length; i++) {
-      const op = ops[i];
-      if (op.type === "rewrite") {
-        content = op.content ?? "";
-        applied++;
-      } else if (op.type === "update") {
-        const { oldStr, newStr } = op;
-        if (oldStr === undefined) {
-          warnings.push(`op ${i + 1}: update requires oldStr`);
-          continue;
-        }
-        if (oldStr === "") {
-          // Empty oldStr = prepend (matches string-patch semantics).
-          content = `${newStr ?? ""}${content}`;
-          applied++;
-          continue;
-        }
-        const first = content.indexOf(oldStr);
-        if (first === -1) {
-          warnings.push(`op ${i + 1}: oldStr not found: "${truncate(oldStr)}"`);
-          continue;
-        }
-        if (content.indexOf(oldStr, first + oldStr.length) !== -1) {
-          warnings.push(`op ${i + 1}: oldStr is not unique: "${truncate(oldStr)}"`);
-          continue;
-        }
-        content = content.slice(0, first) + (newStr ?? "") + content.slice(first + oldStr.length);
-        applied++;
-      } else {
-        warnings.push(`op ${i + 1}: unknown type "${(op as { type?: string }).type ?? "(missing)"}"`);
-      }
-    }
-
-    if (applied > 0) {
+  async applyPatch(path: string, ops: PatchOp[]): Promise<PatchResult> {
+    const p = normalizePath(path);
+    const { content, result } = applyPatchOps(p, this.files.get(p) ?? "", ops);
+    if (result.applied) {
       this.files.set(p, content);
       this.changed.add(p);
     }
-
-    return {
-      applied: applied > 0,
-      summary:
-        applied > 0
-          ? `Applied ${applied}/${ops.length} operation(s) to ${p}`
-          : `No operations applied to ${p}`,
-      warnings,
-    };
+    return result;
   }
 
   /** Paths written during this run, sorted. */
-  changedPaths(): string[] {
+  async changedPaths(): Promise<string[]> {
     return [...this.changed].sort();
   }
 
-  /** Full current snapshot, sorted by path. */
+  /** Just what this run wrote, sorted by path — the interface contract. */
+  async changedFiles(): Promise<AgentFile[]> {
+    return [...this.changed]
+      .sort()
+      .map((path) => ({ path, content: this.files.get(path) ?? "" }));
+  }
+
+  /** Full current tree. Cheap here and nowhere else, so it is NOT on the
+   *  interface — only callers holding an in-memory project may ask. */
   snapshot(): AgentFile[] {
-    return this.list().map((path) => ({ path, content: this.files.get(path)! }));
+    return [...this.files.keys()].sort().map((path) => ({ path, content: this.files.get(path)! }));
   }
 }

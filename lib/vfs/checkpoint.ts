@@ -380,7 +380,13 @@ class CheckpointManager {
     }
     
     const checkpoint: Checkpoint = {
-      id: `cp_${Date.now()}`,
+      // Millisecond-plus-random, NOT the millisecond alone. `cp_${Date.now()}`
+      // gives two checkpoints created in the same millisecond the same id, and
+      // the second silently overwrites the first — a revision the user made and
+      // can never get back. An agent editing in a loop hits this constantly;
+      // three saves in a row would land as one. The timestamp still leads so ids
+      // sort chronologically.
+      id: `cp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
       timestamp: new Date().toISOString(),
       description,
       files: fileContents,
