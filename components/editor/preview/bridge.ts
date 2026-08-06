@@ -49,7 +49,12 @@ export type FrameEvent =
       tagName?: string;
     }
   | { type: 'preview:select'; info: ElementInfo }
-  | { type: 'preview:navigate'; path: string };
+  | { type: 'preview:navigate'; path: string }
+  | {
+      type: 'preview:console';
+      level: 'log' | 'info' | 'warn' | 'error' | 'debug';
+      text: string;
+    };
 
 export type FrameCommand =
   | { type: 'preview:editable'; active: boolean }
@@ -166,6 +171,48 @@ export const BRIDGE_SCRIPT = `
     if (!selector) return null;
     try { return document.querySelector(selector); } catch (e) { return null; }
   }
+
+  // The preview's console, forwarded. The dock used to reach in and patch
+  // \`frame.contentWindow.console\` from the host; across an opaque origin merely
+  // READING a property off that window throws, which took the whole builder down
+  // with an Application Error. Patching from inside is both safe and simpler.
+  var LEVELS = ['log', 'info', 'warn', 'error', 'debug'];
+  for (var li = 0; li < LEVELS.length; li++) {
+    (function (level) {
+      var original = console[level];
+      if (typeof original !== 'function') return;
+      console[level] = function () {
+        var args = Array.prototype.slice.call(arguments);
+        try {
+          send({ type: 'preview:console', level: level, text: fmt(args) });
+        } catch (e) {}
+        original.apply(console, args);
+      };
+    })(LEVELS[li]);
+  }
+
+  function fmt(args) {
+    var out = [];
+    for (var i = 0; i < args.length; i++) {
+      var a = args[i];
+      if (typeof a === 'string') { out.push(a); continue; }
+      if (a instanceof Error) { out.push(a.stack || (a.name + ': ' + a.message)); continue; }
+      try { out.push(JSON.stringify(a)); } catch (e) { out.push(String(a)); }
+    }
+    return out.join(' ');
+  }
+
+  window.addEventListener('error', function (e) {
+    send({
+      type: 'preview:console',
+      level: 'error',
+      text: e.message ? e.message + ' (' + (e.filename || '') + ':' + (e.lineno || 0) + ')' : 'Script error'
+    });
+  });
+
+  window.addEventListener('unhandledrejection', function (e) {
+    send({ type: 'preview:console', level: 'error', text: 'Unhandled rejection: ' + String(e.reason) });
+  });
 
   document.addEventListener('mouseover', function (e) {
     if (!editable) return;

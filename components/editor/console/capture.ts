@@ -5,12 +5,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
 /**
  * What the console shows: the PREVIEW's console.
  *
- * The generated page runs in a `srcdoc` iframe, so it is same-origin and its
- * `console` is reachable. We patch it on every frame load — the preview is
- * double-buffered and rewrites `srcDoc` as a build streams, so each new
- * document needs patching again. Listening for `load` in the CAPTURE phase on
- * `document` catches all of them (load does not bubble, but it does capture)
- * without the preview having to know this panel exists.
+ * It ARRIVES now. This used to reach into `frame.contentWindow` and patch the
+ * console from out here, which worked only while the preview shared this origin.
+ * It does not any more — untrusted generated, imported and forked HTML runs in
+ * there, so the frame is sandboxed without `allow-same-origin` — and the failure
+ * was not graceful: merely READING `win.__hzConsole` off a cross-origin window
+ * throws, outside the try that guarded fetching the window, so the whole builder
+ * came down with "Application Error … Blocked a frame from accessing a
+ * cross-origin frame".
+ *
+ * The bridge injected into every previewed document (`preview/bridge.ts`) patches
+ * console there and forwards each line as a `preview:console` message. That is
+ * both safe across the boundary and simpler: no re-patching per frame load, no
+ * `__hzConsole` sentinel, and the double buffer stops mattering because both
+ * frames carry the same bridge and both post to the same listener.
  */
 
 export type Level = "log" | "info" | "warn" | "error" | "debug";
@@ -27,20 +35,6 @@ const LIMIT = 300;
 /** Frames the preview owns; both buffers carry this title. */
 const FRAMES = 'iframe[title="output"]';
 
-function format(args: unknown[]): string {
-  return args
-    .map((a) => {
-      if (typeof a === "string") return a;
-      if (a instanceof Error) return a.stack || `${a.name}: ${a.message}`;
-      try {
-        return JSON.stringify(a);
-      } catch {
-        return String(a);
-      }
-    })
-    .join(" ");
-}
-
 export function usePreviewConsole() {
   const [entries, setEntries] = useState<Entry[]>([]);
   const seq = useRef(0);
@@ -54,55 +48,24 @@ export function usePreviewConsole() {
       });
     };
 
-    const attach = (frame: HTMLIFrameElement) => {
-      let win: (Window & { __hzConsole?: boolean }) | null = null;
-      try {
-        win = frame.contentWindow as (Window & { __hzConsole?: boolean }) | null;
-      } catch {
-        return; // cross-origin: nothing to read, and nothing to break
-      }
-      if (!win || win.__hzConsole) return;
-      win.__hzConsole = true;
+    const onMessage = (event: MessageEvent) => {
+      // Only the preview's own frames. `event.origin` cannot say so — a
+      // sandboxed document reports the origin "null", which every opaque frame
+      // shares — so the sender is identified by window, matched against the
+      // frames the preview owns.
+      const frames = Array.from(
+        document.querySelectorAll<HTMLIFrameElement>(FRAMES),
+      );
+      if (!frames.some((f) => f.contentWindow === event.source)) return;
 
-      const target = (win as unknown as {
-        console: Record<string, (...a: unknown[]) => void>;
-      }).console;
-      for (const level of LEVELS) {
-        const original = target[level];
-        if (typeof original !== "function") continue;
-        target[level] = (...args: unknown[]) => {
-          push(level, format(args));
-          original.apply(target, args);
-        };
-      }
-      win.addEventListener("error", (event) => {
-        const e = event as ErrorEvent;
-        push(
-          "error",
-          e.message
-            ? `${e.message} (${e.filename ?? ""}:${e.lineno ?? 0})`
-            : "Script error",
-        );
-      });
-      win.addEventListener("unhandledrejection", (event) => {
-        push(
-          "error",
-          `Unhandled rejection: ${String((event as PromiseRejectionEvent).reason)}`,
-        );
-      });
+      const data = event.data as { type?: string; level?: Level; text?: string };
+      if (!data || data.type !== "preview:console") return;
+      if (!data.level || !LEVELS.includes(data.level)) return;
+      push(data.level, data.text ?? "");
     };
 
-    const onLoad = (event: Event) => {
-      const target = event.target;
-      if (target instanceof HTMLIFrameElement && target.matches(FRAMES)) {
-        attach(target);
-      }
-    };
-
-    document.addEventListener("load", onLoad, true);
-    // Frames that finished loading before this dock mounted.
-    document.querySelectorAll<HTMLIFrameElement>(FRAMES).forEach(attach);
-    return () => document.removeEventListener("load", onLoad, true);
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
   }, []);
 
   const clear = useCallback(() => setEntries([]), []);
