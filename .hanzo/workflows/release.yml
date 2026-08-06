@@ -201,10 +201,18 @@ jobs:
           push: true
           tags: ghcr.io/hanzoai/app:${{ steps.ver.outputs.version_v }}
           provenance: false
-          # Without this the bundle ships unkeyed, so every beacon takes cloud's
-          # anonymous lane — which admits pageview and error, DROPS track/identify/
-          # group, and still answers 200. Build-time by necessity: Next inlines
-          # NEXT_PUBLIC_* into the client bundle.
+          # Without this the bundle ships unkeyed and EVERY beacon is refused:
+          # measured against the live door as a hard 401 `ingest_key_required`,
+          # with and without a browser Origin, for pageviews and exceptions alike.
+          # There is no anonymous lane admitting pageview+error — that lane is
+          # described in several comments across this estate and is not implemented
+          # in the deployed cloud, which is why "we still get errors, just not
+          # events" was believed for so long. Nothing arrives.
+          #
+          # The name must stay PUBLISHABLE_KEY end to end: it is the name in KMS
+          # and the ARG the Dockerfile declares. It did NOT used to be — the
+          # Dockerfile declared NEXT_PUBLIC_PUBLISHABLE_KEY, so this value was
+          # handed to a build that had nowhere to put it.
           build-args: |
             PUBLISHABLE_KEY=${{ steps.ingest.outputs.key }}
       - name: Verify the pushed image is pullable (guard the image ⇔ tag invariant)

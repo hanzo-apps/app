@@ -12,8 +12,19 @@ import type { Analytics } from '@hanzo/event';
  * `type:'error'` row on the event stream, exactly like a browser one. The only
  * difference is `source: 'server'`.
  *
- * The key is read from the SERVER-side name first: a server has no reason to use
- * the publishable browser key, and `HANZO_INGEST_KEY` never reaches a bundle.
+ * ONE key, under ONE name. This used to prefer a server-side `HANZO_INGEST_KEY`,
+ * falling back to `NEXT_PUBLIC_HANZO_INGEST_KEY`, on the reasoning that a server
+ * has no business holding the publishable browser key. Sound in the abstract, and
+ * the effect was that server errors went nowhere for as long as it stood: neither
+ * name is set by the Dockerfile, by release.yml, or by the pod, and no separate
+ * server credential is minted anywhere in the estate. So the plane that catches
+ * SSR and route-handler failures — the one worth having in production — reported
+ * nothing at all, and said nothing about it.
+ *
+ * A publishable key is the right credential here regardless: it resolves to the
+ * ORG rather than a principal, it is write-only, and it opens the same door this
+ * client already posts to. If a distinct server credential is ever wanted, mint it
+ * deliberately and change this line; do not reintroduce a name nothing sets.
  */
 let client: Analytics | undefined;
 
@@ -23,7 +34,7 @@ async function telemetry(): Promise<Analytics | undefined> {
     const { createAnalytics } = await import('@hanzo/event');
     client = createAnalytics({
       product: 'app',
-      ingestKey: process.env.HANZO_INGEST_KEY || process.env.NEXT_PUBLIC_HANZO_INGEST_KEY,
+      ingestKey: process.env.NEXT_PUBLIC_PUBLISHABLE_KEY,
       environment: process.env.NODE_ENV,
     });
     return client;
