@@ -1064,15 +1064,31 @@ export function AskAI({
         </XStack>
       )}
 
+      {/* NOT YET CONFIRMED IN A BROWSER. The structure below is correct by
+          construction and typechecks, but `.hz-composer` did not appear in the
+          DOM on a local dev server that was demonstrably serving stale bytes for
+          THIS module (the rendered panel still carried the `focusStyle` atomic
+          classes removed here, after a touch and a forced rebuild, with no
+          compile error). Other classes on the same page render fine
+          (glass=3, md=1, no-scrollbar=3), so the mechanism works. Verify against
+          a fresh server before trusting this.
+
+          THE SAME COMPOSER AS EVERYWHERE ELSE YOU TALK TO HANZO.
+          `.hz-composer` is the prism — a 1.5px-padded host carrying the slow
+          conic ring (::before) and its blurred halo (::after) — and the panel
+          inside it is glass. `/new` (components/build-composer) and hanzo.chat
+          both already render exactly this; the builder was the one surface that
+          did not, so the place you spend the most time typing was a flat black
+          box with a hard hairline while the other two glowed.
+
+          The host draws the edge, so the panel carries NO border of its own: a
+          hairline inside the ring is the second edge that made this read heavy.
+          Radius is $8 outside / 14 inside, matching build-composer — concentric,
+          the inner radius smaller by the host's padding. */}
+      <YStack borderRadius="$8" elevation={6} zIndex={10} width="100%" className="hz-composer">
       <YStack
-        // Liquid glass, the SAME material hanzo.chat's composer is made of
-        // (@hanzo/ui/theme.css .glass: translucent fill + backdrop blur, so it
-        // reads as one lifted pane, not an opaque black box ringed by a hard
-        // gray border). The border is now a whisper hairline that only brightens
-        // on focus — the "ugly border" was `$borderColor` at full strength on a
-        // pure-black fill, which drew the box louder than its contents.
         className="glass"
-        position="relative" borderWidth={1} borderColor="$color06" borderRadius="$5" elevation={2} zIndex={10} width="100%" group focusStyle={{ borderColor: "$color8" }}
+        position="relative" borderRadius={14} width="100%" group
         onDragOver={handleDragOver}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
@@ -1360,6 +1376,7 @@ export function AskAI({
           onClose={() => setOpenProModal(false)}
   />
       </YStack>
+      </YStack>{/* .hz-composer host */}
       <audio ref={hookAudio} id="audio">
         <source src="/success.mp3" type="audio/mpeg" />
         Your browser does not support the audio element.
