@@ -1,7 +1,7 @@
 /**
  * What `update` and `rewrite` mean — defined once, for every filesystem.
  *
- * Both `InMemoryProjectFs` and `SandboxProjectFs` apply edits by calling this,
+ * Both `InMemoryProjectFs` and `Sandbox` apply edits by calling this,
  * so a model gets identical behaviour whether it is editing a scratch project
  * in this process or a checkout on a box. Two copies of these rules would be
  * two subtly different edit contracts, and the model would have no way to tell

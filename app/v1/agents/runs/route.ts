@@ -27,7 +27,7 @@ import { requireSameOrigin } from "@/lib/org/csrf";
 import { resolveModelId } from "@/lib/providers";
 import { runAgent, type AgentEvent, type AgentFile, type ProjectFs } from "@/lib/agent";
 import { AgentSession } from "@/lib/agent/session";
-import { SandboxProjectFs, openBox, releaseBox } from "@/lib/agent/sandbox-fs";
+import { Sandbox, openSandbox, releaseSandbox } from "@/lib/agent/sandbox";
 
 const HANZO_AI_BASE_URL = process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai/v1";
 
@@ -43,7 +43,7 @@ interface AgentRequestBody {
   files?: unknown;
   maxTurns?: unknown;
   /** Run in this existing box. */
-  boxId?: unknown;
+  id?: unknown;
   /** Run in a box for this project, creating one if there is none. */
   project?: unknown;
 }
@@ -53,7 +53,7 @@ interface AgentRequestBody {
  *
  * Three cases, in order of how specific the caller was:
  *
- *   boxId    a box the caller already holds — reuse it, do not create a second.
+ *   id    a box the caller already holds — reuse it, do not create a second.
  *   project  a named project — cloud gets or creates its box, and the agent
  *            edits a REAL checkout with a real toolchain it can run.
  *   neither  the scratch case: a handful of files in this process. Most runs.
@@ -67,26 +67,26 @@ interface AgentRequestBody {
  * fallback does not have.
  *
  * `opened` records which of the two box cases we are in, because it decides who
- * hangs the box up at the end. A caller-supplied `boxId` belongs to the caller
+ * hangs the box up at the end. A caller-supplied `id` belongs to the caller
  * and must outlive the run; a box opened here for `project` has no other owner.
  */
 async function resolveFs(
   token: string,
   body: AgentRequestBody,
   files: AgentFile[]
-): Promise<{ fs?: ProjectFs; boxId?: string; opened?: boolean }> {
-  const boxId = typeof body.boxId === "string" ? body.boxId.trim() : "";
-  if (boxId) {
-    return { fs: new SandboxProjectFs({ baseUrl: HANZO_AI_BASE_URL, boxId, token }), boxId };
+): Promise<{ fs?: ProjectFs; id?: string; opened?: boolean }> {
+  const id = typeof body.id === "string" ? body.id.trim() : "";
+  if (id) {
+    return { fs: new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id, token }), id };
   }
 
   const project = typeof body.project === "string" ? body.project.trim() : "";
   if (project) {
-    const box = await openBox({ baseUrl: HANZO_AI_BASE_URL, token, project });
+    const box = await openSandbox({ baseUrl: HANZO_AI_BASE_URL, token, project });
     if (box) {
       return {
-        fs: new SandboxProjectFs({ baseUrl: HANZO_AI_BASE_URL, boxId: box.id, token }),
-        boxId: box.id,
+        fs: new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id: box.id, token }),
+        id: box.id,
         opened: true,
       };
     }
@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
   // fleet views, and its control queue is what pause/resume/stop/message from
   // any surface arrive through. Unreachable registry => `open()` returns null
   // and the run proceeds exactly as it did before, private to this caller.
-  const { fs, boxId, opened } = await resolveFs(token, body, files);
+  const { fs, id, opened } = await resolveFs(token, body, files);
 
   const agentSession = new AgentSession({
     baseUrl: HANZO_AI_BASE_URL,
@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
     title: prompt.slice(0, 120),
     // Where it runs, so the fleet views show a box run as a box run rather than
     // as an anonymous stream from a browser tab.
-    ...(boxId ? { host: boxId, repo: typeof body.project === "string" ? body.project : undefined } : {}),
+    ...(id ? { host: id, repo: typeof body.project === "string" ? body.project : undefined } : {}),
   });
   await agentSession.open();
 
@@ -214,8 +214,8 @@ export async function POST(request: NextRequest) {
       // RWO volume until a human notices. Suspending frees the pod and keeps
       // the checkout, which is also what clears the one-live-box-per-project
       // rule for the next run.
-      if (opened && boxId) {
-        await releaseBox({ baseUrl: HANZO_AI_BASE_URL, token, boxId });
+      if (opened && id) {
+        await releaseSandbox({ baseUrl: HANZO_AI_BASE_URL, token, id });
       }
       try {
         await writer.close();

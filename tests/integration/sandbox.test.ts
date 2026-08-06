@@ -1,16 +1,16 @@
 /**
- * The sandbox filesystem, against a stub of the box.
+ * The sandbox filesystem, against a stub of the sandbox.
  *
  * What is worth testing here is not "does fetch work" but three claims the seam
  * makes:
  *
- *   1. a `SandboxProjectFs` is substitutable for the in-memory one everywhere
+ *   1. a `Sandbox` is substitutable for the in-memory one everywhere
  *      the agent touches it;
  *   2. the edit semantics are IDENTICAL on both — a model must not get
  *      different behaviour depending on where it happens to be running;
  *   3. it speaks the contract that actually exists.
  *
- * (3) is why the stub below answers `/v1/sandbox/boxes/:id/fs/*` and not the
+ * (3) is why the stub below answers `/v1/sandboxes/:id/fs/*` and not the
  * routes this file used to call. The previous client spoke to a Daytona-fork
  * daemon (`/files`, `/process/execute`) that was deleted with the fork, and
  * every one of those tests passed against a stub of a server that no longer
@@ -19,30 +19,30 @@
  */
 import { InMemoryProjectFs, canExec, type ProjectFs } from "@/lib/agent/fs";
 import {
-  DEFAULT_BOX_TTL_SEC,
-  SandboxProjectFs,
-  openBox,
-  releaseBox,
-} from "@/lib/agent/sandbox-fs";
+  DEFAULT_TTL_SEC,
+  Sandbox,
+  openSandbox,
+  releaseSandbox,
+} from "@/lib/agent/sandbox";
 
 const BASE = "https://api.hanzo.test/v1";
-const BOX = "box-abc123";
-const PREFIX = `/v1/sandbox/boxes/${BOX}`;
+const ID = "sbx-abc123";
+const PREFIX = `/v1/sandboxes/${ID}`;
 
 /**
- * A stand-in for cloud + the box behind it.
+ * A stand-in for cloud + the sandbox behind it.
  *
- * It filters `node_modules`/`.git` out of a listing because THE BOX does that
+ * It filters `node_modules`/`.git` out of a listing because THE ID does that
  * (`cmd/boxd/fs.go`'s `skip` set) — the tree never crosses the network to be
  * discarded. The client holds no second copy of that rule, so a stub that
  * returned them would be modelling a server that does not exist.
  */
-function stubBox(
+function stubSandbox(
   initial: Record<string, string>,
   /**
    * Break a route on purpose. A stub that can only answer 200 or 404 cannot
-   * express "the box is there but refuses" (409, what cloud's proxy returns for
-   * a suspended box) or "the box tried and failed" (500, what boxd returns when
+   * express "the sandbox is there but refuses" (409, what cloud's proxy returns for
+   * a suspended sandbox) or "the sandbox tried and failed" (500, what boxd returns when
    * a file exists but cannot be opened) — and those are exactly the answers a
    * client is most likely to mistake for "the file is not there".
    */
@@ -71,50 +71,63 @@ function stubBox(
     const broken = fault?.(method, p);
     if (broken) return Response.json({ error: `forced ${broken}` }, { status: broken });
 
-    if (method === "POST" && p === "/v1/sandbox/boxes") {
+    if (method === "POST" && p === "/v1/sandboxes") {
       created.push(json());
-      return Response.json({ id: BOX, project: json().project, class: json().class, status: "running" }, { status: 201 });
+      return Response.json({ id: ID, project: json().project, class: json().class, status: "running" }, { status: 201 });
     }
-    if (method === "GET" && p === "/v1/sandbox/boxes") {
+    if (method === "GET" && p === "/v1/sandboxes") {
       const want = url.searchParams.get("project");
       const status = url.searchParams.get("status");
-      const live = { id: BOX, project: want ?? "", class: "dev", status: "running" };
-      return Response.json({ boxes: status && status !== "running" ? [] : [live] });
+      const live = { id: ID, project: want ?? "", class: "dev", status: "running" };
+      return Response.json({ sandboxes: status && status !== "running" ? [] : [live] });
     }
-    if (method === "POST" && p === `${PREFIX}/suspend`) {
-      return Response.json({ id: BOX, status: "suspended" });
-    }
-    if (method === "GET" && p === `${PREFIX}/fs/list`) {
-      return Response.json({
-        entries: [...tree.keys()]
-          .filter((k) => !skip.test(k))
-          .map((k) => ({ path: k, size: tree.get(k)!.length, mode: "-rw-r--r--", isDir: false })),
-      });
-    }
-    if (method === "GET" && p === `${PREFIX}/fs/read`) {
+    if (method === "DELETE" && p === PREFIX) return new Response(null, { status: 204 });
+
+    // GET /fs?path= is one verb for read-a-file, and the sandbox answers raw
+    // bytes rather than JSON — `cat`, not a document describing a file.
+    if (method === "GET" && p === `${PREFIX}/fs`) {
       const c = tree.get(path);
       return c === undefined
         ? Response.json({ error: "no such file" }, { status: 404 })
         : new Response(c, { headers: { "Content-Type": "application/octet-stream" } });
     }
-    if (method === "POST" && p === `${PREFIX}/fs/write`) {
-      const b = json();
-      tree.set(String(b.path), String(b.content));
+    // POST /fs?path= takes the CONTENT as the body. Not {path,content} JSON:
+    // the path is addressing and the body is the file, so a file whose text
+    // happens to be JSON needs no escaping.
+    if (method === "POST" && p === `${PREFIX}/fs`) {
+      tree.set(path, req.body ?? "");
       return new Response(null, { status: 204 });
     }
-    if (method === "GET" && p === `${PREFIX}/fs/search`) {
-      const needle = (url.searchParams.get("q") ?? "").toLowerCase();
-      const matches: Array<{ path: string; line: number; text: string }> = [];
-      for (const [k, v] of tree) {
-        if (skip.test(k)) continue;
-        v.split("\n").forEach((text, i) => {
-          if (text.toLowerCase().includes(needle)) matches.push({ path: k, line: i + 1, text: text.trim() });
-        });
-      }
-      return Response.json({ matches });
-    }
-    if (method === "POST" && p === `${PREFIX}/proc/exec`) {
+
+    // ONE exec verb, and list/search go through it. There is no /fs/list and no
+    // /fs/search on the real surface, deliberately: a recursive listing and a
+    // grep are COMMANDS, and a second endpoint for each would be a second way to
+    // ask a question the sandbox already answers. So this stub has to be a small
+    // shell — which is the point, because it makes the test exercise the same
+    // path production does instead of a friendlier invented one.
+    if (method === "POST" && p === `${PREFIX}/exec`) {
       lastExec = json();
+      const cmd = String(lastExec?.command ?? "");
+      const visible = [...tree.keys()].filter((k) => !skip.test(k));
+
+      if (cmd.startsWith("find ")) {
+        return Response.json({ exitCode: 0, stdout: visible.map((k) => `./${k}`).join("\n"), stderr: "" });
+      }
+      if (cmd.startsWith("grep ")) {
+        // The needle is single-quoted by the client; recover it, honouring the
+        // '\'' escape the client emits for an embedded quote.
+        const q = /'((?:[^']|'\\'')*)'/.exec(cmd);
+        const needle = (q ? q[1].replace(/'\\''/g, "'") : "");
+        const hits: string[] = [];
+        for (const k of visible) {
+          (tree.get(k) ?? "").split("\n").forEach((text, i) => {
+            if (needle && text.includes(needle)) hits.push(`./${k}:${i + 1}:${text}`);
+          });
+        }
+        // grep exits 1 when there are no matches. That is an ANSWER, and a
+        // client that treats it as a failure reports an empty repository.
+        return Response.json({ exitCode: hits.length ? 0 : 1, stdout: hits.join("\n"), stderr: "" });
+      }
       return Response.json({ exitCode: 1, stdout: "2 passing\n", stderr: "1 failing\n", durationMs: 42 });
     }
     return Response.json({ error: `unhandled ${method} ${p}` }, { status: 500 });
@@ -124,7 +137,7 @@ function stubBox(
 }
 
 /** fetch(), reduced to what the stub needs and nothing the client can't send. */
-function installFetch(stub: ReturnType<typeof stubBox>) {
+function installFetch(stub: ReturnType<typeof stubSandbox>) {
   globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) =>
     stub.handler({
       method: init?.method ?? "GET",
@@ -138,28 +151,28 @@ function make(
   initial: Record<string, string>,
   fault?: (method: string, path: string) => number | undefined
 ) {
-  const stub = stubBox(initial, fault);
+  const stub = stubSandbox(initial, fault);
   installFetch(stub);
-  return { stub, fs: new SandboxProjectFs({ baseUrl: BASE, boxId: BOX, token: "tok-123" }) };
+  return { stub, fs: new Sandbox({ baseUrl: BASE, id: ID, token: "tok-123" }) };
 }
 
-describe("SandboxProjectFs", () => {
+describe("Sandbox", () => {
   const realFetch = globalThis.fetch;
   afterEach(() => {
     globalThis.fetch = realFetch;
   });
 
-  it("reads and writes through the box, not the local disk", async () => {
+  it("reads and writes through the sandbox, not the local disk", async () => {
     const { stub, fs } = make({ "/index.html": "<h1>Hi</h1>" });
 
     expect(await fs.read("/index.html")).toBe("<h1>Hi</h1>");
     await fs.write("/new.txt", "made");
 
     expect(stub.tree.get("/new.txt")).toBe("made");
-    expect(stub.calls).toContain(`POST ${PREFIX}/fs/write`);
+    expect(stub.calls).toContain(`POST ${PREFIX}/fs`);
   });
 
-  it("calls the routes cmd/boxd actually serves", async () => {
+  it("calls the routes the sandbox actually serves", async () => {
     // The defect this replaces: the previous client's every route 404'd, and
     // its tests all passed. Pinning the paths is what makes that impossible.
     const { stub, fs } = make({ "/a.txt": "one" });
@@ -171,17 +184,17 @@ describe("SandboxProjectFs", () => {
     await fs.exec("true");
 
     expect(stub.calls).toEqual([
-      `GET ${PREFIX}/fs/list`,
-      `GET ${PREFIX}/fs/read`,
-      `GET ${PREFIX}/fs/read`,
-      `POST ${PREFIX}/fs/write`,
-      `GET ${PREFIX}/fs/search`,
-      `POST ${PREFIX}/proc/exec`,
+      `POST ${PREFIX}/exec`,
+      `GET ${PREFIX}/fs`,
+      `GET ${PREFIX}/fs`,
+      `POST ${PREFIX}/fs`,
+      `POST ${PREFIX}/exec`,
+      `POST ${PREFIX}/exec`,
     ]);
   });
 
   it("sends the caller's IAM bearer and never a service key", async () => {
-    // The box's own credential lives in cloud and is added on the SECOND hop.
+    // The sandbox's own credential lives in cloud and is added on the SECOND hop.
     // If it ever appeared here, this process would be holding a key that grants
     // access to every tenant's boxes.
     const { stub, fs } = make({ "/a.txt": "one" });
@@ -199,9 +212,9 @@ describe("SandboxProjectFs", () => {
     expect(await fs.list()).toHaveLength(3);
   });
 
-  it("does not re-filter what the box already dropped", async () => {
+  it("does not re-filter what the sandbox already dropped", async () => {
     // One definition of "what an agent should not read", and it lives on the
-    // box. The client returns the listing it is given.
+    // sandbox. The client returns the listing it is given.
     const { fs } = make({ "/src/App.tsx": "x", "/node_modules/react/index.js": "y", "/.git/HEAD": "z" });
     expect(await fs.list()).toEqual(["/src/App.tsx"]);
   });
@@ -212,7 +225,7 @@ describe("SandboxProjectFs", () => {
     expect(await fs.exists("/nope.txt")).toBe(false);
   });
 
-  it("greps on the box", async () => {
+  it("greps on the sandbox", async () => {
     const { fs } = make({ "/a.txt": "one\ntwo\nthree" });
     expect(await fs.search("two")).toEqual([{ path: "/a.txt", line: 2, text: "two" }]);
   });
@@ -230,13 +243,13 @@ describe("run_command", () => {
     globalThis.fetch = realFetch;
   });
 
-  it("is a capability of a box and not of a map", () => {
+  it("is a capability of a sandbox and not of a map", () => {
     const { fs } = make({});
     expect(canExec(fs)).toBe(true);
     expect(canExec(new InMemoryProjectFs([]))).toBe(false);
   });
 
-  it("carries the command and its deadline to the box", async () => {
+  it("carries the command and its deadline to the sandbox", async () => {
     const { stub, fs } = make({});
     await fs.exec("pnpm test", 300);
     expect(stub.exec()).toEqual({ command: "pnpm test", timeoutSec: 300 });
@@ -244,7 +257,7 @@ describe("run_command", () => {
 
   it("returns a failing program as a successful call", async () => {
     // The distinction the whole result type exists for: "your tests failed" and
-    // "the box is broken" are different facts, and a caller that cannot tell
+    // "the sandbox is broken" are different facts, and a caller that cannot tell
     // them apart retries the wrong one.
     const { fs } = make({});
     const r = await fs.exec("pnpm test");
@@ -253,39 +266,39 @@ describe("run_command", () => {
     expect(r.stderr).toContain("1 failing");
   });
 
-  it("raises an unreachable box instead of returning it as a program result", async () => {
-    // Same intent this test always had — "the box is broken" must not arrive
+  it("raises an unreachable sandbox instead of returning it as a program result", async () => {
+    // Same intent this test always had — "the sandbox is broken" must not arrive
     // looking like "your command failed" — with the mechanism corrected. It
     // used to assert exitCode -1, but boxd ALREADY spends -1 on "the binary
     // never launched" (`proc.go`), so a model seeing -1 could not tell a
-    // missing command from a missing box and would retry the wrong one. Every
-    // other method on this class raises a broken box; exec is not an exception.
+    // missing command from a missing sandbox and would retry the wrong one. Every
+    // other method on this class raises a broken sandbox; exec is not an exception.
     const { fs } = make({});
     globalThis.fetch = (async () => new Response("", { status: 502 })) as typeof fetch;
     await expect(fs.exec("true")).rejects.toThrow(/502/);
   });
 });
 
-describe("openBox", () => {
+describe("openSandbox", () => {
   const realFetch = globalThis.fetch;
   afterEach(() => {
     globalThis.fetch = realFetch;
   });
 
-  it("asks cloud for a box and hands back its id", async () => {
-    const stub = stubBox({});
+  it("asks cloud for a sandbox and hands back its id", async () => {
+    const stub = stubSandbox({});
     installFetch(stub);
-    const box = await openBox({ baseUrl: BASE, token: "tok-123", project: "acme/site" });
-    expect(box?.id).toBe(BOX);
-    expect(box?.project).toBe("acme/site");
-    expect(stub.calls).toContain("POST /v1/sandbox/boxes");
+    const sandbox = await openSandbox({ baseUrl: BASE, token: "tok-123", project: "acme/site" });
+    expect(sandbox?.id).toBe(ID);
+    expect(sandbox?.project).toBe("acme/site");
+    expect(stub.calls).toContain("POST /v1/sandboxes");
   });
 
   it("returns null when the sandbox service is unreachable, so a run can fall back", async () => {
     globalThis.fetch = (async () => {
       throw new Error("ECONNREFUSED");
     }) as typeof fetch;
-    expect(await openBox({ baseUrl: BASE, token: "t", project: "p" })).toBeNull();
+    expect(await openSandbox({ baseUrl: BASE, token: "t", project: "p" })).toBeNull();
   });
 });
 
@@ -330,7 +343,7 @@ describe("edit semantics are identical on both filesystems", () => {
 
   it("agrees on refusing an ambiguous update", async () => {
     // Both must refuse: replacing the wrong one of two identical spans is a
-    // silent corruption, and it must not depend on which box you are on.
+    // silent corruption, and it must not depend on which sandbox you are on.
     await bothAgree({ "/a.txt": "x x" }, (fs) =>
       fs.applyPatch("/a.txt", [{ type: "update", oldStr: "x", newStr: "y" }])
     );
@@ -361,17 +374,20 @@ describe("edit semantics are identical on both filesystems", () => {
  * that was intact, while returning a PatchResult identical to the in-memory
  * one. Data loss that the equivalence assertion could not see.
  */
-describe("SandboxProjectFs failure semantics", () => {
+describe("Sandbox failure semantics", () => {
   const realFetch = globalThis.fetch;
   afterEach(() => {
     globalThis.fetch = realFetch;
   });
 
-  const only = (badPath: string, status: number) => (_m: string, p: string) =>
-    p.endsWith(badPath) ? status : undefined;
+  // The METHOD is part of the address now: read and write are GET and POST on
+  // one /fs path, so a fault named by path alone would break the write too and
+  // the test would pass for the wrong reason.
+  const only = (method: string, badPath: string, status: number) => (m: string, p: string) =>
+    m === method && p.endsWith(badPath) ? status : undefined;
 
   it("does not destroy a file when the read that precedes the patch fails", async () => {
-    const { stub, fs } = make({ "/a.txt": "REAL CONTENT" }, only("/fs/read", 500));
+    const { stub, fs } = make({ "/a.txt": "REAL CONTENT" }, only("GET", "/fs", 500));
 
     // The prepend form: oldStr "" matches at offset 0, so this op cannot miss
     // and the write always happens. Against a phantom empty file it writes the
@@ -381,7 +397,7 @@ describe("SandboxProjectFs failure semantics", () => {
     ).rejects.toThrow(/500/);
 
     expect(stub.tree.get("/a.txt")).toBe("REAL CONTENT");
-    expect(stub.calls).not.toContain(`POST ${PREFIX}/fs/write`);
+    expect(stub.calls).not.toContain(`POST ${PREFIX}/fs`);
   });
 
   it("reports a 404 as absent and everything else as a failure", async () => {
@@ -389,13 +405,13 @@ describe("SandboxProjectFs failure semantics", () => {
     expect(await fs.read("/missing.txt")).toBeNull();
     expect(await fs.exists("/missing.txt")).toBe(false);
 
-    const { fs: broken } = make({ "/a.txt": "one" }, only("/fs/read", 500));
+    const { fs: broken } = make({ "/a.txt": "one" }, only("GET", "/fs", 500));
     await expect(broken.read("/a.txt")).rejects.toThrow(/500/);
     await expect(broken.exists("/a.txt")).rejects.toThrow(/500/);
   });
 
-  it("does not present a suspended box as an empty project", async () => {
-    // cloud answers 409 for a box that is not running. Reporting that as an
+  it("does not present a suspended sandbox as an empty project", async () => {
+    // cloud answers 409 for a sandbox that is not running. Reporting that as an
     // empty listing, no matches and no such file lets the model conclude the
     // checkout is empty and start rewriting it from scratch.
     const { fs } = make({ "/a.txt": "one", "/b.txt": "two" }, () => 409);
@@ -406,76 +422,76 @@ describe("SandboxProjectFs failure semantics", () => {
     await expect(fs.exec("true")).rejects.toThrow(/409/);
   });
 
-  it("names the box in the failure, so a broken one is identifiable", async () => {
+  it("names the sandbox in the failure, so a broken one is identifiable", async () => {
     const { fs } = make({}, () => 502);
-    await expect(fs.list()).rejects.toThrow(BOX);
+    await expect(fs.list()).rejects.toThrow(ID);
   });
 });
 
-describe("openBox", () => {
+describe("openSandbox", () => {
   const realFetch = globalThis.fetch;
   afterEach(() => {
     globalThis.fetch = realFetch;
   });
 
-  it("bounds the life of every box it opens", async () => {
-    const stub = stubBox({});
+  it("bounds the life of every sandbox it opens", async () => {
+    const stub = stubSandbox({});
     installFetch(stub);
-    await openBox({ baseUrl: BASE, token: "tok-123", project: "acme" });
+    await openSandbox({ baseUrl: BASE, token: "tok-123", project: "acme" });
     expect(stub.created[0]).toMatchObject({ project: "acme", class: "dev" });
-    expect(stub.created[0]!.ttlSec).toBe(DEFAULT_BOX_TTL_SEC);
+    expect(stub.created[0]!.ttlSec).toBe(DEFAULT_TTL_SEC);
   });
 
-  it("recovers the live box when cloud refuses a second one", async () => {
-    // 409 means "this project already has a box" — which is the box the caller
+  it("recovers the live sandbox when cloud refuses a second one", async () => {
+    // 409 means "this project already has a sandbox" — which is the sandbox the caller
     // asked for. Treating it as failure sent the next run to an empty in-memory
-    // map while the real checkout sat in a box nobody looked up.
-    const stub = stubBox({}, (m, p) => (m === "POST" && p === "/v1/sandbox/boxes" ? 409 : undefined));
+    // map while the real checkout sat in a sandbox nobody looked up.
+    const stub = stubSandbox({}, (m, p) => (m === "POST" && p === "/v1/sandboxes" ? 409 : undefined));
     installFetch(stub);
 
-    const box = await openBox({ baseUrl: BASE, token: "tok-123", project: "acme" });
+    const sandbox = await openSandbox({ baseUrl: BASE, token: "tok-123", project: "acme" });
 
-    expect(box?.id).toBe(BOX);
-    expect(stub.calls).toEqual(["POST /v1/sandbox/boxes", "GET /v1/sandbox/boxes"]);
+    expect(sandbox?.id).toBe(ID);
+    expect(stub.calls).toEqual(["POST /v1/sandboxes", "GET /v1/sandboxes"]);
   });
 
-  it("falls back to memory when the conflicting box is not runnable", async () => {
-    // A pending box holds the volume but its proxy refuses every call. Handing
+  it("falls back to memory when the conflicting sandbox is not runnable", async () => {
+    // A pending sandbox holds the volume but its proxy refuses every call. Handing
     // one back would produce a filesystem whose every method throws.
-    const stub = stubBox({}, (m, p) =>
-      m === "POST" && p === "/v1/sandbox/boxes" ? 409 : undefined
+    const stub = stubSandbox({}, (m, p) =>
+      m === "POST" && p === "/v1/sandboxes" ? 409 : undefined
     );
     installFetch(stub);
     const orig = stub.handler;
     const noneRunning = async (req: Parameters<typeof orig>[0]) => {
-      if (req.method === "GET" && req.url.pathname === "/v1/sandbox/boxes") {
-        stub.calls.push("GET /v1/sandbox/boxes");
+      if (req.method === "GET" && req.url.pathname === "/v1/sandboxes") {
+        stub.calls.push("GET /v1/sandboxes");
         return Response.json({ boxes: [] });
       }
       return orig(req);
     };
     installFetch({ ...stub, handler: noneRunning });
 
-    expect(await openBox({ baseUrl: BASE, token: "tok-123", project: "acme" })).toBeNull();
+    expect(await openSandbox({ baseUrl: BASE, token: "tok-123", project: "acme" })).toBeNull();
   });
 });
 
-describe("releaseBox", () => {
+describe("releaseSandbox", () => {
   const realFetch = globalThis.fetch;
   afterEach(() => {
     globalThis.fetch = realFetch;
   });
 
-  it("suspends rather than deletes, so the checkout survives the run", async () => {
-    const stub = stubBox({});
+  it("ends the lease without destroying the checkout", async () => {
+    const stub = stubSandbox({});
     installFetch(stub);
-    expect(await releaseBox({ baseUrl: BASE, token: "tok-123", boxId: BOX })).toBe(true);
-    expect(stub.calls).toEqual([`POST ${PREFIX}/suspend`]);
+    expect(await releaseSandbox({ baseUrl: BASE, token: "tok-123", id: ID })).toBe(true);
+    expect(stub.calls).toEqual([`DELETE ${PREFIX}`]);
   });
 
   it("reports failure instead of throwing into a finished run", async () => {
-    const stub = stubBox({}, () => 500);
+    const stub = stubSandbox({}, () => 500);
     installFetch(stub);
-    expect(await releaseBox({ baseUrl: BASE, token: "tok-123", boxId: BOX })).toBe(false);
+    expect(await releaseSandbox({ baseUrl: BASE, token: "tok-123", id: ID })).toBe(false);
   });
 });

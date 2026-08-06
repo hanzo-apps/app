@@ -35,7 +35,7 @@ export interface RunAgentOptions {
    *  Ignored when `fs` is supplied — a sandbox already has its own files. */
   files?: AgentFile[];
   /** Where the agent edits. Defaults to an in-memory project built from
-   *  `files`; pass a `SandboxProjectFs` to edit a real checkout on a box. The
+   *  `files`; pass a `Sandbox` to edit a real checkout on a box. The
    *  loop is identical either way — that is the whole point of the seam. */
   fs?: ProjectFs;
   /** Max reason→act turns before the loop stops. Default 8. */
