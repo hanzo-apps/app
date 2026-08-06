@@ -1,9 +1,6 @@
-<svg viewBox="0 0 138 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lux Network" fill="#000">
-  <!-- Lux brand mark: the downward delta/triangle, extracted from the official
-       Lux assets (lux/kms/frontend/public/favicon.svg + the .github/hero.svg
-       lockups: path "M50 85 L15 25 L85 25 Z"), scaled into a horizontal wordmark
-       lockup. Single-color so the logo wall's brightness(0) invert(1) renders it
-       clean white. -->
-  <path d="M23 41 L6 11 L40 11 Z" />
-  <text x="52" y="36" font-family="Geist, Inter, system-ui, -apple-system, Helvetica, Arial, sans-serif" font-size="34" font-weight="700" letter-spacing="-1.5">Lux</text>
+<svg viewBox="0 0 74 40" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lux Network" fill="#000">
+  <!-- The LUX wordmark, text-only. The earlier lockup paired a delta mark with
+       mixed-case "Lux"; the wall wants the plain caps wordmark. Single-color so
+       brightness(0) invert(1) renders it clean white. -->
+  <text x="0" y="30" font-family="Geist, Inter, system-ui, -apple-system, Helvetica, Arial, sans-serif" font-size="28" font-weight="700" letter-spacing="2">LUX</text>
 </svg>
