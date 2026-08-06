@@ -37,6 +37,32 @@ export type { Lift } from "@hanzo/ui/glass";
 export const RAIL = 960;
 
 /**
+ * A square control whose whole content is one glyph.
+ *
+ * The size IS the padding, so the padding must be ZERO — and that is the part
+ * every call site forgot. A Button carries 12px of horizontal padding for its
+ * label; pin the box to a fixed width and that padding eats the box from both
+ * sides, leaving `size - 24` for the icon. `svg { max-width: 100% }` then
+ * shrinks the glyph to fit instead of letting it overflow, so nothing warns and
+ * nothing clips — the icon just quietly stops being square.
+ *
+ * Measured in the builder toolbar, and the arithmetic is exact: a 28px device
+ * toggle rendered its 16px icon at 2px (28-24, less the hairline), the 32px
+ * history/refresh/open controls at 6px, a 36px control at 10px. Six icons in one
+ * bar, each a different sliver, which is what "the icons look wrong" was.
+ *
+ * Height is not passed: a square is one number.
+ */
+export const iconBox = (size: number) => ({
+  width: size,
+  height: size,
+  paddingHorizontal: 0,
+  paddingVertical: 0,
+  alignItems: "center",
+  justifyContent: "center",
+}) as const;
+
+/**
  * What this app learned. It stays here, not in the package, because the
  * evidence is all local paths — and it is the reason each recipe is shaped the
  * way it is, so it should not be lost to a move.

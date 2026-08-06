@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger, Button } from '@hanzo/ui';
-import { selected } from "@/lib/chrome";
+import { iconBox, selected } from "@/lib/chrome";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { PagePanel } from "@/components/editor/page-navigator";
 import { WorkspaceMenu } from "@/components/editor/workspace-menu";
@@ -133,7 +133,7 @@ export function Header({
         <Link
           href="/"
           aria-label="Hanzo home"
-        ><XStack marginRight="$0.5" width={CONTROL} height={CONTROL} alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}>
+        ><XStack marginRight="$0.5" {...iconBox(CONTROL)} borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}>
           <HanzoLogo size={20} />
         </XStack></Link>
         <YStack minWidth={0}>
@@ -149,7 +149,7 @@ export function Header({
             aria-label={historyOpen ? "Back to chat" : "Version history"}
             aria-pressed={Boolean(historyOpen)}
             variant="ghost"
-            display="none" $lg={{ display: "flex" }} width={CONTROL} height={CONTROL} alignItems="center" justifyContent="center" borderRadius="$5" {...{ ...selected(Boolean(historyOpen)), hoverStyle: historyOpen ? undefined : { backgroundColor: "$color3" } }}
+            display="none" $lg={{ display: "flex" }} {...iconBox(CONTROL)} borderRadius="$5" {...{ ...selected(Boolean(historyOpen)), hoverStyle: historyOpen ? undefined : { backgroundColor: "$color3" } }}
           >
             <History size={16} />
           </Button>
@@ -212,7 +212,7 @@ export function Header({
                   aria-selected={active}
                   title={`${d.name[0].toUpperCase()}${d.name.slice(1)} preview`}
                   onClick={() => setDevice(d.name as "desktop" | "mobile")}
-                  width={28} height={28} alignItems="center" justifyContent="center" borderRadius="$3" {...{ ...sel, hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
+                  {...iconBox(28)} borderRadius="$3" {...{ ...sel, hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
                 >
                   <SizableText color={sel.color}>
                     <d.icon size={16} />
@@ -226,7 +226,7 @@ export function Header({
             onClick={handleRefreshIframe}
             title="Refresh preview"
             variant="ghost"
-            width={CONTROL} height={CONTROL} alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
+            {...iconBox(CONTROL)} borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
           >
             <RefreshCcw size={14} />
           </Button>
@@ -273,7 +273,7 @@ export function Header({
             title="Open preview in a new tab"
             aria-label="Open preview in a new tab"
             variant="ghost"
-            width={CONTROL} height={CONTROL} alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
+            {...iconBox(CONTROL)} borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
           >
             <ExternalLink size={14} />
           </Button>
