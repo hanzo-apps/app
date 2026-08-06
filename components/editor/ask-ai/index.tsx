@@ -1,5 +1,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { ElementInfo } from "../preview/bridge";
 import { YStack, XStack, SizableText, Paragraph, type GuiElement } from '@hanzo/gui';
 import { useState, useMemo, useRef, useEffect } from "react";
 import { toast, Button, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
@@ -105,8 +106,8 @@ export function AskAI({
   onSuccess: (page: Page[], p: string, n?: number[][]) => void;
   isEditableModeEnabled: boolean;
   setIsEditableModeEnabled: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedElement?: HTMLElement | null;
-  setSelectedElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
+  selectedElement?: ElementInfo | null;
+  setSelectedElement: React.Dispatch<React.SetStateAction<ElementInfo | null>>;
   selectedFiles: string[];
   setSelectedFiles: React.Dispatch<React.SetStateAction<string[]>>;
   setPages: React.Dispatch<React.SetStateAction<Page[]>>;
@@ -505,7 +506,7 @@ export function AskAI({
     if (useFollowUp) {
       // Use follow-up function for existing projects
       const selectedElementHtml = selectedElement
-        ? selectedElement.outerHTML
+        ? selectedElement.html
         : "";
 
       const result = await callAiFollowUp(

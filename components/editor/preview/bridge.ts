@@ -31,11 +31,23 @@ export interface ElementInfo {
   text?: string;
   /** A snapshot, not the live CSSStyleDeclaration — that cannot cross a frame. */
   styles: Record<string, string>;
+  /** The element's own markup, which is what the composer hands the model when
+   *  you ask it to change "this". Capped: a selected <body> would otherwise put
+   *  the entire document into a postMessage and then into a prompt. */
+  html: string;
 }
 
 export type FrameEvent =
   | { type: 'preview:ready' }
-  | { type: 'preview:hover'; selector: string | null }
+  | {
+      type: 'preview:hover';
+      selector: string | null;
+      /** Viewport-relative inside the FRAME. The host draws its hover overlay
+       *  from this — it used to call getBoundingClientRect() on the node itself,
+       *  which is the one thing that cannot cross an origin. */
+      rect?: { top: number; left: number; width: number; height: number };
+      tagName?: string;
+    }
   | { type: 'preview:select'; info: ElementInfo }
   | { type: 'preview:navigate'; path: string };
 
@@ -44,7 +56,8 @@ export type FrameCommand =
   | { type: 'preview:style'; selector: string; property: string; value: string }
   | { type: 'preview:text'; selector: string; text: string }
   | { type: 'preview:theme'; mode: 'light' | 'dark' | 'auto' }
-  | { type: 'preview:highlight'; selector: string | null };
+  | { type: 'preview:highlight'; selector: string | null }
+  | { type: 'preview:scroll'; align: 'start' | 'end'; smooth: boolean };
 
 /** The style properties the editor panel reads. Snapshotting all ~340 computed
  *  properties per hover would put a kilobyte on every mouse move. */
@@ -144,7 +157,8 @@ export const BRIDGE_SCRIPT = `
       id: el.id || undefined,
       className: typeof el.className === 'string' ? el.className : undefined,
       text: (el.textContent || '').slice(0, 200),
-      styles: styles
+      styles: styles,
+      html: (el.outerHTML || '').slice(0, 8000)
     };
   }
 
@@ -160,7 +174,13 @@ export const BRIDGE_SCRIPT = `
     if (hovered) hovered.classList.remove('hovered-element');
     hovered = t;
     t.classList.add('hovered-element');
-    send({ type: 'preview:hover', selector: selectorFor(t) });
+    var r = t.getBoundingClientRect();
+    send({
+      type: 'preview:hover',
+      selector: selectorFor(t),
+      rect: { top: r.top, left: r.left, width: r.width, height: r.height },
+      tagName: t.tagName.toLowerCase()
+    });
   }, true);
 
   document.addEventListener('mouseout', function () {
@@ -222,6 +242,14 @@ export const BRIDGE_SCRIPT = `
       } else {
         root.style.colorScheme = m.mode;
         root.setAttribute('data-theme', m.mode);
+      }
+      return;
+    }
+    if (m.type === 'preview:scroll') {
+      if (document.body) {
+        document.body.scrollIntoView({
+          block: m.align, inline: 'nearest', behavior: m.smooth ? 'smooth' : 'instant'
+        });
       }
       return;
     }

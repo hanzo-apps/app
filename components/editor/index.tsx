@@ -3,6 +3,7 @@ import { SizableText, YStack, XStack, type GuiElement } from '@hanzo/gui';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast, Button } from '@hanzo/ui';
 import type { CodeEditorHandle } from "@/components/code-editor";
+import type { ElementInfo } from "./preview/bridge";
 import dynamic from "next/dynamic";
 import { CopyIcon, Share2 } from "lucide-react";
 
@@ -130,7 +131,10 @@ export const AppEditor = ({
   const [isResizing, setIsResizing] = useState(false);
   const [isAiWorking, setIsAiWorking] = useState(false);
   const [isEditableModeEnabled, setIsEditableModeEnabled] = useState(false);
-  const [selectedElement, setSelectedElement] = useState<HTMLElement | null>(
+  // An ElementInfo, not a live node. The preview frame is isolated, so what
+  // crosses is a description of the element — selector, tag, text, a style
+  // snapshot and its markup — never a handle into another document's DOM.
+  const [selectedElement, setSelectedElement] = useState<ElementInfo | null>(
     null
   );
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);

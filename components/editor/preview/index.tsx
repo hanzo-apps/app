@@ -1,6 +1,7 @@
 "use client";
 import { XStack, YStack, Paragraph, SizableText, type GuiElement } from '@hanzo/gui';
 import { useUpdateEffect } from "react-use";
+import { withBridge, isFrameEvent, command, type ElementInfo } from "./bridge";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast, Button } from '@hanzo/ui';
 import { Maximize2, Minimize2 } from "lucide-react";
@@ -74,9 +75,15 @@ export const Preview = ({
   device: "desktop" | "mobile";
   currentTab: string;
   isEditableModeEnabled?: boolean;
-  onClickElement?: (element: HTMLElement) => void;
+  onClickElement?: (element: ElementInfo) => void;
 }) => {
-  const [hoveredElement, setHoveredElement] = useState<HTMLElement | null>(
+  // Serialisable, not a node: the frame is on its way to an opaque origin and a
+  // DOM handle cannot survive that. The rect is what the overlay below needs.
+  const [hoveredElement, setHoveredElement] = useState<{
+    selector: string;
+    tagName: string;
+    rect: { top: number; left: number; width: number; height: number };
+  } | null>(
     null
   );
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -103,111 +110,59 @@ export const Preview = ({
     return () => document.removeEventListener("fullscreenchange", onChange);
   }, []);
 
-  const handleMouseOver = (event: MouseEvent) => {
-    if (iframeRef?.current) {
-      const iframeDocument = iframeRef.current.contentDocument;
-      if (iframeDocument) {
-        const targetElement = event.target as HTMLElement;
-        if (
-          hoveredElement !== targetElement &&
-          targetElement !== iframeDocument.body
-        ) {
-          setHoveredElement(targetElement);
-          targetElement.classList.add("hovered-element");
-        } else {
-          return setHoveredElement(null);
-        }
+  // ── The frame talks; we listen ───────────────────────────────────────────
+  // This used to be four handlers bound onto `iframe.contentDocument`. That is
+  // the access an opaque origin takes away, and it is the only reason this pane
+  // still carries `allow-same-origin` while generated, imported and forked HTML
+  // runs on the origin holding the IAM refresh token. Everything the pane needs
+  // now arrives as a message from the injected bridge instead, addressed by CSS
+  // selector rather than by node.
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      const frame = iframeRef?.current ?? null;
+      if (!isFrameEvent(event, frame)) return;
+      const msg = event.data;
+
+      if (msg.type === "preview:hover") {
+        setHoveredElement(
+          msg.selector && msg.rect && msg.tagName
+            ? { selector: msg.selector, tagName: msg.tagName, rect: msg.rect }
+            : null,
+        );
+        return;
       }
-    }
-  };
-  const handleMouseOut = () => {
-    setHoveredElement(null);
-  };
-  const handleClick = (event: MouseEvent) => {
-    if (iframeRef?.current) {
-      const iframeDocument = iframeRef.current.contentDocument;
-      if (iframeDocument) {
-        const targetElement = event.target as HTMLElement;
-        if (targetElement !== iframeDocument.body) {
-          onClickElement?.(targetElement);
-        }
+
+      if (msg.type === "preview:select") {
+        onClickElement?.(msg.info);
+        return;
       }
-    }
-  };
-  const handleCustomNavigation = (event: MouseEvent) => {
-    if (iframeRef?.current) {
-      const iframeDocument = iframeRef.current.contentDocument;
-      if (iframeDocument) {
-        const findClosestAnchor = (
-          element: HTMLElement
-        ): HTMLAnchorElement | null => {
-          let current = element;
-          while (current && current !== iframeDocument.body) {
-            if (current.tagName === "A") {
-              return current as HTMLAnchorElement;
-            }
-            current = current.parentElement as HTMLElement;
-          }
-          return null;
-        };
 
-        const anchorElement = findClosestAnchor(event.target as HTMLElement);
-        if (anchorElement) {
-          let href = anchorElement.getAttribute("href");
-          if (href) {
-            event.stopPropagation();
-            event.preventDefault();
-
-            if (href.includes("#") && !href.includes(".html")) {
-              const targetElement = iframeDocument.querySelector(href);
-              if (targetElement) {
-                targetElement.scrollIntoView({ behavior: "smooth" });
-              }
-              return;
-            }
-
-            href = href.split(".html")[0] + ".html";
-            const isPageExist = pages.some((page) => page.path === href);
-            if (isPageExist) {
-              setCurrentPage(href);
-            }
-          }
-        }
-      }
-    }
-  };
-
-  useUpdateEffect(() => {
-    const cleanupListeners = () => {
-      if (iframeRef?.current?.contentDocument) {
-        const iframeDocument = iframeRef.current.contentDocument;
-        iframeDocument.removeEventListener("mouseover", handleMouseOver);
-        iframeDocument.removeEventListener("mouseout", handleMouseOut);
-        iframeDocument.removeEventListener("click", handleClick);
+      if (msg.type === "preview:navigate") {
+        // Same rule as before: only a page this build actually has. An unknown
+        // href is ignored rather than navigating the pane somewhere blank.
+        const href = msg.path.split(".html")[0] + ".html";
+        if (pages.some((page) => page.path === href)) setCurrentPage(href);
       }
     };
 
-    if (iframeRef?.current) {
-      const iframeDocument = iframeRef.current.contentDocument;
-      if (iframeDocument) {
-        cleanupListeners();
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [iframeRef, onClickElement, pages, setCurrentPage]);
 
-        if (isEditableModeEnabled) {
-          iframeDocument.addEventListener("mouseover", handleMouseOver);
-          iframeDocument.addEventListener("mouseout", handleMouseOut);
-          iframeDocument.addEventListener("click", handleClick);
-        }
-      }
+  // Editable mode is a command now, not a set of listeners we attach and detach.
+  // Both frames are told: the double buffer means the one being written to is
+  // not always the one in front.
+  useUpdateEffect(() => {
+    for (const ref of [iframeA, iframeB]) {
+      command(ref.current, { type: "preview:editable", active: !!isEditableModeEnabled });
     }
+    if (!isEditableModeEnabled) setHoveredElement(null);
+  }, [isEditableModeEnabled]);
 
-    return cleanupListeners;
-  }, [iframeRef, isEditableModeEnabled]);
-
-  const selectedElement = useMemo(() => {
-    if (!isEditableModeEnabled) return null;
-    if (!hoveredElement) return null;
-    return hoveredElement;
-  }, [hoveredElement, isEditableModeEnabled]);
+  const selectedElement = useMemo(
+    () => (isEditableModeEnabled ? hoveredElement : null),
+    [hoveredElement, isEditableModeEnabled],
+  );
 
   // ── Double-buffered preview ──────────────────────────────────────────────
   // Streaming a build used to write `srcDoc` on the ONE iframe every update —
@@ -257,19 +212,17 @@ export const Preview = ({
     else setSrcA(streamHtml);
   }, [streamHtml, isAiWorking]);
 
+  // Follow the stream to the bottom while the model writes, settle at the top
+  // when it stops. A command now: `contentWindow.document` is exactly what an
+  // opaque origin denies. The anchor wiring that used to live here is gone —
+  // the bridge intercepts link clicks in the document itself and sends
+  // `preview:navigate`, so there is nothing to bind from out here.
   const wireFrame = (el: HTMLIFrameElement | null) => {
-    const doc = el?.contentWindow?.document;
-    if (!doc) return;
-    if (doc.body) {
-      doc.body.scrollIntoView({
-        block: isAiWorking ? "end" : "start",
-        inline: "nearest",
-        behavior: isAiWorking ? "instant" : "smooth",
-      });
-    }
-    doc
-      .querySelectorAll("a")
-      .forEach((link) => link.addEventListener("click", handleCustomNavigation));
+    command(el, {
+      type: "preview:scroll",
+      align: isAiWorking ? "end" : "start",
+      smooth: !isAiWorking,
+    });
   };
 
   const handleFrameLoad = (which: "a" | "b") => {
@@ -348,18 +301,14 @@ export const Preview = ({
         <YStack
           cursor="pointer" position="absolute" backgroundColor="$color01" borderWidth={1} borderColor="$color" borderStyle="dashed" borderTopRightRadius="$5" borderBottomRightRadius="$5" borderBottomLeftRadius="$5" padding="$3" zIndex={10} pointerEvents="none"
           style={{
-            top:
-              selectedElement.getBoundingClientRect().top +
-              (currentTab === "preview" ? 0 : 24),
-            left:
-              selectedElement.getBoundingClientRect().left +
-              (currentTab === "preview" ? 0 : 24),
-            width: selectedElement.getBoundingClientRect().width,
-            height: selectedElement.getBoundingClientRect().height,
+            top: selectedElement.rect.top + (currentTab === "preview" ? 0 : 24),
+            left: selectedElement.rect.left + (currentTab === "preview" ? 0 : 24),
+            width: selectedElement.rect.width,
+            height: selectedElement.rect.height,
           }}
         >
           <SizableText backgroundColor="$color5" borderWidth={1} borderColor="$color6" borderTopLeftRadius="$3" borderTopRightRadius="$3" fontSize="$3" color="$color12" paddingHorizontal="$2" paddingVertical="$0.5" y={-28} position="absolute" top="$0" left="$0">
-            {htmlTagToText(selectedElement.tagName.toLowerCase())}
+            {htmlTagToText(selectedElement.tagName)}
           </SizableText>
         </YStack>
       )}
@@ -374,25 +323,21 @@ export const Preview = ({
             title="output"
             className="preview-frame"
             style={frameStyle}
-            // PARTIAL, and named as partial so nobody reads it as the fix.
+            // NO `allow-same-origin`. That flag is what let generated, imported
+            // and forked HTML read `top.localStorage` — where the IAM access and
+            // refresh tokens live — and even drop its own sandbox. It is gone
+            // because nothing here needs it any more: hover, click-to-select,
+            // navigation, theming and scroll-follow all travel over the bridge
+            // injected by `withBridge`, addressed by CSS selector instead of by
+            // node, and the selection crosses as a description rather than as a
+            // handle into another document.
             //
-            // `allow-same-origin` is still here, and it is the whole hole: with
-            // it, previewed code keeps THIS origin and can read the IAM refresh
-            // token out of localStorage. It cannot be dropped from this pane the
-            // way it was dropped from components/preview/* — those talk to the
-            // host over an injected postMessage bridge, while this one drives
-            // hover, click-to-select and in-preview navigation through
-            // `contentDocument`, and the editor holds the clicked node itself as
-            // `selectedElement: HTMLElement`. An opaque origin makes all of that
-            // null, so isolating this pane means moving the instrumentation into
-            // the bridge and making the selection serialisable first.
-            //
-            // What the attribute DOES buy, today: no top-level navigation (a
-            // previewed page cannot redirect the whole builder to a phishing
-            // page), no popups, no downloads, no modals, no pointer/orientation
-            // lock. Real classes of attack, and none of them the token one.
-            sandbox="allow-scripts allow-same-origin allow-forms"
-            srcDoc={srcA}
+            // Proven in Chromium against a real frame with exactly this
+            // attribute (e2e/bridge): `contentDocument` is null, reading through
+            // `contentWindow` throws SecurityError, and the exfiltration script
+            // from the report comes back DENIED instead of a token.
+            sandbox="allow-scripts allow-forms"
+            srcDoc={withBridge(srcA)}
             onLoad={() => handleFrameLoad("a")}
           />
         </YStack>
@@ -404,9 +349,10 @@ export const Preview = ({
             aria-hidden={frontA}
             className="preview-frame"
             style={frameStyle}
-            // Same sandbox, same caveat as the frame above.
-            sandbox="allow-scripts allow-same-origin allow-forms"
-            srcDoc={srcB}
+            // Same sandbox as the frame above — the double buffer means both
+            // frames show untrusted HTML, so both are isolated or neither is.
+            sandbox="allow-scripts allow-forms"
+            srcDoc={withBridge(srcB)}
             onLoad={() => handleFrameLoad("b")}
           />
         </YStack>

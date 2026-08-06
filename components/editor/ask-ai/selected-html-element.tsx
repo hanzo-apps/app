@@ -1,5 +1,6 @@
 'use client';
 
+import type { ElementInfo } from "../preview/bridge";
 import { XStack, Paragraph } from '@hanzo/gui';
 import { Code, XCircle } from "lucide-react";
 
@@ -11,13 +12,13 @@ export const SelectedHtmlElement = ({
   isAiWorking = false,
   onDelete,
 }: {
-  element: HTMLElement | null;
+  element: ElementInfo | null;
   isAiWorking: boolean;
   onDelete?: () => void;
 }) => {
   if (!element) return null;
 
-  const tagName = element.tagName.toLowerCase();
+  const tagName = element.tagName;
   return (
     <Collapsible
       borderWidth={1} borderColor="$borderColor" borderRadius="$6" padding="$1.5" paddingRight="$3" maxWidth="max-content" {...{ cursor: isAiWorking ? "not-allowed" : !isAiWorking ? "pointer" : "pointer", opacity: isAiWorking ? 0.5 : undefined }}
@@ -33,7 +34,7 @@ export const SelectedHtmlElement = ({
           <Code size={14} />
         </XStack>
         <Paragraph fontSize="$3" fontWeight="500" color="$color11">
-          {element.textContent?.trim().split(/\s+/)[0]} {htmlTagToText(tagName)}
+          {element.text?.trim().split(/\s+/)[0]} {htmlTagToText(tagName)}
         </Paragraph>
         <XCircle size={16} />
       </CollapsibleTrigger>
