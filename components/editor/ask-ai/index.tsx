@@ -3,6 +3,7 @@
 import { YStack, XStack, SizableText, Paragraph, type GuiElement } from '@hanzo/gui';
 import { useState, useMemo, useRef, useEffect } from "react";
 import { toast, Button, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
+import { sends } from '@hanzo/ui/chat';
 import { useLocalStorage } from "react-use";
 import { ArrowUp, CircleStop, ImagePlus, MoreHorizontal, X } from "lucide-react";
 
@@ -1218,7 +1219,7 @@ export function AskAI({
             onChangeText={(t) => setPrompt(t)}
             onPaste={handlePaste}
             onKeyDown={(e: React.KeyboardEvent) => {
-              if (e.key === "Enter" && !e.shiftKey) {
+              if (sends(e.key, e.nativeEvent)) {
                 e.preventDefault();
                 callAi();
               }

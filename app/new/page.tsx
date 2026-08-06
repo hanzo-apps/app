@@ -5,6 +5,7 @@ import { glass } from "@/lib/chrome";
 import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button, toast, Textarea, Input } from '@hanzo/ui';
+import { sends } from '@hanzo/ui/chat';
 import {
   ArrowRight,
   ArrowUp,
@@ -237,8 +238,8 @@ function NewProjectInner() {
                 rows={2}
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey || !e.shiftKey)) {
+                onKeyDown={(e: React.KeyboardEvent) => {
+                  if (sends(e.key, e.nativeEvent)) {
                     e.preventDefault();
                     submit();
                   }

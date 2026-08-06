@@ -31,6 +31,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Textarea, Button } from '@hanzo/ui';
+import { sends } from '@hanzo/ui/chat';
 import { baseEnabled, setBaseEnabled } from '@/lib/base/flag';
 import { startNewBuild } from '@/lib/dev/workspace';
 
@@ -221,8 +222,8 @@ export function BuildComposer({
             ref={textareaRef}
             value={idea}
             onChangeText={(t) => setIdea(t)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+            onKeyDown={(e: React.KeyboardEvent) => {
+              if (sends(e.key, e.nativeEvent)) {
                 e.preventDefault();
                 submit();
               }

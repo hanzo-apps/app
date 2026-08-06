@@ -11,6 +11,7 @@
  * visitor gets an honest sign-in prompt.
  */
 import { XStack, YStack, Paragraph, SizableText, H1 } from '@hanzo/gui';
+import { sends } from '@hanzo/ui/chat';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ArrowUp,
@@ -439,7 +440,7 @@ export default function ChatPage() {
                   value={input}
                   onChangeText={(t) => setInput(t)}
                   onKeyDown={(e: React.KeyboardEvent) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
+                    if (sends(e.key, e.nativeEvent)) {
                       e.preventDefault();
                       void send();
                     }
