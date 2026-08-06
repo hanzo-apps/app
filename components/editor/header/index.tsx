@@ -213,8 +213,58 @@ export function Header({
           })}
         </XStack>
 
-        {/* Preview-frame controls — device, refresh, page selector, external.
-            Hidden below `md` where there's no room. */}
+        {/* THE PAGE BROWSER IS NAVIGATION, NOT PREVIEW TOOLING, so it is not
+            behind the `$md` gate below. It was, and that meant a phone could
+            not switch pages AT ALL: the whole cluster is `display: none` under
+            md, and the only page list — and the only SEARCH over it, which is
+            the one way to find a page in a project with more than a handful —
+            went with it. The device toggle and refresh legitimately stay
+            desktop-only; a device switcher on a phone is answering a question
+            nobody asked.
+
+            It sits in the centre cluster's scroll track, so on a narrow screen
+            it is reachable by scrolling rather than by being dropped. */}
+        {/* Page browser — search + folder-grouped list of every page in the
+            project (not just index.html). The working page is highlighted. */}
+        {pages.length > 0 && (
+          <Popover open={pageMenuOpen} onOpenChange={setPageMenuOpen}>
+          {/* A fixed 32px box, not vertical padding: this control sits in a
+                row with the others and has to match their height exactly, which
+                padding around a variable-height label does not. */}
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                title="Browse pages"
+                aria-label="Browse pages"
+                maxWidth="12rem" height={32} alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color3" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color4" }}
+              >
+                <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1">
+                  {currentPage}
+                </SizableText>
+                <ChevronDown size={14} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="center"
+              sideOffset={6}
+              width={256} overflow="hidden" padding="$0"
+            >
+              <PagePanel
+                pages={pages}
+                currentPage={currentPage}
+                onSelectPage={onSelectPage}
+                onClose={() => setPageMenuOpen(false)}
+                autoFocus
+  />
+            </PopoverContent>
+          </Popover>
+        )}
+
+
+        {/* Preview-frame TOOLING — device, refresh, open-in-new. Desktop only:
+            below `md` there is no room, and none of the three answers a
+            question a phone user is asking. The page browser is NOT here; it is
+            navigation and lives above, at every width. */}
         <XStack display="none" $md={{ display: "flex" }} alignItems="center" gap="$2">
           {/* No padding on the group: its items are `size="icon-sm"` (32), the
               same as every other icon control in this bar, so the group is
@@ -256,42 +306,6 @@ export function Header({
           >
             <RefreshCcw size={14} />
           </Button>
-
-          {/* Page browser — search + folder-grouped list of every page in the
-              project (not just index.html). The working page is highlighted. */}
-          {pages.length > 0 && (
-            <Popover open={pageMenuOpen} onOpenChange={setPageMenuOpen}>
-              {/* A fixed 32px box, not vertical padding: this control sits in a
-                  row with the others and has to match their height exactly, which
-                  padding around a variable-height label does not. */}
-              <PopoverTrigger asChild>
-                <Button
-                  type="button"
-                  title="Browse pages"
-                  aria-label="Browse pages"
-                  maxWidth="12rem" height={32} alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color3" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color4" }}
-                >
-                  <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1">
-                    {currentPage}
-                  </SizableText>
-                  <ChevronDown size={14} />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                align="center"
-                sideOffset={6}
-                width={256} overflow="hidden" padding="$0"
-              >
-                <PagePanel
-                  pages={pages}
-                  currentPage={currentPage}
-                  onSelectPage={onSelectPage}
-                  onClose={() => setPageMenuOpen(false)}
-                  autoFocus
-  />
-              </PopoverContent>
-            </Popover>
-          )}
 
           <Button
             type="button"
