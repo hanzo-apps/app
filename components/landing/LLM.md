@@ -2,9 +2,9 @@
 
 
 Design-maven marketing landing — true-black `#000` monochrome (zero hue by
-construction), Basel Grotesk Medium headings, Geist Mono for code/data. Lovable
-STRUCTURE, Hanzo brand. Keep the working prompt-composer + logged-in projects
-logic in `page.tsx`; elevate design only.
+construction), Basel Grotesk Medium headings, Geist Mono for code/data. The
+reference builder's STRUCTURE, Hanzo brand. Keep the working prompt-composer +
+logged-in projects logic in `page.tsx`; elevate design only.
 
 - **`reveal.tsx`** — the ONE scroll-reveal primitive (IntersectionObserver
   fade-up, ~500ms ease-out, `delay` for stagger). Fails open on reduced-motion

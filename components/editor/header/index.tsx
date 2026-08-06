@@ -21,10 +21,10 @@ import { HanzoLogo } from "@/components/HanzoLogo";
 import { PagePanel } from "@/components/editor/page-navigator";
 import { WorkspaceMenu } from "@/components/editor/workspace-menu";
 import type { Page, Project } from "@/types";
-// The ONE view switcher (Lovable's grouped segmented control). "Chat" only means
-// anything on mobile, where a single pane shows at a time — on desktop the chat
-// pane is always docked on the left, so Preview/Code drive the RIGHT pane and
-// the Chat segment is hidden.
+// The ONE view switcher (a grouped segmented control). "Chat" only means anything
+// on mobile, where a single pane shows at a time — on desktop the chat pane is
+// always docked on the left, so Preview/Code drive the RIGHT pane and the Chat
+// segment is hidden.
 const TABS = [
   { value: "chat", label: "Chat", icon: MessageCircleCode, mobileOnly: true },
   { value: "preview", label: "Preview", icon: Eye },
@@ -54,7 +54,7 @@ const DEVICES = [
 const CONTROL = 32;
 
 /**
- * Builder top chrome — the ONE bar (Lovable structure, Hanzo true-black
+ * Builder top chrome — the ONE bar (three clusters across, Hanzo true-black
  * monochrome). It sits on the SAME flat workspace field as the panels below it,
  * with NO bottom border, so the chrome reads as one continuous surface and the
  * raised preview card is the only thing that lifts off it.

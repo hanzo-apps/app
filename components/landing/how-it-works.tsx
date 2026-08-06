@@ -1,9 +1,8 @@
 'use client';
 
 import { YStack, Paragraph, H2, SizableText, H3 } from '@hanzo/gui';
-// Three-step "how it works" — the Lovable structure (idea → build → ship) in
-// Hanzo's monochrome. The third step is the differentiator: it ships to Hanzo
-// Cloud, not just a preview.
+// Three-step "how it works" — idea → build → ship, in Hanzo's monochrome. The
+// third step is the differentiator: it ships to Hanzo Cloud, not just a preview.
 
 import Reveal from "./reveal";
 

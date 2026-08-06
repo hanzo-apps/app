@@ -2,8 +2,8 @@
 
 /**
  * WorkspaceMenu — the ONE top-left org/project menu for the /dev builder
- * (Lovable structure, Hanzo true-black monochrome). It folds the whole
- * workspace identity into a single dropdown so the header stays lean:
+ * (Hanzo true-black monochrome). It folds the whole workspace identity into a
+ * single dropdown so the header stays lean:
  *
  *   trigger   org mark + project/workspace name + chevron (the left anchor)
  *   content   Go to Dashboard · who you're signed in as · active workspace

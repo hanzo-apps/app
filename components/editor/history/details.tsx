@@ -103,10 +103,10 @@ function workingDiffs(pages: Page[], basePages: Page[]): FileDiff[] {
 }
 
 /**
- * RevisionDetails — the Lovable-style Details view (Timeline | Changes), rendered
- * as a right-area overlay. Changes shows per-file diffs (red/green unified diff
- * with line numbers); Timeline shows the revision's honest metadata (commit
- * fields, or the edit's prompt/model/time — never fabricated steps).
+ * RevisionDetails — the Details view (Timeline | Changes), rendered as a
+ * right-area overlay. Changes shows per-file diffs (red/green unified diff with
+ * line numbers); Timeline shows the revision's honest metadata (commit fields, or
+ * the edit's prompt/model/time — never fabricated steps).
  */
 export function RevisionDetails({
   rev,

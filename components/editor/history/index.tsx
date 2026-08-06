@@ -149,12 +149,12 @@ function openGitSync(): void {
 }
 
 /**
- * HistoryPanel — the git-changeset timeline as a Lovable-style overlay over the
- * chat pane. Working changes (uncommitted) group on top; the real commit history
- * below as cards (provider icon · AI-clean message · bookmark · Details · Preview
- * · revert · ⋮). Bookmarks are durable (per-app Base, localStorage fallback) and
- * fill instantly. `onOpenDetails` opens the right-area Details view; the panel
- * previews a past commit by loading its pages into the editor.
+ * HistoryPanel — the git-changeset timeline as an overlay over the chat pane.
+ * Working changes (uncommitted) group on top; the real commit history below as
+ * cards (provider icon · AI-clean message · bookmark · Details · Preview · revert
+ * · ⋮). Bookmarks are durable (per-app Base, localStorage fallback) and fill
+ * instantly. `onOpenDetails` opens the right-area Details view; the panel previews
+ * a past commit by loading its pages into the editor.
  */
 export function HistoryPanel({
   history,
@@ -492,11 +492,11 @@ export function HistoryPanel({
         }
         return;
       }
-      // commit → restore its pages INTO the editor. Lovable semantics: head moves
-      // FORWARD (a new commit) rather than a detached checkout, so nothing in the
-      // timeline is lost and "restore" is itself a revision you can undo. Same
-      // fetch previewCommit uses; on empty/error say so instead of silently doing
-      // nothing.
+      // commit → restore its pages INTO the editor. Restore-forward semantics:
+      // head moves FORWARD (a new commit) rather than a detached checkout, so
+      // nothing in the timeline is lost and "restore" is itself a revision you can
+      // undo. Same fetch previewCommit uses; on empty/error say so instead of
+      // silently doing nothing.
       if (!repo) return;
       setBusyKey(rev.key);
       try {
@@ -712,7 +712,7 @@ export function HistoryPanel({
   );
 }
 
-/** A single revision CARD (Lovable layout) — one shape across kinds. */
+/** A single revision CARD — one shape across kinds. */
 function RevCard({
   rev,
   isActive,

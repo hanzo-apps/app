@@ -55,10 +55,11 @@ const FIX_PREAMBLE =
   "Fix the current design to match the attached reference. Change only what differs from the reference; keep what already matches.";
 
 
-// Contextual next-step suggestions shown as dismissible chips above the composer
-// (Lovable parity). Honest, app-agnostic starters — clicking one sends it as a
-// message in the current mode (Plan discusses it, Build executes it). Dynamic,
-// app-state-derived suggestions are a future refinement on top of this set.
+// Contextual next-step suggestions shown as dismissible chips above the composer,
+// matching the reference builder's composer. Honest, app-agnostic starters —
+// clicking one sends it as a message in the current mode (Plan discusses it, Build
+// executes it). Dynamic, app-state-derived suggestions are a future refinement on
+// top of this set.
 const SUGGESTIONS = [
   "Review security",
   "Review SEO",
@@ -161,9 +162,10 @@ export function AskAI({
   );
   const [isDragging, setIsDragging] = useState(false);
 
-  // Composer mode (Lovable parity): "build" generates/patches the app (default);
-  // "plan" is a conversational back-and-forth that DOESN'T touch the app — the
-  // model discusses/plans, then the user flips to Build to execute. Persisted.
+  // Composer mode, the reference builder's Build/Plan pair: "build"
+  // generates/patches the app (default); "plan" is a conversational back-and-forth
+  // that DOESN'T touch the app — the model discusses/plans, then the user flips to
+  // Build to execute. Persisted.
   const [mode, setMode] = useLocalStorage<"build" | "plan">("composer-mode", "build");
   const isPlan = mode === "plan";
 
