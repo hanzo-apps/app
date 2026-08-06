@@ -36,6 +36,7 @@ import { Uploader } from "./uploader";
 import { offer } from "./mic";
 import { sentence } from "./sentence";
 import { ChatThread, type ThreadMessage } from "./chat-thread";
+import { codeTurn } from "./code-turn";
 import { isConversational } from "./intent";
 import { useVoice, speech } from "@hanzo/voice";
 
@@ -164,12 +165,21 @@ export function AskAI({
   );
   const [isDragging, setIsDragging] = useState(false);
 
-  // Composer mode, the reference builder's Build/Plan pair: "build"
-  // generates/patches the app (default); "plan" is a conversational back-and-forth
-  // that DOESN'T touch the app — the model discusses/plans, then the user flips to
-  // Build to execute. Persisted.
-  const [mode, setMode] = useLocalStorage<"build" | "plan">("composer-mode", "build");
+  // Composer mode — three acts, one control:
+  //   build  generate/patch the app (default): one shot, no tools, the result
+  //          lands in this browser's working copy.
+  //   code   the agent edits the project's real checkout in a sandbox and can
+  //          RUN things — install, build, test. Durable; costs a pod.
+  //   plan   a conversational back-and-forth that DOESN'T touch the app.
+  // Build and Code are deliberately separate values rather than a flag on one
+  // verb: they have different costs and different failure modes, and nobody
+  // should reach the expensive one by accident. Persisted.
+  const [mode, setMode] = useLocalStorage<"build" | "code" | "plan">("composer-mode", "build");
   const isPlan = mode === "plan";
+  const isCode = mode === "code";
+  // The sandbox this project's runs are landing in — remembered across turns so
+  // a second message reuses the warm pod instead of asking for a new one.
+  const sandboxRef = useRef<string | undefined>(undefined);
 
   // Honor the Build/Plan choice handed off from the landing / dashboard composer
   // (localStorage.initialMode). Applied ONCE on mount then cleared, so it seeds the
@@ -178,7 +188,7 @@ export function AskAI({
   useEffect(() => {
     if (typeof window === "undefined") return;
     const handoff = localStorage.getItem("initialMode");
-    if (handoff === "build" || handoff === "plan") {
+    if (handoff === "build" || handoff === "code" || handoff === "plan") {
       setMode(handoff);
       localStorage.removeItem("initialMode");
     }
@@ -462,6 +472,67 @@ export function AskAI({
     if (!queuedPrompt) {
       setPrompt("");
       setIsFixMode(false);
+    }
+
+    // Code mode — the agent works in the project's sandbox. A real checkout, a
+    // real toolchain, and the commands it runs stream into the console dock as
+    // they happen. Checked before the conversational branch because a Code
+    // message is never small talk: someone in Code mode asking "does this build"
+    // wants it built, not discussed.
+    if (isCode && !redesignMarkdown && !fixSubmit) {
+      const codeId = beginTurn(promptToUse.trim(), false);
+      updateAssistant(codeId, { activity: ["Opening the project's sandbox"] });
+      setisAiWorking(true);
+      const activity: string[] = [];
+      let answer = "";
+      try {
+        const result = await codeTurn({
+          prompt: promptToUse.trim(),
+          model,
+          sandbox: sandboxRef.current,
+          files: pages.map((p) => ({ path: p.path, content: p.html })),
+          onWhere: ({ durable, sandbox, reason }) => {
+            sandboxRef.current = sandbox;
+            activity.length = 0;
+            activity.push(durable ? `Sandbox ${sandbox}` : "In memory — NOT saved");
+            updateAssistant(codeId, { activity: [...activity] });
+            // The fallback, said where the person is looking. A run that saves
+            // nothing must never be indistinguishable from one that saves.
+            if (!durable) {
+              setMessages((prev) => [
+                ...prev,
+                { id: genId(), role: "system", text: reason ?? "This run edits memory only — nothing is saved." },
+              ]);
+            }
+          },
+          onActivity: (label) => {
+            activity.push(label);
+            updateAssistant(codeId, { activity: [...activity] });
+          },
+          onText: (chunk) => {
+            answer += chunk;
+            updateAssistant(codeId, { text: answer, phase: "building" });
+          },
+        });
+        // A durable run's files live in the sandbox; take up what it changed so
+        // the preview and the editor show the same thing the disk holds.
+        if (result.files.length) {
+          onSuccess(
+            result.files.map((f) => ({ path: f.path, html: f.content })),
+            promptToUse.trim(),
+          );
+        }
+        const summary =
+          (result.text.trim() ||
+            (result.changed.length
+              ? `Changed ${result.changed.join(", ")}`
+              : "Nothing to change.")) +
+          (result.durable ? "" : "\n\n(Not saved — this run edited memory only.)");
+        finishTurn(codeId, result.ok ? "done" : "error", summary);
+      } finally {
+        setisAiWorking(false);
+      }
+      return;
     }
 
     // A conversational turn — NO build. Stream a chat reply into the thread and stop.
@@ -1210,6 +1281,8 @@ export function AskAI({
                 ? "Attach a reference (drop, paste, or pick), then send — or add a note"
                 : isPlan
                 ? "Chat about your app — Plan mode won't change it"
+                : isCode
+                ? "Edit and run your project in a sandbox — try \"run the tests\""
                 : selectedElement
                 ? `Ask Hanzo about ${selectedElement.tagName.toLowerCase()}...`
                 : isFollowUp && (!isSameHtml || pages?.length > 1)
@@ -1313,7 +1386,7 @@ export function AskAI({
               aria-label="Composer mode"
               flexShrink={0} alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$0.5"
             >
-              {(["build", "plan"] as const).map((m) => {
+              {(["build", "code", "plan"] as const).map((m) => {
                 // The app's ONE selected look, so the composer's mode agrees
                 // with the header's tabs and the sidebar's rows. It read
                 // `var(--brand-accent)`, which resolves to #ffffff here — a pure
@@ -1331,6 +1404,8 @@ export function AskAI({
                   title={
                     m === "plan"
                       ? "Plan: chat about your app without changing it"
+                      : m === "code"
+                      ? "Code: the agent edits your project in a sandbox and can run commands"
                       : "Build: generate and modify your app"
                   }
                   onClick={() => setMode(m)}

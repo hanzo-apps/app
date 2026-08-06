@@ -1,0 +1,158 @@
+"use client";
+
+import { startAgentRun } from "@/lib/agent/client";
+import type { AgentEvent, AgentFile } from "@/lib/agent/types";
+import { currentProject } from "@/lib/dev/workspace";
+import { push, pushBlock } from "@/components/editor/console/log";
+
+/**
+ * Code mode — the agent editing the project's real checkout.
+ *
+ * WHY THIS IS NOT BUILD MODE. Build generates a page: one shot, no tools, the
+ * result lands in the browser's working copy. Code runs a bounded reason→act
+ * loop in a sandbox: it lists and reads files, patches them, and RUNS THINGS —
+ * installs, builds, tests. Those are different acts with different costs and
+ * different failure modes, so they are different values of the one mode control
+ * rather than a flag on a single verb that would let someone pick the expensive
+ * one by accident.
+ *
+ * WHAT THE PROJECT IS. `currentProject` — the one answer, shared with the
+ * per-turn git commit and the version history: the saved project's slug when
+ * there is one, else a per-browser minted `site-xxxx` stable for the life of the
+ * workspace. It is deliberately not a constant and not a nickname: two people
+ * building must never land in one sandbox, and the same person returning must
+ * land back in theirs.
+ */
+
+export interface CodeTurnResult {
+  /** False when this run's edits were NOT saved anywhere. */
+  durable: boolean;
+  /** The sandbox it ran in, to reuse on the next turn. */
+  sandbox?: string;
+  /** Why it was not durable — a sentence for the person, not a code. */
+  reason?: string;
+  /** The model's closing summary, or the error that ended the run. */
+  text: string;
+  /** Project-relative paths the run wrote. */
+  changed: string[];
+  /** The files as they now stand, for the workspace to take up. */
+  files: AgentFile[];
+  ok: boolean;
+}
+
+/** Trim a tool's raw JSON arguments down to the command it is running. */
+function commandOf(rawArgs: string): string {
+  try {
+    const parsed = JSON.parse(rawArgs) as { command?: unknown };
+    return typeof parsed.command === "string" ? parsed.command : "";
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Run one Code turn, pouring the agent's tool use into the builder console as it
+ * happens and returning what the thread needs to settle its bubble.
+ *
+ * The console is where a command's output belongs — it is a terminal, and this
+ * is the first thing in the product that has ever put a real shell's output in
+ * front of a person. Every `run_command` shows up the moment the model issues
+ * it, and its exit code and output the moment it returns.
+ */
+export async function codeTurn(args: {
+  prompt: string;
+  model?: string;
+  /** Reuse the sandbox a previous turn opened. */
+  sandbox?: string;
+  files?: AgentFile[];
+  signal?: AbortSignal;
+  /** Streamed assistant prose. */
+  onText: (chunk: string) => void;
+  /** One human-readable line per step, for the thread's activity list. */
+  onActivity: (label: string) => void;
+  /** Where this run edits — fires once, before any work. */
+  onWhere: (where: { durable: boolean; sandbox?: string; reason?: string }) => void;
+}): Promise<CodeTurnResult> {
+  const project = currentProject();
+  const out: CodeTurnResult = { durable: false, text: "", changed: [], files: [], ok: false };
+  /** Command per tool-call id, so a result can name what produced it. */
+  const running = new Map<string, string>();
+
+  const on = (event: AgentEvent) => {
+    switch (event.type) {
+      case "sandbox": {
+        out.durable = event.durable;
+        // Only a sandbox that PROVED it can be written to is worth going back
+        // to. Remembering one that could not would make every later turn reuse
+        // the same dead pod.
+        out.sandbox = event.durable ? event.id : undefined;
+        out.reason = event.reason;
+        if (event.durable) {
+          push("sandbox", "info", `connected to sandbox ${event.id} (${event.project})`);
+        } else {
+          // LOUD. This is the case that used to be invisible: the run proceeds,
+          // looks perfect, and saves nothing.
+          push("sandbox", "error", event.reason ?? "not durable — this run edits memory only");
+        }
+        args.onWhere({ durable: event.durable, sandbox: event.id, reason: event.reason });
+        break;
+      }
+      case "text":
+        out.text += event.text;
+        args.onText(event.text);
+        break;
+      case "tool_call": {
+        if (event.name === "run_command") {
+          const command = commandOf(event.arguments);
+          running.set(event.id, command);
+          push("sandbox", "info", command || "(command)");
+          args.onActivity(command ? `Running ${command}` : "Running a command");
+        } else {
+          args.onActivity(event.name.replace(/_/g, " "));
+        }
+        break;
+      }
+      case "tool_result": {
+        const command = running.get(event.id);
+        if (command !== undefined) {
+          running.delete(event.id);
+          // `Exit code N` is the first line of the tool's own result, so a
+          // failed command reads as failed without a second interpretation of
+          // the same bytes here.
+          pushBlock("sandbox", event.result.startsWith("Exit code 0") ? "log" : "error", event.result);
+        }
+        break;
+      }
+      case "done":
+        out.changed = event.changed;
+        out.files = event.files;
+        out.ok = event.finishReason !== "error";
+        break;
+      case "error":
+        out.text = event.message;
+        out.ok = false;
+        push("sandbox", "error", event.message);
+        break;
+      default:
+        break;
+    }
+  };
+
+  try {
+    await startAgentRun(
+      {
+        prompt: args.prompt,
+        ...(args.sandbox ? { id: args.sandbox } : { project }),
+        ...(args.model ? { model: args.model } : {}),
+        ...(args.files?.length ? { files: args.files } : {}),
+        ...(args.signal ? { signal: args.signal } : {}),
+      },
+      on,
+    );
+  } catch (e) {
+    out.ok = false;
+    out.text = e instanceof Error ? e.message : "The agent run could not be started.";
+    push("sandbox", "error", out.text);
+  }
+  return out;
+}

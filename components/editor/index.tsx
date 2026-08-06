@@ -45,7 +45,7 @@ import { LoadProject } from "../my-projects/load-project";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { useAutosave } from "@/hooks/useAutosave";
 import { commitTurn } from "@/lib/git/commit-turn";
-import { loadWorkspace, projectRepoName, saveWorkspace } from "@/lib/dev/workspace";
+import { currentProject, loadWorkspace, saveWorkspace } from "@/lib/dev/workspace";
 import { saveLabel } from "@/lib/pages/save-label";
 import { FileTree } from "./file-tree";
 import { HistoryPanel } from "./history";
@@ -403,7 +403,7 @@ export const AppEditor = ({
                 // A STABLE name. Deriving it from the title meant every
                 // first-time project was called "untitled-site" and they
                 // overwrote each other's history in one shared repo.
-                const repoName = projectRepoName(project?.space_id?.split("/")[1]);
+                const repoName = currentProject(project?.space_id?.split("/")[1]);
                 void (repoName
                   ? commitTurn(repoName, newPages, p)
                   : Promise.resolve({ ok: false as const, reason: "no project id", unconfigured: true })
