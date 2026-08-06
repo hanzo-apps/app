@@ -63,7 +63,7 @@ export default function ModelsStrip() {
 Authorization: Bearer $HANZO_KEY
 
 {
-  "model": "zen-omni",
+  "model": "zen5",
   "messages": [{ "role": "user", "content": "…" }],
   "stream": true
 }`}
