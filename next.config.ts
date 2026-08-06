@@ -1,5 +1,6 @@
 import path from 'node:path';
 
+import { withGui } from '@hanzogui/next-plugin';
 import type { NextConfig } from 'next';
 
 import { transpiled, guiClosure } from './transpile';
@@ -149,4 +150,55 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// STATIC EXTRACTION — WORKING, AND A NET LOSS HERE. Read the numbers before
+// shipping this.
+//
+// Without it every atomic rule is authored at RUNTIME, through
+// `CSSStyleSheet.insertRule` into a <style> in the document, re-sent with every
+// HTML response and cacheable by nobody. `withGui` runs the same styled()
+// evaluation at build time: each module's rules become a `.hanzogui.css` sibling
+// Next bundles into the linked stylesheet, and the markup ships class names
+// already resolved. It runs — 443 files extracted, no errors — and it costs more
+// than it saves, because the two sheets are not the same set of rules.
+//
+// Measured (scripts/measure-css.mjs, 8 routes, production build, same binaries
+// both sides). CSS delivered = inline rule bytes + linked wire bytes. The inline
+// half falls on every route; the linked half rises by more, every time:
+//
+//   route       inline CSS         linked CSS          total       atomic rules
+//   /pricing    33,751 -> 22,377   120,165 -> 149,775  +18,236     441 -> 742
+//   /templates  53,533 -> 49,695   120,165 -> 147,585  +23,582     513 -> 917
+//   /install    29,301 -> 20,149   120,165 -> 145,122  +15,805     384 -> 641
+//   sum, 8 rts  1,276,487 -> 1,496,696  = +220,209 B (+17.3%);  JS +257,645
+//
+// The runtime writes only the rules that render. The extractor emits every rule
+// a module COULD produce and re-emits shared rules into each route chunk — 495
+// linked rules on /pricing, 257 of them distinct, declaring 315 classes for the
+// 231 the page renders. A superset cannot beat the minimum on bytes.
+//
+// It never removes runtime injection either: @hanzo/ui ships from node_modules
+// and @hanzogui/loader 8.1.0 declines node_modules, so /templates still writes
+// 430 of its 501 atomic rules at render time. Coverage is unaffected in both
+// directions — 0 atomic classes without a rule before or after, on every route.
+//
+// `components` is how the extractor knows which imports ARE gui components:
+// @hanzo/ui is where this app's elements come from, @hanzo/gui is the config it
+// registers against.
+//
+// `disableAliases`: GuiPlugin's own `react-native$` / `react-native-web$`
+// aliases resolve from the loader's directory, which under pnpm is a different
+// physical copy than the one the block at the top of this file pins. Two copies
+// of the module registry is exactly the "Missing theme." failure that comment
+// describes, so this app keeps the aliases it already declares.
+//
+// `outputCSS` is deliberately absent, and scripts/gen-gui-css.mjs is not a
+// workaround for it. outputCSS writes `config.getCSS()` whole — 351,611 B, every
+// color family in @hanzo/ui's config. gen-gui-css.mjs writes the same sheet
+// pruned to the themes this app mounts: 80,205 B. Swapping one for the other
+// adds 271,406 B of linked CSS to every route.
+export default withGui({
+  config: './lib/gui.ts',
+  components: ['@hanzo/ui', '@hanzo/gui'],
+  disableAliases: true,
+  logTimings: true,
+})(nextConfig);
