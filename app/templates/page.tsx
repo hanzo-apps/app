@@ -146,7 +146,7 @@ function ResourcesBrowser() {
               <Input
                 placeholder="Search resources…"
                 value={query}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
+                onChangeText={(v: string) => setQuery(v)}
                 width="100%" borderColor="$borderColor" backgroundColor="$background" paddingLeft={36} color="$color" $sm={{ width: 256 }}
   />
             </YStack>

@@ -97,7 +97,7 @@ export function ReImagine({
                 type="text"
                 placeholder="https://example.com"
                 value={url}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUrl(e.target.value)}
+                onChangeText={(v: string) => setUrl(v)}
                 onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
                   const inputUrl = e.target.value.trim();
                   if (!inputUrl) {

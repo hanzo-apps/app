@@ -218,7 +218,7 @@ function ConnectorsInner() {
               placeholder="Search connectors…"
               paddingLeft={36}
               value={query}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
+              onChangeText={(v: string) => setQuery(v)}
   />
           </YStack>
           {connectedCount > 0 && (

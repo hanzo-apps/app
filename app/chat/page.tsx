@@ -293,7 +293,7 @@ export default function ChatPage() {
               <Input
                 placeholder="Search chats"
                 value={search}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+                onChangeText={(v: string) => setSearch(v)}
                 paddingLeft={36} backgroundColor="$background" borderColor="$borderColor" color="$color" placeholderTextColor="$color11"
   />
             </YStack>

@@ -257,9 +257,7 @@ export const DeployButtonContent = ({
             type="text"
             placeholder="My Awesome Website"
             value={config.title}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setConfig({ ...config, title: e.target.value })
-            }
+            onChangeText={(v: string) => setConfig({ ...config, title: v })}
             borderColor="$borderColor" backgroundColor="$color2" color="$color" placeholderTextColor="$color11"
   />
         </div>

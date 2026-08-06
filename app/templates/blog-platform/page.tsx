@@ -119,7 +119,7 @@ export default function BlogPlatform() {
                 <Input
                   placeholder="Search articles..."
                   value={searchQuery}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                  onChangeText={(v: string) => setSearchQuery(v)}
                   paddingLeft={36} width={250}
   />
               </YStack>

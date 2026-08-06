@@ -341,18 +341,14 @@ export default function AgentsPage() {
                     backgroundColor="$background" borderColor="$borderColor"
                     value={form.name}
                     disabled={submitting}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setForm((f) => ({ ...f, name: e.target.value }))
-                    }
+                    onChangeText={(v: string) => setForm((f) => ({ ...f, name: v }))}
   />
                   <Input
                     placeholder={`Model (e.g. ${DEFAULT_MODEL})`}
                     backgroundColor="$background" borderColor="$borderColor"
                     value={form.model}
                     disabled={submitting}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setForm((f) => ({ ...f, model: e.target.value }))
-                    }
+                    onChangeText={(v: string) => setForm((f) => ({ ...f, model: v }))}
   />
                   <Textarea
                     placeholder="Instructions — the agent's system prompt (optional)"

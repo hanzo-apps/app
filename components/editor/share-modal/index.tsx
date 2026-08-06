@@ -120,7 +120,7 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
                 type="email"
                 placeholder="name@company.com"
                 value={email}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                onChangeText={(v: string) => setEmail(v)}
                 onKeyDown={(e: React.KeyboardEvent) => e.key === "Enter" && handleInvite()}
                 flex={1}
   />

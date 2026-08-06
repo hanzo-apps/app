@@ -541,7 +541,7 @@ export function GitSyncButton({
               <Label marginBottom="$1.5" fontSize="$1" color="$color11">Repository name</Label>
               <Input
                 value={name}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+                onChangeText={(v: string) => setName(v)}
                 placeholder="my-awesome-site"
                 borderColor="$borderColor" backgroundColor="$background" color="$color" placeholderTextColor="$color11"
   />
@@ -628,7 +628,7 @@ function CommitMessageField({
       <YStack position="relative">
         <Input
           value={value}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
+          onChangeText={(v: string) => onChange(v)}
           placeholder="Describe this change"
           borderColor="$borderColor" backgroundColor="$background" color="$color" placeholderTextColor="$color11"
   />

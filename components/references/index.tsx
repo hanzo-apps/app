@@ -177,7 +177,7 @@ export function References({ project }: { project?: string | null }) {
         <Input
           id="ref-url"
           value={url}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUrl(e.target.value)}
+          onChangeText={(v: string) => setUrl(v)}
           placeholder="https://drive.google.com/drive/folders/…"
           borderRadius="$3"
           borderWidth={1}

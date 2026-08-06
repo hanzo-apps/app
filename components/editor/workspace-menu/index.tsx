@@ -351,7 +351,7 @@ export function WorkspaceMenu({
             value={renameValue}
             autoFocus
             placeholder="Project name"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRenameValue(e.target.value)}
+            onChangeText={(v: string) => setRenameValue(v)}
             onKeyDown={(e: React.KeyboardEvent) => {
               if (e.key === "Enter") {
                 e.preventDefault();
