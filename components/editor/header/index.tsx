@@ -127,7 +127,7 @@ export function Header({
     <XStack zIndex={20} alignItems="center" gap="$2" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" $sm={{ gap: "$3" }} $lg={{ paddingHorizontal: "$4" }}>
       {/* LEFT — the workspace menu (identity/home anchor) + version history.
           Everything about who/where you are lives in the menu. */}
-      <XStack flexShrink={0} alignItems="center" gap="$1.5">
+      <XStack flexShrink={1} minWidth={0} alignItems="center" gap="$1.5">
         {/* The ONE Hanzo block-H (mark from @hanzo/logo MARK_PATHS, via the
             shared HanzoLogo). Home anchor, top-left — the IDE's brand corner. */}
         <Link
@@ -179,7 +179,7 @@ export function Header({
           a measurement. Reproduce with a browser at 390/834/1440 comparing the
           bounding rects of every control in the top band; the rects overlap,
           which is not visible in a screenshot at desktop width. */}
-      <XStack alignItems="center" gap="$2">
+      <XStack alignItems="center" gap="$2" flex={1} minWidth={0} overflow="scroll" className="no-scrollbar">
         <XStack
           role="tablist"
           aria-label="Editor view"
@@ -306,17 +306,27 @@ export function Header({
         </XStack>
       </XStack>
 
-      {/* RIGHT — the solid Publish primary is pinned `shrink-0` OUTSIDE the
-          scroll track so it always paints fully; the secondary actions
-          (Share · Load · Push) scroll within their own track on tight widths. */}
-      {/* `flex={1}` at EVERY width. It used to widen to `$lg={{ flex: 0 }}`,
-          and `flex: 0` is not "stop growing" — it is `0 0 0%`, a box with no
-          basis and no growth, which measures ZERO. Above `lg` this cluster was
-          1440px of header collapsed to 0px at x=170, so Publish, Push, Load and
-          Share overflowed a widthless parent and painted straight over the
-          centre tab group: `Preview ⨯ Publish`, `Code ⨯ Publish`. Growing is
-          the whole job — it is what carries `justifyContent="flex-end"`. */}
-      <XStack minWidth={0} flex={1} alignItems="center" justifyContent="flex-end" gap="$1.5" $lg={{ gap: "$2" }}>
+      {/* RIGHT — the actions. NEVER shrinks: it holds the primary, and a
+          primary you cannot press is not a primary.
+
+          This carried `flex={1}` and that was the overlap. `flex: 1` is
+          `1 1 0%` — basis ZERO — so the cluster's own size is nothing and it
+          only ever gets LEFTOVER space. With the left and centre clusters both
+          `flexShrink: 0` there was no leftover, so it measured 15px at 390 and
+          44px at 834 while holding Share AND Publish, and its children spilled
+          out and painted over the tabs:
+
+            mobile 390px   actions box 15px   4 overlapping pairs
+            tablet 834px   actions box 44px   2 overlapping pairs
+            laptop 1440px  actions box 684px  none
+
+          The note this replaces reasoned that growing "is the whole job — it is
+          what carries justifyContent flex-end". Growing does push the cluster
+          right, but it cannot protect it: a `flex-basis: 0` box has no size of
+          its own to defend. The CENTRE cluster grows instead, which pushes this
+          one to the right edge just the same, and this one is now sized by its
+          contents and pinned. */}
+      <XStack flexShrink={0} alignItems="center" gap="$1.5" $lg={{ gap: "$2" }}>
         {secondary.length > 0 && (
           <XStack minWidth={0} alignItems="center" gap="$1.5" overflow="scroll" $lg={{ gap: "$2" }} className="no-scrollbar">
             {secondary}
