@@ -65,6 +65,47 @@ const TOKEN_KEY = 'hanzo_iam_access_token';
 /** A sandbox is a pod; a cold pull is ~27s, a warm start ~3.3s. */
 const READY_TIMEOUT_MS = 120_000;
 
+/**
+ * Every sandbox call passes this explicitly, and none of them may inherit
+ * playwright.config's `actionTimeout: 15_000`.
+ *
+ * That default is right for clicking a button and catastrophically wrong here:
+ * `POST /v1/sandboxes` BLOCKS until the pod is running, which is ~31s measured on
+ * a cold pull and a full 2 minutes when the pod never comes up at all — cloud
+ * waits that long before answering 503. At 15s Playwright aborts the request
+ * mid-flight and reports `apiRequestContext.post: Timeout 15000ms exceeded`,
+ * which names the test harness as the culprit for a failure that belongs to the
+ * cluster. It turned a precise "this image cannot be pulled" into a generic
+ * timeout in two of these tests. Longer than cloud's own deadline, so the answer
+ * we report is always the SERVICE's answer.
+ */
+const CALL_TIMEOUT_MS = 150_000;
+
+/**
+ * An image to prove the MECHANISM with, while the product image is still missing.
+ *
+ *   E2E_SANDBOX_IMAGE=node:22 pnpm exec playwright test …
+ *
+ * Unset — the default, and what CI runs — every test asks for exactly what the
+ * app asks for and the suite measures production as it is.
+ *
+ * Set, it names the image for the tests whose subject is the AGENT LOOP (does a
+ * run reach a pod, does the edit land on a disk, does a second pod see it). Those
+ * questions are independent of which bytes the pod boots, and answering them today
+ * with a stock `node:22` is exactly what apps/sandbox/live_test.go does via
+ * SANDBOX_LIVE_IMAGE — "proving the mechanism does not require our own image to
+ * exist yet".
+ *
+ * IT CANNOT LAUNDER THE BLOCKER. The one test whose subject IS the image —
+ * 'the default image … can actually be pulled' — never reads this and never
+ * passes an image, so it stays red until the real bytes ship and the suite fails
+ * with it. This makes the full path demonstrable without making it look done.
+ */
+const PROOF_IMAGE = (process.env.E2E_SANDBOX_IMAGE ?? '').trim();
+
+/** `{image}` when proving the mechanism, `{}` when measuring production. */
+const proofImage = (): { image?: string } => (PROOF_IMAGE ? { image: PROOF_IMAGE } : {});
+
 /** Unique per run, so two of these never collide and nothing here is reused state. */
 const uniq = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 
@@ -118,6 +159,7 @@ async function sandboxService(request: APIRequestContext, token: string): Promis
   const res = await request.get(`${API}/sandboxes`, {
     headers: { Authorization: `Bearer ${token}` },
     failOnStatusCode: false,
+    timeout: CALL_TIMEOUT_MS,
   });
   const image = res.headers()['x-api-version'] ?? 'unknown';
   const body = (await res.text()).slice(0, 300);
@@ -146,12 +188,13 @@ async function sandboxService(request: APIRequestContext, token: string): Promis
 async function createSandbox(
   request: APIRequestContext,
   token: string,
-  body: { class: 'exec' | 'dev'; project?: string; ttlSec?: number },
+  body: { class: 'exec' | 'dev'; project?: string; ttlSec?: number; image?: string },
 ): Promise<Sandbox> {
   const res = await request.post(`${API}/sandboxes`, {
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     data: { ttlSec: 900, ...body },
     failOnStatusCode: false,
+    timeout: CALL_TIMEOUT_MS,
   });
   const text = await res.text();
 
@@ -170,6 +213,26 @@ async function createSandbox(
     );
   }
 
+  // ONE LIVE SANDBOX PER PROJECT, and cloud says so with a 409 rather than
+  // quietly minting a second pod on a disk that only one of them can mount.
+  // Adopting the named sandbox is not leniency, it is THE CONTRACT: the app's own
+  // `openSandbox` does exactly this (409 → `live()`), so a test that treated 409
+  // as a failure would be asserting a rule the product does not follow.
+  //
+  // It shows up here because a run that opened a sandbox for `project` and then
+  // could not use it leaves the lease behind — `route.ts` only releases what it
+  // successfully `opened` — so the next create for that project meets its own
+  // predecessor.
+  if (res.status() === 409) {
+    const existing = await liveFor(request, token, body.project);
+    expect(
+      existing,
+      `POST ${API}/sandboxes -> 409 (${text.slice(0, 160)}) but no live sandbox for ` +
+        `project=${body.project} is listed. The conflict names a sandbox the collection does not.`,
+    ).toBeTruthy();
+    return existing as Sandbox;
+  }
+
   // 201 Created. Cloud returns http.StatusCreated for a lease it minted; a
   // resumed lease answers 200. Both are success and neither is "the other one is
   // a bug" — asserting 200 alone failed every green run against production.
@@ -180,6 +243,23 @@ async function createSandbox(
   const sandbox = JSON.parse(text) as Sandbox;
   expect(sandbox.id, 'sandbox create returned no id').toBeTruthy();
   return sandbox;
+}
+
+/** The project's existing live sandbox — the one a 409 is telling us about. */
+async function liveFor(
+  request: APIRequestContext,
+  token: string,
+  project?: string,
+): Promise<Sandbox | undefined> {
+  const res = await request.get(`${API}/sandboxes`, {
+    headers: { Authorization: `Bearer ${token}` },
+    ...(project ? { params: { project } } : {}),
+    failOnStatusCode: false,
+    timeout: CALL_TIMEOUT_MS,
+  });
+  if (!res.ok()) return undefined;
+  const { sandboxes = [] } = (await res.json()) as { sandboxes?: Sandbox[] };
+  return sandboxes.find((s) => !project || s.project === project);
 }
 
 /**
@@ -201,6 +281,7 @@ async function whyNoPod(
       headers: { Authorization: `Bearer ${token}` },
       ...(project ? { params: { project } } : {}),
       failOnStatusCode: false,
+    timeout: CALL_TIMEOUT_MS,
     });
     if (!res.ok()) return `(could not list sandboxes to diagnose: HTTP ${res.status()})`;
     const { sandboxes = [] } = (await res.json()) as { sandboxes?: Sandbox[] };
@@ -243,6 +324,7 @@ async function running(request: APIRequestContext, token: string, id: string): P
     const res = await request.get(`${API}/sandboxes/${encodeURIComponent(id)}`, {
       headers: { Authorization: `Bearer ${token}` },
       failOnStatusCode: false,
+    timeout: CALL_TIMEOUT_MS,
     });
     if (res.ok()) {
       const sandbox = (await res.json()) as Sandbox;
@@ -272,6 +354,7 @@ async function readFile(
     headers: { Authorization: `Bearer ${token}` },
     params: { path },
     failOnStatusCode: false,
+    timeout: CALL_TIMEOUT_MS,
   });
   if (res.status() === 404) return null;
   const text = await res.text();
@@ -293,6 +376,7 @@ async function exec(
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     data: { command, timeoutSec: 60 },
     failOnStatusCode: false,
+    timeout: CALL_TIMEOUT_MS,
   });
   const text = await res.text();
   expect(
@@ -309,6 +393,7 @@ async function destroy(request: APIRequestContext, token: string, id: string): P
       headers: { Authorization: `Bearer ${token}` },
       params: { purge: '1' },
       failOnStatusCode: false,
+    timeout: CALL_TIMEOUT_MS,
     })
     .catch(() => {});
 }
@@ -492,7 +577,7 @@ test.describe('hanzo.app agent runs edit a REAL sandbox', () => {
     const token = await bearer(page);
     await sandboxService(request, token);
 
-    const sandbox = await createSandbox(request, token, { class: 'exec' });
+    const sandbox = await createSandbox(request, token, { class: 'exec', ...proofImage() });
     try {
       await running(request, token, sandbox.id);
 
@@ -524,6 +609,7 @@ test.describe('hanzo.app agent runs edit a REAL sandbox', () => {
         params: { path: wire(`/${marker}.txt`) },
         data: marker,
         failOnStatusCode: false,
+    timeout: CALL_TIMEOUT_MS,
       });
       const text = await res.text();
       expect(
@@ -544,6 +630,7 @@ test.describe('hanzo.app agent runs edit a REAL sandbox', () => {
         params: { path: `/${marker}-raw.txt` },
         data: marker,
         failOnStatusCode: false,
+    timeout: CALL_TIMEOUT_MS,
       });
       expect(
         raw.status(),
@@ -600,7 +687,7 @@ test.describe('hanzo.app agent runs edit a REAL sandbox', () => {
       // back to the in-memory map, this sandbox is empty — the map died with the
       // request. Nothing about the stream above changes if that happens, which
       // is the entire reason this check exists.
-      const fresh = await createSandbox(request, token, { class: 'dev', project });
+      const fresh = await createSandbox(request, token, { class: 'dev', project, ...proofImage() });
       try {
         await running(request, token, fresh.id);
 
@@ -638,6 +725,7 @@ test.describe('hanzo.app agent runs edit a REAL sandbox', () => {
         headers: { Authorization: `Bearer ${token}` },
         params: { project },
         failOnStatusCode: false,
+    timeout: CALL_TIMEOUT_MS,
       });
       if (list.ok()) {
         const body = (await list.json()) as { sandboxes?: Sandbox[] };
@@ -659,7 +747,7 @@ test.describe('hanzo.app agent runs edit a REAL sandbox', () => {
     const project = `e2e-held-${uniq()}`;
     const file = 'exec-proof.txt';
 
-    const sandbox = await createSandbox(request, token, { class: 'dev', project });
+    const sandbox = await createSandbox(request, token, { class: 'dev', project, ...proofImage() });
     try {
       await running(request, token, sandbox.id);
 
@@ -749,6 +837,7 @@ test.describe('hanzo.app agent runs edit a REAL sandbox', () => {
     const list = await request.get(`${API}/sandboxes`, {
       headers: { Authorization: `Bearer ${token}` },
       failOnStatusCode: false,
+    timeout: CALL_TIMEOUT_MS,
     });
     if (list.ok()) {
       const body = (await list.json()) as { sandboxes?: Sandbox[] };
