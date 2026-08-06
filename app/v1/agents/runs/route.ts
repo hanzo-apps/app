@@ -1,5 +1,5 @@
 /**
- * /v1/agent — Track B agentic coding harness (D1), flag-gated.
+ * /v1/agents/runs — the agentic coding harness.
  *
  * A server-side, tool-using agent loop over a project's files. Unlike
  * `/v1/generate` (single-shot HTML streaming, no tools), this endpoint runs a
@@ -26,6 +26,7 @@ import { session } from "@/lib/iam";
 import { requireSameOrigin } from "@/lib/org/csrf";
 import { resolveModelId } from "@/lib/providers";
 import { runAgent, type AgentEvent, type AgentFile } from "@/lib/agent";
+import { AgentSession } from "@/lib/agent/session";
 
 const HANZO_AI_BASE_URL = process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai/v1";
 
@@ -86,6 +87,19 @@ export async function POST(request: NextRequest) {
       ? body.maxTurns
       : undefined;
 
+  // Register the run on the canonical registry BEFORE streaming. This is what
+  // makes it a session rather than an anonymous stream: it shows up in the
+  // fleet views, and its control queue is what pause/resume/stop/message from
+  // any surface arrive through. Unreachable registry => `open()` returns null
+  // and the run proceeds exactly as it did before, private to this caller.
+  const agentSession = new AgentSession({
+    baseUrl: HANZO_AI_BASE_URL,
+    token,
+    agent: "hanzo-app",
+    title: prompt.slice(0, 120),
+  });
+  await agentSession.open();
+
   const encoder = new TextEncoder();
   const stream = new TransformStream<Uint8Array, Uint8Array>();
   const writer = stream.writable.getWriter();
@@ -94,7 +108,10 @@ export async function POST(request: NextRequest) {
   // pick a card (reasoning / tool_call / tool_result / text), same event shapes
   // the client orchestrator already renders.
   const emit = async (event: AgentEvent) => {
+    // Out to the caller first — they are watching — then to the registry, which
+    // queues and never blocks this write.
     await writer.write(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+    agentSession.publish(event);
   };
 
   const response = new NextResponse(stream.readable, {
@@ -116,9 +133,11 @@ export async function POST(request: NextRequest) {
           files,
           maxTurns,
           signal: request.signal,
+          session: agentSession,
         },
         emit
       );
+      await agentSession.close("done");
     } catch (error) {
       try {
         await emit({
@@ -128,6 +147,7 @@ export async function POST(request: NextRequest) {
       } catch {
         // stream already broken
       }
+      await agentSession.close("error");
     } finally {
       try {
         await writer.close();

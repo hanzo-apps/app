@@ -19,6 +19,7 @@
 
 import type { AgentFile, EmitEvent } from "./types";
 import { InMemoryProjectFs, type ProjectFs } from "./fs";
+import type { AgentSession, ControlDecision } from "./session";
 import { AGENT_TOOL_DEFS, executeAgentTool } from "./tools";
 
 export interface RunAgentOptions {
@@ -43,6 +44,11 @@ export interface RunAgentOptions {
   maxTokens?: number;
   /** Abort the run (client disconnect). */
   signal?: AbortSignal;
+  /** The `/v1/agents` session this run is recorded against. Supplying it makes
+   *  the run visible to every surface AND steerable from them — events go out,
+   *  pause/resume/stop/message come back in at each turn boundary. Omit it and
+   *  the run is exactly what it was before: private to its caller. */
+  session?: AgentSession;
 }
 
 const SYSTEM_PROMPT = `You are Hanzo's coding agent. You edit a small web project by CALLING TOOLS — never paste file contents in prose.
@@ -193,6 +199,37 @@ async function streamTurn(
  * Run the bounded agent loop. Streams events to `emit` and resolves when the
  * run finishes (a `done` or `error` event is always the last thing emitted).
  */
+/**
+ * Drain control, and if the run is paused, keep draining until it is not.
+ *
+ * A pause has to actually hold the loop — recording "paused" and continuing
+ * would make the button a lie. It polls rather than subscribes because the
+ * control queue is a cursor over durable commands, which survives a poller
+ * that missed a beat; a socket would not. Two seconds is well inside human
+ * patience and costs nothing while nobody is steering.
+ *
+ * `stop` beats `resume`: once a stop is seen the wait ends immediately and the
+ * decision carries it out, so a stop can always end a pause.
+ */
+async function waitOutPause(
+  session: AgentSession,
+  signal?: AbortSignal
+): Promise<ControlDecision> {
+  let decision = await session.drainControl();
+  while (decision.paused && !decision.stop && !signal?.aborted) {
+    await new Promise((r) => setTimeout(r, 2000));
+    const next = await session.drainControl();
+    decision = {
+      // A pause persists until something lifts it; messages accumulate across
+      // the wait so nothing said while paused is dropped on resume.
+      stop: next.stop,
+      paused: next.paused,
+      messages: [...decision.messages, ...next.messages],
+    };
+  }
+  return decision;
+}
+
 export async function runAgent(opts: RunAgentOptions, emit: EmitEvent): Promise<void> {
   const maxTurns = Math.max(1, Math.min(opts.maxTurns ?? 8, 24));
   const fs: ProjectFs = opts.fs ?? new InMemoryProjectFs(opts.files ?? []);
@@ -207,6 +244,21 @@ export async function runAgent(opts: RunAgentOptions, emit: EmitEvent): Promise<
 
   try {
     for (turn = 1; turn <= maxTurns; turn++) {
+      // A turn boundary is the ONLY place steering can land without tearing the
+      // conversation: mid-turn the model is streaming and its tool calls are
+      // half-issued, so an injected instruction would interleave into a reply
+      // already in flight. Checking here costs one poll per turn.
+      if (opts.session) {
+        const control = await waitOutPause(opts.session, opts.signal);
+        if (control.stop) {
+          finishReason = "stopped";
+          break;
+        }
+        // Steering arrives as a user turn, which is what it is: someone told
+        // the agent something while it was working.
+        for (const m of control.messages) messages.push({ role: "user", content: m });
+      }
+
       await emit({ type: "turn", turn, maxTurns });
 
       const { content, toolCalls, finishReason: fr } = await streamTurn(opts, messages, emit);
