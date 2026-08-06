@@ -368,14 +368,36 @@ export const AppEditor = ({
           is that, and it takes the user's bearings with it. Bounded, the row is
           held to the viewport and the panes scroll INSIDE it, which is what the
           chat pane's own `minHeight={0} flex={1}` below already assumed. */}
-      <XStack backgroundColor="$background" flex={1} minHeight={0} width="100%" position="relative" $lg={{ flexDirection: "column", height: "calc(100%-82px)" }}>
+      {/* ROW on desktop, COLUMN on mobile — and it was exactly inverted. `$lg` is
+          min-width:1024, so `$lg={{ flexDirection: "column" }}` stacked the chat,
+          the resizer and the preview VERTICALLY on every desktop: measured 360x0,
+          36x819, 1368x24 in an 819-tall column. That is why the preview looked
+          missing, why the chat text clipped, and why the resizer ran full height
+          down the middle of the window.
+          Base is the mobile case (column); `$lg` restores the row. */}
+      <XStack
+        backgroundColor="$background" flex={1} minHeight={0} width="100%" position="relative"
+        flexDirection="column"
+        $lg={{ flexDirection: "row" }}
+      >
         {/* LEFT — the chat pane, ALWAYS chat (never code). The composer is pinned
             to the bottom of this flex-col (AskAI is `mt-auto`), so messages scroll
             above it. Desktop: docked left unless collapsed; mobile: shown only on
             the Chat tab. Kept mounted so generation state persists across views. */}
         <YStack
           ref={editor}
-          position="relative" overflow="hidden" height="100%" display={currentTab === "chat" ? undefined : "none"} $lg={{ flex: 1, ...(sidebarCollapsed ? { display: "none" } : { flexShrink: 0 }) }}
+          position="relative" overflow="hidden" height="100%"
+          // `$lg` is min-width:1024 — DESKTOP. These three blocks (here, the
+          // resizer, the preview) were written as if it meant "at most lg", so
+          // every one of them applied its mobile rule to desktop instead: the
+          // preview vanished whenever you were on the Chat tab, and the resizer
+          // between the two panes existed only on phones. The comments above
+          // already say what was meant; the styles now agree with them.
+          //
+          // Mobile: one pane at a time, chosen by the tab. Desktop: chat docked
+          // left unless collapsed, preview beside it.
+          display={currentTab === "chat" ? "flex" : "none"}
+          $lg={{ flex: 1, flexShrink: 0, display: sidebarCollapsed ? "none" : "flex" }}
         >
           {/* Chat — ALWAYS the left pane (composer/thread live here permanently);
               the history panel OVERLAYS it when toggled from the header icon. */}
@@ -471,7 +493,10 @@ export const AppEditor = ({
           role="separator"
           aria-orientation="vertical"
           aria-label="Resize chat and preview panes"
-          position="relative" width="$3" height="100%" flexShrink={0} cursor="col-resize" alignItems="center" justifyContent="center" $lg={{ display: "none" }} className="group/resizer"
+          position="relative" width="$3" height="100%" flexShrink={0} cursor="col-resize" alignItems="center" justifyContent="center"
+          // Only where there are two panes to divide: hidden on mobile, shown on
+          // desktop. It was exactly inverted.
+          display="none" $lg={{ display: "flex" }} className="group/resizer"
         >
           {/* A REAL, grabbable handle: an always-present hairline seam (so the
               divider is never invisible — you can see where the panes meet and
@@ -486,7 +511,9 @@ export const AppEditor = ({
             card is the only element that lifts off the flat workspace. Preview
             stays mounted (iframe warm, iframeRef valid); Code overlays it. */}
         <YStack
-          position="relative" flex={1} minWidth={0} height="100%" padding="$2" $lg={{ padding: "$3" }} {...{ display: currentTab === "chat" ? "none" : undefined }}
+          position="relative" flex={1} minWidth={0} height="100%" padding="$2"
+          display={currentTab === "chat" ? "none" : "flex"}
+          $lg={{ padding: "$3", display: "flex" }}
         >
           <YStack position="relative" height="100%" width="100%" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={5} className="preview-stage">
             {/* Faint top highlight — a crisp edge that reads as raised glass. */}

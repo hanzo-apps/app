@@ -263,7 +263,16 @@ export const Preview = ({
   return (
     <XStack
       ref={ref as React.Ref<GuiElement>}
-      width="100%" position="relative" zIndex={0} alignItems="center" justifyContent="center" backgroundColor="$background" {...{ $lg: currentTab === "preview" ? {"height":"100%"} : currentTab === "chat" && !isFullscreen ? {"height":"$0"} : undefined, height: isFullscreen ? "100%" : "100%", padding: isFullscreen ? "$0" : undefined }}
+      width="100%" position="relative" zIndex={0} alignItems="center" justifyContent="center" backgroundColor="$background"
+      // Always full height. This used to collapse to `$0` at `$lg` whenever the
+      // Chat tab was active — and `$lg` is min-width:1024, so on every DESKTOP
+      // the preview had zero height while you were chatting, which is exactly
+      // when you want to watch it build. It was a mobile rule wearing a desktop
+      // breakpoint, and it is redundant either way: on mobile the whole preview
+      // COLUMN is display:none on the Chat tab, so there is nothing left here to
+      // collapse.
+      height="100%"
+      padding={isFullscreen ? "$0" : undefined}
       onClick={(e) => {
         if (isAiWorking) {
           e.preventDefault();
