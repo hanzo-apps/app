@@ -31,7 +31,7 @@ async function send<T>(
     .find((row) => row.startsWith(`${SESSION_COOKIE}=`))
     ?.split("=")[1];
 
-  const res = await fetch(`/api${path}`, {
+  const res = await fetch(`/v1${path}`, {
     method,
     cache: "no-store",
     headers: {

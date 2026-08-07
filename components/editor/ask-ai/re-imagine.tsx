@@ -36,18 +36,21 @@ export function ReImagine({
       return;
     }
     setIsLoading(true);
-    const response = await api.put("/re-design", {
-      url: url.trim(),
-    });
-    if (response?.data?.ok) {
+    try {
+      const response = await api.put("/re-design", { url: url.trim() });
       setOpen(false);
       setUrl("");
       onRedesign(response.data.markdown);
       toast.success("Hanzo AI is redesigning your site! Let it cook... 🔥");
-    } else {
-      toast.error(response?.data?.error || "Failed to redesign the site.");
+    } catch (e) {
+      // The client rejects on a non-2xx, so the branch that read `data.ok` was
+      // never reached — the refusal arrived as a throw and left the button
+      // spinning with nothing on the way. The server states a reason; say it.
+      const said = (e as { response?: { data?: { error?: string } } })?.response?.data?.error;
+      toast.error(said || "Could not read that site.");
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
