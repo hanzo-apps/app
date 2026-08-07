@@ -284,7 +284,7 @@ export function BuildComposer({
                 onClick={toggleBase}
                 aria-pressed={withBase}
                 title="Hanzo Base backend — database, auth, realtime for this app"
-                group alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} backgroundColor="$color005" {...{ borderColor: withBase ? "$color" : "$borderColor" }} paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: withBase ? "$color" : "$color06" }}
+                group alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} backgroundColor="$color005" {...{ borderColor: withBase ? "$color02" : "$borderColor" }} paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: withBase ? "$color" : "$color06" }}
               >
                 <XStack alignItems="center" gap="$1.5">
                   <Database size={14} />

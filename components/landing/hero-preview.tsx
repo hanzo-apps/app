@@ -326,7 +326,7 @@ export default function HeroPreview() {
             {/* A text host cannot row-lay mixed children (the check rendered as
                 a block ABOVE its label, and the unsized inner text ballooned the
                 chip) — the XStack is the chip, one sized label inside. */}
-            <XStack alignItems="center" gap="$1" borderRadius="$3" borderWidth={1} paddingHorizontal="$2" paddingVertical="$0.5" {...{ backgroundColor: live ? "$color4" : "$color12", borderColor: live ? "$color" : "$color12" }}>
+            <XStack alignItems="center" gap="$1" borderRadius="$3" borderWidth={1} paddingHorizontal="$2" paddingVertical="$0.5" {...{ backgroundColor: live ? "$color4" : "$color12", borderColor: live ? "$color02" : "$color12" }}>
               {live ? (
                 <Check size={10} strokeWidth={3} color="var(--foreground)" />
               ) : phase === "publishing" ? (
