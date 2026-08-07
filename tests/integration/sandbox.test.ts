@@ -360,17 +360,38 @@ describe("openSandbox", () => {
   it("asks cloud for a sandbox and hands back its id", async () => {
     const stub = stubSandbox({});
     installFetch(stub);
-    const sandbox = await openSandbox({ baseUrl: BASE, token: "tok-123", project: "acme/site" });
-    expect(sandbox?.id).toBe(ID);
-    expect(sandbox?.project).toBe("acme/site");
+    const opened = await openSandbox({ baseUrl: BASE, token: "tok-123", project: "acme/site" });
+    expect(opened).toEqual({
+      sandbox: expect.objectContaining({ id: ID, project: "acme/site" }),
+    });
     expect(stub.calls).toContain("POST /v1/sandboxes");
   });
 
-  it("returns null when the sandbox service is unreachable, so a run can fall back", async () => {
+  it("says WHY when the sandbox service is unreachable, so a run can fall back and still explain itself", async () => {
     globalThis.fetch = (async () => {
       throw new Error("ECONNREFUSED");
     }) as typeof fetch;
-    expect(await openSandbox({ baseUrl: BASE, token: "t", project: "p" })).toBeNull();
+    const opened = await openSandbox({ baseUrl: BASE, token: "t", project: "p" });
+    expect(opened).not.toHaveProperty("sandbox");
+    expect("why" in opened && opened.why).toMatch(/could not be reached.*ECONNREFUSED/);
+  });
+
+  /**
+   * A quota and an outage are different things to be told.
+   *
+   * Every non-409 refusal used to become `null`, and `null` became one sentence:
+   * "the sandbox service did not give one out". Out of quota (429), pod would not
+   * start (503) and not entitled (403) are each actionable, and each needs a
+   * DIFFERENT action — so the service's own words have to survive the trip.
+   */
+  it.each([429, 503, 403])("carries cloud's own words out of a %i", async (status) => {
+    const stub = stubSandbox({}, (m, p) => (m === "POST" && p === "/v1/sandboxes" ? status : undefined));
+    installFetch(stub);
+    const opened = await openSandbox({ baseUrl: BASE, token: "tok-123", project: "acme" });
+    expect(opened).not.toHaveProperty("sandbox");
+    expect("why" in opened && opened.why).toBe(
+      `The sandbox service refused (${status}): forced ${status}`
+    );
   });
 });
 
@@ -521,9 +542,9 @@ describe("openSandbox", () => {
     const stub = stubSandbox({}, (m, p) => (m === "POST" && p === "/v1/sandboxes" ? 409 : undefined));
     installFetch(stub);
 
-    const sandbox = await openSandbox({ baseUrl: BASE, token: "tok-123", project: "acme" });
+    const opened = await openSandbox({ baseUrl: BASE, token: "tok-123", project: "acme" });
 
-    expect(sandbox?.id).toBe(ID);
+    expect(opened).toEqual({ sandbox: expect.objectContaining({ id: ID }) });
     expect(stub.calls).toEqual(["POST /v1/sandboxes", "GET /v1/sandboxes"]);
   });
 
@@ -544,7 +565,11 @@ describe("openSandbox", () => {
     };
     installFetch({ ...stub, handler: noneRunning });
 
-    expect(await openSandbox({ baseUrl: BASE, token: "tok-123", project: "acme" })).toBeNull();
+    const opened = await openSandbox({ baseUrl: BASE, token: "tok-123", project: "acme" });
+    expect(opened).not.toHaveProperty("sandbox");
+    // "still starting up" and "there is none" are different facts: the first is
+    // worth trying again in a moment, the second is not.
+    expect("why" in opened && opened.why).toMatch(/already has a sandbox and it is still starting up/);
   });
 });
 

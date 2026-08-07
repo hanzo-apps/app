@@ -39,9 +39,17 @@ const BUDGETS: Record<Tier, Budget> = {
 };
 
 // Model calls. Expensive whatever the verb, so the path decides before the
-// method does — today all three are writes (/v1/generate is POST PATCH PUT),
+// method does — today all of them are writes (/v1/generate is POST PATCH PUT),
 // so this changes nothing now and stays right if a streaming GET ever lands.
-const MODEL = ['/v1/generate', '/v1/images', '/api/ai'];
+//
+// `/v1/agents/runs` is the MOST expensive call the app makes and it was in the
+// cheapest tier — a generic `api` 60/min, because it simply was not listed. One
+// of those is up to 24 model turns AND arbitrary commands in a sandbox pod, so
+// the endpoint that can cost the most per call was allowed twice the calls of
+// single-shot `/v1/generate`. It is listed exactly, not as `/v1/agents`: the
+// registry underneath that prefix is polled for session state and fleet views,
+// and sweeping it into a 30/min model budget would rate-limit watching a run.
+const MODEL = ['/v1/generate', '/v1/images', '/v1/agents/runs', '/api/ai'];
 const CREDENTIAL = ['/v1/auth', '/api/auth'];
 const CHARGE = ['/v1/commerce', '/api/commerce', '/v1/crypto/payment'];
 

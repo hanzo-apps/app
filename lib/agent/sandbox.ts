@@ -96,11 +96,60 @@ export class SandboxError extends Error {
 }
 
 /**
+ * What the sandbox service SAID, not merely what it returned.
+ *
+ * Every refusal carries a sentence — `project "x" already has a live sandbox`,
+ * `exec: context deadline exceeded`, `org holds 16 live sandboxes` — and a bare
+ * status code throws all of it away. That cost twice over. A command that merely
+ * ran past its deadline is a 502 (the deadline is not an exit code, so cloud
+ * cannot report it as one), and the model read `returned 502` as a broken sandbox
+ * and went looking for the wrong bug. And on create, a quota, an outage and a
+ * cold pull that never finished were one indistinguishable sentence to the person
+ * whose run had just quietly stopped being saved.
+ *
+ * Read once and bounded: a refusal is a sentence, and a service that answers one
+ * with a megabyte is not owed the memory. Consuming the body here is also what
+ * frees the connection, which is why no caller cancels it separately.
+ */
+async function said(res: Response): Promise<string> {
+  try {
+    const text = (await res.text()).slice(0, 600).trim();
+    if (!text) return "";
+    try {
+      const body = JSON.parse(text) as { error?: unknown; message?: unknown };
+      const sentence = body.error ?? body.message;
+      if (typeof sentence === "string" && sentence.trim()) return sentence.trim();
+    } catch {
+      // Not a JSON envelope — the text itself is the sentence.
+    }
+    return text;
+  } catch {
+    return "";
+  }
+}
+
+/**
  * How long a sandbox this process opens is allowed to exist, absent anyone saying
- * otherwise. An hour is the sandbox's own ceiling for a single command, so it is the
- * longest a run can legitimately still be using one.
+ * otherwise. An hour, and cloud's reaper genuinely enforces it: it wakes every
+ * minute and stops sandboxes that are both expired and untouched for an hour.
  */
 export const DEFAULT_TTL_SEC = 3600;
+
+/**
+ * How long to wait for a sandbox to be created.
+ *
+ * Creation BLOCKS until the pod is running: ~11-15s measured warm, ~27s on a cold
+ * image pull, and cloud waits about two minutes before it gives up and answers
+ * 503 itself. The old 20-30s ceiling sat inside that window, so a slow pull was
+ * aborted HERE — and an abort is indistinguishable from a refusal, so the run
+ * fell back to memory while the pod it had asked for came up moments later with
+ * nobody holding its id. It then held the project's volume, so the NEXT run got
+ * a 409 for a sandbox this one had already given up on.
+ *
+ * Past cloud's own deadline, deliberately: the answer a person is given should be
+ * the SERVICE's answer, never the sound of us hanging up on it.
+ */
+const CREATE_TIMEOUT_MS = 150_000;
 
 /** `class` in the wire: what toolchain the sandbox carries. */
 export type SandboxClass = "exec" | "dev" | "desktop";
@@ -111,11 +160,22 @@ export interface Info {
   org?: string;
   project?: string;
   class?: SandboxClass;
-  status?: "pending" | "running" | "suspended" | "error";
+  status?: "pending" | "running" | "error";
   image?: string;
-  ref?: string;
-  url?: string;
+  volume?: string;
 }
+
+/**
+ * A sandbox, or why there is not one — exactly one of the two, and the caller
+ * cannot read the second without having handled the first.
+ *
+ * It used to be `Info | null`, and `null` was every refusal at once: out of quota,
+ * pod failed to start, service unreachable, and a create we abandoned ourselves.
+ * The caller could only say "the sandbox service did not give one out", which is
+ * true of all four and useful for none — and the person reading it is the one who
+ * has to decide whether to wait, delete something, or give up.
+ */
+export type Opened = { sandbox: Info } | { why: string };
 
 export interface SandboxOptions {
   /** Gateway base URL, e.g. `https://api.hanzo.ai/v1` — the same one the rest
@@ -145,29 +205,28 @@ export interface SandboxOptions {
  * from an empty in-memory map while the real checkout sat untouched in a sandbox
  * nobody looked up — and report success.
  *
- * `ttlSec` is sent because nothing else bounds a sandbox's life. The comment that
- * used to sit here said lifetime was "cloud's problem — it owns the lease that
- * suspends an idle sandbox"; there is no such lease. `apps/sandbox` has no reaper,
- * so `ExpiresAt` is currently a fact nothing acts on. Sending it is still
- * right — it is the declared field for this, and it means the sandboxes this
- * process opens are already marked for collection on the day something
- * collects. Until then `release()` is what actually frees the pod.
+ * `ttlSec` is sent and it is genuinely enforced: cloud's reaper wakes every minute
+ * and stops sandboxes that are BOTH past `expiresAt` and untouched for an hour.
+ * An earlier comment here claimed there was no reaper and that `expiresAt` was a
+ * fact nothing acted on — that was wrong, and it is worth stating correctly,
+ * because it is the reason a run may hand a sandbox back rather than hoarding it:
+ * an abandoned one is collected either way, so `release()` is an economy, not the
+ * only thing standing between us and a leaked pod.
  *
- * Returns null when the sandbox service is unreachable or refuses for any other
- * reason, so a caller can fall back to an in-memory project rather than failing
- * the user's run.
+ * A refusal is REPORTED, never collapsed: the caller can still fall back to an
+ * in-memory project rather than failing the user's run, but it does so holding
+ * cloud's own sentence for why.
  */
 export async function openSandbox(opts: {
   baseUrl: string;
   token: string;
   project: string;
   class?: SandboxClass;
-  ref?: string;
   timeoutMs?: number;
   ttlSec?: number;
-}): Promise<Info | null> {
+}): Promise<Opened> {
   const base = opts.baseUrl.replace(/\/+$/, "");
-  const timeout = opts.timeoutMs ?? 30_000;
+  const timeout = opts.timeoutMs ?? CREATE_TIMEOUT_MS;
   const headers = {
     Authorization: `Bearer ${opts.token}`,
     "Content-Type": "application/json",
@@ -180,17 +239,39 @@ export async function openSandbox(opts: {
         project: opts.project,
         class: opts.class ?? "dev",
         ttlSec: opts.ttlSec ?? DEFAULT_TTL_SEC,
-        ...(opts.ref ? { ref: opts.ref } : {}),
       }),
       signal: AbortSignal.timeout(timeout),
       cache: "no-store",
     });
-    if (res.status === 409) return live(base, headers, opts.project, timeout);
-    if (!res.ok) return null;
+    if (res.status === 409) {
+      await res.body?.cancel().catch(() => {});
+      const sandbox = await live(base, headers, opts.project, timeout);
+      // 409 counts a PENDING sandbox as live — it holds the volume — but the
+      // running filter excludes one, so this is a sandbox that exists and is not
+      // ready yet. Saying so is the difference between "wait a moment" and
+      // "something is broken".
+      return sandbox
+        ? { sandbox }
+        : { why: `${opts.project} already has a sandbox and it is still starting up.` };
+    }
+    if (!res.ok) {
+      const why = await said(res);
+      return { why: `The sandbox service refused (${res.status})${why ? `: ${why}` : "."}` };
+    }
     const sandbox = (await res.json()) as Info;
-    return sandbox?.id ? sandbox : null;
-  } catch {
-    return null;
+    return sandbox?.id
+      ? { sandbox }
+      : { why: "The sandbox service answered without a sandbox id." };
+  } catch (e) {
+    // A timeout here is OUR deadline, not cloud's, and it is worth naming as such:
+    // past CREATE_TIMEOUT_MS the pod is most likely still coming up, and the next
+    // run will find it by its 409.
+    const timedOut = e instanceof Error && e.name === "TimeoutError";
+    return {
+      why: timedOut
+        ? `The sandbox for ${opts.project} did not start within ${Math.round(timeout / 1000)}s.`
+        : `The sandbox service could not be reached: ${e instanceof Error ? e.message : String(e)}`,
+    };
   }
 }
 
@@ -225,14 +306,19 @@ async function live(
 /**
  * Give the sandbox back.
  *
- * Suspend, not delete: the pod goes away and the checkout stays, which is what
- * a coding agent wants between turns — `node_modules` and the working tree
- * survive, and the next run resumes onto the same volume. Delete would keep
- * the volume too (purge is opt-in) but throw away the warm process for no gain.
+ * The POD goes away and the CHECKOUT stays, which is exactly what a coding agent
+ * wants between runs: the volume is named deterministically from org and project,
+ * so the next run's create re-attaches the same disk and finds `node_modules` and
+ * the working tree where it left them. Verified against the live service — a file
+ * written before a release was read back after the next create, from the same
+ * volume id.
  *
- * This is the only thing that currently frees a sandbox. Best-effort by
- * construction: a run whose work is already streamed to the user must not fail
- * because the sandbox would not hang up.
+ * What does NOT survive is the sandbox ROW: this is a delete, not a suspend, and
+ * the id is gone afterwards. That is why a caller reuses a project, never a
+ * remembered id, on the run after this one.
+ *
+ * Best-effort by construction: a run whose work is already streamed to the user
+ * must not fail because the sandbox would not hang up.
  */
 export async function releaseSandbox(opts: {
   baseUrl: string;
@@ -312,8 +398,15 @@ export class Sandbox implements ProjectFs, ProjectExec {
       cache: "no-store",
     });
     if (res.ok || (init.allow ?? []).includes(res.status)) return res;
-    await res.body?.cancel().catch(() => {});
-    throw new SandboxError(res.status, `${method} ${path}: sandbox ${this.opts.id} returned ${res.status}`);
+    // Cloud's sentence, not just its number. `runTool` hands this straight to the
+    // model, and "returned 502" sends it debugging a broken sandbox when what
+    // actually happened was `exec: context deadline exceeded` — its own command
+    // ran too long. Reading the body is also what releases the connection.
+    const why = await said(res);
+    throw new SandboxError(
+      res.status,
+      `${method} ${path}: sandbox ${this.opts.id} returned ${res.status}${why ? ` — ${why}` : ""}`
+    );
   }
 
   /**
@@ -469,11 +562,14 @@ export class Sandbox implements ProjectFs, ProjectExec {
    * honest one.
    */
   async changedFiles(): Promise<AgentFile[]> {
-    const paths = [...this.changed].sort();
-    const files: AgentFile[] = [];
-    for (const path of paths) {
-      files.push({ path, content: (await this.read(path)) ?? "" });
-    }
-    return files;
+    // Concurrently, because this runs AFTER the model has stopped talking: a run
+    // that touched twenty files was twenty sequential round trips of dead air at
+    // the very end, with nothing left to stream over it. The set is only what
+    // this run wrote, so it is bounded by the run's own tool calls.
+    return Promise.all(
+      [...this.changed]
+        .sort()
+        .map(async (path) => ({ path, content: (await this.read(path)) ?? "" }))
+    );
   }
 }

@@ -86,12 +86,18 @@ interface Where {
  * Can this sandbox actually be written to?
  *
  * "We got a sandbox" and "this run's edits will survive" are DIFFERENT FACTS, and
- * conflating them reproduces the exact defect this endpoint exists to end. Live,
- * today: `POST /v1/sandboxes {project}` answers 201 with a running pod whose
- * project volume is mounted root-owned into a container that runs as uid 1000,
- * so every write returns `Permission denied` — a sandbox that opens perfectly and
- * saves nothing. Reporting that as durable is the silent-fallback bug wearing a
- * pod.
+ * conflating them reproduces the exact defect this endpoint exists to end. The
+ * case that proved it: a pod whose project volume was mounted root-owned under a
+ * container running as uid 1000, so it opened perfectly and every write came back
+ * `Permission denied`. Reporting that as durable is the silent-fallback bug
+ * wearing a pod.
+ *
+ * That particular mount is FIXED — `/work` is now `root:sandbox` with the setgid
+ * bit and the container's uid 1000 is in that group, measured against the live
+ * service — so this check passes today and costs one exec (~0.3s warm). It stays
+ * because what it asserts is the invariant, not that one bug: the day a mount,
+ * a quota or a read-only volume takes writes away again, the run says so instead
+ * of discovering it one failed edit at a time.
  *
  * One `exec`, no litter: `test -w .` asks the directory the same question the run
  * is about to ask it, and writes nothing to answer it. A failure carries the
@@ -127,22 +133,25 @@ async function resolveFs(token: string, body: AgentRequestBody): Promise<Where> 
   }
 
   if (project) {
-    const sandbox = await openSandbox({ baseUrl: HANZO_AI_BASE_URL, token, project });
-    if (sandbox) {
-      const fs = new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id: sandbox.id, token });
+    const opened = await openSandbox({ baseUrl: HANZO_AI_BASE_URL, token, project });
+    if ("sandbox" in opened) {
+      const fs = new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id: opened.sandbox.id, token });
       const why = await writable(fs);
       // `opened` either way: the pod exists and this run is the only thing that
       // knows about it, so it still has to be given back.
       return why
-        ? { id: sandbox.id, project, opened: true, durable: false, reason: why }
-        : { fs, id: sandbox.id, project, opened: true, durable: true };
+        ? { id: opened.sandbox.id, project, opened: true, durable: false, reason: why }
+        : { fs, id: opened.sandbox.id, project, opened: true, durable: true };
     }
     // A project WAS named and it did not get one. This is the case that used to
-    // disappear: the run continued against a map and reported success.
+    // disappear: the run continued against a map and reported success. It now
+    // carries the SERVICE's reason — a quota, a pod that would not start and an
+    // unreachable service each need a different thing done about them, and one
+    // sentence for all three told the person nothing they could act on.
     return {
       project,
       durable: false,
-      reason: `No sandbox for ${project} — the sandbox service did not give one out. This run edits a scratch copy in memory and nothing it writes is saved.`,
+      reason: `No sandbox for ${project}. ${opened.why} This run edits a scratch copy in memory and nothing it writes is saved.`,
     };
   }
 
@@ -199,28 +208,15 @@ export async function POST(request: NextRequest) {
       ? body.maxTurns
       : undefined;
 
-  // Register the run on the canonical registry BEFORE streaming. This is what
-  // makes it a session rather than an anonymous stream: it shows up in the
-  // fleet views, and its control queue is what pause/resume/stop/message from
-  // any surface arrive through. Unreachable registry => `open()` returns null
-  // and the run proceeds exactly as it did before, private to this caller.
-  const where = await resolveFs(token, body);
-  const { fs, id, opened } = where;
-
-  const agentSession = new AgentSession({
-    baseUrl: HANZO_AI_BASE_URL,
-    token,
-    agent: "hanzo-app",
-    title: prompt.slice(0, 120),
-    // Where it runs, so the fleet views show a sandbox run as a sandbox run rather than
-    // as an anonymous stream from a browser tab.
-    ...(id ? { host: id, repo: where.project } : {}),
-  });
-  await agentSession.open();
-
   const encoder = new TextEncoder();
   const stream = new TransformStream<Uint8Array, Uint8Array>();
   const writer = stream.writable.getWriter();
+
+  // The run's handle on the agent registry, once there is one. `emit` works
+  // before it exists so that a frame always reaches the person watching, even if
+  // the registry never answers — the caller is the audience, the registry a copy.
+  // (Not `session`: that name is the IAM caller, and there is one of those.)
+  let registry: AgentSession | undefined;
 
   // Each AgentEvent is one SSE `data:` frame of JSON — the UI reads `type` to
   // pick a card (reasoning / tool_call / tool_result / text), same event shapes
@@ -229,7 +225,7 @@ export async function POST(request: NextRequest) {
     // Out to the caller first — they are watching — then to the registry, which
     // queues and never blocks this write.
     await writer.write(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
-    agentSession.publish(event);
+    registry?.publish(event);
   };
 
   const response = new NextResponse(stream.readable, {
@@ -240,11 +236,57 @@ export async function POST(request: NextRequest) {
     },
   });
 
+  // EVERYTHING SLOW HAPPENS AFTER THE RESPONSE IS HANDED BACK.
+  //
+  // Opening a sandbox BLOCKS until the pod is running — 11-15s warm, ~27s on a
+  // cold image pull. All of that used to run before this function returned, so
+  // the browser had no response at all, not even headers, for as long as it
+  // took: a run that was working perfectly was indistinguishable from a hung one
+  // for half a minute, and it is the FIRST thing a person sees of the feature.
+  //
+  // The stream now opens immediately and the sandbox is resolved on it, which is
+  // also where the `sandbox` frame belongs — it is a fact about the run, and the
+  // run has already started. Nothing that decides whether to serve at all moved:
+  // origin, session, body and prompt are all settled above, and still answer with
+  // a status a client can read.
   (async () => {
+    // Named out here because `finally` must give back a sandbox that a failure
+    // half way through opening still left running.
+    let give: string | undefined;
     try {
-      // WHERE, before anything else. The client marks the run from this frame,
-      // so it has to precede the first token the user could mistake for work
-      // being saved.
+      // The response head does not leave until the body's first chunk does — a
+      // streamed body sends nothing on its own, so moving the slow work off the
+      // request path bought nothing by itself: `fetch()` stayed pending for the
+      // whole sandbox create exactly as before (measured: 14.6s to first byte).
+      //
+      // An SSE COMMENT is the frame that costs nothing to send and nothing to
+      // receive: the spec ignores lines beginning with `:`, and our own reader
+      // skips every line that is not `data:`. It is not an event, so no UI has to
+      // learn it — but it flushes the head, which is what makes the connection
+      // observably alive while the pod comes up.
+      await writer.write(encoder.encode(": open\n\n"));
+
+      const where = await resolveFs(token, body);
+      if (where.opened) give = where.id;
+
+      // Register the run on the canonical registry. This is what makes it a
+      // session rather than an anonymous stream: it shows up in the fleet views,
+      // and its control queue is what pause/resume/stop/message from any surface
+      // arrive through. Unreachable registry => `open()` returns null and the run
+      // proceeds exactly as it did before, private to this caller.
+      registry = new AgentSession({
+        baseUrl: HANZO_AI_BASE_URL,
+        token,
+        agent: "hanzo-app",
+        title: prompt.slice(0, 120),
+        // Where it runs, so the fleet views show a sandbox run as a sandbox run
+        // rather than as an anonymous stream from a browser tab.
+        ...(where.id ? { host: where.id, repo: where.project } : {}),
+      });
+      await registry.open();
+
+      // WHERE, before any token. The client marks the run from this frame, so it
+      // has to precede the first thing a user could mistake for work being saved.
       await emit({
         type: "sandbox",
         durable: where.durable,
@@ -259,14 +301,14 @@ export async function POST(request: NextRequest) {
           model,
           prompt,
           files,
-          fs,
+          fs: where.fs,
           maxTurns,
           signal: request.signal,
-          session: agentSession,
+          session: registry,
         },
         emit
       );
-      await agentSession.close("done");
+      await registry.close("done");
     } catch (error) {
       try {
         await emit({
@@ -276,15 +318,16 @@ export async function POST(request: NextRequest) {
       } catch {
         // stream already broken
       }
-      await agentSession.close("error");
+      await registry?.close("error");
     } finally {
-      // Give back only what this run took out. Nothing else releases a sandbox:
-      // `apps/sandbox` has no reaper, so a sandbox leaked here holds a pod and an
-      // RWO volume until a human notices. Suspending frees the pod and keeps
-      // the checkout, which is also what clears the one-live-sandbox-per-project
-      // rule for the next run.
-      if (opened && id) {
-        await releaseSandbox({ baseUrl: HANZO_AI_BASE_URL, token, id });
+      // Give back only what this run took out. Cloud's reaper would collect it
+      // eventually — expired AND idle for an hour — but "eventually" is an hour
+      // of a pod and an RWO volume held for a run that ended, and the volume is
+      // what makes the next run on this project wait for a 409 it need not have.
+      // The checkout survives: the volume is named from org and project, so the
+      // next create re-attaches the same disk.
+      if (give) {
+        await releaseSandbox({ baseUrl: HANZO_AI_BASE_URL, token, id: give });
       }
       try {
         await writer.close();
