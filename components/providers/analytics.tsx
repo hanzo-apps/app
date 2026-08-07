@@ -118,8 +118,15 @@ export function AnalyticsRoot({ children }: { children: ReactNode }) {
     <TelemetryProvider
       product="app"
       path={usePathname()}
-      ingestKey={INGEST_KEY}
-      getToken={() => tokenRef.current ?? undefined}
+      // Signed in -> the visitor's OWN IAM token, so cloud attributes the event to
+      // their org and user. Signed out -> the publishable key, which is admission
+      // for anonymous traffic and nothing more.
+      //
+      // Never as `ingestKey`: the SDK resolves the credential as
+      // `ingestKey ?? token`, so passing it there makes the key win even for a
+      // signed-in user and leaves this resolver unreachable. Here it inverts to
+      // `token ?? key` — one credential per state, the token whenever there is one.
+      getToken={() => tokenRef.current ?? INGEST_KEY}
     >
       <Identity />
       <ManualErrors />
