@@ -312,3 +312,56 @@ candidate fixes — `flexShrink: 1` + `minWidth: 0` on the centre cluster, and t
 same on the left cluster — were MEASURED to change nothing, so neither is in the
 tree. Reproduce by comparing the bounding rects of every control in the top band
 at 390 / 834 / 1440; the rects overlap, which a desktop screenshot cannot show.
+
+### The visual-edit round trip: a click has to say WHERE, not just what
+
+Clicking an element in the preview must give the agent a file and a line. It did
+not. `ElementInfo` (`preview/bridge.ts`) carries selector, xpath, classes,
+styles and `outerHTML` — no location — and the composer forwarded only
+`selectedElementHtml`, so `/v1/generate` said "update ONLY the following
+element" and handed the model markup to find for itself across every page.
+
+**That markup is the BROWSER'S serialization, and it frequently appears nowhere
+in the source.** The DOM reorders attributes into insertion order, re-quotes
+values to double, closes void tags and resolves entities. Measured in jsdom
+against `<button id='buy'   class='btn primary'>`: the source does not contain
+the string `outerHTML` returns. So the old locator — regex-matching
+`element.html.substring(0, 100)` — missed by construction, and when it hit, hit
+by luck.
+
+It also labelled every answer `file: "index.html"`, a literal, while a project
+is `Page[]` with real paths. On a multi-page project it returned a line from
+whichever buffer was open under the name of a different file. **A wrong file
+with a plausible line is worse than no answer** — it aims an edit at the wrong
+document and reports success.
+
+`lib/source-locate.ts` is the one answer, a pure function over `(anchor,
+pages)`. The previous one lived inside a `useCallback` and could only be reached
+by rendering the builder, which is why nothing verified it. It is an anchor
+ladder, each rung a property that SURVIVES serialization — `id`, then a
+distinctive attribute (`data-testid`/`name`/`href`/…), then the full class list,
+then visible text matched between `>` and `<` rather than as a substring, so
+`"Buy"` cannot resolve to a hit inside `id="Buyer"`.
+
+**Every rung demands a UNIQUE match across all pages and returns `undefined`
+otherwise.** An ambiguous anchor is not a location; a caller handed a guess
+edits a coin-flip line. `undefined` leaves the prompt exactly as it was.
+
+The location travels: `ask-ai` computes it, `useCallAi` forwards it as
+`selectedElementAt`, and `app/v1/generate/route.ts` names the file, the line and
+the rung that matched. `applyEdit` (`lib/edit/apply.ts`) is the other half and
+already holds the same line — exact match, then a relaxed one ONLY when it names
+one place.
+
+Two things to check before trusting a change here. The ladder reads `id`,
+`className`, `text` and `html`, and `bridge.ts:162-166` is what fills them — a
+rung anchored on a field the bridge does not send passes every unit test and
+resolves nothing in the product. And `tests/unit/source-locate.test.ts` feeds
+the last four cases a REAL jsdom serialization rather than hand-written strings,
+because a hand-written fixture only encodes what the author believed a browser
+emits.
+
+**Still unproven: the live gesture.** No test drives a real click in `/dev` and
+asserts the request body carries `selectedElementAt`. Only a browser can tell a
+correct recipe from one that arrives — the same reason `editor-toolbar.spec.ts`
+exists rather than a unit test on `iconBox`.
