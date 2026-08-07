@@ -54,13 +54,21 @@ const HANZO_BASE = (process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai").rep
  * gateway serves; `env_key` names the variable dev reads the credential from,
  * which is how the caller's own token reaches the model without ever being
  * written to disk or into a command line.
+ *
+ * THE CREDENTIAL IS A MACHINE'S, NOT A PERSON'S. `HANZO_USER_KEY` is the bearer
+ * `hanzo auth login` fills in for a human at a terminal, and no service has one:
+ * a run started here carries the caller's IAM token, forwarded by the route.
+ * dev's Hanzo provider reads HANZO_API_KEY and HANZO_MACHINE_TOKEN ahead of the
+ * human session for exactly this (hanzoai/dev, create_hanzo_provider), so the
+ * variable set below is the machine one. Reading only the human variable is what
+ * made a live pod answer "Authentication expired" to an authenticated caller.
  */
 function providerArgs(): string[] {
   return [
     "-c", `model_providers.hanzocode.name="Hanzo Code"`,
     "-c", `model_providers.hanzocode.base_url="${HANZO_BASE}/v1"`,
     "-c", `model_providers.hanzocode.wire_api="responses"`,
-    "-c", `model_providers.hanzocode.env_key="HANZO_USER_KEY"`,
+    "-c", `model_providers.hanzocode.env_key="HANZO_API_KEY"`,
     "-c", `model_provider="hanzocode"`,
   ];
 }
@@ -176,7 +184,7 @@ export type HarnessResult = {
  * project lives there: the harness has to see the files it is editing, and the
  * pod is the one place they exist.
  *
- * The token is passed as HANZO_USER_KEY through the command's environment, and
+ * The token is passed as HANZO_API_KEY through the command's environment, and
  * the prompt through a heredoc, so neither is interpolated into a shell word
  * where a quote in a user's task could end the argument.
  */
@@ -195,7 +203,7 @@ export async function runHarness(
   const script = [
     `cd ${JSON.stringify(cwd)} 2>/dev/null || cd .`,
     `unset OPENAI_API_KEY OPENAI_BASE_URL`,
-    `export HANZO_USER_KEY=${JSON.stringify(opts.token)}`,
+    `export HANZO_API_KEY=${JSON.stringify(opts.token)}`,
     `dev ${args} -- "$(cat <<'HANZO_TASK_EOF'`,
     opts.task,
     `HANZO_TASK_EOF`,
