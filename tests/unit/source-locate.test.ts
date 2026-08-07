@@ -102,3 +102,60 @@ describe("text is matched as element CONTENT, never as a substring", () => {
     expect(hit?.via).toBe("text");
   });
 });
+
+/**
+ * The rungs above are fed hand-written strings, which encodes MY belief about
+ * what a browser emits. These feed `locate` what a real DOM actually produces:
+ * the source goes through the parser, and the anchor is read back off the live
+ * node exactly as the preview bridge reads it. If a browser serializes
+ * differently than assumed, this is where it shows.
+ */
+describe("against a REAL DOM's serialization, not a hand-written one", () => {
+  const SOURCE = [
+    "<div id='wrap'>",
+    "  <button id='buy'   class='btn primary'   data-testid='buy-cta'>Add to cart</button>",
+    "  <p class='note'>Ships in 2 days</p>",
+    "</div>",
+  ].join("\n");
+
+  const anchorFromDom = (sel: string) => {
+    document.body.innerHTML = SOURCE;
+    const el = document.querySelector(sel) as HTMLElement;
+    return {
+      id: el.id || undefined,
+      className: el.className || undefined,
+      tagName: el.tagName,
+      html: el.outerHTML,          // the browser's own serialization
+      text: el.textContent ?? undefined,
+    };
+  };
+
+  it("the DOM really does rewrite the source (the premise, measured)", () => {
+    const a = anchorFromDom("#buy");
+    // Single quotes became double and the run of spaces collapsed, so the
+    // source text does NOT contain what the DOM handed us.
+    expect(SOURCE.includes(a.html!)).toBe(false);
+    expect(a.html).toContain('id="buy"');
+  });
+
+  it("still locates the button, from real outerHTML", () => {
+    const hit = locate(anchorFromDom("#buy"), [{ path: "shop.html", html: SOURCE }]);
+    expect(hit).toMatchObject({ file: "shop.html", line: 2, via: "id" });
+  });
+
+  it("locates an element with no id, via its real class list", () => {
+    const hit = locate(anchorFromDom("p.note"), [{ path: "shop.html", html: SOURCE }]);
+    expect(hit?.file).toBe("shop.html");
+    expect(hit?.line).toBe(3);
+  });
+
+  it("locates by data-testid when id and class are absent", () => {
+    const a = anchorFromDom("#buy");
+    const hit = locate(
+      { tagName: a.tagName, html: a.html },   // attribute rung only
+      [{ path: "shop.html", html: SOURCE }],
+    );
+    expect(hit?.via).toBe("attribute");
+    expect(hit?.line).toBe(2);
+  });
+});
