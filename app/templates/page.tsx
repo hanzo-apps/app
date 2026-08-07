@@ -141,13 +141,18 @@ function ResourcesBrowser() {
         {/* Filters */}
         <YStack {...glass(2)} position="sticky" top="$0" zIndex={30} borderBottomWidth={1}>
           <XStack width="100%" maxWidth={1280} alignSelf="center" flexWrap="wrap" alignItems="flex-start" gap="$3" paddingHorizontal="$5" paddingVertical="$3">
-            <YStack position="relative" width="100%" $sm={{ width: "auto" }}>
-              <Search size={16} />
+            {/* The glyph goes IN the field, which is what `startAdornment` is
+                for. As a plain sibling it was never positioned, so it stacked
+                above the box and the 36px gutter held a space nothing sat in —
+                measured on prod, icon bottom 291 against field top 291 at both
+                widths. */}
+            <YStack width="100%" $sm={{ width: "auto" }}>
               <Input
                 placeholder="Search resources…"
                 value={query}
                 onChangeText={(v: string) => setQuery(v)}
-                width="100%" borderColor="$borderColor" backgroundColor="$background" paddingLeft={36} color="$color" $sm={{ width: 256 }}
+                startAdornment={<Search size={16} />}
+                width="100%" borderColor="$borderColor" backgroundColor="$background" color="$color" $sm={{ width: 256 }}
   />
             </YStack>
             {/* `flexShrink={1}` is load-bearing. gui's base rule gives every

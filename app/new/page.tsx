@@ -380,13 +380,18 @@ function NewProjectInner() {
                 <Boxes size={18} />
                 <H2 fontSize={15} fontWeight="500">Clone a Template</H2>
               </XStack>
-              <YStack position="relative" display="none" $sm={{ display: "flex" }} width="$17">
-                <Search size={14} />
+              {/* An unpositioned sibling icon does not sit in the field — it
+                  stacks above it, and the column then reads as one tall box
+                  with a glyph floating off its corner. `startAdornment` puts
+                  it where the `paddingLeft` gutter was always reserving room
+                  for it. */}
+              <YStack display="none" $sm={{ display: "flex" }} width="$17">
                 <Input
                   value={repoFilter}
                   onChange={(e) => setRepoFilter(e.target.value)}
                   placeholder="Filter"
-                  height="$6" width="100%" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingLeft="$6" paddingRight="$2" fontSize="$1" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color" }}
+                  startAdornment={<Search size={14} />}
+                  height="$6" width="100%" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingRight="$2" fontSize="$1" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color" }}
   />
               </YStack>
             </XStack>
