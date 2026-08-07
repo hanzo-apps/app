@@ -72,6 +72,20 @@ import { applyPatchOps, normalizePath } from "./patch";
 const wire = (path: string): string => normalizePath(path).slice(1);
 
 /**
+ * Throw a response body away, and DO NOT WAIT for it to be thrown.
+ *
+ * Every call site here is on its way to somewhere else — returning a boolean,
+ * raising a `SandboxError` — and the cancel is a courtesy to the connection pool,
+ * not a step in the answer. It used to be awaited, which quietly made that
+ * courtesy load-bearing: a body that will not cancel then blocks the throw, and
+ * the agent turn hangs on cleanup for a request whose outcome was already known.
+ * Caught here, once, because an ignored rejection is still a rejection.
+ */
+const discard = (res: Response): void => {
+  void res.body?.cancel().catch(() => {});
+};
+
+/**
  * The sandbox did not answer the question.
  *
  * This exists because "the file is not there" and "I could not find out" are
@@ -250,7 +264,7 @@ export async function releaseSandbox(opts: {
         cache: "no-store",
       }
     );
-    await res.body?.cancel().catch(() => {});
+    discard(res);
     return res.ok;
   } catch {
     return false;
@@ -312,7 +326,7 @@ export class Sandbox implements ProjectFs, ProjectExec {
       cache: "no-store",
     });
     if (res.ok || (init.allow ?? []).includes(res.status)) return res;
-    await res.body?.cancel().catch(() => {});
+    discard(res);
     throw new SandboxError(res.status, `${method} ${path}: sandbox ${this.opts.id} returned ${res.status}`);
   }
 
@@ -383,7 +397,7 @@ export class Sandbox implements ProjectFs, ProjectExec {
       query: { path: wire(path) },
       allow: [404],
     });
-    await res.body?.cancel().catch(() => {});
+    discard(res);
     return res.ok;
   }
 
@@ -395,7 +409,7 @@ export class Sandbox implements ProjectFs, ProjectExec {
       allow: [404],
     });
     if (res.status === 404) {
-      await res.body?.cancel().catch(() => {});
+      discard(res);
       return null;
     }
     return res.text();

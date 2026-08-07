@@ -142,7 +142,14 @@ export async function codeTurn(args: {
     await startAgentRun(
       {
         prompt: args.prompt,
-        ...(args.sandbox ? { id: args.sandbox } : { project }),
+        // ALWAYS the project. The sandbox id is an optimization — reuse the warm
+        // pod if it is still there — and it was sent INSTEAD of the project until
+        // a second message proved that wrong: the route hangs its sandbox up when
+        // a run ends, so the id from turn one is a 404 by turn two, and a turn
+        // that had only the id fell back to memory for a project whose checkout
+        // was still on disk. Naming both makes the id free to be stale.
+        project,
+        ...(args.sandbox ? { id: args.sandbox } : {}),
         ...(args.model ? { model: args.model } : {}),
         ...(args.files?.length ? { files: args.files } : {}),
         ...(args.signal ? { signal: args.signal } : {}),
