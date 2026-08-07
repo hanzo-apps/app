@@ -654,14 +654,20 @@
     '--hz-dim:var(--muted-foreground,#9a9a9a);' +
     '--hz-line:var(--border,rgba(255,255,255,.14));' +
     '--hz-radius:var(--control-radius,8px);' +
-    // The ONE spectrum, shared with the composer ring (assets/globals.css
-    // declares --hz-spectrum). Inherited from the host page where there is one —
-    // custom properties cross the shadow boundary, and `all:initial` above does
-    // not reset them — so a palette change there reaches the mark for free. The
-    // fallback is the same sweep written out, for the third-party pages this
-    // script also runs on, which have no Hanzo tokens at all.
-    '--hz-prism:var(--hz-spectrum,rgba(8,148,255,.45),rgba(201,89,221,.48),' +
-    'rgba(255,46,84,.4),rgba(255,144,4,.4),rgba(8,148,255,.45));' +
+    // The ensō lights in WHITE. It used to borrow the composer's
+    // --hz-spectrum, which is prismatic BY DESIGN and owner-directed — but that
+    // is a decision about the composer, the one surface allowed colour, and the
+    // mark inherited it only because the token happened to be in scope. Two
+    // different things wearing one value is not sharing, it is coupling: a mark
+    // that is meant to be a monochrome circle cannot be, because someone else's
+    // ring is iridescent.
+    //
+    // So the glow is its own token and its own value. Three white stops rather
+    // than one, because the sweep still turns: a uniform ring would rotate
+    // invisibly. Closes on the stop it opens with — a conic whose ends differ
+    // shows a hard seam.
+    '--hz-glow:var(--hz-mark-glow,rgba(255,255,255,.62),rgba(255,255,255,.22),' +
+    'rgba(255,255,255,.62));' +
     '}';
 
   var css =
@@ -695,12 +701,14 @@
     '.fab:hover svg,.fab:focus-visible svg{color:transparent}' +
     // One conic sweep, used twice: blurred into a halo, and masked down to a
     // hairline ring on the ensō's own radius. Both are absent at rest — the
-    // chrome is monochrome and this is the one accent.
+    // mark is quiet until touched, then it lights white.
     '.fab::before,.fab::after{content:"";position:absolute;left:50%;top:50%;' +
     'width:calc(var(--mark) * .9);height:calc(var(--mark) * .9);border-radius:999px;' +
-    'background:conic-gradient(var(--hz-prism));transform:translate(-50%,-50%);' +
+    'background:conic-gradient(var(--hz-glow));transform:translate(-50%,-50%);' +
     'opacity:0;transition:opacity .25s ease;pointer-events:none}' +
-    '.fab::before{filter:blur(calc(var(--mark) * .22)) saturate(1.5)}' +
+    // No `saturate()` — there is no hue left to saturate, and pushing it only
+    // hardened the blur's edge.
+    '.fab::before{filter:blur(calc(var(--mark) * .22))}' +
     '.fab::after{-webkit-mask:radial-gradient(closest-side,transparent calc(100% - 1.25px),#000 0);' +
     'mask:radial-gradient(closest-side,transparent calc(100% - 1.25px),#000 0)}' +
     '.fab:hover::before,.fab:focus-visible::before,.fab:active::before{opacity:.7}' +

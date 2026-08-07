@@ -59,6 +59,26 @@ describe('edit widget mark', () => {
     expect(style.getPropertyValue('box-shadow')).toBe('');
   });
 
+  it('lights in white — the ensō carries no hue of its own', () => {
+    // It used to light from --hz-spectrum, the composer's iridescence. That
+    // sweep is owner-directed and stays where it is; the mark is a different
+    // surface and simply inherited it because the token was in scope. A colour
+    // reaching this mark again means the two have been coupled a second time.
+    const css = script;
+    const glow = /--hz-glow:[^;]+;/.exec(css)?.[0] ?? '';
+    expect(glow).not.toBe('');
+    // Every stop is white — only the alpha varies, so the sweep still turns.
+    const stops = glow.match(/rgba?\([^)]*\)/g) ?? [];
+    expect(stops.length).toBeGreaterThan(1);
+    for (const stop of stops) {
+      const [r, g, b] = stop.match(/[\d.]+/g)!.slice(0, 3).map(Number);
+      expect([r, g, b]).toEqual([255, 255, 255]);
+    }
+    // And the mark never READS the composer's spectrum again. Naming it in
+    // prose is how the next reader learns why; consuming it is the defect.
+    expect(css).not.toContain('var(--hz-spectrum');
+  });
+
   it('keeps the trigger a button with an accessible name', () => {
     const fab = trigger(mount());
     expect(fab.tagName).toBe('BUTTON');
