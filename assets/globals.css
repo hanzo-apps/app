@@ -1326,11 +1326,20 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
 
 /* @hanzo/voice styles itself through one className, so the mic's chrome is one
    rule. Listening and speaking are the same control in two moods: lit while the
-   conversation is live, breathing while it talks. */
+   conversation is live, breathing while it talks.
+
+   IT IS A TAP TARGET, so it is sized like one. At 20px it was the smallest
+   control on the landing page and the only one under the 24px floor WCAG 2.2
+   sets for a pointer target (2.5.8) — measured live, alongside a 44px send
+   button and a 44px mode picker sharing its row, so it also read as a
+   half-height dent in a row of full-height controls. 44px matches the row
+   rather than merely clearing the floor: a control's box belongs to the row it
+   sits in, and the 16px glyph inside is unchanged, so nothing looks bigger —
+   only the reachable area is. */
 .voice-control {
   display: flex;
-  width: 20px;
-  height: 20px;
+  width: 44px;
+  height: 44px;
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-sm, 6px);
