@@ -377,6 +377,32 @@ export async function POST(request: NextRequest) {
             message: `the coding harness exited ${result.exitCode}`,
           });
         }
+        // `done` CLOSES THE TURN, and its file list is what the browser commits.
+        //
+        // loop.ts emits this from fs.changedFiles(); the harness cannot, because
+        // it edits inside the pod and the Sandbox client never saw those writes
+        // — its change set would be empty after a run that rewrote the project.
+        // So the list comes from the checkout's own git (changedInSandbox), and
+        // the contents are read back through the same filesystem the loop uses.
+        //
+        // Without this the turn ends with no `done` at all: the UI never learns
+        // what changed and commitTurn writes NO REVISION to git.hanzo.ai, so the
+        // history panel stays empty while the work sits real on the disk.
+        const changed = result.changed;
+        const harnessFiles: AgentFile[] = [];
+        for (const path of changed) {
+          const content = await where.fs.read(path);
+          if (content !== undefined && content !== null) {
+            harnessFiles.push({ path, content });
+          }
+        }
+        await emit({
+          type: "done",
+          finishReason: result.exitCode === 0 ? "stop" : "error",
+          turns: 1,
+          files: harnessFiles,
+          changed,
+        });
       } else {
         await runAgent(
           {

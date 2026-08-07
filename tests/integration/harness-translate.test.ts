@@ -66,3 +66,39 @@ describe("translate", () => {
     expect(translate({ msg: { type: "agent_message", message: "" } })).toEqual([]);
   });
 });
+
+/**
+ * The changed-set parser, against REAL `git status --porcelain -uall` output
+ * captured in a live sandbox pod. The shapes that matter are the two a
+ * hand-written fixture would most likely get wrong: a rename, whose NEW name is
+ * the file that now exists, and an untracked file inside a new directory, which
+ * only appears at all because of `-uall`.
+ *
+ * This list is what the browser hands to commitTurn, so a path lost here is a
+ * revision that never reaches git.hanzo.ai.
+ */
+import { parsePorcelain } from "../../lib/agent/harness";
+
+describe("parsePorcelain", () => {
+  it("reads the real output of a run that renamed and added a file", () => {
+    const real = "RM tracked.txt -> renamed.txt\n?? newdir/added.txt";
+    expect(parsePorcelain(real)).toEqual(["renamed.txt", "newdir/added.txt"]);
+  });
+
+  it("takes the NEW name of a rename — the old one no longer exists", () => {
+    expect(parsePorcelain("R  a.txt -> b.txt")).toEqual(["b.txt"]);
+  });
+
+  it("reads ordinary modifications and additions", () => {
+    expect(parsePorcelain(" M src/app.ts\nA  src/new.ts\n?? note.md")).toEqual([
+      "src/app.ts",
+      "src/new.ts",
+      "note.md",
+    ]);
+  });
+
+  it("is empty for a clean tree, and for a directory that is not a repo", () => {
+    expect(parsePorcelain("")).toEqual([]);
+    expect(parsePorcelain("\n  \n")).toEqual([]);
+  });
+});

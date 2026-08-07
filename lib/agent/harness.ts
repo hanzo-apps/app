@@ -173,9 +173,68 @@ export type HarnessResult = {
   lastMessage: string;
   /** Non-zero means the harness itself failed, not the task. */
   exitCode: number;
-  /** Set when the harness could not be run at all. */
-  unavailable?: string;
+  /** Paths this run wrote, as the sandbox's own git reports them. */
+  changed: string[];
 };
+
+/**
+ * Read `git status --porcelain -uall` into the paths that exist now.
+ *
+ * Exported because it is the part worth testing without a pod: every line is
+ * `XY <path>`, and a rename is `R  old -> new`, where the NEW name is the file
+ * on disk. Taking the old one would name a path that is gone.
+ */
+export function parsePorcelain(out: string): string[] {
+  return out
+    .split("\n")
+    .map((l) => l.trimEnd())
+    .filter((l) => l.trim().length > 0)
+    .map((l) => {
+      const path = l.slice(2).trim();
+      const arrow = path.indexOf(" -> ");
+      return arrow >= 0 ? path.slice(arrow + 4).trim() : path;
+    })
+    .filter((p) => p.length > 0);
+}
+
+/**
+ * What this run changed — asked of GIT IN THE SANDBOX, and it has to be.
+ *
+ * `Sandbox.changedPaths()` returns the set `Sandbox.write()` populated, which is
+ * the right answer for the loop: the loop makes every edit through that client,
+ * so the client saw them all. The harness does not. `dev` edits files inside the
+ * pod with its own tools, and the client never learns a thing — so asking it
+ * would report NOTHING CHANGED after a run that rewrote the project.
+ *
+ * That matters beyond a display: the `done` event's file list is what the
+ * browser hands to `commitTurn`, and `commitTurn` is what writes the revision to
+ * git.hanzo.ai. An empty list is a turn that silently records no history — the
+ * project's version panel stays empty while the work is real and on disk.
+ *
+ * So the question goes to the thing that actually watched: the checkout. Tracked
+ * modifications and untracked additions both count, because a new file is as
+ * much of the turn as an edited one. A directory that is not a repo answers
+ * empty, honestly — there is nothing to commit from and nothing to claim.
+ */
+async function changedInSandbox(box: Sandbox, cwd: string): Promise<string[]> {
+  const script = [
+    `cd ${JSON.stringify(cwd)} 2>/dev/null || cd .`,
+    `git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0`,
+    // -uall so a new directory lists its files rather than just itself; -z is
+    // avoided because the porcelain path is parsed line-wise below.
+    `git status --porcelain -uall`,
+  ].join("\n");
+  try {
+    const r = await box.exec(script, 60);
+    if (r.exitCode !== 0) return [];
+    return parsePorcelain(r.stdout || "");
+  } catch {
+    // The sandbox went away between the run and the question. The turn still
+    // happened; we simply cannot enumerate it, and saying "nothing changed"
+    // would be a stronger claim than we can make.
+    return [];
+  }
+}
 
 /**
  * runHarness executes one task with `dev` inside `box` and relays its events.
@@ -235,5 +294,9 @@ export async function runHarness(
     await emit({ type: "error", message: r.stderr.trim().slice(0, 600) });
   }
 
-  return { lastMessage: last, exitCode: r.exitCode ?? 0 };
+  return {
+    lastMessage: last,
+    exitCode: r.exitCode ?? 0,
+    changed: await changedInSandbox(box, cwd),
+  };
 }
