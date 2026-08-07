@@ -176,12 +176,29 @@ const CREATE_TIMEOUT_MS = 150_000;
 /** `class` in the wire: what toolchain the sandbox carries. */
 export type SandboxClass = "exec" | "dev" | "desktop";
 
+/**
+ * `runtime` in the wire: the isolation boundary the pod runs behind. A different
+ * axis from `class` — class picks the toolchain, runtime picks what stands
+ * between that toolchain and the kernel — and the two must not be confused.
+ *
+ * `""` names none, which asks for whatever the fleet is set to. That is a real
+ * request and not a missing one: it is the only value that keeps following the
+ * fleet when the fleet moves.
+ *
+ * Cloud decides. It refuses a combination it cannot honour rather than
+ * substituting a different runtime, so anything here may be ASKED for and the
+ * answer comes back on `Info.runtime`.
+ */
+export type Runtime = "" | "runc" | "gvisor" | "kata-fc";
+
 /** A sandbox as the API reports it — the row, not the handle. */
 export interface Info {
   id: string;
   org?: string;
   project?: string;
   class?: SandboxClass;
+  /** The runtime this sandbox GOT, which need not be the one asked for. */
+  runtime?: Runtime;
   status?: "pending" | "running" | "error";
   image?: string;
   volume?: string;
@@ -254,6 +271,18 @@ export async function openSandbox(opts: {
   token: string;
   project: string;
   class?: SandboxClass;
+  /**
+   * The isolation boundary to ask for. Omitted or `""` asks for the fleet's own,
+   * which is what nearly every run wants; a person comparing runtimes names one.
+   *
+   * Asking is not getting, and the refusal is the interesting case: a project
+   * sandbox mounts a volume, and a runtime with no shared filesystem cannot hold
+   * one, so cloud answers 400 with a sentence saying exactly that. It arrives
+   * here as `{ why }` like any other refusal and reaches the person unchanged —
+   * which is the point. A client that quietly retried without the runtime would
+   * hand somebody gVisor's numbers under Firecracker's name.
+   */
+  runtime?: Runtime;
   timeoutMs?: number;
   ttlSec?: number;
 }): Promise<Opened> {
@@ -270,6 +299,7 @@ export async function openSandbox(opts: {
       body: JSON.stringify({
         project: opts.project,
         class: opts.class ?? "dev",
+        ...(opts.runtime ? { runtime: opts.runtime } : {}),
         ttlSec: opts.ttlSec ?? DEFAULT_TTL_SEC,
       }),
       signal: AbortSignal.timeout(timeout),

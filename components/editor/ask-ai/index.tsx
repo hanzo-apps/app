@@ -43,6 +43,7 @@ import { offer } from "./mic";
 import { sentence } from "./sentence";
 import { ChatThread, type ThreadMessage } from "./chat-thread";
 import { codeTurn } from "./code-turn";
+import type { Runtime } from "@/lib/agent/sandbox";
 import { isConversational } from "./intent";
 import { useVoice, speech } from "@hanzo/voice";
 
@@ -186,6 +187,22 @@ export function AskAI({
   // The sandbox this project's runs are landing in — remembered across turns so
   // a second message reuses the warm pod instead of asking for a new one.
   const sandboxRef = useRef<string | undefined>(undefined);
+  // THE ISOLATION BOUNDARY this project's sandboxes ask for, persisted per
+  // project like the other composer preferences above. Per project because that
+  // is the unit of the experiment: pin one project to a microVM and another to
+  // gVisor, work in both, and the difference is a thing you felt rather than a
+  // number somebody quoted. `""` asks for whatever the fleet runs, which is what
+  // a session that is not being measured should keep.
+  const [runtime, setRuntime] = useLocalStorage<Runtime>(
+    `sandbox-runtime:${project?.space_id ?? "new"}`,
+    "",
+  );
+  // What the last run's sandbox actually got, and cloud's sentence when it got
+  // none. Held apart from the request above BECAUSE THEY CAN DIFFER — reading a
+  // selection back as if it were an outcome is the one failure this whole path
+  // is built to make impossible.
+  const [granted, setGranted] = useState<string | undefined>(undefined);
+  const [refused, setRefused] = useState<string | undefined>(undefined);
 
   // Honor the Build/Plan choice handed off from the landing / dashboard composer
   // (localStorage.initialMode). Applied ONCE on mount then cleared, so it seeds the
@@ -496,9 +513,17 @@ export function AskAI({
           prompt: promptToUse.trim(),
           model,
           sandbox: sandboxRef.current,
+          runtime,
           files: pages.map((p) => ({ path: p.path, content: p.html })),
-          onWhere: ({ durable, sandbox, reason }) => {
+          onWhere: ({ durable, sandbox, runtime: got, reason }) => {
             sandboxRef.current = sandbox;
+            // WHAT IT GOT, back to the picker. When there is no sandbox there is
+            // nothing true to report, so the last answer is cleared rather than
+            // left standing beside a run that never had one.
+            setGranted(got);
+            // The refusal belongs beside the choice only when a choice was made:
+            // a scratch run with no project is not the runtime being turned down.
+            setRefused(!durable && runtime ? reason : undefined);
             activity.length = 0;
             activity.push(durable ? `Sandbox ${sandbox}` : "In memory — NOT saved");
             updateAssistant(codeId, { activity: [...activity] });
@@ -1426,6 +1451,10 @@ export function AskAI({
               model={model as string}
               onChange={setProvider}
               onModelChange={setModel}
+              runtime={runtime ?? ""}
+              onRuntimeChange={setRuntime}
+              granted={granted}
+              refused={refused}
               open={openProvider}
               error={providerError}
               onClose={setOpenProvider}

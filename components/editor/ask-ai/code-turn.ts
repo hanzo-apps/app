@@ -3,6 +3,7 @@
 import { startAgentRun } from "@/lib/agent/client";
 import type { AgentEvent, AgentFile } from "@/lib/agent/types";
 import { watchRuns } from "@/lib/agent/watch";
+import type { Runtime } from "@/lib/agent/sandbox";
 import { currentProject } from "@/lib/dev/workspace";
 import { beginRun, endRun, push, pushBlock } from "@/components/editor/console/log";
 
@@ -78,6 +79,8 @@ export async function codeTurn(args: {
   model?: string;
   /** Reuse the sandbox a previous turn opened. */
   sandbox?: string;
+  /** The isolation boundary to ask cloud for. Empty takes the fleet's own. */
+  runtime?: Runtime;
   files?: AgentFile[];
   signal?: AbortSignal;
   /** Streamed assistant prose. */
@@ -85,7 +88,13 @@ export async function codeTurn(args: {
   /** One human-readable line per step, for the thread's activity list. */
   onActivity: (label: string) => void;
   /** Where this run edits — fires once, before any work. */
-  onWhere: (where: { durable: boolean; sandbox?: string; reason?: string }) => void;
+  onWhere: (where: {
+    durable: boolean;
+    sandbox?: string;
+    /** The runtime it GOT. Not the one asked for — those can differ. */
+    runtime?: string;
+    reason?: string;
+  }) => void;
 }): Promise<CodeTurnResult> {
   const project = currentProject();
   const out: CodeTurnResult = { durable: false, text: "", changed: [], files: [], ok: false };
@@ -114,10 +123,19 @@ export async function codeTurn(args: {
         out.sandbox = event.durable ? event.id : undefined;
         out.reason = event.reason;
         if (event.durable) {
-          push("sandbox", "info", `connected to sandbox ${event.id} (${event.project})`);
+          // The RUNTIME is named here, and it is the granted one. A run whose
+          // isolation boundary is not in its own log is a measurement nobody can
+          // check afterwards — and the slug, not a friendly name, because this is
+          // a terminal and somebody is going to grep it.
+          push(
+            "sandbox",
+            "info",
+            `connected to sandbox ${event.id} (${event.project}) on ${event.runtime || "the fleet runtime"}`,
+          );
         } else {
           // LOUD. This is the case that used to be invisible: the run proceeds,
-          // looks perfect, and saves nothing.
+          // looks perfect, and saves nothing. A refused runtime arrives here too,
+          // carrying cloud's own sentence about why it could not be had.
           push("sandbox", "error", event.reason ?? "not durable — this run edits memory only");
         }
         // The dock's Stop acts on the sandbox, so it can only be offered once
@@ -146,7 +164,12 @@ export async function codeTurn(args: {
             live = false;
           });
         }
-        args.onWhere({ durable: event.durable, sandbox: event.id, reason: event.reason });
+        args.onWhere({
+          durable: event.durable,
+          sandbox: event.id,
+          runtime: event.runtime,
+          reason: event.reason,
+        });
         break;
       }
       case "text":
@@ -208,6 +231,7 @@ export async function codeTurn(args: {
         // was still on disk. Naming both makes the id free to be stale.
         project,
         ...(args.sandbox ? { id: args.sandbox } : {}),
+        ...(args.runtime ? { runtime: args.runtime } : {}),
         ...(args.model ? { model: args.model } : {}),
         ...(args.files?.length ? { files: args.files } : {}),
         ...(args.signal ? { signal: args.signal } : {}),

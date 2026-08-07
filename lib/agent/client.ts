@@ -18,6 +18,7 @@
  */
 
 import type { AgentEvent, AgentFile } from "./types";
+import type { Runtime } from "./sandbox";
 
 export interface StartRunOptions {
   /** What to do. */
@@ -31,6 +32,15 @@ export interface StartRunOptions {
   /** A sandbox already held (from a previous run's `sandbox` event). Wins over
    *  `project`: reuse the pod rather than asking for a second one. */
   id?: string;
+  /**
+   * The isolation boundary to ask for. Omit to take the fleet's own, which is
+   * what a run that is not being measured should do.
+   *
+   * The server decides and may refuse — a refusal comes back as the `sandbox`
+   * event's `reason`, in cloud's own words. The runtime that was actually
+   * granted comes back on the same event, and is the only one worth quoting.
+   */
+  runtime?: Runtime;
   /** Resolved model id, or undefined for the caller's default. */
   model?: string;
   /** Seed files, for a scratch run that starts from what is on screen. Ignored
@@ -59,6 +69,7 @@ export async function startAgentRun(
       prompt: opts.prompt,
       ...(opts.id ? { id: opts.id } : {}),
       ...(opts.project ? { project: opts.project } : {}),
+      ...(opts.runtime ? { runtime: opts.runtime } : {}),
       ...(opts.model ? { model: opts.model } : {}),
       ...(opts.files?.length ? { files: opts.files } : {}),
       ...(opts.maxTurns ? { maxTurns: opts.maxTurns } : {}),

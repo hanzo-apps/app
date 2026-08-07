@@ -27,7 +27,7 @@ import { requireSameOrigin } from "@/lib/org/csrf";
 import { resolveModelId } from "@/lib/providers";
 import { runAgent, type AgentEvent, type AgentFile, type ProjectFs } from "@/lib/agent";
 import { AgentSession } from "@/lib/agent/session";
-import { Sandbox, openSandbox, releaseSandbox } from "@/lib/agent/sandbox";
+import { Sandbox, openSandbox, releaseSandbox, type Runtime } from "@/lib/agent/sandbox";
 
 const HANZO_AI_BASE_URL = process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai/v1";
 
@@ -46,6 +46,28 @@ interface AgentRequestBody {
   id?: unknown;
   /** Run in a sandbox for this project, creating one if there is none. */
   project?: unknown;
+  /** Which isolation boundary to ask cloud for. See `runtimeAsked`. */
+  runtime?: unknown;
+}
+
+/**
+ * The runtime this request asks for, or none.
+ *
+ * Narrowed against the closed set for the same reason every other field here is
+ * narrowed: the body is `unknown` and this value is forwarded to cloud. An
+ * unknown name would be refused there anyway — the point of doing it here is
+ * that a person who typed nothing gets the fleet's runtime rather than a 400
+ * about a word this route invented.
+ *
+ * It is NOT a policy check. Cloud owns the policy and will refuse a choice this
+ * route happily forwards; that refusal is the thing the person needs to read,
+ * so nothing here tries to predict it.
+ */
+const RUNTIMES: readonly Runtime[] = ["runc", "gvisor", "kata-fc"];
+
+function runtimeAsked(raw: unknown): Runtime | undefined {
+  const v = typeof raw === "string" ? raw.trim() : "";
+  return RUNTIMES.includes(v as Runtime) ? (v as Runtime) : undefined;
 }
 
 /**
@@ -77,6 +99,8 @@ interface Where {
   fs?: ProjectFs;
   id?: string;
   project?: string;
+  /** The runtime cloud GRANTED, read off the sandbox it handed back. */
+  runtime?: string;
   opened?: boolean;
   durable: boolean;
   reason?: string;
@@ -120,6 +144,7 @@ async function writable(fs: Sandbox): Promise<string> {
 async function resolveFs(token: string, body: AgentRequestBody): Promise<Where> {
   const id = typeof body.id === "string" ? body.id.trim() : "";
   const project = typeof body.project === "string" ? body.project.trim() : "";
+  const runtime = runtimeAsked(body.runtime);
 
   if (id) {
     const fs = new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id, token });
@@ -139,15 +164,19 @@ async function resolveFs(token: string, body: AgentRequestBody): Promise<Where> 
   }
 
   if (project) {
-    const opened = await openSandbox({ baseUrl: HANZO_AI_BASE_URL, token, project });
+    const opened = await openSandbox({ baseUrl: HANZO_AI_BASE_URL, token, project, runtime });
     if ("sandbox" in opened) {
       const fs = new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id: opened.sandbox.id, token });
       const why = await writable(fs);
+      // THE GRANTED RUNTIME, off the sandbox — never the one asked for. Cloud may
+      // answer with a different boundary than the request named, and reporting
+      // the request back would make every comparison unfalsifiable.
+      const got = opened.sandbox.runtime ?? "";
       // `opened` either way: the pod exists and this run is the only thing that
       // knows about it, so it still has to be given back.
       return why
-        ? { id: opened.sandbox.id, project, opened: true, durable: false, reason: why }
-        : { fs, id: opened.sandbox.id, project, opened: true, durable: true };
+        ? { id: opened.sandbox.id, project, runtime: got, opened: true, durable: false, reason: why }
+        : { fs, id: opened.sandbox.id, project, runtime: got, opened: true, durable: true };
     }
     // A project WAS named and it did not get one. This is the case that used to
     // disappear: the run continued against a map and reported success. It now
@@ -309,6 +338,7 @@ export async function POST(request: NextRequest) {
         durable: where.durable,
         ...(where.id ? { id: where.id } : {}),
         ...(where.project ? { project: where.project } : {}),
+        ...(where.runtime !== undefined ? { runtime: where.runtime } : {}),
         ...(where.reason ? { reason: where.reason } : {}),
         ...(watching ? { session: watching } : {}),
       });

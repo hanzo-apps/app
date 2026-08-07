@@ -104,7 +104,16 @@ function stubSandbox(
 
     if (method === "POST" && p === "/v1/sandboxes") {
       created.push(json());
-      return Response.json({ id: ID, project: json().project, class: json().class, status: "running" }, { status: 201 });
+      // `runtime` is answered and NOT echoed, because cloud does not echo it:
+      // it derives the isolation boundary from whether the sandbox mounts a
+      // volume and hands back what it GRANTED, which for a project sandbox is
+      // the one that can share a filesystem whatever was asked for. A stub that
+      // parroted the request would agree with a client that never read the
+      // answer, and the two would be wrong together.
+      return Response.json(
+        { id: ID, project: json().project, class: json().class, runtime: "gvisor", status: "running" },
+        { status: 201 }
+      );
     }
     if (method === "GET" && p === "/v1/sandboxes") {
       const want = url.searchParams.get("project");
@@ -391,6 +400,35 @@ describe("openSandbox", () => {
       sandbox: expect.objectContaining({ id: ID, project: "acme/site" }),
     });
     expect(stub.calls).toContain("POST /v1/sandboxes");
+  });
+
+  /**
+   * The runtime is a REQUEST going out and an ANSWER coming back, and they are
+   * allowed to disagree.
+   *
+   * Both halves in one test because either alone is passable and misleading:
+   * a client that sends the field but reads its own selection back reports a
+   * microVM it never got, and a client that reads the answer but never sends
+   * the field reports the truth about a choice nobody made.
+   */
+  it("asks for a runtime and reports the one it was granted", async () => {
+    const stub = stubSandbox({});
+    installFetch(stub);
+    const opened = await openSandbox({
+      baseUrl: BASE,
+      token: "tok-123",
+      project: "acme/site",
+      runtime: "kata-fc",
+    });
+    expect(stub.created[0]).toMatchObject({ project: "acme/site", runtime: "kata-fc" });
+    expect(opened).toEqual({ sandbox: expect.objectContaining({ runtime: "gvisor" }) });
+  });
+
+  it("asks for nothing when no runtime is named, so the fleet's own is used", async () => {
+    const stub = stubSandbox({});
+    installFetch(stub);
+    await openSandbox({ baseUrl: BASE, token: "tok-123", project: "acme/site" });
+    expect(stub.created[0]).not.toHaveProperty("runtime");
   });
 
   it("says WHY when the sandbox service is unreachable, so a run can fall back and still explain itself", async () => {
