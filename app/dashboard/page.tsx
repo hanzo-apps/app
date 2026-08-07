@@ -266,11 +266,25 @@ function ProjectGrid({
         // never looks like an untouched draft. See lib/project-status.
         const st = statusOf(p.status);
         return (
-          <Button
-            variant="ghost"
+          /* A CARD, not a control — the same reason the templates grid stopped
+             being a Button. @hanzo/ui pins a Button to its size variant's
+             height whatever the caller asks for, and `overflow="hidden"` then
+             crops the row to that band: measured on prod at 36px holding 62px,
+             which took the "Live · N ago" line off every project. A clickable
+             stack sizes from its content. */
+          <YStack
+            role="button"
+            tabIndex={0}
+            aria-label={`Open ${p.name}`}
             key={p.id}
             onClick={() => onOpen(p)}
-            group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "$-0.5", borderColor: "$color", backgroundColor: "$color3" }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onOpen(p);
+              }
+            }}
+            cursor="pointer" flexDirection="row" alignItems="center" group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "$-0.5", borderColor: "$color", backgroundColor: "$color3" }}
           >
             {/* Real thumbnail: the live site itself (inert); monogram otherwise. */}
             <YStack position="relative">
@@ -290,7 +304,7 @@ function ProjectGrid({
                 </XStack>
               </XStack>
             </YStack>
-          </Button>
+          </YStack>
         );
       })}
     </YStack>
