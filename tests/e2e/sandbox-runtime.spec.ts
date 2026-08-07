@@ -140,6 +140,11 @@ async function run(page: Page, prompt: string, sandbox: object): Promise<Record<
 
 test.describe('the sandbox runtime is a choice, and an honest one', () => {
   test.describe.configure({ mode: 'serial', timeout: 180_000 });
+  // A window the height of a laptop's, not Playwright's 720. The popover opens
+  // UPWARD from a trigger that sits at the bottom of the screen, so how much of
+  // it a person can see at once is a fact about their window — and 720 is
+  // shorter than anything this is used on.
+  test.use({ viewport: { width: 1280, height: 1000 } });
 
   test('every runtime is offered, in terms a person can weigh', async ({ page }) => {
     await openComposer(page);
@@ -152,10 +157,41 @@ test.describe('the sandbox runtime is a choice, and an honest one', () => {
 
     // The tradeoff is stated where the choice is made. A slug on its own asks
     // somebody to already know what kata-fc costs.
-    await expect(picker).toContainText('Leases 2.8s · git status 156–195ms');
-    await expect(picker).toContainText('Leases 4–8s · git status 21–53ms');
-    await expect(picker).toContainText('no project disk');
-    await page.screenshot({ path: 'tests/e2e/test-results/runtime-1-picker.png' });
+    await expect(picker).toContainText('Starts 3.9s, 5.3s busy');
+    await expect(picker).toContainText('git status 21–53ms');
+    await expect(picker).toContainText('No project disk');
+
+    // AND THE COST UNDER LOAD, on the row that has one.
+    //
+    // A microVM leases in 4–8s on a quiet cluster and its p90 in a burst of 50
+    // is 175 SECONDS. Both are measured; a hint that printed only the first
+    // reads as a recommendation, and the person most likely to act on it is the
+    // one who already suspects the microVM is the better trade for a long
+    // session. So this asserts the unflattering half is present — it is the
+    // only thing stopping the copy drifting back to the happy number.
+    await expect(page.getByTestId('runtime-kata-fc')).toContainText(
+      'Slowest to start: 27s, 175s busy',
+    );
+
+    // ALL FOUR TOGETHER, WHOLE, because the copy above exists to be COMPARED and
+    // a row you cannot see beside the others is one nobody weighs.
+    //
+    // Measured against the SCROLLER's box, not the viewport. toBeInViewport was
+    // tried and passes on a row the popover has clipped in half — the element
+    // keeps its geometry when an ancestor scrolls it out of sight, so the check
+    // that reads like the right one is the check that sees nothing. This asks
+    // the question a person's eye asks: is the whole row inside the box.
+    await page.getByTestId('runtime-kata-fc').scrollIntoViewIfNeeded();
+    const cut = await page.evaluate(() => {
+      const body = document.querySelector('[data-testid="settings-body"]')!.getBoundingClientRect();
+      return ['default', 'runc', 'gvisor', 'kata-fc'].filter((r) => {
+        const b = document.querySelector(`[data-testid="runtime-${r}"]`)!.getBoundingClientRect();
+        return b.top < body.top - 1 || b.bottom > body.bottom + 1;
+      });
+    });
+    expect(cut, 'these runtime rows are clipped by the popover, so nobody compares them').toEqual([]);
+    await page.screenshot({ path: 'tests/e2e/test-results/runtime-1-picker.png', clip: await picker.boundingBox() ?? undefined });
+    await page.screenshot({ path: 'tests/e2e/test-results/runtime-1-page.png' });
   });
 
   test('picking one puts it on the wire, and a reload keeps it', async ({ page }) => {
