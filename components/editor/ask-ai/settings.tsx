@@ -12,11 +12,26 @@ import type { Runtime } from "@/lib/agent/sandbox";
 /**
  * The isolation boundaries a session can ask for, and what picking one costs.
  *
- * Every figure here is MEASURED on the real lease path, not estimated, and the
- * two that matter pull in opposite directions: a microVM takes longer to hand
- * you a machine and is then several times faster at touching files. For a long
- * editing session that trade is probably worth taking, which is exactly the sort
- * of claim nobody should have to accept on somebody's word — hence the picker.
+ * EVERY LEASE FIGURE IS FROM THE BURST OF 50, not from a quiet cluster, and the
+ * two are not close enough to round together. Measured with all three given the
+ * same 39-of-50 scheduling so the comparison is fair:
+ *
+ *      runtime    p50        p90
+ *      runc       2,161ms    3,064ms
+ *      gvisor     3,948ms    5,274ms
+ *      kata-fc   26,957ms  174,877ms
+ *
+ * On an idle cluster a microVM leases in 4–8s, which is the number this list
+ * used to carry and the reason it has to carry a different one now. Under load
+ * its p90 is 175 SECONDS. Both are true; only one of them describes a working
+ * day, and a hint that printed the flattering one would have talked somebody
+ * into a runtime that stalls for two and a half minutes the first time a
+ * colleague starts a build.
+ *
+ * The steady-state win is real and stays: once running, git status inside a
+ * microVM takes 21–53ms against gVisor's 156–195ms. So the row says both — the
+ * fastest at files, the worst at starting — and lets a person decide, which is
+ * the entire reason there is a picker rather than a house opinion.
  *
  * This list is COPY, not policy. Cloud owns which of these an org may actually
  * have and refuses the rest in its own words; nothing here tries to predict that
@@ -24,10 +39,18 @@ import type { Runtime } from "@/lib/agent/sandbox";
  * in the one place that cannot see it.
  */
 const RUNTIMES: { value: Runtime; label: string; hint: string }[] = [
-  { value: "", label: "Default", hint: "Whatever the fleet runs" },
-  { value: "runc", label: "Shared kernel", hint: "Fastest to start · our own code only" },
-  { value: "gvisor", label: "gVisor", hint: "Leases 2.8s · git status 156–195ms" },
-  { value: "kata-fc", label: "microVM", hint: "Leases 4–8s · git status 21–53ms · no project disk" },
+  { value: "", label: "Default", hint: "Whatever the fleet runs. Pick another only to measure one." },
+  { value: "runc", label: "Shared kernel", hint: "Fastest to start: 2.2s, 3.1s busy. Our own code only." },
+  {
+    value: "gvisor",
+    label: "gVisor",
+    hint: "Balanced, and what the fleet runs. Starts 3.9s, 5.3s busy; git status 156–195ms.",
+  },
+  {
+    value: "kata-fc",
+    label: "microVM",
+    hint: "Fastest on files: git status 21–53ms. Slowest to start: 27s, 175s busy. No project disk.",
+  },
 ];
 
 /** One selectable row — a plain button (no nested Radix Select portal, which was
@@ -39,12 +62,15 @@ const RUNTIMES: { value: Runtime; label: string; hint: string }[] = [
 function Choice({
   label,
   hint,
+  rows = 1,
   selected,
   onClick,
   testid,
 }: {
   label: string;
   hint?: string;
+  /** How many lines the hint may take. The row's floor is sized from it. */
+  rows?: number;
   selected: boolean;
   onClick: () => void;
   testid?: string;
@@ -56,12 +82,16 @@ function Choice({
       aria-pressed={selected}
       data-testid={testid}
       group
-      // 58 IS A MEASUREMENT, not a taste. A Button carries a fixed 36px height
-      // from its size variant; a label over a single-line hint measures 42px,
-      // and paddingVertical $2 adds 8 above and below. So a two-line row was
+      // THE FLOOR IS A MEASUREMENT, not a taste. A Button carries a fixed 36px
+      // height from its size variant, so a row with a label over a hint was
       // drawing 58px of text into a 36px box and cutting the top off its own
-      // label — which every model row has done since the day it was written,
+      // label — which every model row had done since the day it was written,
       // and which no assertion on the text would ever notice.
+      //
+      // It is `rows` now rather than one number because the hints stopped being
+      // short: a runtime has to state both what it is fast at and what it is
+      // slow at, and that is two lines for the worst of them. 21px of label,
+      // 2px of margin, 19px per hint line, 16px of padding.
       //
       // A floor rather than a height because min-height beats height in CSS,
       // which is the one way to state this that the size variant cannot
@@ -69,17 +99,17 @@ function Choice({
       // flexShrink because the body scrolls: a flex child in a height-capped
       // column gives way by default, and the row is the fixed thing here — the
       // list is what should give.
-      width="100%" minHeight={58} flexShrink={0} alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$2" {...{ backgroundColor: selected ? "$color3" : undefined, hoverStyle: selected ? undefined : { backgroundColor: "$color3" } }}
+      width="100%" minHeight={39 + 19 * rows} flexShrink={0} alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$2" {...{ backgroundColor: selected ? "$color3" : undefined, hoverStyle: selected ? undefined : { backgroundColor: "$color3" } }}
     >
       <YStack minWidth={0} flex={1}>
         <SizableText numberOfLines={1} fontWeight="500" textAlign="left" fontSize="$3" color={selected ? "$color" : "$color11"} $group-hover={{ color: "$color" }}>{label}</SizableText>
-        {/* ONE LINE, and the rows are written to fit it. The row is a Button and
-            a Button has a fixed height, so a hint that wraps does not make room
-            — it slides up under its own label and out through the sides of the
-            popover. Which is a thing a screenshot shows and no assertion on the
-            text would ever notice. */}
+        {/* The hint wraps to `rows` and the row is sized for exactly that. A
+            Button has a fixed height, so a hint that wraps further does not make
+            room — it slides up under its own label and out through the sides of
+            the popover. Which is a thing a screenshot shows and no assertion on
+            the text would ever notice. */}
         {hint && (
-          <SizableText marginTop="$0.5" numberOfLines={1} textAlign="left" fontSize="$1" color="$color11">
+          <SizableText marginTop="$0.5" numberOfLines={rows} textAlign="left" fontSize="$1" color="$color11">
             {hint}
           </SizableText>
         )}
@@ -168,7 +198,7 @@ export function Settings({
             from a trigger sitting near the bottom, so anything taller runs off
             the TOP of the screen instead — which is how a long refusal pushed
             the model section out of view entirely. */}
-        <YStack maxHeight="50vh" overflow="scroll">
+        <YStack data-testid="settings-body" maxHeight="50vh" overflow="scroll">
         <YStack borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3">
           <SizableText textAlign="center" fontSize="$3" fontWeight="500" color="$color">Model</SizableText>
         </YStack>
@@ -234,12 +264,20 @@ export function Settings({
             data-testid="runtime-picker"
             borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$1"
           >
+            {/* Two lines for every row, not per-row. A runtime's hint has to say
+                what it is fast at AND what it is slow at, which is two lines for
+                the longest; and rows of differing heights invite the eye to read
+                them as differing in importance, which is the opposite of what a
+                list you are meant to COMPARE should do. Two is also what keeps
+                all four inside one screen of the scroller — a comparison you
+                have to scroll through is one nobody makes. */}
             {RUNTIMES.map((r) => (
               <Choice
                 key={r.value || "default"}
                 testid={`runtime-${r.value || "default"}`}
                 label={r.label}
                 hint={r.hint}
+                rows={2}
                 selected={runtime === r.value}
                 onClick={() => onRuntimeChange(r.value)}
     />
