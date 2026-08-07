@@ -56,7 +56,16 @@ import { useVoice, speech } from "@hanzo/voice";
 // That costs the platform VOICE, not the conversation: the browser's own
 // recogniser still gives a live transcript and its own voice reads the reply,
 // and this upgrades itself the day the gateway accepts that audience.
-const HANZO_SPEECH = speech({ baseUrl: "" });
+// The models are named because @hanzo/voice defaults to OpenAI's spellings
+// (whisper-1, tts-1) and this platform serves its own: `whisper` transcribes and
+// `kokoro` speaks, both in the catalog at /v1/models. The defaults resolve to
+// nothing here, so leaving them would fail on the model name even after the
+// audience above is accepted — two blockers wearing one 4xx.
+const HANZO_SPEECH = speech({
+  baseUrl: "",
+  ear: "whisper",
+  voice: { model: "kokoro" },
+});
 
 // Fix mode composes this short, human intent preamble in front of the user's
 // text (empty text is fine when references are attached). The reference images
