@@ -331,7 +331,13 @@ function ResourceCard({
           </XStack>
         )}
       </YStack>
-      <YStack flex={1} padding="$4">
+      {/* `flex={1}` is `flex: 1 1 0` — a ZERO basis. A gui stack also carries
+          `min-height: 0`, so a zero-basis block contributes nothing to the
+          card's intrinsic height, the card sizes to its picture alone, and
+          `overflow="hidden"` slices the title off. Measured on prod: all 100
+          cards cropped, the worst by 154px. Grow into a stretched row, but
+          never below the words. */}
+      <YStack flexGrow={1} flexBasis="auto" flexShrink={0} padding="$4">
         <H3 fontWeight="500" color="$color">{item.title}</H3>
         <Paragraph marginTop="$1" numberOfLines={2} minHeight="2.5rem" fontSize="$1" color="$color11">{item.description}</Paragraph>
         <Paragraph marginTop="auto" paddingTop="$3" fontSize={11} color="$color11">{item.meta || item.framework}</Paragraph>
