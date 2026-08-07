@@ -789,10 +789,8 @@ code, pre, kbd, samp, .font-mono, [class~="font-mono"] {
 
 /* A <kbd> is a HINT, not a keycap: the row states the action, the shortcut
    trails it in muted text. That is how hanzo.chat renders one (its
-   `DropdownPopup` kbd is `ml-auto … text-xs text-black/50 dark:text-white/50`,
-   no box) and how the desktop app it is aligned to does, and it is the same
-   shape read two ways — `margin-left: auto` IS the "label left, shortcut right"
-   law, stated once here instead of at each call site.
+   `DropdownPopup` kbd is `ml-auto … text-xs`, no box) and how the desktop app
+   it is aligned to does.
 
    It used to draw a bordered, filled, monospace keycap. Inside the sidebar's
    Search row — a row that already carries its own fill and hairline on hover —
@@ -805,12 +803,19 @@ code, pre, kbd, samp, .font-mono, [class~="font-mono"] {
    the two surfaces mute a hint by the same rung and not by two similar numbers.
    `font-family: inherit` overrides the mono rule above (same specificity, later
    in the file): a shortcut is chrome, so it wears the chrome's face.
-   One element rule — no per-call chrome. */
+
+   NO `margin-left: auto`. It claimed to be the "label left, shortcut right"
+   law, and it decided nothing: measured used value at every call site in this
+   app is 4px / 0px / 0px, and each of those comes from somewhere else — the
+   header hint's own `.hs-kbd { margin-left: 4px }`, the sidebar row's `flex: 1`
+   label, and the palette hint's content-sized XStack. So it earned nothing here
+   while applying to every <kbd> anyone writes next, in a layout nobody has seen
+   yet. A rule that governs the future has to be doing something in the present.
+   Alignment belongs to the row that has the space to give. */
 kbd {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  margin-left: auto;
   font-family: inherit;
   font-size: var(--text-xs);
   color: var(--text-tertiary);

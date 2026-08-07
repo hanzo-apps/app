@@ -318,12 +318,24 @@ function SidebarContent({
           alignItems="center" height={54} borderBottomWidth={1} paddingHorizontal="$2" {...{ justifyContent: collapsed ? "center" : "space-between", gap: collapsed ? undefined : "$2" }}
         >
           {collapsed ? (
+            /* `size="icon"` is load-bearing, and it is the ONLY thing that
+               works. An unsized Button carries 12px of horizontal padding, so
+               36 − 12 − 12 − 2px of border left a 10px content box and this 16px
+               glyph rendered 10 wide (16 tall) — squashed, on the one affordance
+               the collapsed rail has, while every other PanelLeft in the app is
+               16. A padding prop cannot fix it: `@hanzo/ui` sets the padding from
+               `[data-variant][data-size]:not([data-size^="icon"])`, which at
+               (0,3,0) outranks every atomic class gui compiles — measured, after
+               `paddingHorizontal={0}` emitted `_pl-0px _pr-0px` and lost. That
+               `:not` IS the library's contract: an icon-only button says so by
+               name. The box stays 36×36; only the padding goes. */
             <Button
               onClick={toggleCollapsed}
               title="Expand sidebar"
               aria-label="Expand sidebar"
               aria-expanded={false}
               variant="ghost"
+              size="icon"
               height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$3"
             >
               <PanelLeft size={16} />

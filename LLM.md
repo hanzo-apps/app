@@ -311,11 +311,34 @@ visible together — on `/chat` the shell's toggle and the conversation rail's s
 ~330px apart and wore different shapes. State belongs to `aria-expanded`; a
 second glyph says nothing extra and costs the eye a shape to re-learn.
 
+**One glyph means one SIZE too: 16.** The builder console was the last 14
+(`components/editor/console/index.tsx`) against 16 at every other call site.
+
+**An icon-only Button must say `size="icon"` — a padding prop CANNOT do it.**
+`@hanzo/ui` sets a Button's horizontal padding from
+`[data-variant][data-size]:not([data-size^="icon"]):not([data-slot="item"]) {
+padding-inline: .75rem }`. That is (0,3,0), and every style prop gui compiles is
+an atomic class at (0,2,0) — so the rule wins whatever the call site writes.
+Measured: `paddingHorizontal={0}` on the collapsed rail's toggle emitted
+`_pl-0px _pr-0px` and lost, leaving 36 − 12 − 12 − 2px of border = a 10px content
+box, which rendered a 16px `PanelLeft` at 10×16 on the ONE affordance the rail
+has. The `:not([data-size^="icon"])` in that selector IS the library's contract:
+declare the button an icon button and the padding is `0` by design. Reach for
+`size="icon"`, never for a padding override — and if a box looks wrong and no
+prop moves it, check specificity against `@hanzo/ui`'s own sheet before assuming
+the prop is unsupported.
+
 **A `<kbd>` is a hint, not a keycap** — one element rule in `assets/globals.css`,
-`margin-left: auto` + `var(--text-tertiary)` + `var(--text-xs)`, no box. Same
-shape hanzo.chat draws (`DropdownPopup.tsx`), and the colour and size come from
-`@hanzo/ui/theme.css`, the token layer both surfaces already import, so the two
-mute a hint by the same rung rather than by two similar numbers.
+`var(--text-tertiary)` + `var(--text-xs)`, no box. Same shape hanzo.chat draws
+(`DropdownPopup.tsx`), and the colour and size come from `@hanzo/ui/theme.css`,
+the token layer both surfaces already import, so the two mute a hint by the same
+rung rather than by two similar numbers. **It carries no `margin-left: auto`.**
+That declaration used to sit here as the "label left, shortcut right" law, and it
+decided nothing: measured used value at all three call sites is 4px / 0px / 0px,
+each produced by the row itself — `.hs-kbd`'s own `margin-left: 4px`, the sidebar
+row's `flex: 1` label, and the palette hint's content-sized XStack. A global
+element rule that governs only layouts nobody has written yet is a liability, not
+a law; alignment belongs to the row that has the space to give.
 
 The icon library needs no decision: both surfaces are already lucide (this app
 `lucide-react` direct, chat the same package plus the gui-wrapped

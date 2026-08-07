@@ -180,9 +180,10 @@ export function Console({
           >
             {/* ONE glyph for the left panel — `PanelLeft`, open or shut (the
                 fleet rule; see components/sidebar). `aria-expanded` above already
-                says which it is. */}
+                says which it is. `size={16}` is the rest of that rule: one glyph
+                means one SIZE too, and this was the app's only 14. */}
             <SizableText color="$color11" $group-hover={{ color: "$color" }}>
-              <PanelLeft size={14} />
+              <PanelLeft size={16} />
             </SizableText>
           </Button>
         </XStack>

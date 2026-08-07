@@ -73,8 +73,16 @@ describe("a shortcut hint is a hint, not a keycap", () => {
     expect(rule![1]).toMatch(/font-size:\s*var\(--text-xs\)/);
   });
 
-  it("puts the label left and the shortcut right", () => {
-    expect(rule![1]).toMatch(/margin-left:\s*auto/);
+  /**
+   * The rule owns the hint's LOOK and nothing else. `margin-left: auto` used to
+   * sit here as the "label left, shortcut right" law; measured, it decided
+   * nothing at any of the three call sites (4px / 0px / 0px, each produced by
+   * the row itself), so it was a global rule earning its keep only in layouts
+   * nobody had written yet. Alignment is the row's; this rule must not take it
+   * back.
+   */
+  it("leaves alignment to the row — it is not a layout rule", () => {
+    expect(rule![1]).not.toMatch(/margin/);
   });
 
   it("draws no box — that is what made the sidebar's ⌘K read as a control", () => {
