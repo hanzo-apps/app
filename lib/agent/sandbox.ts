@@ -23,10 +23,12 @@
  * `{path, content}` envelope: the path is addressing, the body is the file, and
  * a file whose own text is JSON then needs no escaping.
  *
- * One thing this deliberately does NOT do, because the sandbox already does it
- * and doing it twice means doing it differently: path mapping. Every path is
- * project-relative by construction (`/src/App.tsx`). The sandbox's workdir is
- * the sandbox's business; there is no prefix to strip and nothing to configure.
+ * There IS one conversion, in one line (`wire`, below), and it used to be absent
+ * on the theory that the sandbox already did it. It does not: cloud's `confine`
+ * treats a leading slash as absolute and refuses anything outside its workdir, so
+ * `/src/App.tsx` — the identity every other part of the harness uses for a file —
+ * was a 400 on every read and every write. The workdir stays the sandbox's
+ * business and nothing here is configurable; the slash comes off, and that is all.
  *
  * What it DOES do here rather than on the sandbox is apply patches: read, apply,
  * write. The reason — what `update` means when `oldStr`
@@ -47,6 +49,27 @@ import type {
   SearchMatch,
 } from "./fs";
 import { applyPatchOps, normalizePath } from "./patch";
+
+/**
+ * The path as the SANDBOX addresses it.
+ *
+ * `normalizePath` gives a file one identity — leading slash, project-relative —
+ * and that identity is what the model, the patch engine, `changedPaths` and the
+ * in-memory filesystem all speak. The sandbox addresses files differently, and
+ * this is the one line that knows it: cloud's `confine` reads a leading slash as
+ * ABSOLUTE and refuses anything outside the workdir, so `/src/App.tsx` is not
+ * "the project's src/App.tsx" to it — it is a path at the root of the filesystem
+ * and a 400. A relative path is resolved against the workdir, which is exactly
+ * the meaning we want, so the conversion is: drop the slash.
+ *
+ * It is done HERE and nowhere else. Mapping paths on both sides is how the two
+ * definitions drift; mapping them on neither is what this fixes. The comment
+ * above `Sandbox` used to say this file "deliberately does not do path mapping"
+ * because the sandbox already did it — the sandbox does the opposite, and every
+ * agent read and write against a real sandbox was a 400 raised as a SandboxError,
+ * which the model saw as a broken tool rather than a wrong address.
+ */
+const wire = (path: string): string => normalizePath(path).slice(1);
 
 /**
  * The sandbox did not answer the question.
@@ -357,7 +380,7 @@ export class Sandbox implements ProjectFs, ProjectExec {
    */
   async exists(path: string): Promise<boolean> {
     const res = await this.call("GET", "/fs", {
-      query: { path: normalizePath(path) },
+      query: { path: wire(path) },
       allow: [404],
     });
     await res.body?.cancel().catch(() => {});
@@ -368,7 +391,7 @@ export class Sandbox implements ProjectFs, ProjectExec {
    *  the sandbox failed to answer; that throws. */
   async read(path: string): Promise<string | null> {
     const res = await this.call("GET", "/fs", {
-      query: { path: normalizePath(path) },
+      query: { path: wire(path) },
       allow: [404],
     });
     if (res.status === 404) {
@@ -380,7 +403,9 @@ export class Sandbox implements ProjectFs, ProjectExec {
 
   async write(path: string, content: string): Promise<void> {
     const p = normalizePath(path);
-    await this.call("POST", "/fs", { query: { path: p }, raw: content });
+    await this.call("POST", "/fs", { query: { path: wire(p) }, raw: content });
+    // The identity, not the address: `changedPaths` and `changedFiles` feed the
+    // caller and the model, which speak leading-slash project paths.
     this.changed.add(p);
   }
 

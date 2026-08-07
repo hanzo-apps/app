@@ -60,41 +60,99 @@ interface AgentRequestBody {
  *            It stays in memory deliberately — a throwaway HTML page does not
  *            need a pod, and paying for one would make the fast path slow.
  *
- * A sandbox that cannot be reached falls back to memory rather than failing the
- * user's run: the agent does less (no `run_command`, and it is told so), but
- * the work still happens. `agentToolDefs` derives the toolset from whichever
- * filesystem comes back, so the model is never offered a capability that the
- * fallback does not have.
+ * A sandbox that cannot be reached still falls back to memory rather than failing
+ * the user's run — but it SAYS SO. The fallback itself was never the defect; the
+ * silence was. `Where.durable` is the fact, it is emitted as the first frame of
+ * every run, and the UI marks the run not-durable from it. A person who thought
+ * their code was saved and finds nothing is worse than an error.
+ *
+ * `agentToolDefs` derives the toolset from whichever filesystem comes back, so the
+ * model is never offered a capability the fallback does not have.
  *
  * `opened` records which of the two sandbox cases we are in, because it decides who
  * hangs the sandbox up at the end. A caller-supplied `id` belongs to the caller
  * and must outlive the run; a sandbox opened here for `project` has no other owner.
  */
-async function resolveFs(
-  token: string,
-  body: AgentRequestBody,
-  files: AgentFile[]
-): Promise<{ fs?: ProjectFs; id?: string; opened?: boolean }> {
+interface Where {
+  fs?: ProjectFs;
+  id?: string;
+  project?: string;
+  opened?: boolean;
+  durable: boolean;
+  reason?: string;
+}
+
+/**
+ * Can this sandbox actually be written to?
+ *
+ * "We got a sandbox" and "this run's edits will survive" are DIFFERENT FACTS, and
+ * conflating them reproduces the exact defect this endpoint exists to end. Live,
+ * today: `POST /v1/sandboxes {project}` answers 201 with a running pod whose
+ * project volume is mounted root-owned into a container that runs as uid 1000,
+ * so every write returns `Permission denied` — a sandbox that opens perfectly and
+ * saves nothing. Reporting that as durable is the silent-fallback bug wearing a
+ * pod.
+ *
+ * One `exec`, no litter: `test -w .` asks the directory the same question the run
+ * is about to ask it, and writes nothing to answer it. A failure carries the
+ * sandbox's own words rather than a code, because the person reading it is the
+ * one who has to decide whether to keep going.
+ */
+async function writable(fs: Sandbox): Promise<string> {
+  try {
+    const r = await fs.exec("test -w . || { ls -ld . ; exit 1; }", 20);
+    if (r.exitCode === 0) return "";
+    return (
+      `The sandbox opened but its project directory is not writable, so nothing this run does is saved. ` +
+      `${(r.stdout || r.stderr).trim() || "the sandbox refused the check"}`
+    );
+  } catch (e) {
+    return `The sandbox opened but did not answer a write check: ${e instanceof Error ? e.message : String(e)}`;
+  }
+}
+
+async function resolveFs(token: string, body: AgentRequestBody): Promise<Where> {
   const id = typeof body.id === "string" ? body.id.trim() : "";
+  const project = typeof body.project === "string" ? body.project.trim() : "";
+
   if (id) {
-    return { fs: new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id, token }), id };
+    const fs = new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id, token });
+    const why = await writable(fs);
+    // A sandbox that cannot be written to is not a place to work: every edit the
+    // model made would fail one at a time and it would spend the run debugging
+    // the cluster. Memory does the work; the reason says it is not saved.
+    return why
+      ? { id, project, durable: false, reason: why }
+      : { fs, id, project, durable: true };
   }
 
-  const project = typeof body.project === "string" ? body.project.trim() : "";
   if (project) {
     const sandbox = await openSandbox({ baseUrl: HANZO_AI_BASE_URL, token, project });
     if (sandbox) {
-      return {
-        fs: new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id: sandbox.id, token }),
-        id: sandbox.id,
-        opened: true,
-      };
+      const fs = new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id: sandbox.id, token });
+      const why = await writable(fs);
+      // `opened` either way: the pod exists and this run is the only thing that
+      // knows about it, so it still has to be given back.
+      return why
+        ? { id: sandbox.id, project, opened: true, durable: false, reason: why }
+        : { fs, id: sandbox.id, project, opened: true, durable: true };
     }
+    // A project WAS named and it did not get one. This is the case that used to
+    // disappear: the run continued against a map and reported success.
+    return {
+      project,
+      durable: false,
+      reason: `No sandbox for ${project} — the sandbox service did not give one out. This run edits a scratch copy in memory and nothing it writes is saved.`,
+    };
   }
 
-  // No sandbox: the loop builds an in-memory project from `files` itself.
-  void files;
-  return {};
+  // Nothing named: the scratch case, and legitimately so — a throwaway page does
+  // not need a pod, and paying for one would make the fast path slow. Still said
+  // out loud, because "cheap" and "invisible" are different things.
+  return {
+    durable: false,
+    reason: "No project named — this run edits a scratch copy in memory and nothing it writes is saved.",
+  };
 }
 
 /** Validate and normalize the incoming project file list. */
@@ -146,7 +204,8 @@ export async function POST(request: NextRequest) {
   // fleet views, and its control queue is what pause/resume/stop/message from
   // any surface arrive through. Unreachable registry => `open()` returns null
   // and the run proceeds exactly as it did before, private to this caller.
-  const { fs, id, opened } = await resolveFs(token, body, files);
+  const where = await resolveFs(token, body);
+  const { fs, id, opened } = where;
 
   const agentSession = new AgentSession({
     baseUrl: HANZO_AI_BASE_URL,
@@ -155,7 +214,7 @@ export async function POST(request: NextRequest) {
     title: prompt.slice(0, 120),
     // Where it runs, so the fleet views show a sandbox run as a sandbox run rather than
     // as an anonymous stream from a browser tab.
-    ...(id ? { host: id, repo: typeof body.project === "string" ? body.project : undefined } : {}),
+    ...(id ? { host: id, repo: where.project } : {}),
   });
   await agentSession.open();
 
@@ -183,6 +242,16 @@ export async function POST(request: NextRequest) {
 
   (async () => {
     try {
+      // WHERE, before anything else. The client marks the run from this frame,
+      // so it has to precede the first token the user could mistake for work
+      // being saved.
+      await emit({
+        type: "sandbox",
+        durable: where.durable,
+        ...(where.id ? { id: where.id } : {}),
+        ...(where.project ? { project: where.project } : {}),
+        ...(where.reason ? { reason: where.reason } : {}),
+      });
       await runAgent(
         {
           token,

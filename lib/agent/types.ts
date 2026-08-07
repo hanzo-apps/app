@@ -23,6 +23,31 @@ export interface AgentFile {
  * an in-process callback (tests).
  */
 export type AgentEvent =
+  /**
+   * WHERE this run edits — always the first frame, always emitted.
+   *
+   * It exists because the alternative was a silent lie. `runAgent` falls back to
+   * an in-memory project when it is handed no filesystem, and every other
+   * observable of the run is identical either way: the same tool calls, the same
+   * `done`, the same changed-file list, the same happy UI. A person who believed
+   * their code was saved and later found nothing had no way to have known.
+   *
+   * `durable` is the one fact that separates the two, so it rides on the wire
+   * rather than being inferred from the presence of an `id`. `reason` says why
+   * when it is false — "no project named" is a scratch run and fine; "the
+   * sandbox service refused" is a failure the user is entitled to see.
+   */
+  | {
+      type: "sandbox";
+      /** True only when this run's edits land on a real disk in a real sandbox. */
+      durable: boolean;
+      /** The sandbox, when there is one. Reusable as `id` on the next run. */
+      id?: string;
+      /** The project asked for, whether or not it got a sandbox. */
+      project?: string;
+      /** Why it is not durable. Absent when it is. */
+      reason?: string;
+    }
   /** Incremental chain-of-thought / thinking tokens. */
   | { type: "reasoning"; text: string }
   /** Incremental assistant answer tokens (the prose the model streams). */

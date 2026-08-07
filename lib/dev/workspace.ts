@@ -116,6 +116,31 @@ export function projectRepoName(slug?: string | null): string {
 }
 
 /**
+ * WHAT THE USER IS WORKING ON — the one answer, for everything that needs it.
+ *
+ * Three things ask this question and they must never disagree: the per-turn git
+ * commit (which repo do these pages belong to), the version history (whose
+ * commits am I listing), and the coding agent (which project's sandbox do I
+ * edit). Two of them already answered it two different ways — the commit path
+ * read the project RECORD's `space_id`, the sandbox path read the browser's
+ * `__projectSlug` — and two derivations of one identity is how a run lands in a
+ * sandbox that is not the repo the same session commits to.
+ *
+ * `hint` is for the caller that already holds the record and would otherwise be
+ * forced to wait for the page to have published the slug on `window`. It is a
+ * hint and not an override: when it is absent the browser's open project answers,
+ * and when neither exists `projectRepoName` mints the per-workspace id that keeps
+ * two unsaved builds out of each other's history.
+ */
+export function currentProject(hint?: string | null): string {
+  const fromRecord = (hint || "").trim();
+  if (fromRecord) return projectRepoName(fromRecord);
+  if (typeof window === "undefined") return "";
+  const open = (window as { __projectSlug?: string }).__projectSlug;
+  return projectRepoName(open ?? null);
+}
+
+/**
  * A NEW build is starting — forget the last unsaved project's identity.
  *
  * The minted repo id lives under ONE key so a RELOAD of the same build reuses

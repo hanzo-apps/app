@@ -29,6 +29,32 @@ const BASE = "https://api.hanzo.test/v1";
 const ID = "sbx-abc123";
 const PREFIX = `/v1/sandboxes/${ID}`;
 
+/** Where a sandbox's project lives and where every command runs (cloud `apps/sandbox`). */
+const WORKDIR = "/work";
+
+/**
+ * cloud's `confine`, modelled — and the reason this stub is worth having.
+ *
+ * It used to key its file map on whatever string arrived, so BOTH `/a.txt` and
+ * `a.txt` "worked" here and the client's choice between them was untested. Cloud
+ * does not accept both: a leading slash means ABSOLUTE and anything outside
+ * /work is a 400; a relative path resolves against /work. The client was sending
+ * the first kind, so every read and write against a real sandbox failed — and
+ * every test in this file passed. A stub that accepts more than the server does
+ * is not a stub, it is a second server with friendlier rules.
+ *
+ * `null` means the server would refuse.
+ */
+function confine(p: string): string | null {
+  if (!p) return WORKDIR;
+  if (p.includes("..")) return null;
+  if (p.startsWith("/")) return p === WORKDIR || p.startsWith(`${WORKDIR}/`) ? p : null;
+  return `${WORKDIR}/${p}`;
+}
+
+/** Project identity (`/a.txt`) → the place on the pod's disk (`/work/a.txt`). */
+const onDisk = (p: string) => `${WORKDIR}${p.startsWith("/") ? p : `/${p}`}`;
+
 /**
  * A stand-in for cloud + the sandbox behind it.
  *
@@ -48,8 +74,12 @@ function stubSandbox(
    */
   fault?: (method: string, path: string) => number | undefined
 ) {
-  const tree = new Map(Object.entries(initial));
+  // Keyed where the pod keeps them. Callers still declare a project (`/a.txt`),
+  // because that is the identity the agent speaks; the map holds the disk.
+  const tree = new Map(Object.entries(initial).map(([k, v]) => [onDisk(k), v]));
   const calls: string[] = [];
+  /** Every `?path=` the client put on the wire — the address, verbatim. */
+  const wire: string[] = [];
   const auth: string[] = [];
   const created: Array<Record<string, unknown>> = [];
   const skip = /(^|\/)(\.git|node_modules|\.next|dist|build|target|\.venv|__pycache__)(\/|$)/;
@@ -67,6 +97,7 @@ function stubSandbox(
     if (req.headers.Authorization) auth.push(req.headers.Authorization);
     const json = () => (req.body ? JSON.parse(req.body) : {});
     const path = url.searchParams.get("path") ?? "";
+    if (p.endsWith("/fs")) wire.push(path);
 
     const broken = fault?.(method, p);
     if (broken) return Response.json({ error: `forced ${broken}` }, { status: broken });
@@ -86,7 +117,9 @@ function stubSandbox(
     // GET /fs?path= is one verb for read-a-file, and the sandbox answers raw
     // bytes rather than JSON — `cat`, not a document describing a file.
     if (method === "GET" && p === `${PREFIX}/fs`) {
-      const c = tree.get(path);
+      const at = confine(path);
+      if (at === null) return Response.json({ error: `path must be under ${WORKDIR}` }, { status: 400 });
+      const c = tree.get(at);
       return c === undefined
         ? Response.json({ error: "no such file" }, { status: 404 })
         : new Response(c, { headers: { "Content-Type": "application/octet-stream" } });
@@ -95,7 +128,9 @@ function stubSandbox(
     // the path is addressing and the body is the file, so a file whose text
     // happens to be JSON needs no escaping.
     if (method === "POST" && p === `${PREFIX}/fs`) {
-      tree.set(path, req.body ?? "");
+      const at = confine(path);
+      if (at === null) return Response.json({ error: `path must be under ${WORKDIR}` }, { status: 400 });
+      tree.set(at, req.body ?? "");
       return new Response(null, { status: 204 });
     }
 
@@ -108,10 +143,20 @@ function stubSandbox(
     if (method === "POST" && p === `${PREFIX}/exec`) {
       lastExec = json();
       const cmd = String(lastExec?.command ?? "");
-      const visible = [...tree.keys()].filter((k) => !skip.test(k));
+      // `find .` / `grep -r .` run in the workdir, so they print paths relative
+      // to it — `./a.txt`, never `./work/a.txt`. Getting this wrong here would
+      // hand the client a path prefixed twice and hide the same class of bug
+      // one layer down.
+      const visible = [...tree.keys()]
+        .filter((k) => !skip.test(k))
+        .map((k) => [k, k.slice(WORKDIR.length + 1)] as const);
 
       if (cmd.startsWith("find ")) {
-        return Response.json({ exitCode: 0, stdout: visible.map((k) => `./${k}`).join("\n"), stderr: "" });
+        return Response.json({
+          exitCode: 0,
+          stdout: visible.map(([, rel]) => `./${rel}`).join("\n"),
+          stderr: "",
+        });
       }
       if (cmd.startsWith("grep ")) {
         // The needle is single-quoted by the client; recover it, honouring the
@@ -119,9 +164,9 @@ function stubSandbox(
         const q = /'((?:[^']|'\\'')*)'/.exec(cmd);
         const needle = (q ? q[1].replace(/'\\''/g, "'") : "");
         const hits: string[] = [];
-        for (const k of visible) {
-          (tree.get(k) ?? "").split("\n").forEach((text, i) => {
-            if (needle && text.includes(needle)) hits.push(`./${k}:${i + 1}:${text}`);
+        for (const [at, rel] of visible) {
+          (tree.get(at) ?? "").split("\n").forEach((text, i) => {
+            if (needle && text.includes(needle)) hits.push(`./${rel}:${i + 1}:${text}`);
           });
         }
         // grep exits 1 when there are no matches. That is an ANSWER, and a
@@ -133,7 +178,7 @@ function stubSandbox(
     return Response.json({ error: `unhandled ${method} ${p}` }, { status: 500 });
   };
 
-  return { tree, calls, auth, created, handler, exec: () => lastExec };
+  return { tree, calls, wire, auth, created, handler, exec: () => lastExec };
 }
 
 /** fetch(), reduced to what the stub needs and nothing the client can't send. */
@@ -168,8 +213,35 @@ describe("Sandbox", () => {
     expect(await fs.read("/index.html")).toBe("<h1>Hi</h1>");
     await fs.write("/new.txt", "made");
 
-    expect(stub.tree.get("/new.txt")).toBe("made");
+    expect(stub.tree.get(onDisk("/new.txt"))).toBe("made");
     expect(stub.calls).toContain(`POST ${PREFIX}/fs`);
+  });
+
+  /**
+   * The address, not the identity — the two are different and were the same bug.
+   *
+   * `/new.txt` is what the model, the patch engine and `changedPaths` call this
+   * file. It is NOT what the sandbox calls it: `confine` reads the leading slash
+   * as absolute and answers 400 for anything outside /work, so sending the
+   * identity as the address made every read and write against a real sandbox a
+   * SandboxError the model saw as a broken tool. Asserting the query string
+   * directly, because "the write succeeded" is exactly the observation that was
+   * true against the old stub and false against the sandbox.
+   */
+  it("addresses files the way the sandbox does, while keeping their project identity", async () => {
+    const { stub, fs } = make({});
+
+    await fs.write("/deep/new.txt", "made");
+    await fs.read("/deep/new.txt");
+
+    // What went out as `?path=`, both times. Relative, so `confine` resolves it
+    // against the workdir instead of refusing it.
+    expect(stub.wire).toEqual(["deep/new.txt", "deep/new.txt"]);
+
+    // On the pod's disk, under the workdir.
+    expect(stub.tree.get("/work/deep/new.txt")).toBe("made");
+    // And still `/deep/new.txt` to everyone above the wire.
+    expect(await fs.changedPaths()).toEqual(["/deep/new.txt"]);
   });
 
   it("calls the routes the sandbox actually serves", async () => {
@@ -396,7 +468,7 @@ describe("Sandbox failure semantics", () => {
       fs.applyPatch("/a.txt", [{ type: "update", oldStr: "", newStr: "// header\n" }])
     ).rejects.toThrow(/500/);
 
-    expect(stub.tree.get("/a.txt")).toBe("REAL CONTENT");
+    expect(stub.tree.get(onDisk("/a.txt"))).toBe("REAL CONTENT");
     expect(stub.calls).not.toContain(`POST ${PREFIX}/fs`);
   });
 

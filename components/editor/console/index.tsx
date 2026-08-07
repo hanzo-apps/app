@@ -9,8 +9,8 @@ import { Voice } from "@hanzo/voice";
 
 import { useMic } from "@/components/editor/ask-ai/mic";
 
-import { BAR, MIN_OPEN, STEP, maxOpen, useDock } from "./dock";
-import { usePreviewConsole } from "./capture";
+import { BAR, DEFAULT_OPEN, MIN_OPEN, STEP, maxOpen, useDock } from "./dock";
+import { useConsoleLog } from "./log";
 
 /**
  * The developer console — the builder's bottom dock.
@@ -53,7 +53,7 @@ export function Console({
   onToggleSidebar: () => void;
 }) {
   const { height, open, setHeight, toggle, nudge } = useDock();
-  const { entries } = usePreviewConsole();
+  const { entries } = useConsoleLog();
   // The composer's voice, drawn here. Null until a composer is mounted.
   const voice = useMic();
 
@@ -77,6 +77,20 @@ export function Console({
   useEffect(() => {
     if (open) tail.current?.scrollIntoView({ block: "end" });
   }, [entries, open]);
+
+  // The terminal RAISES ITSELF the first time a run puts something in it.
+  // Command output that lands in a collapsed dock is output nobody sees, which
+  // is the same as not having it — and the dock is the only place in the
+  // product where you can watch a command run. Once per session: after that the
+  // dock's height is the user's, and a second run must not fight a deliberate
+  // collapse.
+  const raised = useRef(false);
+  const sandboxLines = entries.filter((e) => e.source === "sandbox").length;
+  useEffect(() => {
+    if (raised.current || sandboxLines === 0) return;
+    raised.current = true;
+    if (!open) setHeight(DEFAULT_OPEN);
+  }, [sandboxLines, open, setHeight]);
 
   return (
     <YStack
@@ -246,20 +260,36 @@ export function Console({
         <YStack minHeight={0} flex={1} borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" overflow="scroll">
           {entries.length === 0 ? (
             <Paragraph fontFamily="$mono" fontSize={11} lineHeight="1.625" color="$color11">
-              Nothing logged yet — output and errors from the preview appear here.
+              Nothing logged yet — the preview&apos;s console and the commands the agent
+              runs in your sandbox both appear here.
             </Paragraph>
           ) : (
             entries.map((entry) => (
-              <Paragraph
-                key={entry.id}
-                className="break-words"
-                fontFamily="$mono" fontSize={11} lineHeight="1.625"
-                whiteSpace="pre-wrap" {...{ color: entry.level === "error" ? "var(--destructive)" : entry.level === "warn"
-                      ? "$color"
-                      : "$color11" }}
-              >
-                {entry.text}
-              </Paragraph>
+              <XStack key={entry.id} gap="$1.5" alignItems="flex-start">
+                {/* One character says which machine spoke. `$` is the sandbox —
+                    a real shell on a real pod — and its absence is the page's
+                    own console. A source column of words would be wider than
+                    most of the lines it labels. */}
+                <SizableText
+                  aria-hidden
+                  fontFamily="$mono"
+                  fontSize={11}
+                  lineHeight="1.625"
+                  color={entry.source === "sandbox" ? "var(--brand-accent)" : "$color06"}
+                >
+                  {entry.source === "sandbox" ? "$" : "·"}
+                </SizableText>
+                <Paragraph
+                  className="break-words"
+                  flex={1}
+                  fontFamily="$mono" fontSize={11} lineHeight="1.625"
+                  whiteSpace="pre-wrap" {...{ color: entry.level === "error" ? "var(--destructive)" : entry.level === "warn"
+                        ? "$color"
+                        : "$color11" }}
+                >
+                  {entry.text}
+                </Paragraph>
+              </XStack>
             ))
           )}
           <div ref={tail} />
