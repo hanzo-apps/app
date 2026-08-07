@@ -124,12 +124,18 @@ async function resolveFs(token: string, body: AgentRequestBody): Promise<Where> 
   if (id) {
     const fs = new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id, token });
     const why = await writable(fs);
-    // A sandbox that cannot be written to is not a place to work: every edit the
-    // model made would fail one at a time and it would spend the run debugging
-    // the cluster. Memory does the work; the reason says it is not saved.
-    return why
-      ? { id, project, durable: false, reason: why }
-      : { fs, id, project, durable: true };
+    if (!why) return { fs, id, project, durable: true };
+    // THE ID IS A HINT AND THE PROJECT IS THE FACT, and getting that backwards
+    // broke the second message of every conversation. This route RELEASES the
+    // sandbox it opened when the run ends — the pod goes, the disk stays — so the
+    // id a turn hands back is dead by the time the next turn quotes it, and
+    // measuring it gives 404 on the write check. Preferring the id and stopping
+    // there turned "your warm pod went away" into "nothing you do is saved", for
+    // a project whose checkout was sitting right there.
+    //
+    // So a dead id falls through to the project rather than to memory. Falling
+    // back to MEMORY is reserved for having nowhere to work at all.
+    if (!project) return { id, durable: false, reason: why };
   }
 
   if (project) {
