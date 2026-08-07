@@ -47,8 +47,7 @@ import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signa
 import { SaveButton } from "./save-button";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { useAutosave } from "@/hooks/useAutosave";
-import { commitTurn } from "@/lib/git/commit-turn";
-import { currentProject, loadWorkspace, saveWorkspace } from "@/lib/dev/workspace";
+import { loadWorkspace, saveWorkspace } from "@/lib/dev/workspace";
 import { saveLabel } from "@/lib/pages/save-label";
 import { FileTree } from "./file-tree";
 import { HistoryPanel } from "./history";
@@ -296,8 +295,8 @@ export const AppEditor = ({
    * addresses it, so there is ONE write path; a project with no record has
    * nowhere to save and the bar says so instead of reassuring.
    */
-  const [saveNs, saveRepo] = (project?.space_id ?? "").split("/");
-  const autosave = useAutosave(saveNs, saveRepo, pages, prompts, isAiWorking);
+  const saveRepo = (project?.space_id ?? "").split("/")[1];
+  const autosave = useAutosave(saveRepo, pages, prompts, isAiWorking);
 
   // Keep the working copy current. Debounced so a streaming build does not write
   // on every chunk, and skipped while building because a partial document is not
@@ -358,8 +357,8 @@ export const AppEditor = ({
         {/* Two lean actions, Codex-minimal: Share (a preview link) and Publish
             (the sole solid primary). ONE secondary treatment — a quiet glass
             toolbar button — so the cluster reads as a set. Git push is NOT a
-            header verb: every finished turn already commits to git.hanzo.ai
-            (onSuccess → commitTurn), so a manual Push button was a third size
+            header verb: autosave already commits every settled change to
+            git.hanzo.ai, so a manual Push button was a third size
             competing for the corner while doing, on demand, exactly what happens
             on its own. Load is gone too — you are already inside a project
             editing it, so "load a project" here was a door to nowhere. */}
@@ -373,7 +372,7 @@ export const AppEditor = ({
           <SizableText display="none" $md={{ display: "inline" }}>Share</SizableText>
         </Button>
         {project?._id ? (
-          <SaveButton pages={pages} prompts={prompts} />
+          <SaveButton save={autosave.saveNow} />
         ) : (
           <DeployButton pages={pages} prompts={prompts} disabled={isAiWorking} />
         )}
@@ -433,26 +432,11 @@ export const AppEditor = ({
                 // (no-ops if a generation produced none). Fire-and-forget.
                 sendRewardSignal(getLastGenerationRequestId(), "accept");
 
-                // VERSION HISTORY. Each finished turn is a commit on
-                // git.hanzo.ai, so the history panel has real revisions to show,
-                // bookmark and fork from. Fire-and-forget — the build is already
-                // on screen and a slow forge must not hold up the next prompt —
-                // but never silent: an unwired forge or a failed write says so,
-                // because implying a history that is not being written is the
-                // same defect as the status bar that read "Auto-saved".
-                // A STABLE name. Deriving it from the title meant every
-                // first-time project was called "untitled-site" and they
-                // overwrote each other's history in one shared repo.
-                const repoName = currentProject(project?.space_id?.split("/")[1]);
-                void (repoName
-                  ? commitTurn(repoName, newPages, p)
-                  : Promise.resolve({ ok: false as const, reason: "no project id", unconfigured: true })
-                ).then((r) => {
-                  if (!r.ok && !r.unconfigured) {
-                    toast.error(`Version not saved to git: ${r.reason}`);
-                  }
-                });
-
+                // Persistence is autosave's job and ONLY autosave's job. A commit
+                // fired here as well, two seconds ahead of the debounce, so every
+                // turn wrote the same pages to the same repo twice and the history
+                // grew a duplicate per turn. The status bar reports the one write
+                // that remains, which is also the one the person can see.
                 const currentHistory = [...htmlHistory];
                 currentHistory.unshift({
                   pages: newPages,
