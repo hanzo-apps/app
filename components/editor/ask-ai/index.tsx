@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ElementInfo } from "../preview/bridge";
+import { locate } from "@/lib/source-locate";
 import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
 // `GuiElement` is a TYPE, and @hanzo/ui's dts build drops a two-hop
 // type-only re-export, so it is not on the barrel yet. A type is erased at
@@ -585,13 +586,33 @@ export function AskAI({
         ? selectedElement.html
         : "";
 
+      // WHERE it is, not just WHAT it is. Handing the model only the markup
+      // makes it search every page for a serialization that may not appear
+      // verbatim anywhere — the browser rewrites attribute order and quoting on
+      // its way out of the DOM. `locate` answers with a file and a line, or
+      // with nothing when no anchor is unique; an undefined location leaves the
+      // prompt exactly as it was rather than pointing at a guess.
+      const selectedElementAt = selectedElement
+        ? locate(
+            {
+              id: selectedElement.id,
+              className: selectedElement.className,
+              tagName: selectedElement.tagName,
+              html: selectedElement.html,
+              text: selectedElement.text,
+            },
+            pages,
+          )
+        : undefined;
+
       const result = await callAiFollowUp(
         effectivePrompt,
         model,
         provider,
         previousPrompts,
         selectedElementHtml,
-        selectedFiles
+        selectedFiles,
+        selectedElementAt
       );
 
       if (result?.error) {

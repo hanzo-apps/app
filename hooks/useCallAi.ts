@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import type { SourceLocation } from "@/lib/source-locate";
 import { toast } from '@hanzo/ui';
 import { Page } from "@/types";
 import { parsePages, parseSinglePage, stripThinkBlocks } from "@/lib/format-pages";
@@ -475,7 +476,7 @@ export const useCallAi = ({
     }
   };
 
-  const callAiFollowUp = async (prompt: string, model: string | undefined, provider: string | undefined, previousPrompts: string[], selectedElementHtml?: string, files?: string[]) => {
+  const callAiFollowUp = async (prompt: string, model: string | undefined, provider: string | undefined, previousPrompts: string[], selectedElementHtml?: string, files?: string[], selectedElementAt?: SourceLocation) => {
     if (isAiWorking) return;
     if (!prompt.trim()) return;
     
@@ -496,6 +497,7 @@ export const useCallAi = ({
           model,
           pages,
           selectedElementHtml,
+          selectedElementAt,
           files,
           base: baseEnabled(),
         }),
