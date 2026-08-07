@@ -63,58 +63,25 @@ jobs:
         id: ver
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
+        # The scan — the 1.42.-pinned tags ∪ registry union, and every incident
+        # that shaped it — now lives in scripts/version.sh, unchanged. It moved
+        # because hanzo.yml's gate has to run the SAME scan to check the file
+        # this job writes, and a scan spelled twice is right twice and then wrong
+        # once. `next` prints the number; the diagnostics go to stderr.
         run: |
           set -euo pipefail
           git fetch --tags --force --quiet
-          # The deployed lineage is 1.42.x: the operator CR (universe: hanzo-app.yaml)
-          # and every ghcr.io/hanzoai/app image are on it, and the newest-by-date
-          # commits on main are tagged v1.42.x. Stray older tags exist off that line
-          # (v2.2.0 = a 2025 "stack integration" relic, v2.2.1 = a one-off CSP fix,
-          # v1.75.0 = a June relic). `sort -V` is purely numeric, so an UNCONSTRAINED
-          # scan lets 2.2.1 > 1.75.0 > 1.42.x hijack the floor and cut a v2.2.2 the CR
-          # can't follow. Pin the scan to the 1.42. line so the bump stays monotonic
-          # over the ACTUAL deploy stream, not the numerically-largest orphan tag.
-          LINE='1.42.'
-          git_max="$(git tag -l "v${LINE}[0-9]*" \
-            | sed 's/^v//' | grep -E "^${LINE//./\\.}[0-9]+$" | sort -V | tail -1 || true)"
-          # Fold in ALREADY-PUSHED container tags on the same line, so a number that has
-          # an image (even from a run that died before git-tagging) is never reused
-          # (mirrors hanzoai/cloud). Best-effort — never fails the run if the API is down.
-          # Use curl (universally present) NOT gh — the arcd runners have no `gh`, so
-          # the gh-gated scan returned container_max='none' and the first run cut
-          # v1.42.11 instead of v1.42.13. Fold BOTH v-prefixed and legacy non-v 1.42.x
-          # image tags so the v-stream never numerically collides with the retired
-          # platform-build non-v tags. jq-optional: grep fallback if a runner lacks jq.
-          #
-          # The package scanned MUST be the one this job pushes to. It named the
-          # retired `hanzo-app` package while the build pushed `app`, so the scan
-          # read a stream that stopped at 1.42.153 and the floor came from git
-          # alone — and the forge's tag stream lags GitHub's, so v1.42.158 was cut
-          # AFTER v1.42.163 was already live. The image ⇔ tag guard below cannot
-          # catch that: the image resolved, it was simply numbered backwards.
-          cont_max=""
-          if [ -n "${GH_PAT:-}" ]; then
-            _pkgjson="$(curl -fsSL -H "Authorization: Bearer $GH_PAT" \
-              -H "Accept: application/vnd.github+json" \
-              'https://api.github.com/orgs/hanzoai/packages/container/app/versions?per_page=100' 2>/dev/null || true)"
-            cont_max="$(printf '%s' "$_pkgjson" \
-              | { jq -r '.[].metadata.container.tags[]?' 2>/dev/null || grep -oE '"v?[0-9]+\.[0-9]+\.[0-9]+"' | tr -d '"'; } \
-              | sed 's/^v//' | grep -E "^${LINE//./\\.}[0-9]+$" | sort -V | tail -1 || true)"
-          fi
-          max="$(printf '%s\n%s\n%s\n' "${LINE}0" "$git_max" "$cont_max" \
-            | grep -E "^${LINE//./\\.}[0-9]+$" | sort -V | tail -1)"
-          major="${max%%.*}"; rest="${max#*.}"; minor="${rest%%.*}"; patch="${rest##*.}"
-          version="${major}.${minor}.$((patch + 1))"
-          if git rev-parse -q --verify "refs/tags/v${version}" >/dev/null; then
-            echo "::error::computed v${version} already exists — aborting to avoid collision"; exit 1
-          fi
-          echo "version_v=v${version}" >> "$GITHUB_OUTPUT"
-          echo "Next release: v${version} (git_max='${git_max:-none}' container_max='${cont_max:-none}')"
+          echo "version_v=v$(scripts/version.sh next)" >> "$GITHUB_OUTPUT"
       - name: Stamp package.json with the release version
-        # The sidebar / about-modal / dashboard read `pkg.version`; without this the
-        # image ships whatever version was last hand-committed (was frozen at 1.42.21
-        # while deploys ran ahead). Write the computed release version into the build
-        # context so the shown version always matches the deployed tag.
+        # The sidebar / about-modal / dashboard read `pkg.version` (lib/version.ts);
+        # without this the image ships whatever version was last hand-committed
+        # (was frozen at 1.42.21 while deploys ran ahead). Write the computed
+        # release version into the build context so the shown version always
+        # matches the deployed tag.
+        #
+        # This stamp is also what makes the COMMIT below honest: the tree that
+        # gets tagged is byte-identical to the tree that was built, so the tag
+        # names the bytes that shipped AND the number they call themselves.
         run: |
           v="${{ steps.ver.outputs.version_v }}"; v="${v#v}"
           sed -i.bak -E "s/(\"version\"[[:space:]]*:[[:space:]]*\")[^\"]+(\")/\1${v}\2/" package.json && rm -f package.json.bak
@@ -230,11 +197,30 @@ jobs:
             echo "ghcr manifest ${v} not visible yet (attempt ${i}/6) — retrying"; sleep 5
           done
           echo "::error::image ${v} not pullable after push — refusing to tag git (prevents ImagePullBackOff)"; exit 1
-      - name: Tag the release (image ⇔ tag invariant)
+      - name: Tag the release (image ⇔ tag ⇔ package.json invariant)
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
+        # THE TAG NAMES A COMMIT THAT DECLARES ITS OWN VERSION. The stamp step
+        # above already wrote the number into package.json for the build, so this
+        # commits the exact tree that was built and tags THAT — no rebase, no
+        # re-stamp, nothing tagged that was not compiled.
+        #
+        # Before this, the stamp lived only in the build context and was thrown
+        # away with the runner. package.json on main therefore drifted one patch
+        # per release and reached 1.42.211 against a published v1.42.353 — 141
+        # behind, and invisible, because the scan reads the file as nothing.
+        #
+        # `[skip ci]` because release.yml triggers on any push to main that is not
+        # workflow/docs, and package.json is deliberately NOT in paths-ignore (a
+        # dependency bump IS a release). Both remotes honour it — git.hanzo.ai via
+        # Gitea's SKIP_WORKFLOW_STRINGS default, github.com natively — so the
+        # write-back cannot re-enter this workflow.
         run: |
           set -euo pipefail
+          git config user.name 'hanzo-ci'
+          git config user.email 'ci@hanzo.ai'
+          git add package.json
+          git commit -m "release ${{ steps.ver.outputs.version_v }} [skip ci]"
           git tag "${{ steps.ver.outputs.version_v }}"
           git push origin "${{ steps.ver.outputs.version_v }}"
           # Mirror the tag to GitHub so both remotes agree on the release
@@ -309,3 +295,33 @@ jobs:
             git -C /tmp/universe reset --quiet --hard origin/main
           done
           echo "::error::could not push the pin after 5 attempts — image ${VERSION} is pushed but NOT deployed"; exit 1
+
+      # AFTER the pin, deliberately: the release commit is bookkeeping, the pin is
+      # the deploy. A push conflict here must never be able to hold up shipping.
+      #
+      # Loud, though, not fail-soft — an unnoticed miss here IS the drift. The
+      # gate in hanzo.yml (`scripts/version.sh check`) catches it on the next push
+      # either way, so the two mechanisms are independent: this one writes, that
+      # one refuses to go green while it is wrong.
+      #
+      # The TAG is already pushed and immutable, and it names the built tree. Main
+      # is a separate question: another release can land between our checkout and
+      # this push, and a shallow retry must not re-tag. So on a conflict we
+      # RE-APPLY the number onto the new tip rather than rebase — the value is
+      # derived, the write is idempotent, and the tag keeps naming what was built.
+      - name: Commit the version onto main (the declared number must not lag)
+        run: |
+          set -euo pipefail
+          v="${{ steps.ver.outputs.version_v }}"; n="${v#v}"
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:main; then
+              echo "main declares ${n} — package.json and ${v} agree"; exit 0
+            fi
+            echo "main moved under us (attempt ${attempt}/5) — re-applying ${n} on the new tip"
+            git fetch --quiet origin main
+            git reset --quiet --hard origin/main
+            sed -i.bak -E "s/(\"version\"[[:space:]]*:[[:space:]]*\")[^\"]+(\")/\1${n}\2/" package.json && rm -f package.json.bak
+            git diff --quiet -- package.json && { echo "main already declares ${n}"; exit 0; }
+            git commit --quiet -am "release ${v} [skip ci]"
+          done
+          echo "::error::image ${v} shipped and is pinned, but package.json on main still does not declare ${n} — commit it by hand or the next scan reads a stale floor"; exit 1
