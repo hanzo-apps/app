@@ -28,8 +28,14 @@ import { resolveModelId } from "@/lib/providers";
 import { runAgent, type AgentEvent, type AgentFile, type ProjectFs } from "@/lib/agent";
 import { AgentSession } from "@/lib/agent/session";
 import { Sandbox, openSandbox, releaseSandbox, type Runtime } from "@/lib/agent/sandbox";
+import { runHarness } from "@/lib/agent/harness";
 
 const HANZO_AI_BASE_URL = process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai/v1";
+
+// How long ONE harness run may take inside the sandbox. Long, because this is a
+// coding agent editing a real checkout rather than a single completion, and the
+// caller is streaming: a turn still producing events is still working.
+const HARNESS_TIMEOUT_SEC = 900;
 
 const unauthorized = () =>
   NextResponse.json(
@@ -342,20 +348,51 @@ export async function POST(request: NextRequest) {
         ...(where.reason ? { reason: where.reason } : {}),
         ...(watching ? { session: watching } : {}),
       });
-      await runAgent(
-        {
-          token,
-          baseUrl: HANZO_AI_BASE_URL,
-          model,
-          prompt,
-          files,
-          fs: where.fs,
-          maxTurns,
-          signal: request.signal,
-          session: registry,
-        },
-        emit
-      );
+      // THE HARNESS DRIVES A RUN THAT HAS A REAL SANDBOX, and the loop drives
+      // the ones that do not.
+      //
+      // `dev` is the same binary that codes in a terminal, and running it here
+      // is what stops hanzo.app carrying a SECOND coding agent that has to be
+      // kept in step with the first by discipline. It needs the project to be on
+      // a disk it can see, which is exactly what `where.fs` being a Sandbox
+      // means — so the condition is the sandbox, not a flag.
+      //
+      // A run with no sandbox (no project named, or the service refused) still
+      // has to answer, and `loop.ts` answers it against an in-memory project.
+      // That path already tells the truth about itself: the `sandbox` frame
+      // above carries durable:false and the reason, emitted before either engine
+      // starts.
+      if (where.fs instanceof Sandbox) {
+        const result = await runHarness(
+          where.fs,
+          { task: prompt, token, model, timeoutSec: HARNESS_TIMEOUT_SEC },
+          emit
+        );
+        // The harness failing is not the task failing, and the two must not read
+        // the same. A non-zero exit with nothing relayed would otherwise close
+        // as a clean `done` with an empty transcript.
+        if (result.exitCode !== 0) {
+          await emit({
+            type: "error",
+            message: `the coding harness exited ${result.exitCode}`,
+          });
+        }
+      } else {
+        await runAgent(
+          {
+            token,
+            baseUrl: HANZO_AI_BASE_URL,
+            model,
+            prompt,
+            files,
+            fs: where.fs,
+            maxTurns,
+            signal: request.signal,
+            session: registry,
+          },
+          emit
+        );
+      }
       await registry.close("done");
     } catch (error) {
       try {
