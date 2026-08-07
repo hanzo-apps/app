@@ -555,6 +555,7 @@ export const AppEditor = ({
               <VisualEditor
                 iframeRef={iframeRef}
                 editorRef={editorRef}
+                pagePath={currentPageData?.path ?? "index.html"}
                 isEnabled={isEditableModeEnabled}
                 onToggle={setIsEditableModeEnabled}
                 onElementSelect={(_info) => {
