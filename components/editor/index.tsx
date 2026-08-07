@@ -63,11 +63,14 @@ export const AppEditor = ({
   pages: initialPages,
   images,
   isNew,
+  siteUrl,
 }: {
   project?: Project | null;
   pages?: Page[];
   images?: string[];
   isNew?: boolean;
+  /** The project's own public address, when it has one — see Preview.siteUrl. */
+  siteUrl?: string | null;
 }) => {
   const [htmlStorage, , removeHtmlStorage] = useLocalStorage("pages");
   const [, copyToClipboard] = useCopyToClipboard();
@@ -540,6 +543,7 @@ export const AppEditor = ({
               isAiWorking={isAiWorking}
               ref={preview}
               device={device}
+              siteUrl={siteUrl}
               pages={pages}
               setCurrentPage={setCurrentPage}
               currentTab={currentTab}

@@ -21,7 +21,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { LockKeyhole } from "lucide-react";
 import { AppEditor } from "@/components/editor";
-import { fetchProject, fetchProjectSite, toEditorProject } from "@/lib/api/projects";
+import { fetchProject, fetchProjectSite, liveUrlOf, toEditorProject } from "@/lib/api/projects";
 import { providerFromRepoUrl, fetchGitCommits, fetchCommitPages } from "@/lib/api/git";
 import { currentOrg, setCurrentOrg } from "@/lib/org-scope";
 import type { Page, Project as EditorProject } from "@/types";
@@ -42,6 +42,10 @@ export default function ProjectDevPage() {
   // The org the signed-in user actually acts in (their bearer owner), read from
   // the ONE org context BFF. Used only to explain a denied open ("you're in X").
   const [signedInOrg, setSignedInOrg] = useState("");
+  // Where the project's OWN files live. The preview runs in a srcDoc frame, which
+  // has no address, so without this every root-relative asset the document names
+  // resolves against hanzo.app and 404s — a built site previews as blank white.
+  const [siteUrl, setSiteUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!slug) return;
@@ -105,6 +109,9 @@ export default function ProjectDevPage() {
         if (!alive) return;
       }
       if (restoredPages.length > 0) setPages(restoredPages);
+      // liveUrlOf is the ONE normalizer (it also fixes legacy two-label hosts);
+      // the site's own answer is the fallback for a record we could not read.
+      setSiteUrl(record ? liveUrlOf(record) : site.liveUrl);
       // Give the editor the project's real IDENTITY (name, slug, repo). This is
       // what stops an open from reading as "new" — it fixes the status bar
       // ("Not saved · 1 file"), the Save-vs-Deploy button, per-turn commits
@@ -186,5 +193,5 @@ export default function ProjectDevPage() {
   // An EXISTING project passes its identity + isNew=false so the editor never
   // auto-runs a stale composer seed (an open is never a build). Only a truly
   // record-less open (site-only edge case) falls back to new.
-  return <AppEditor project={project ?? undefined} pages={pages ?? undefined} isNew={!project} />;
+  return <AppEditor project={project ?? undefined} pages={pages ?? undefined} isNew={!project} siteUrl={siteUrl} />;
 }

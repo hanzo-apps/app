@@ -321,15 +321,50 @@ export const BRIDGE_STYLES = `
 `;
 
 /**
+ * Tell the document where its own files live.
+ *
+ * A `srcDoc` frame has no address of its own, so every root-relative path in the
+ * document — `/assets/index-x.js`, a stylesheet, an image — resolves against the
+ * BUILDER's origin, where none of the project's files exist. A deployed Vite
+ * build is `<div id="root"></div>` and one script tag, so the whole page renders
+ * as blank white and the builder reads as broken rather than as empty.
+ *
+ * One `<base>` restores the address without touching a byte of the document's
+ * own text. It goes FIRST inside `<head>`, because the parser resolves each URL
+ * as it reaches it and a base declared after a tag does not apply to that tag.
+ *
+ * A document that already declares a base has said where it lives, and we do not
+ * overrule it. Neither do we invent one: with no `<head>` there is nothing to
+ * anchor to, and injecting a base ahead of the doctype would drop the frame into
+ * quirks mode — a worse bug than the one being fixed.
+ */
+export function withBase(html: string, url: string | null | undefined): string {
+  if (!html || !url || /<base\b/i.test(html)) return html;
+  let origin: string;
+  try {
+    const u = new URL(url);
+    if (u.protocol !== "https:" && u.protocol !== "http:") return html;
+    origin = `${u.origin}/`;
+  } catch {
+    return html;
+  }
+  return html.replace(/<head(\s[^>]*)?>/i, (head) => `${head}<base href="${origin}">`);
+}
+
+/**
  * Put the bridge into a document that is about to be shown.
  *
  * Appended rather than prepended: a `srcDoc` is often mid-stream from the model
  * and its `<head>` may not exist yet, while appending is valid against a partial
  * document and the browser still runs the script.
+ *
+ * `siteUrl` is the project's own public address when it has one. It is optional
+ * because most of a build's life is spent before there is anything deployed to
+ * point at, and a document that inlines everything needs no base at all.
  */
-export function withBridge(html: string): string {
+export function withBridge(html: string, siteUrl?: string | null): string {
   if (!html) return html;
-  return `${html}<style>${BRIDGE_STYLES}</style><script>${BRIDGE_SCRIPT}</script>`;
+  return `${withBase(html, siteUrl)}<style>${BRIDGE_STYLES}</style><script>${BRIDGE_SCRIPT}</script>`;
 }
 
 /** True when a message is from our own frame and speaks this protocol. */

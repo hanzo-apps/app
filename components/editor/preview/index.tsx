@@ -66,6 +66,7 @@ export const Preview = ({
   currentTab,
   iframeRef,
   pages,
+  siteUrl,
   setCurrentPage,
   isEditableModeEnabled,
   onClickElement,
@@ -74,6 +75,13 @@ export const Preview = ({
   isResizing: boolean;
   isAiWorking: boolean;
   pages: Page[];
+  /**
+   * The project's own public address. A `srcDoc` frame has no address, so every
+   * root-relative path the document names — its bundle, its stylesheet, its
+   * images — would otherwise resolve against the BUILDER and 404. Null while
+   * nothing is deployed, which is most of a build's life and needs no base.
+   */
+  siteUrl?: string | null;
   setCurrentPage: React.Dispatch<React.SetStateAction<string>>;
   ref: React.RefObject<HTMLDivElement | null>;
   iframeRef?: React.RefObject<HTMLIFrameElement | null>;
@@ -352,7 +360,7 @@ export const Preview = ({
             // `contentWindow` throws SecurityError, and the exfiltration script
             // from the report comes back DENIED instead of a token.
             sandbox="allow-scripts allow-forms"
-            srcDoc={withBridge(srcA)}
+            srcDoc={withBridge(srcA, siteUrl)}
             onLoad={() => handleFrameLoad("a")}
           />
         </YStack>
@@ -367,7 +375,7 @@ export const Preview = ({
             // Same sandbox as the frame above — the double buffer means both
             // frames show untrusted HTML, so both are isolated or neither is.
             sandbox="allow-scripts allow-forms"
-            srcDoc={withBridge(srcB)}
+            srcDoc={withBridge(srcB, siteUrl)}
             onLoad={() => handleFrameLoad("b")}
           />
         </YStack>
