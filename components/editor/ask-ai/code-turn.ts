@@ -2,8 +2,9 @@
 
 import { startAgentRun } from "@/lib/agent/client";
 import type { AgentEvent, AgentFile } from "@/lib/agent/types";
+import { watchRuns } from "@/lib/agent/watch";
 import { currentProject } from "@/lib/dev/workspace";
-import { push, pushBlock } from "@/components/editor/console/log";
+import { beginRun, endRun, push, pushBlock } from "@/components/editor/console/log";
 
 /**
  * Code mode — the agent editing the project's real checkout.
@@ -38,6 +39,19 @@ export interface CodeTurnResult {
   /** The files as they now stand, for the workspace to take up. */
   files: AgentFile[];
   ok: boolean;
+}
+
+/**
+ * How a step reads: red when it ended badly, plain otherwise.
+ *
+ * The sandbox says how a command finished in one line — `exit 0`, `exit 1`, or
+ * `ended: <why>` when it was stopped or the sandbox stopped answering. Only the
+ * first of those is success, and a build that failed should not have to be
+ * spotted by reading the number.
+ */
+function ended(step: string, message: string): "info" | "error" {
+  if (step !== "exit") return "info";
+  return message.trim() === "exit 0" ? "info" : "error";
 }
 
 /** Trim a tool's raw JSON arguments down to the command it is running. */
@@ -77,6 +91,18 @@ export async function codeTurn(args: {
   const out: CodeTurnResult = { durable: false, text: "", changed: [], files: [], ok: false };
   /** Command per tool-call id, so a result can name what produced it. */
   const running = new Map<string, string>();
+  /** Ends the live feed when the run does. */
+  const stopWatching = new AbortController();
+  /**
+   * Whether the sandbox's own narration is reaching the console.
+   *
+   * It decides ONE thing: who prints a command's output. When a session opened,
+   * the lines arrive AS THE COMMAND RUNS and printing the buffered result
+   * afterwards would print all of it a second time. When it did not — an
+   * unreachable registry — the buffered result is the only copy there is, and
+   * dropping it would trade a silent pause for silence.
+   */
+  let live = false;
 
   const on = (event: AgentEvent) => {
     switch (event.type) {
@@ -93,6 +119,32 @@ export async function codeTurn(args: {
           // LOUD. This is the case that used to be invisible: the run proceeds,
           // looks perfect, and saves nothing.
           push("sandbox", "error", event.reason ?? "not durable — this run edits memory only");
+        }
+        // The dock's Stop acts on the sandbox, so it can only be offered once
+        // there is one to act on — which is here, the first frame of every run.
+        beginRun({ sandbox: event.id, session: event.session });
+        if (event.session) {
+          live = true;
+          void watchRuns({
+            root: event.session,
+            signal: stopWatching.signal,
+            onLine: (_, said) => {
+              // A step is a phase of the run — leased, clone, the tool's name,
+              // exit. Output is everything else and is most of the volume, so it
+              // is written as the block of lines it is rather than one entry.
+              //
+              // `exit 0` is the only ending that is not a failure: a non-zero
+              // code and an `ended: …` (the command was stopped, or the sandbox
+              // stopped answering) both belong in red.
+              if (said.step) push("sandbox", ended(said.step, said.message), said.message || said.step);
+              else pushBlock("sandbox", "log", said.message);
+            },
+          }).catch(() => {
+            // Watching is how a run is READ, never how it is run. A feed that
+            // cannot be opened costs the live view; the buffered result below
+            // then remains the copy that gets printed.
+            live = false;
+          });
         }
         args.onWhere({ durable: event.durable, sandbox: event.id, reason: event.reason });
         break;
@@ -116,10 +168,16 @@ export async function codeTurn(args: {
         const command = running.get(event.id);
         if (command !== undefined) {
           running.delete(event.id);
+          // ONLY when nothing was watching. With a session open the console has
+          // already shown every one of these bytes, live, and printing the
+          // buffered copy here would double the whole build log.
+          //
           // `Exit code N` is the first line of the tool's own result, so a
           // failed command reads as failed without a second interpretation of
           // the same bytes here.
-          pushBlock("sandbox", event.result.startsWith("Exit code 0") ? "log" : "error", event.result);
+          if (!live) {
+            pushBlock("sandbox", event.result.startsWith("Exit code 0") ? "log" : "error", event.result);
+          }
         }
         break;
       }
@@ -160,6 +218,11 @@ export async function codeTurn(args: {
     out.ok = false;
     out.text = e instanceof Error ? e.message : "The agent run could not be started.";
     push("sandbox", "error", out.text);
+  } finally {
+    // On every path. A feed left open outlives the run it was watching, and a
+    // Stop button left on screen offers to interrupt a command that is over.
+    stopWatching.abort();
+    endRun();
   }
   return out;
 }

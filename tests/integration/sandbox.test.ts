@@ -134,13 +134,17 @@ function stubSandbox(
       return new Response(null, { status: 204 });
     }
 
-    // ONE exec verb, and list/search go through it. There is no /fs/list and no
+    // ONE run verb, and list/search go through it. There is no /fs/list and no
     // /fs/search on the real surface, deliberately: a recursive listing and a
     // grep are COMMANDS, and a second endpoint for each would be a second way to
     // ask a question the sandbox already answers. So this stub has to be a small
     // shell — which is the point, because it makes the test exercise the same
     // path production does instead of a friendlier invented one.
-    if (method === "POST" && p === `${PREFIX}/exec`) {
+    //
+    // It is addressed at the COLLECTION with the id in the body, because that is
+    // the op that carries a `session` to narrate into. `/:id/exec` has no field
+    // for one, so a command sent there cannot be watched while it runs.
+    if (method === "POST" && p === "/v1/sandboxes/run") {
       lastExec = json();
       const cmd = String(lastExec?.command ?? "");
       // `find .` / `grep -r .` run in the workdir, so they print paths relative
@@ -256,12 +260,12 @@ describe("Sandbox", () => {
     await fs.exec("true");
 
     expect(stub.calls).toEqual([
-      `POST ${PREFIX}/exec`,
+      "POST /v1/sandboxes/run",
       `GET ${PREFIX}/fs`,
       `GET ${PREFIX}/fs`,
       `POST ${PREFIX}/fs`,
-      `POST ${PREFIX}/exec`,
-      `POST ${PREFIX}/exec`,
+      "POST /v1/sandboxes/run",
+      "POST /v1/sandboxes/run",
     ]);
   });
 
@@ -324,7 +328,29 @@ describe("run_command", () => {
   it("carries the command and its deadline to the sandbox", async () => {
     const { stub, fs } = make({});
     await fs.exec("pnpm test", 300);
-    expect(stub.exec()).toEqual({ command: "pnpm test", timeoutSec: 300 });
+    expect(stub.exec()).toEqual({ id: ID, command: "pnpm test", timeoutSec: 300 });
+  });
+
+  it("says nothing about a session when nobody is watching", async () => {
+    // A sandbox nobody is watching narrates to nobody, and sending an empty
+    // session would ask cloud to append every line of a build to a log that does
+    // not exist. Absent is the honest default.
+    const { stub, fs } = make({});
+    await fs.exec("pnpm test");
+    expect(stub.exec()).not.toHaveProperty("session");
+  });
+
+  it("names the session on every command once it is watched", async () => {
+    // THE WHOLE POINT: with a session named, the sandbox appends the command's
+    // output to that session's live log AS IT RUNS. Without it a 25-minute build
+    // is a blank pause and a verdict. It applies to every command from then on,
+    // not only the next one.
+    const { stub, fs } = make({});
+    fs.watch("sess-42");
+    await fs.exec("pnpm build");
+    expect(stub.exec()).toMatchObject({ id: ID, session: "sess-42" });
+    await fs.exec("pnpm test");
+    expect(stub.exec()).toMatchObject({ session: "sess-42" });
   });
 
   it("returns a failing program as a successful call", async () => {

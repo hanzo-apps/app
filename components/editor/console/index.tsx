@@ -2,15 +2,77 @@
 
 import { Button } from '@hanzo/ui';
 import { SizableText, YStack, XStack, Paragraph } from '@hanzo/ui';
-import { useEffect, useRef } from "react";
-import { Check, GitBranch, PanelLeft } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, GitBranch, PanelLeft, Square } from "lucide-react";
 
 import { Voice } from "@hanzo/voice";
 
 import { useMic } from "@/components/editor/ask-ai/mic";
 
 import { BAR, DEFAULT_OPEN, MIN_OPEN, STEP, maxOpen, useDock } from "./dock";
-import { useConsoleLog } from "./log";
+import { push, useConsoleLog, useRun } from "./log";
+
+/**
+ * Stop what the sandbox is running.
+ *
+ * TWO VERBS EXIST AND THIS IS THE FIRST. `stop` interrupts the command; `end`
+ * releases the sandbox. A person hits this because a build is wedged or a test
+ * is hanging, and what they want next is to LOOK at it — the checkout, the
+ * half-written file, everything the run has said. So the box stays, and the
+ * label says so, because a control that might delete your work is one people
+ * hesitate over instead of using.
+ *
+ * Zero stopped is not a failure: a command that finished a moment ago is one
+ * there was nothing left to interrupt. Either way the run is no longer running,
+ * which is what the person asked for and what the console says.
+ */
+function Stop({ sandbox }: { sandbox: string }) {
+  const [stopping, setStopping] = useState(false);
+
+  const stop = async () => {
+    setStopping(true);
+    try {
+      const res = await fetch("/v1/sandboxes/stop", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: sandbox }),
+      });
+      const body = (await res.json().catch(() => null)) as { message?: string } | null;
+      push(
+        "sandbox",
+        res.ok ? "info" : "error",
+        res.ok
+          ? "stopped — the sandbox and everything in it are still here"
+          : body?.message || `Could not stop the run (${res.status})`
+      );
+    } catch {
+      push("sandbox", "error", "Could not reach the sandbox to stop it.");
+    } finally {
+      setStopping(false);
+    }
+  };
+
+  return (
+    <Button
+      type="button"
+      onClick={stop}
+      disabled={stopping}
+      variant="ghost"
+      group
+      aria-label="Stop the running command — the sandbox and its files stay"
+      title="Stop the running command. The sandbox, the checkout and the log stay."
+      height="$4.5" alignItems="center" justifyContent="center" gap="$1"
+      paddingHorizontal="$2" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}
+    >
+      <SizableText color="var(--destructive)">
+        <Square size={12} fill="currentColor" />
+      </SizableText>
+      <SizableText fontSize={11} color="$color11" $group-hover={{ color: "$color" }}>
+        {stopping ? "Stopping…" : "Stop"}
+      </SizableText>
+    </Button>
+  );
+}
 
 /**
  * The developer console — the builder's bottom dock.
@@ -54,6 +116,8 @@ export function Console({
 }) {
   const { height, open, setHeight, toggle, nudge } = useDock();
   const { entries } = useConsoleLog();
+  // The live run, or null. Its sandbox is the handle Stop acts on.
+  const run = useRun();
   // The composer's voice, drawn here. Null until a composer is mounted.
   const voice = useMic();
 
@@ -191,7 +255,22 @@ export function Console({
         {/* State, inert: it rides on the bar but never eats the drag. Padded to
             clear the panel toggle on the left and the mic + Enso on the right —
             measured clearances, so they stay the measurements they are. */}
-        <XStack pointerEvents="none" position="relative" height="100%" alignItems="center" gap="$2.5" paddingLeft="2.25rem" paddingRight="4.25rem">
+        <XStack
+          pointerEvents="none"
+          position="relative"
+          height="100%"
+          alignItems="center"
+          gap="$2.5"
+          paddingLeft="2.25rem"
+          // The right cluster is floated OVER this row, so the row reserves its
+          // width rather than flowing around it — which means the reservation
+          // has to grow when the cluster does. Stop appears only while a run is
+          // live, and at 4.25rem it painted straight through "Working". The two
+          // numbers are the measured widths of what is actually there; the
+          // geometry assertion in tests/e2e/live-run.spec.ts is what keeps them
+          // honest when either side changes.
+          paddingRight={run?.sandbox ? "9.5rem" : "4.25rem"}
+        >
           <XStack alignItems="center" gap="$1.5">
             {/* A live indicator: a small dot inside a wider, dimmer halo. All
                 three boxes were `$1.5` — 24px, the size of a BUTTON, so this
@@ -238,6 +317,11 @@ export function Console({
             Order is mic then Enso: the mic is the conversation, Enso the editor,
             and the user asked for the mark to sit to the RIGHT of the mic. */}
         <XStack position="absolute" right="$2" top="$0" height="100%" alignItems="center" gap="$0.5">
+          {/* Only while there is a command to interrupt, and only when it runs
+              somewhere interruptible: a scratch run edits a map in this process
+              and has no sandbox to stop. An always-visible Stop that sometimes
+              does nothing is worse than one that appears when it can act. */}
+          {run?.sandbox && <Stop sandbox={run.sandbox} />}
           {voice && (
             <Voice
               voice={voice}

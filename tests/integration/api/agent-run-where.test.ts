@@ -50,20 +50,23 @@ beforeEach(async () => {
 function sandboxes(opts: { deadIsGone?: boolean; freshIsWritable?: boolean } = {}) {
   const { deadIsGone = true, freshIsWritable = true } = opts;
   return [
-    // A released sandbox is GONE, not merely unwritable — this is the 404 that a
-    // reused id actually meets.
-    http.post(`${GATEWAY}/sandboxes/${DEAD}/exec`, () =>
-      deadIsGone
-        ? HttpResponse.json({ status: 404, error: "sandbox not found" }, { status: 404 })
-        : HttpResponse.json({ exitCode: 0, stdout: "", stderr: "" }),
-    ),
-    http.post(`${GATEWAY}/sandboxes/${FRESH}/exec`, () =>
-      HttpResponse.json(
+    // One address for running a command, with the sandbox named in the BODY —
+    // it is the op that carries a session to narrate into, and the only one that
+    // does. A released sandbox is GONE, not merely unwritable: this is the 404
+    // that a reused id actually meets.
+    http.post(`${GATEWAY}/sandboxes/run`, async ({ request }) => {
+      const { id } = (await request.json()) as { id?: string };
+      if (id === DEAD) {
+        return deadIsGone
+          ? HttpResponse.json({ status: 404, error: "sandbox not found" }, { status: 404 })
+          : HttpResponse.json({ exitCode: 0, stdout: "", stderr: "" });
+      }
+      return HttpResponse.json(
         freshIsWritable
           ? { exitCode: 0, stdout: "", stderr: "" }
           : { exitCode: 1, stdout: "drwxr-xr-x 3 root root 4096 .", stderr: "" },
-      ),
-    ),
+      );
+    }),
     http.post(`${GATEWAY}/sandboxes`, () =>
       HttpResponse.json({ id: FRESH, project: "luxquest", status: "running" }, { status: 201 }),
     ),

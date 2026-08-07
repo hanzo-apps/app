@@ -289,16 +289,28 @@ export async function POST(request: NextRequest) {
         // rather than as an anonymous stream from a browser tab.
         ...(where.id ? { host: where.id, repo: where.project } : {}),
       });
-      await registry.open();
+      const watching = await registry.open();
+
+      // NOW the sandbox knows where to narrate. Every command from here on
+      // appends its output to that session's log as the program produces it, so
+      // a person watching sees the build work rather than a blank pause — which
+      // is the whole difference between a 25-minute run that shows four lines
+      // and one you can read. It is set here rather than at construction because
+      // the sandbox has to exist before the session can say which sandbox it is
+      // running on; a run with no registry simply narrates to nobody.
+      if (watching && where.fs instanceof Sandbox) where.fs.watch(watching);
 
       // WHERE, before any token. The client marks the run from this frame, so it
       // has to precede the first thing a user could mistake for work being saved.
+      // It also names the session, because that is the address the client tails
+      // to see the commands run.
       await emit({
         type: "sandbox",
         durable: where.durable,
         ...(where.id ? { id: where.id } : {}),
         ...(where.project ? { project: where.project } : {}),
         ...(where.reason ? { reason: where.reason } : {}),
+        ...(watching ? { session: watching } : {}),
       });
       await runAgent(
         {

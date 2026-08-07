@@ -7,17 +7,25 @@
  * anywhere but the IAM edge would be a second auth path, so every call goes
  * through cloud:
  *
- *     hanzo.app  ──Bearer──▶  cloud /v1/sandboxes/:id/{exec,fs}
+ *     hanzo.app  ──Bearer──▶  cloud /v1/sandboxes/{run,:id/fs}
  *                             └──▶  kube exec into the pod
  *
  * We hold the user's IAM bearer and nothing else. The credential on the second
  * hop is cloud's own and is never present in this process.
  *
- * THREE VERBS, and the shape of this file follows from that. `POST /:id/exec`
- * runs a command; `GET /:id/fs?path=` reads one; `POST /:id/fs?path=` writes
- * one. There is no /fs/list and no /fs/search, deliberately — a recursive
- * listing is `find` and a grep is `grep`, and a second endpoint for each would
- * be a second way to ask a question the sandbox already answers.
+ * THREE VERBS, and the shape of this file follows from that. `POST /run` runs a
+ * command; `GET /:id/fs?path=` reads one; `POST /:id/fs?path=` writes one. There
+ * is no /fs/list and no /fs/search, deliberately — a recursive listing is `find`
+ * and a grep is `grep`, and a second endpoint for each would be a second way to
+ * ask a question the sandbox already answers.
+ *
+ * Running is the one verb addressed at the COLLECTION rather than at this
+ * sandbox, which is why the id travels in its body. That is not an inconsistency
+ * to tidy away: `/run` is the op the fleet publishes to agents as
+ * `run_in_sandbox`, and it is the only one that takes a SESSION to narrate into.
+ * The older `/:id/exec` has no field for one, so every command sent there is
+ * silent for its whole life — which is the entire defect this file's `watch()`
+ * exists to end.
  *
  * That is also why the writes take the file as the raw body rather than a
  * `{path, content}` envelope: the path is addressing, the body is the file, and
@@ -201,6 +209,16 @@ export interface SandboxOptions {
   token: string;
   /** Per-request timeout. A wedged sandbox must not hang the agent turn. */
   timeoutMs?: number;
+  /**
+   * The run's session, when something is watching. Every command names it, and
+   * the sandbox appends the command's output to that session's log AS IT IS
+   * PRODUCED — so a watcher reads a twenty-five minute build working instead of
+   * a blank pause with a verdict at the end.
+   *
+   * Absent is the honest default and costs nothing: a sandbox nobody is watching
+   * narrates to nobody. Set it with `watch()` once the session exists.
+   */
+  session?: string;
 }
 
 /**
@@ -360,16 +378,34 @@ export async function releaseSandbox(opts: {
 export class Sandbox implements ProjectFs, ProjectExec {
   private readonly changed = new Set<string>();
   private readonly timeoutMs: number;
+  /** `…/sandboxes` — the collection. `mine` addresses this one within it. */
   private readonly base: string;
+  private readonly mine: string;
+  private session: string;
 
   constructor(private readonly opts: SandboxOptions) {
     this.timeoutMs = opts.timeoutMs ?? 20_000;
-    this.base = `${opts.baseUrl.replace(/\/+$/, "")}/sandboxes/${encodeURIComponent(opts.id)}`;
+    this.base = `${opts.baseUrl.replace(/\/+$/, "")}/sandboxes`;
+    this.mine = `/${encodeURIComponent(opts.id)}`;
+    this.session = opts.session ?? "";
   }
 
   /** The sandbox this filesystem edits — the id a caller shows or reuses. */
   get id(): string {
     return this.opts.id;
+  }
+
+  /**
+   * Narrate every command from here on into this session.
+   *
+   * Separate from the constructor because of the order the run is built in: the
+   * sandbox has to exist before the session can say which sandbox it is running
+   * on, so the session id is not known yet when this object is made. One
+   * assignment rather than a second object, because it is the same sandbox
+   * either way — the only thing that changed is that somebody is watching.
+   */
+  watch(session: string): void {
+    this.session = session.trim();
   }
 
   /**
@@ -440,8 +476,20 @@ export class Sandbox implements ProjectFs, ProjectExec {
     // data. A failed SANDBOX throws from `call`: exitCode -1 already means
     // "the binary never launched", so reusing it for "the sandbox is gone" would
     // give one value two meanings and the model would debug the wrong one.
-    const res = await this.call("POST", "/exec", {
-      body: { command, timeoutSec },
+    //
+    // `run`, not `:id/exec`. They run the same command through the same code
+    // path, and exactly one of them carries a session: `:id/exec` has no field
+    // for one, so a command sent there is silent for its whole life however many
+    // people are watching. `run` is also the op the fleet publishes to agents
+    // (`run_in_sandbox`), so a person driving a sandbox from chat and this agent
+    // driving one for a build are using ONE address.
+    const res = await this.call("POST", "/run", {
+      body: {
+        id: this.opts.id,
+        command,
+        timeoutSec,
+        ...(this.session ? { session: this.session } : {}),
+      },
       timeoutMs: (timeoutSec + 10) * 1000,
     });
     const out = (await res.json()) as ExecResult;
@@ -486,7 +534,7 @@ export class Sandbox implements ProjectFs, ProjectExec {
    * the same question more cheaply would be a second answer to maintain.
    */
   async exists(path: string): Promise<boolean> {
-    const res = await this.call("GET", "/fs", {
+    const res = await this.call("GET", `${this.mine}/fs`, {
       query: { path: wire(path) },
       allow: [404],
     });
@@ -497,7 +545,7 @@ export class Sandbox implements ProjectFs, ProjectExec {
   /** `null` means the sandbox answered 404 — the file is not there. It never means
    *  the sandbox failed to answer; that throws. */
   async read(path: string): Promise<string | null> {
-    const res = await this.call("GET", "/fs", {
+    const res = await this.call("GET", `${this.mine}/fs`, {
       query: { path: wire(path) },
       allow: [404],
     });
@@ -510,7 +558,7 @@ export class Sandbox implements ProjectFs, ProjectExec {
 
   async write(path: string, content: string): Promise<void> {
     const p = normalizePath(path);
-    await this.call("POST", "/fs", { query: { path: wire(p) }, raw: content });
+    await this.call("POST", `${this.mine}/fs`, { query: { path: wire(p) }, raw: content });
     // The identity, not the address: `changedPaths` and `changedFiles` feed the
     // caller and the model, which speak leading-slash project paths.
     this.changed.add(p);

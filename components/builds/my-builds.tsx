@@ -14,6 +14,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { MessageSquare, Globe, Lock, ArrowUpRight } from "lucide-react";
 
+import { watchRuns, type Row } from "@/lib/agent/watch";
+
 type SessionRow = {
   id: string;
   org: string;
@@ -26,6 +28,47 @@ type SessionRow = {
   updatedAt: string;
 };
 
+/**
+ * Fold one live update into the list.
+ *
+ * A run that is not here yet goes to the FRONT — the newest run is the one you
+ * just started, and it belongs where you are looking. One already here is merged
+ * rather than replaced: the feed carries a session's changing fields, and a row
+ * built from the list read has fields (`org`, `project`) a later frame may not
+ * repeat. Overwriting would blank the "Read" link on the first status change.
+ */
+function fold(rows: SessionRow[], row: Row): SessionRow[] {
+  const at = rows.findIndex((r) => r.id === row.id);
+  if (at < 0) {
+    return [
+      {
+        id: row.id,
+        org: row.org ?? "",
+        agent: row.agent ?? "",
+        status: row.status ?? "",
+        events: row.events ?? 0,
+        updatedAt: row.updatedAt ?? "",
+        ...(row.title ? { title: row.title } : {}),
+        ...(row.project ? { project: row.project } : {}),
+        ...(row.published ? { published: true } : {}),
+      },
+      ...rows,
+    ];
+  }
+  const next = rows.slice();
+  next[at] = { ...next[at], ...strip(row) };
+  return next;
+}
+
+/** Drop the fields a frame did not state, so a merge never blanks one. */
+function strip(row: Row): Partial<SessionRow> {
+  const out: Partial<SessionRow> = {};
+  for (const [k, v] of Object.entries(row)) {
+    if (v !== undefined && v !== "") (out as Record<string, unknown>)[k] = v;
+  }
+  return out;
+}
+
 type State =
   | { kind: "loading" }
   | { kind: "signedOut" }
@@ -35,23 +78,39 @@ type State =
 export function MyBuilds() {
   const [state, setState] = useState<State>({ kind: "loading" });
 
+  // The list read is the TRUTH and the feed is the live half — the same division
+  // cloud states about its own stream, and the reason both are here rather than
+  // one. A GET answers "what do I have", which a stream joined mid-flight cannot;
+  // the stream answers "what just changed", which a page-load read cannot. This
+  // used to be the GET alone, so a run started in another tab, or this one's own
+  // progress, appeared only if you reloaded.
   useEffect(() => {
-    let live = true;
+    const gone = new AbortController();
+
     (async () => {
       try {
-        const r = await fetch("/v1/agents/sessions", { cache: "no-store" });
-        if (!live) return;
+        const r = await fetch("/v1/agents/sessions", { cache: "no-store", signal: gone.signal });
         if (r.status === 401) return setState({ kind: "signedOut" });
         if (!r.ok) return setState({ kind: "error", message: `HTTP ${r.status}` });
         const body = (await r.json()) as { sessions?: SessionRow[] };
         setState({ kind: "ready", sessions: body.sessions ?? [] });
       } catch {
-        if (live) setState({ kind: "error", message: "Unable to reach the API" });
+        if (!gone.signal.aborted) setState({ kind: "error", message: "Unable to reach the API" });
       }
     })();
-    return () => {
-      live = false;
-    };
+
+    watchRuns({
+      signal: gone.signal,
+      onSession: (row) =>
+        // Only once the list has landed. A frame that arrived first would
+        // otherwise replace "Loading…" with a one-row list that looks complete.
+        setState((s) => (s.kind === "ready" ? { kind: "ready", sessions: fold(s.sessions, row) } : s)),
+    }).catch(() => {
+      // Watching is the live half, never the truth. A feed that will not open
+      // leaves the list exactly as the read left it — correct, just not moving.
+    });
+
+    return () => gone.abort();
   }, []);
 
   return (
