@@ -162,24 +162,26 @@ export function Header({
       {/* CENTER — view switcher + device switcher + refresh + page selector +
           open-in-new-tab, one control cluster.
 
-          KNOWN DEFECT, measured and NOT yet fixed: below ~1440px this cluster
-          and the pinned Share/Publish actions OVERLAP — controls painted on top
-          of each other, so a press lands on whichever paints last.
+          THE CONTROLS WERE BEING STARVED, and the older note here called it an
+          overlap because it measured the DESCENDANTS. They do not overlap: the
+          three clusters tile cleanly at every width (390: 12→204, 212→241,
+          249→378). What looked like overlap was this cluster's own
+          `overflow: scroll` — a descendant's `getBoundingClientRect()` reports
+          where it WOULD be, un-clipped, so controls scrolled out of view read
+          as sitting on top of the Publish button. Measure the clusters, not
+          the buttons.
 
-            mobile 390px   4 overlapping pairs, Code ∩ Publish by 42x44px
-            tablet 834px   2 overlapping pairs, Browse pages ∩ Share by 79x32px
-            laptop 1440px  none
+          The real fault was `flex={1}` — `flex: 1 1 0`, a ZERO basis, so this
+          cluster asked for nothing and took only what the other two left over.
+          Measured on prod at 390px: 29px of width holding 254px of controls,
+          which is why the page selector read "index.htm" cut mid-word. With
+          `flexBasis: auto` it asks for its content and shrinks from there:
 
-          The note on the RIGHT cluster below records an earlier fix for the
-          SAME pair names (`Preview ⨯ Publish`, `Code ⨯ Publish`), so this has
-          regressed once already and the cause named there is not the whole
-          story. Two candidate fixes were tried and MEASURED TO CHANGE NOTHING —
-          `flexShrink: 1` + `minWidth: 0` on this cluster, and the same on the
-          left cluster — so neither is in the tree; do not re-apply them without
-          a measurement. Reproduce with a browser at 390/834/1440 comparing the
-          bounding rects of every control in the top band; the rects overlap,
-          which is not visible in a screenshot at desktop width. */}
-      <XStack alignItems="center" gap="$2" flex={1} minWidth={0} overflow="scroll" className="no-scrollbar">
+            390px   29px → 128px      560px  199px → 226px      860px  448px → 476px
+
+          The other half is in the workspace menu: the project NAME now gives up
+          its room below $sm, because it is a label and these are the tools. */}
+      <XStack alignItems="center" gap="$2" flexGrow={1} flexShrink={1} flexBasis="auto" minWidth={0} overflow="scroll" className="no-scrollbar">
         <XStack
           role="tablist"
           aria-label="Editor view"

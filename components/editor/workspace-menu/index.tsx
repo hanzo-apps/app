@@ -183,7 +183,11 @@ export function WorkspaceMenu({
             minWidth={0} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$color02", backgroundColor: "$color3" }}
           >
             <OrgMark org={display({ name: orgId, logo: activeOrg?.logo })} size={20} />
-            <SizableText maxWidth="9rem" numberOfLines={1} fontWeight="500" color="$color">
+            {/* On a phone the bar has ~220px to split between this name and
+                the editor's tools, and the name was taking all of it. It is a
+                LABEL; they are the controls you came for. So it gives up room
+                first below $sm and keeps its full width above. */}
+            <SizableText maxWidth="4.5rem" $sm={{ maxWidth: "9rem" }} numberOfLines={1} fontWeight="500" color="$color">
               {projectName}
             </SizableText>
             <ChevronsUpDown size={14} />
