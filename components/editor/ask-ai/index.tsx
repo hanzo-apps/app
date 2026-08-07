@@ -1295,7 +1295,7 @@ export function AskAI({
                 : isPlan
                 ? "Chat about your app — Plan mode won't change it"
                 : isCode
-                ? "Edit and run your project in a sandbox — try \"run the tests\""
+                ? "The agent works in a sandbox — try \"run the tests\""
                 : selectedElement
                 ? `Ask Hanzo about ${selectedElement.tagName.toLowerCase()}...`
                 : isFollowUp && (!isSameHtml || pages?.length > 1)
@@ -1403,7 +1403,14 @@ export function AskAI({
               // quiet inset switch that sits with the icon buttons beside it.
               flexShrink={0} alignItems="center" borderRadius="$3" borderWidth={1} borderColor="$color06" backgroundColor="$color02" padding="$0.5"
             >
+              {/* "Code" was the SECOND thing called Code on this screen — the
+                  header's Preview/Code toggle chooses what you LOOK at, this
+                  chooses what the agent DOES, and one word for two ideas is
+                  what made the row unreadable. The mode is the agent working in
+                  a sandbox where it can run commands, so it is named for that.
+                  The stored value stays `code`; only the word you read changes. */}
               {(["build", "code", "plan"] as const).map((m) => {
+                const label = m === "code" ? "Agent" : m;
                 // The app's ONE selected look, so the composer's mode agrees
                 // with the header's tabs and the sidebar's rows. It read
                 // `var(--brand-accent)`, which resolves to #ffffff here — a pure
@@ -1422,13 +1429,13 @@ export function AskAI({
                     m === "plan"
                       ? "Plan: chat about your app without changing it"
                       : m === "code"
-                      ? "Code: the agent edits your project in a sandbox and can run commands"
+                      ? "Agent: works in a sandbox on your project and can run commands"
                       : "Build: generate and modify your app"
                   }
                   onClick={() => setMode(m)}
                   height={24} borderRadius="$2" paddingHorizontal="$2" paddingVertical="$0" {...sel}
                 >
-                  <SizableText fontWeight="500" fontSize="$1" textTransform="capitalize" color={sel.color}>{m}</SizableText>
+                  <SizableText fontWeight="500" fontSize="$1" textTransform="capitalize" color={sel.color}>{label}</SizableText>
                 </Button>
                 );
               })}
