@@ -190,8 +190,21 @@ a {
      monochrome ninja-stealth, and the composer ring is the ONE deliberate
      spectrum — the Apple-Intelligence iridescence (blue → violet → pink →
      amber and home again), moderated so it glows instead of shouting. */
-  --hz-spectrum: rgba(8, 148, 255, 0.45), rgba(201, 89, 221, 0.48),
-    rgba(255, 46, 84, 0.4), rgba(255, 144, 4, 0.4), rgba(8, 148, 255, 0.45);
+  /* LUMINANCE, NOT HUE — and the same stops hanzo.chat declares, because the
+     note above is right that these two must not drift.
+
+     Four saturated stops at 0.40-0.48 alpha, swept around a rounded RECTANGLE,
+     do not distribute evenly: the long top and bottom edges each take a wide
+     angular slice and the short sides take almost none, so one edge wore a
+     bright pink while the opposite wore a dim blue. That reads as a ring that
+     highlights half the box and sits slightly off — and no amount of nudging
+     the geometry fixes it, because an uneven ring cannot look aligned.
+
+     White at two close alphas removes the bright arc entirely, drops the peak
+     from 0.48 to 0.18, and keeps the slow drift as a sheen. */
+  --hz-spectrum: rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.18),
+    rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.18),
+    rgba(255, 255, 255, 0.1);
 
 }
 
