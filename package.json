@@ -41,7 +41,7 @@
     "@hanzo/observe": "^0.1.6",
     "@hanzo/ui": "^8.0.69",
     "@hanzo/usage": "^0.1.6",
-    "@hanzo/voice": "0.1.6",
+    "@hanzo/voice": "^0.1.8",
     "@hanzogui/config": "^8.0.1",
     "@hanzogui/next-theme": "^8.1.0",
     "@hanzogui/shell": "^8.1.0",

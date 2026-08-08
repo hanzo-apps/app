@@ -241,6 +241,23 @@ a {
   padding: 1.5px;
 }
 
+/* The composer grows with what you type; it is never dragged.
+ *
+ * A `<textarea>` defaults to `resize: vertical`, which paints a grab handle in
+ * the bottom-right corner — inside the ring, on top of the gradient, on both
+ * desktop and mobile. Nobody chose it, and no builder worth the name asks you
+ * to size your own prompt box. Height is set from `scrollHeight` in the
+ * component; this is the half that has to be CSS, because the handle is the
+ * browser's and only a style can take it away.
+ *
+ * Past `--hz-composer-max` the box stops and scrolls: an unbounded field walks
+ * the send button off the bottom of a phone. */
+.hz-composer textarea {
+  resize: none;
+  max-height: var(--hz-composer-max, 40vh);
+  overflow-y: auto;
+}
+
 /* The ring DRAWS A RING. It used to draw a filled DISC and rely on the panel
    above it being opaque to cover the middle — which made the panel's opacity
    load-bearing for something that was never about the panel. The moment the

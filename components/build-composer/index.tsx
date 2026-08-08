@@ -85,6 +85,25 @@ export function BuildComposer({
     if (autoFocus) textareaRef.current?.focus();
   }, [autoFocus]);
 
+  /**
+   * Grow to fit what has been typed.
+   *
+   * `rows={2}` sets the floor and the CSS `max-height` sets the ceiling; between
+   * them the box tracks its own content, so a three-line idea is not read
+   * through a two-line slot. The height is cleared before it is measured
+   * because `scrollHeight` never shrinks below the height already set — without
+   * that reset the field only ever grows, and deleting a line leaves a gap.
+   *
+   * It runs on `idea` rather than on a keystroke handler so that the suggestion
+   * chips, which set the value directly, size the box too.
+   */
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
+  }, [idea]);
+
   // Idle typewriter placeholder — pauses on focus/typing; static first phrase
   // under prefers-reduced-motion (mirrors the Reveal contract).
   const [typed, setTyped] = useState('');
