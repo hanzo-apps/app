@@ -187,12 +187,19 @@ export function AskAI({
   //   code   the agent edits the project's real checkout in a sandbox and can
   //          RUN things — install, build, test. Durable; costs a pod.
   //   plan   a conversational back-and-forth that DOESN'T touch the app.
-  // Build and Code are deliberately separate values rather than a flag on one
-  // verb: they have different costs and different failure modes, and nobody
-  // should reach the expensive one by accident. Persisted.
-  const [mode, setMode] = useLocalStorage<"build" | "code" | "plan">("composer-mode", "build");
+  // TWO modes: Build does it, Plan discusses it. There was a third — `code`,
+  // labelled "Agent" — and it is gone: nobody could say what it was for next to
+  // Build, which is the question that killed it.
+  //
+  // The stored value is read WIDE and narrowed here, because `composer-mode` is
+  // localStorage: anyone who last used the third mode still has "code" on disk,
+  // and typing the state as two values would not change what is written there.
+  // Without this they would come back to a mode with no control to leave it.
+  const [storedMode, setMode] = useLocalStorage<"build" | "code" | "plan">("composer-mode", "build");
+  const mode: "build" | "plan" = storedMode === "plan" ? "plan" : "build";
   const isPlan = mode === "plan";
-  const isCode = mode === "code";
+  /** Always false now — see the sandbox branch in callAi for why it stays. */
+  const isCode = false as boolean;
   // The sandbox this project's runs are landing in — remembered across turns so
   // a second message reuses the warm pod instead of asking for a new one.
   const sandboxRef = useRef<string | undefined>(undefined);
@@ -220,7 +227,7 @@ export function AskAI({
   useEffect(() => {
     if (typeof window === "undefined") return;
     const handoff = localStorage.getItem("initialMode");
-    if (handoff === "build" || handoff === "code" || handoff === "plan") {
+    if (handoff === "build" || handoff === "plan") {
       setMode(handoff);
       localStorage.removeItem("initialMode");
     }
@@ -531,6 +538,13 @@ export function AskAI({
     // they happen. Checked before the conversational branch because a Code
     // message is never small talk: someone in Code mode asking "does this build"
     // wants it built, not discussed.
+    // UNREACHABLE while the composer offers only Build and Plan: `isCode` was
+    // the third segment, and removing it closed the only door — nothing else
+    // writes "code" (build-composer hands off 'build' | 'plan', and the handoff
+    // whitelist no longer admits it). Kept rather than ripped out because the
+    // ask was to remove the BUTTON; deleting codeTurn, the sandbox runtime
+    // picker and their console wiring is a larger removal that should be a
+    // deliberate call, not a side effect of hiding a control.
     if (isCode && !redesignMarkdown && !fixSubmit) {
       const codeId = beginTurn(promptToUse.trim(), false);
       updateAssistant(codeId, { activity: ["Opening the project's sandbox"] });
@@ -1323,8 +1337,6 @@ export function AskAI({
                 ? "Attach a reference (drop, paste, or pick), then send — or add a note"
                 : isPlan
                 ? "Chat about your app — Plan mode won't change it"
-                : isCode
-                ? "The agent works in a sandbox — try \"run the tests\""
                 : selectedElement
                 ? `Ask Hanzo about ${selectedElement.tagName.toLowerCase()}...`
                 : isFollowUp && (!isSameHtml || pages?.length > 1)
@@ -1438,8 +1450,8 @@ export function AskAI({
                   what made the row unreadable. The mode is the agent working in
                   a sandbox where it can run commands, so it is named for that.
                   The stored value stays `code`; only the word you read changes. */}
-              {(["build", "code", "plan"] as const).map((m) => {
-                const label = m === "code" ? "Agent" : m;
+              {(["build", "plan"] as const).map((m) => {
+                const label = m;
                 // The app's ONE selected look, so the composer's mode agrees
                 // with the header's tabs and the sidebar's rows. It read
                 // `var(--brand-accent)`, which resolves to #ffffff here — a pure
@@ -1457,8 +1469,6 @@ export function AskAI({
                   title={
                     m === "plan"
                       ? "Plan: chat about your app without changing it"
-                      : m === "code"
-                      ? "Agent: works in a sandbox on your project and can run commands"
                       : "Build: generate and modify your app"
                   }
                   onClick={() => setMode(m)}

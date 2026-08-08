@@ -87,6 +87,17 @@ a {
   display: none;
 }
 
+/* Centre a row's contents WITHOUT stranding them when they overflow.
+   `safe center` centres while everything fits and falls back to start
+   alignment the moment it does not — plain `center` overflows equally in both
+   directions, and the half that goes past the scroll origin cannot be scrolled
+   back to. The builder header's tool cluster is exactly that case: measured at
+   390px it holds 254px of controls in 128px, so plain centring would put the
+   Preview/Code tabs permanently out of reach. */
+.center-safe {
+  justify-content: safe center;
+}
+
 /* Scroll-reveal (components/landing/reveal): hidden + risen until observed.
    Reduced-motion users get content instantly — content must NEVER stay hidden. */
 [data-reveal] {

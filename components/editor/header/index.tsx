@@ -180,8 +180,16 @@ export function Header({
             390px   29px → 128px      560px  199px → 226px      860px  448px → 476px
 
           The other half is in the workspace menu: the project NAME now gives up
-          its room below $sm, because it is a label and these are the tools. */}
-      <XStack alignItems="center" gap="$2" flexGrow={1} flexShrink={1} flexBasis="auto" minWidth={0} overflow="scroll" className="no-scrollbar">
+          its room below $sm, because it is a label and these are the tools.
+
+          `center-safe`, a CLASS rather than `justifyContent="center"`, because
+          this row scrolls. Plain centring overflows equally in BOTH directions
+          and the half that goes past the scroll origin cannot be scrolled back
+          to — at 390px this box holds 254px of controls in 128px, so the
+          Preview/Code tabs would sit permanently out of reach. CSS
+          `justify-content: safe center` centres while it fits and falls back to
+          start the moment it does not; there is no gui prop that says that. */}
+      <XStack alignItems="center" gap="$2" flexGrow={1} flexShrink={1} flexBasis="auto" minWidth={0} overflow="scroll" className="no-scrollbar center-safe">
         <XStack
           role="tablist"
           aria-label="Editor view"
