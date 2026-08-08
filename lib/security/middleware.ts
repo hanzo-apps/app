@@ -68,8 +68,23 @@ const policy = (dev: boolean) => {
     // is cross-origin and MUST be allowed, or the SSO callback silently fails
     // and the session never persists. This is the one directive a socket
     // belongs to.
+    // `blob:` is here for the same reason it is already in `img-src` and
+    // `media-src`, and leaving it out of this one directive is what made a
+    // previewed project half-render: a Blob URL could be SHOWN and not FETCHED.
+    // Measured on /dev/hanzo/megashop — the site's 3D texture went through
+    // THREE.GLTFLoader, which fetches, and the console read "Connecting to
+    // 'blob:null/…' violates … connect-src". The hero stayed black while the
+    // nav and footer painted, which reads as a broken generated app rather
+    // than a policy.
+    //
+    // It grants no reach. A blob: URL is a handle to bytes this document
+    // already holds — only its own origin can mint one — so allowing it to be
+    // fetched permits reading what is already in memory, never a request to
+    // anybody. Canvas exports, workers, object URLs and every 3D loader are
+    // ordinary things for a generated app to do; refusing them silently is
+    // what was not ordinary.
     src(
-      "connect-src 'self' wss://*.hanzo.ai https://api.openai.com https://api.anthropic.com",
+      "connect-src 'self' blob: wss://*.hanzo.ai https://api.openai.com https://api.anthropic.com",
       ...OURS,
       ...IDP,
       ...http,

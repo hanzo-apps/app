@@ -102,6 +102,25 @@ describe('CSP is one policy, not two', () => {
     expect(unreachable).toEqual([])
   })
 
+  it("lets a previewed project READ a blob it made, not only show one", () => {
+    // `blob:` was in img-src and media-src but not connect-src, so a generated
+    // app could display a Blob URL and not fetch one. Measured on
+    // /dev/hanzo/megashop: THREE.GLTFLoader fetches its texture, the console
+    // read "Connecting to 'blob:null/…' violates … connect-src", and the hero
+    // stayed black while the nav and footer painted — which reads as a broken
+    // app, not a refused request.
+    //
+    // No reach is granted: only a document's own origin can mint a blob: URL,
+    // so this permits reading bytes already in memory and never a request to
+    // anyone. The three directives agreeing is the point — a page that may
+    // SHOW a blob and not READ it is one nobody can reason about.
+    for (const [env, m] of [['production', prod], ['development', dev]] as const) {
+      for (const d of ['img-src', 'media-src', 'connect-src']) {
+        expect([env, d, [...(m.get(d) || [])].includes('blob:')]).toEqual([env, d, true])
+      }
+    }
+  })
+
   it('keeps the identity providers reachable', () => {
     // OIDC discovery + the PKCE token exchange are cross-origin POSTs. Lose
     // these and the SSO callback fails silently and no session ever persists.
