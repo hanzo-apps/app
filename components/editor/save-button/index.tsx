@@ -53,7 +53,7 @@ export function SaveButton({ save }: { save: () => Promise<boolean> }) {
     <Button
       {...accent}
       size="sm"
-      height={28} gap="$1.5" paddingHorizontal="$3" borderRadius={999} position="relative"
+      height={32} gap="$1.5" paddingHorizontal="$3" borderRadius={999} borderWidth={0} position="relative"
       onClick={publish}
       disabled={loading}
     >

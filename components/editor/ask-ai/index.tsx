@@ -1333,9 +1333,14 @@ export function AskAI({
           // anything taller is an invisible click-eater over the input's first
           // line (measured: a 30px strip swallowed clicks meant for the text).
           style={{ height: 14 }}
-          position="absolute" top={-7} left="$4" right="$4" zIndex={20} minHeight={14} paddingVertical={0} cursor="ns-resize" alignItems="center" justifyContent="center" borderRadius="$10" opacity={0} hoverStyle={{ opacity: 1 }} focusVisibleStyle={{ opacity: 1 }}
+          // `backgroundColor` pinned transparent in BOTH states: the ghost
+          // variant paints a hover fill, and on a full-width 14px strip that
+          // fill read as a dark bar across the composer's top edge. The grip's
+          // whole visible body is the small pill below — the strip is only a
+          // hit target, and a hit target has no colour.
+          position="absolute" top={-7} left="$4" right="$4" zIndex={20} minHeight={14} paddingVertical={0} cursor="ns-resize" alignItems="center" justifyContent="center" borderRadius="$10" opacity={0} backgroundColor="transparent" hoverStyle={{ opacity: 1, backgroundColor: "transparent" }} focusVisibleStyle={{ opacity: 1, backgroundColor: "transparent" }}
         >
-          <SizableText height="$0.5" width="$5" borderRadius="$10" backgroundColor="$color8" />
+          <SizableText height={3} width="$4" borderRadius="$10" backgroundColor="$color6" />
         </Button>
         {isDragging && (
           <XStack position="absolute" top={0} right={0} bottom={0} left={0} zIndex={30} borderRadius="$8" borderWidth={2} borderStyle="dashed" borderColor="$color11" backgroundColor="$background" alignItems="center" justifyContent="center" pointerEvents="none">

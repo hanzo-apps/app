@@ -390,7 +390,7 @@ export const AppEditor = ({
           // emphasis. It was an outline rect on a translucent fill next to a
           // raised rounded primary: two shapes for two siblings, which is what
           // read as "weirdly different".
-          height={28} gap="$1.5" paddingHorizontal="$3" borderRadius={999} backgroundColor="$color3" hoverStyle={{ backgroundColor: "$color4" }}
+          height={32} gap="$1.5" paddingHorizontal="$3" borderRadius={999} backgroundColor="$color3" hoverStyle={{ backgroundColor: "$color4" }}
         >
           <Share2 size={14} />
           <SizableText display="none" $md={{ display: "inline" }}>Share</SizableText>

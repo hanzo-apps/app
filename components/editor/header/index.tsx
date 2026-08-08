@@ -218,7 +218,7 @@ export function Header({
                 // rest are glyphs. That is why only this one is `accent` and why
                 // only this one gets horizontal padding worth the name: a label
                 // needs room, an icon needs a square.
-                size="sm" alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal={active ? "$3" : "$2"} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, ...(active ? accent : sel), hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
+                size="sm" alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal={active ? "$3" : "$2"} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, ...(active ? { ...accent, borderWidth: 0 } : sel), hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
               >
                 <SizableText color={active ? accent.color : sel.color}>
                   <item.icon size={16} />
