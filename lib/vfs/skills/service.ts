@@ -516,6 +516,31 @@ class SkillsService {
     await this.init();
     return this.customSkills.has(id) || BUILT_IN_SKILLS.some(s => s.id === id);
   }
+
+  /**
+   * Install one skill from the public catalog.
+   *
+   * The catalog is a menu, not an inventory — its entries carry metadata only,
+   * so installing means fetching that one SKILL.md body and handing it to
+   * createSkill, which already owns parsing, id-from-frontmatter, the
+   * already-exists check and persistence. From then on an installed skill is an
+   * ordinary custom skill: editable, exportable, enable/disable-able.
+   *
+   * Installing one at a time is the design, not a limitation. getEnabledSkills
+   * is opt-OUT, so every skill this service knows about reaches the model's
+   * prompt unless it was explicitly turned off — pouring all 528 in would bury
+   * the prompt in descriptions nobody asked for. Choosing is the point.
+   */
+  async installFromCatalog(path: string): Promise<Skill> {
+    await this.init();
+    const res = await fetch(`/v1/skills/catalog/${path}`, {
+      headers: { Accept: 'text/markdown' },
+    });
+    if (!res.ok) {
+      throw new Error(`Could not fetch that skill (${res.status})`);
+    }
+    return this.createSkill(await res.text());
+  }
 }
 
 // Export singleton instance
