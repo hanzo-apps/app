@@ -1106,7 +1106,7 @@ export function AskAI({
     // null) the composer's `mt-auto` keeps it docked exactly as before.
     <YStack ref={rootRef} alignSelf="center" height="100%" minHeight={0} width="100%" maxWidth={672}>
       <ChatThread messages={messages} />
-      <YStack marginTop="auto" paddingHorizontal="$3" paddingBottom="calc(0.75rem+env(safe-area-inset-bottom))">
+      <YStack marginTop="auto" paddingHorizontal="$2" paddingBottom="calc(0.75rem+env(safe-area-inset-bottom))">
       {/* Stacked Message Queue Cards */}
       {messageQueue.length > 0 && (
         <YStack marginBottom="$4" rowGap="$2">
@@ -1365,7 +1365,7 @@ export function AskAI({
           // hit target, and a hit target has no colour.
           position="absolute" top={-7} left="$4" right="$4" zIndex={20} minHeight={14} paddingVertical={0} cursor="ns-resize" alignItems="center" justifyContent="center" borderRadius="$10" opacity={0} backgroundColor="transparent" hoverStyle={{ opacity: 1, backgroundColor: "transparent" }} focusVisibleStyle={{ opacity: 1, backgroundColor: "transparent" }}
         >
-          <SizableText height={3} width="$4" borderRadius="$10" backgroundColor="$color6" />
+          <SizableText height={2} width="$2.5" borderRadius="$10" backgroundColor="$color6" />
         </Button>
         {isDragging && (
           <XStack position="absolute" top={0} right={0} bottom={0} left={0} zIndex={30} borderRadius="$8" borderWidth={2} borderStyle="dashed" borderColor="$color11" backgroundColor="$background" alignItems="center" justifyContent="center" pointerEvents="none">

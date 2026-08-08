@@ -599,7 +599,7 @@ export const AppEditor = ({
               rounded — an 8px gutter, not the old padded float. Full-bleed on a
               black field made the pane's own surface invisible; this keeps the
               space and restores the shape. */}
-          <YStack position="relative" height="100%" width="100%" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$color04" backgroundColor="$color1" className="preview-stage">
+          <YStack position="relative" height="100%" width="100%" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$color02" backgroundColor="$color1" className="preview-stage">
             {/* Faint top highlight — a crisp edge that reads as raised glass. */}
             <YStack pointerEvents="none" position="absolute" left="$0" right="$0" top="$0" zIndex={20} height={1} />
             <Preview
