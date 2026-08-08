@@ -204,4 +204,61 @@ test.describe('builder toolbar · geometry', () => {
       `no control measured ${CONTROL}px — header/index.tsx sizes four of them size="icon-sm"`,
     ).toBeGreaterThanOrEqual(1)
   })
+  /**
+   * A hover must paint the WHOLE segment it belongs to.
+   *
+   * Both segmented groups in this bar (view: Preview/Code, device:
+   * desktop/mobile) put buttons inside a pill. If a button is shorter than its
+   * pill, its hover paints a chip with a halo of the group's own colour showing
+   * around it — and for a long time the two groups disagreed: the device tabs
+   * lit flush at 32, the view tabs lit a 36px chip inset 4px inside a 40px pill.
+   *
+   * The cause is the same one `iconBox` taught: a size variant sets a
+   * `minHeight` FLOOR (`HEIGHT.default` = 36), and a `height` style prop cannot
+   * argue a floor down. So `height={28}` on a Button rendered 36 and nothing
+   * threw, warned or clipped. The fix is to ask the ladder — `size="sm"` — and
+   * to give the group no padding, so the tab IS the segment.
+   *
+   * Only rendered geometry can see this, which is why it is here and not a unit
+   * test: the call site's props were always "correct", they just never arrived.
+   */
+  test('a segmented tab fills its group, so hover covers the whole segment', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto('/dev')
+    await page.waitForLoadState('networkidle')
+
+    const pairs = await page.evaluate((band) => {
+      const out: Array<{ group: string; tab: string; groupH: number; tabH: number }> = []
+      for (const g of Array.from(document.querySelectorAll('[role="tablist"]'))) {
+        const gr = g.getBoundingClientRect()
+        if (gr.top >= band) continue
+        for (const t of Array.from(g.querySelectorAll<HTMLElement>('[role="tab"]'))) {
+          const tr = t.getBoundingClientRect()
+          out.push({
+            group: g.getAttribute('aria-label') || 'tablist',
+            tab: t.getAttribute('aria-label') || t.title || (t.textContent || '').trim() || 'tab',
+            groupH: +gr.height.toFixed(1),
+            tabH: +tr.height.toFixed(1),
+          })
+        }
+      }
+      return out
+    }, TOP_BAND)
+
+    expect(pairs.length, 'no segmented tabs found — nothing was measured').toBeGreaterThanOrEqual(2)
+
+    const inset = pairs.filter((p) => p.groupH - p.tabH > 1)
+    expect(
+      inset.map((p) => `${p.group}/${p.tab} tab ${p.tabH} in group ${p.groupH}`),
+      'a tab shorter than its group leaves a halo of the group around its hover',
+    ).toEqual([])
+
+    // And every segmented group is the bar's ONE control height, so two groups
+    // side by side cannot stand at different heights (they were 40 and 32).
+    const offSize = pairs.filter((p) => Math.abs(p.groupH - CONTROL) > 1)
+    expect(
+      offSize.map((p) => `${p.group} ${p.groupH}`),
+      `every segmented group must measure ${CONTROL}px`,
+    ).toEqual([])
+  })
 })

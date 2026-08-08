@@ -193,7 +193,7 @@ export function Header({
         <XStack
           role="tablist"
           aria-label="Editor view"
-          flexShrink={0} alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color3" padding="$0.5"
+          flexShrink={0} alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color3"
         >
           {TABS.map((item) => {
             const active = tab === item.value;
@@ -207,12 +207,18 @@ export function Header({
                 aria-selected={active}
                 title={item.label}
                 onClick={() => onNewTab(item.value)}
-                // height 28, NOT vertical padding. Inside this group's $0.5 padding that
-                // makes the pill 32px — the header's one control height, shared with the
-                // device group beside it and every icon button. Padding + line-height
-                // computed to 32px of CONTENT, so the group rendered 36px and sat 4px
-                // taller than its own sibling. Set the height; never let padding decide it.
-                height={28} alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2.5" {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, ...sel, hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
+                // `size="sm"` (32), and the group carries NO padding, so the tab fills
+                // its container edge to edge — hovering paints the WHOLE segment, the
+                // way the device group beside it already did.
+                //
+                // This asked for `height={28}` and got 36. A size variant sets
+                // `minHeight`, not `height` (HEIGHT.default = 36), and a floor cannot be
+                // argued below by a style prop — so the tab rendered 36 inside 2px of
+                // group padding, the pill measured 40, and hover lit a chip with a 2px
+                // halo of the group showing all round. Its 32px sibling lit flush. Two
+                // segmented controls, side by side, disagreeing about what a hover is.
+                // Same lesson as `iconBox`: ask the ladder for a size, never a raw box.
+                size="sm" alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2.5" {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, ...sel, hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
               >
                 <SizableText color={sel.color}>
                   <item.icon size={16} />
@@ -238,15 +244,17 @@ export function Header({
             project (not just index.html). The working page is highlighted. */}
         {pages.length > 0 && (
           <Popover open={pageMenuOpen} onOpenChange={setPageMenuOpen}>
-          {/* A fixed 32px box, not vertical padding: this control sits in a
-                row with the others and has to match their height exactly, which
-                padding around a variable-height label does not. */}
+          {/* `size="sm"` (32) — this sits between the two segmented groups and
+                has to be their height exactly. It said `height={32}` and drew 36:
+                the size variant sets a `minHeight` FLOOR (default 36) and a style
+                prop cannot argue a floor down, so the picker stood 4px proud of
+                the groups on either side of it. */}
             <PopoverTrigger asChild>
               <Button
                 type="button"
                 title="Browse pages"
                 aria-label="Browse pages"
-                maxWidth="12rem" height={32} alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color3" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color4" }}
+                maxWidth="12rem" size="sm" alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color3" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color4" }}
               >
                 <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1">
                   {currentPage}
