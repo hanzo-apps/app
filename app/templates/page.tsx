@@ -21,6 +21,7 @@ import { Search, Star, Sparkles, Gamepad2 } from 'lucide-react';
 import Header from '@/components/layout/header';
 import SiteFooter from '@/components/landing/site-footer';
 import { snapshotCatalog } from '@/lib/gallery-catalog';
+import { fetchPublishedSlugs } from '@/lib/api/templates';
 import {
   mergeResources,
   resourceCategories,
@@ -55,6 +56,11 @@ function ResourcesBrowser() {
   const [progressOpen, setProgressOpen] = useState(false);
   const [remixName, setRemixName] = useState('');
 
+  // Which templates the platform publishes SOURCE for. Empty until it answers,
+  // and empty forever if it does not — see fetchPublishedSlugs: an unreachable
+  // warehouse must not accuse every card of having no source.
+  const [published, setPublished] = useState<Set<string>>(() => new Set());
+
   // Refresh templates from the live gallery (games are static, local).
   useEffect(() => {
     let alive = true;
@@ -67,6 +73,9 @@ function ResourcesBrowser() {
       })
       .catch(() => {})
       .finally(() => alive && setLoading(false));
+    // Independent of the gallery: the two catalogs disagree, which is the whole
+    // reason both are asked. One request for all 63, never one per card.
+    fetchPublishedSlugs().then((s) => alive && setPublished(s));
     return () => {
       alive = false;
     };
@@ -194,7 +203,19 @@ function ResourcesBrowser() {
               down to sheet order. The grid owns its own box. */}
           <div className="card-grid">
             {filtered.map((item) => (
-              <ResourceCard key={item.id} item={item} onOpen={openPreview} />
+              <ResourceCard
+                key={item.id}
+                item={item}
+                onOpen={openPreview}
+                // Only templates make the promise, and only once the warehouse
+                // has answered — an empty set marks nothing.
+                rebuilt={
+                  item.kind === 'template' &&
+                  published.size > 0 &&
+                  !!item.templateSlug &&
+                  !published.has(item.templateSlug)
+                }
+              />
             ))}
           </div>
 
@@ -264,9 +285,12 @@ export default function ResourcesPage() {
 function ResourceCard({
   item,
   onOpen,
+  rebuilt,
 }: {
   item: ResourceItem;
   onOpen: (item: ResourceItem) => void;
+  /** This template publishes no source, so opening it recreates it. */
+  rebuilt?: boolean;
 }) {
   // The card's hairline carries the shot's own colour at low alpha — enough to
   // make the spectrum order legible as you scan, not enough to be chrome. Cards
@@ -345,7 +369,16 @@ function ResourceCard({
       <YStack flexGrow={1} flexBasis="auto" flexShrink={0} padding="$4">
         <H3 fontWeight="500" color="$color">{item.title}</H3>
         <Paragraph marginTop="$1" numberOfLines={2} minHeight="2.5rem" fontSize="$1" color="$color11">{item.description}</Paragraph>
-        <Paragraph marginTop="auto" paddingTop="$3" fontSize={11} color="$color11">{item.meta || item.framework}</Paragraph>
+        {/* The picture is a promise, and for 43 of the 72 on this page the
+            platform cannot keep it: it publishes no source for them, so opening
+            one gets a fresh build from the description rather than the design in
+            the shot. Said HERE because this is where the choice is made — the
+            builder already says it, but only after the remix is committed. */}
+        <Paragraph marginTop="auto" paddingTop="$3" numberOfLines={1} fontSize={11} color="$color11">
+          {[item.meta || item.framework, rebuilt ? "rebuilt from its description" : ""]
+            .filter(Boolean)
+            .join(" · ")}
+        </Paragraph>
       </YStack>
     </YStack>
   );

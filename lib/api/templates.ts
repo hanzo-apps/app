@@ -251,6 +251,50 @@ export async function fetchTemplatePages(slug: string): Promise<Page[] | null> {
   }
 }
 
+/**
+ * The slugs whose SOURCE the platform actually publishes.
+ *
+ * Two catalogs answer about templates and they do not agree. `/v1/gallery` is
+ * the shop window — 72 rows, screenshots, descriptions — and `/v1/templates` is
+ * the warehouse, 63 rows, the only ones whose `/pages` returns anything.
+ * Measured 2026-08-08: 43 of the 72 on display are NOT in the warehouse, and 34
+ * in the warehouse are not on display. `beta-variant`, `cipher-html` and
+ * `folio-contact` are on the shelf; `GET /v1/templates/kalli/pages` is 404.
+ *
+ * The builder already handles the miss honestly — it says the template does not
+ * publish its source and rebuilds from the description. But by then the person
+ * has chosen a screenshot and committed to a remix, and what they get is an AI
+ * recreation of the picture they picked. This moves that sentence EARLIER, to
+ * the card, which is where the choice is actually made.
+ *
+ * FAILS OPEN, and that is the whole reason it returns a Set rather than a
+ * predicate: an empty Set marks nothing. If the warehouse is unreachable the
+ * gallery must not accuse all 72 of having no source — a wrong label on a good
+ * template is worse than no label on a bad one.
+ *
+ * The real fix is cloud reconciling the two catalogs; until then this is the
+ * app declining to promise what it cannot deliver.
+ */
+export async function fetchPublishedSlugs(): Promise<Set<string>> {
+  try {
+    const res = await fetch('/v1/templates', { headers: { Accept: 'application/json' } });
+    if (!res.ok) return new Set();
+    const body = (await res.json()) as { data?: unknown; templates?: unknown };
+    const rows = Array.isArray(body?.data)
+      ? body.data
+      : Array.isArray(body?.templates)
+        ? body.templates
+        : [];
+    return new Set(
+      rows
+        .map((r) => (r && typeof r === 'object' ? (r as { slug?: unknown }).slug : null))
+        .filter((s): s is string => typeof s === 'string' && s.length > 0),
+    );
+  } catch {
+    return new Set();
+  }
+}
+
 // --- Seed resolution (the ONE way /dev turns a template slug into a real seed) ---
 
 /** Normalized metadata used to seed the builder from a template, regardless of
