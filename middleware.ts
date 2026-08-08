@@ -28,6 +28,12 @@ const PROTECTED_PREFIXES = [
   "/projects",
   "/settings",
   "/skills",
+  // The Benchmark harness the project manager links to (its `TestTube` button).
+  // It drives the multi-agent orchestrator against scenario tracks — an
+  // internal tool, and it answered 200 at hanzo.app/test-generation with no
+  // session at all. Everyone who could reach it through the product was already
+  // signed in; the ROUTE just never said so.
+  "/test-generation",
   "/usage",
   "/work",
 ];
