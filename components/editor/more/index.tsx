@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Paragraph, SizableText, XStack, YStack } from '@hanzo/ui';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, Plug } from 'lucide-react';
 
 import { panel } from '@/lib/chrome';
+import { fetchConnectors, type Provider } from '@/lib/connectors';
 import { SECTIONS, findSection, type Section } from './sections';
 
 /**
@@ -144,6 +146,9 @@ function NavRow({
  * lowest-common-denominator table that suits none of them.
  */
 function SectionBody({ section, projectId }: { section: Section; projectId?: string | null }) {
+  // Connectors is the one section whose reader already exists — the same
+  // client /connectors and the project settings read, resolve-never-throws.
+  if (section.id === 'connectors') return <ConnectorsBody />;
   return (
     <YStack {...panel} padding="$4" gap="$2">
       {section.where ? (
@@ -171,6 +176,62 @@ function SectionBody({ section, projectId }: { section: Section; projectId?: str
           </Paragraph>
         </>
       )}
+    </YStack>
+  );
+}
+
+/**
+ * The org's real connectors, compactly.
+ *
+ * The same store `/connectors` manages — connections belong to the WORKSPACE,
+ * so this is a view, not a second copy, and the manage link goes to the one
+ * canonical surface. `fetchConnectors` resolves-never-throws (failure → []),
+ * so the empty state honestly covers "nothing connected" and "unreachable"
+ * alike rather than fabricating rows.
+ */
+function ConnectorsBody() {
+  const [providers, setProviders] = useState<Provider[] | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    fetchConnectors().then((p) => alive && setProviders(p));
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const connected = (providers ?? []).filter((p) => p.connected);
+
+  return (
+    <YStack {...panel} padding="$4" gap="$3">
+      {providers === null ? (
+        <SizableText fontSize="$2" color="$color11">Loading connections…</SizableText>
+      ) : connected.length === 0 ? (
+        <YStack gap="$1">
+          <SizableText fontSize="$3" color="$color">Nothing connected</SizableText>
+          <Paragraph fontSize="$2" color="$color11">
+            Connections belong to the workspace, so any project can use them once made.
+          </Paragraph>
+        </YStack>
+      ) : (
+        <YStack gap="$0.5">
+          {connected.map((p) => (
+            <XStack key={p.id} alignItems="center" gap="$2.5" paddingVertical="$2" borderBottomWidth={1} borderColor="$color04">
+              <SizableText color="$color11"><Plug size={14} /></SizableText>
+              <YStack flex={1} minWidth={0}>
+                <SizableText fontSize="$2" color="$color">{p.name}</SizableText>
+                <SizableText fontSize="$1" color="$color11">{p.category}</SizableText>
+              </YStack>
+              <SizableText fontSize="$1" color="$color11">Connected</SizableText>
+            </XStack>
+          ))}
+        </YStack>
+      )}
+      <Link href="/connectors">
+        <SizableText fontSize="$2" color="$color11" hoverStyle={{ color: '$color' }} textDecorationLine="underline">
+          Manage connectors
+        </SizableText>
+      </Link>
     </YStack>
   );
 }

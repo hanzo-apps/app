@@ -130,7 +130,7 @@ export const SECTIONS: Section[] = [
     label: 'Connectors',
     icon: Plug,
     where: '/v1/connectors',
-    blurb: 'Third-party services this project is linked to.',
+    blurb: 'Third-party services this workspace has connected — any project can use them.',
   },
   {
     id: 'security',
