@@ -28,11 +28,6 @@ export interface EditToken {
   source: 'user' | 'bot';
 }
 
-/** Map the Edit provider name to the IAM-linked provider key (Gitea = our own git). */
-function linkedKey(p: ProviderName): LinkedProvider {
-  return p === 'gitea' ? 'hanzo' : p;
-}
-
 /** The optional server bot identity for a chosen forge (env-configured, never hardcoded). */
 function botToken(p: ProviderName): EditToken | null {
   if (p !== 'github') return null; // increment 1: only a GitHub bot is wired
@@ -52,7 +47,7 @@ export async function resolveEditToken(
   bearer: string | null,
 ): Promise<EditToken | null> {
   if (bearer) {
-    const conn = await resolveConnection(req, linkedKey(provider), bearer);
+    const conn = await resolveConnection(req, provider, bearer);
     if (conn?.token) {
       return { token: conn.token, login: conn.login || '', source: 'user' };
     }

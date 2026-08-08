@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { Input, Textarea } from '@hanzo/ui';
 import { GuiProvider } from '@hanzo/gui';
 
-import { guiConfig } from '@/lib/gui';
+import guiConfig from '@/lib/gui';
 
 /**
  * Which spelling of "the text changed" actually fires.
