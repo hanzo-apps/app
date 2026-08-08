@@ -356,9 +356,14 @@ function ActivityItems({ labels, settled = false }: { labels: string[]; settled?
         return (
           <XStack key={`${i}-${label}`} alignItems="center" gap="$2">
             {active ? (
-              <XStack position="relative" width="$2" height="$2" flexShrink={0} alignItems="center" justifyContent="center">
-                <SizableText position="absolute" width="$2" height="$2" borderRadius="$10" backgroundColor="var(--brand-accent)" opacity={0.6} />
-                <SizableText position="relative" width="$1.5" height="$1.5" borderRadius="$10" backgroundColor="var(--brand-accent)" />
+              // 12/6 in PX — the console's live-dot geometry, stated. The
+              // $-scale sized this ~2x (the $6=64 family of trap), and with
+              // --brand-accent resolving to white the "pulsing dot" painted as
+              // a fat white disc beside 12px text. A status dot is smaller
+              // than the words it decorates.
+              <XStack position="relative" width={12} height={12} flexShrink={0} alignItems="center" justifyContent="center">
+                <SizableText position="absolute" width={12} height={12} borderRadius="$10" backgroundColor="var(--brand-accent)" opacity={0.25} />
+                <SizableText position="relative" width={6} height={6} borderRadius="$10" backgroundColor="var(--brand-accent)" />
               </XStack>
             ) : (
               <Check size={12} />

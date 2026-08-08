@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { toast, Button, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
 import { useLocalStorage } from "react-use";
-import { ArrowUp, Bell, ChevronDown, CircleStop, History as HistoryGlyph, ImagePlus, Plug, Plus, Settings as SettingsGlyph, Sparkles, Wrench, X } from "lucide-react";
+import { ArrowUp, Bell, ChevronDown, CircleStop, History as HistoryGlyph, ImagePlus, Paintbrush, Plug, Plus, Settings as SettingsGlyph, Sparkles, Wrench, X } from "lucide-react";
 
 import ProModal from "@/components/pro-modal";
 import { useUsageLimit } from "@/components/usage/usage-limit";
@@ -1493,6 +1493,14 @@ export function AskAI({
                     <SizableText>Attach images</SizableText>
                   </XStack>
                 </DropdownMenuItem>
+                {isNew && (
+                  <DropdownMenuItem onSelect={() => document.getElementById("composer-reimagine")?.click()}>
+                    <XStack alignItems="center" gap="$2">
+                      <Paintbrush size={15} />
+                      <SizableText>Add reference</SizableText>
+                    </XStack>
+                  </DropdownMenuItem>
+                )}
                 {!isSameHtml && (
                   <>
                     <DropdownMenuCheckboxItem
