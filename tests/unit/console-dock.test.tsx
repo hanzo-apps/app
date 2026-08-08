@@ -53,6 +53,7 @@ const machine = (toggle = jest.fn()) => ({
   open: false,
   blocked: null,
   reason: null,
+  refusal: null,
   toggle,
   say: async () => {},
   hush: () => {},

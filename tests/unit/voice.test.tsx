@@ -17,6 +17,7 @@ const machine = () => ({
   open: false,
   blocked: null,
   reason: null,
+  refusal: null,
   toggle: jest.fn(),
   say: jest.fn(async () => {}),
   hush: jest.fn(),

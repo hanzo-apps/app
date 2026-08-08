@@ -53,9 +53,11 @@ import { useVoice, speech } from "@hanzo/voice";
 // Measured 2026-07-26: the gateway resolves /v1/audio/* through IAM and does not
 // yet accept a hanzo.id bearer with `aud: hanzo-app` (401 — the same 401 that
 // makes /v1/models fall back to its offline ladder; it is not audio-specific).
-// That costs the platform VOICE, not the conversation: the browser's own
-// recogniser still gives a live transcript and its own voice reads the reply,
-// and this upgrades itself the day the gateway accepts that audience.
+// Hanzo's ear and voice are tried first and the browser takes over from the
+// refusal, costing the first turn of a conversation rather than the whole one.
+// The refusal is not silent: it lands on `voice.refusal` and in the mic's label,
+// so a 401 stops reading as a working key. This upgrades itself the day the
+// gateway accepts that audience.
 // The models are named because @hanzo/voice defaults to OpenAI's spellings
 // (whisper-1, tts-1) and this platform serves its own: `whisper` transcribes and
 // `kokoro` speaks, both in the catalog at /v1/models. The defaults resolve to
