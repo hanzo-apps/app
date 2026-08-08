@@ -72,6 +72,7 @@ export function Header({
   onOpenExternal,
   historyOpen,
   onToggleHistory,
+  booted = true,
   chatOpen,
   onToggleChat,
   project,
@@ -91,6 +92,12 @@ export function Header({
   historyOpen?: boolean;
   /** Toggle the history/rollback panel over the chat pane. */
   onToggleHistory?: () => void;
+  /**
+   * Whether there is a workspace to switch around. A fresh project boots as
+   * conversation alone, and the pane pills + preview tooling describe an app
+   * that does not exist yet — chrome for a missing thing reads as broken.
+   */
+  booted?: boolean;
   /** Whether the chat column is showing. */
   chatOpen?: boolean;
   /** Show/hide the chat column — the PanelLeft toggle, in the reference's seat. */
@@ -182,6 +189,7 @@ export function Header({
             pushbutton (`accent` — $color5 on $color6) wearing its own name.
             A trough behind that pill would draw a box around the only element
             that is already a box. */}
+        {booted && (
         <XStack
           role="tablist"
           aria-label="Editor view"
@@ -228,6 +236,7 @@ export function Header({
             );
           })}
         </XStack>
+        )}
       </XStack>
 
       {/* CENTER — view switcher + device switcher + refresh + page selector +
@@ -260,6 +269,11 @@ export function Header({
           Preview/Code tabs would sit permanently out of reach. CSS
           `justify-content: safe center` centres while it fits and falls back to
           start the moment it does not; there is no gui prop that says that. */}
+      {!booted ? (
+        /* Boot: nothing to point tooling at — the flexible middle still grows
+           so the right cluster stays pinned to the edge. */
+        <XStack flexGrow={1} flexShrink={1} flexBasis="auto" minWidth={0} />
+      ) : (
       <XStack alignItems="center" gap="$2" flexGrow={1} flexShrink={1} flexBasis="auto" minWidth={0} overflow="scroll" className="no-scrollbar center-safe">
 
         {/* Preview-frame TOOLING — device, refresh, open-in-new. Desktop only:
@@ -374,6 +388,7 @@ export function Header({
           </Button>
         </XStack>
       </XStack>
+      )}
 
       {/* RIGHT — the actions. NEVER shrinks: it holds the primary, and a
           primary you cannot press is not a primary.

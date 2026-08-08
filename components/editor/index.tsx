@@ -127,6 +127,20 @@ export const AppEditor = ({
    * ask about that element), which disarmed editing again on every use.
    */
   const rightView = rightPane(currentTab);
+  /**
+   * BOOT: a project with nothing in it yet — one page still wearing the
+   * scaffold. The window is the CONVERSATION alone: no preview card, no pane
+   * pills, no page tooling, because every one of those operates on an app that
+   * does not exist, and chrome for a missing thing reads as a broken thing.
+   * Ask questions, plan, talk — full width, like the reference.
+   *
+   * The unfurl is not an event, it is this predicate flipping: the first real
+   * bytes stream into `pages` mid-generation, `isTheSameHtml` goes false, and
+   * the workspace appears exactly when there is something to show. Plan-mode
+   * turns never touch pages, so a purely conversational start stays a
+   * conversation.
+   */
+  const fresh = pages.length <= 1 && isTheSameHtml(pages[0]?.html ?? "");
   // The left pane is ALWAYS the chat composer; a history/rollback ICON in the
   // header toggles the version-history panel as an OVERLAY over it (item 10).
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -348,6 +362,7 @@ export const AppEditor = ({
         currentPage={currentPage}
         onSelectPage={setCurrentPage}
         onOpenExternal={openInNewTab}
+        booted={!fresh}
         chatOpen={!sidebarCollapsed}
         onToggleChat={() => setSidebarCollapsed((v) => !v)}
         historyOpen={historyOpen}
@@ -418,12 +433,12 @@ export const AppEditor = ({
           //
           // Mobile: one pane at a time, chosen by the tab. Desktop: chat docked
           // left unless collapsed, preview beside it.
-          display={currentTab === "chat" ? "flex" : "none"}
-          $lg={{ flex: 1, flexShrink: 0, display: sidebarCollapsed ? "none" : "flex" }}
+          display={currentTab === "chat" || fresh ? "flex" : "none"}
+          $lg={{ flex: 1, flexShrink: 0, display: !fresh && sidebarCollapsed ? "none" : "flex" }}
         >
           {/* Chat — ALWAYS the left pane (composer/thread live here permanently);
               the history panel OVERLAYS it when toggled from the header icon. */}
-          <YStack minHeight={0} flex={1}>
+          <YStack minHeight={0} flex={1} {...(fresh ? { width: "100%", maxWidth: 860, alignSelf: "center" } : null)}>
             <AskAI
               isNew={isNew}
               project={project}
@@ -503,7 +518,7 @@ export const AppEditor = ({
           position="relative" width="$3" height="100%" flexShrink={0} cursor="col-resize" alignItems="center" justifyContent="center"
           // Only where there are two panes to divide: hidden on mobile, shown on
           // desktop. It was exactly inverted.
-          display="none" $lg={{ display: "flex" }} className="group/resizer"
+          display="none" $lg={{ display: fresh ? "none" : "flex" }} className="group/resizer"
         >
           {/* macOS split view: NO visible divider at rest — the panes simply
               meet. The wide (w-3) hit target still grabs from either edge, and a
@@ -520,8 +535,8 @@ export const AppEditor = ({
             stays mounted (iframe warm, iframeRef valid); Code overlays it. */}
         <YStack
           position="relative" flex={1} minWidth={0} height="100%" padding="$2"
-          display={currentTab === "chat" ? "none" : "flex"}
-          $lg={{ padding: "$3", display: "flex" }}
+          display={currentTab === "chat" || fresh ? "none" : "flex"}
+          $lg={{ padding: "$3", display: fresh ? "none" : "flex" }}
         >
           <YStack position="relative" height="100%" width="100%" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={5} className="preview-stage">
             {/* Faint top highlight — a crisp edge that reads as raised glass. */}
