@@ -5,31 +5,22 @@ import { Children, ReactNode, useState } from "react";
 import Link from "next/link";
 import {
   ChevronDown,
-  Code2,
-  Eye,
   ExternalLink,
   History,
-  MessageCircleCode,
   Monitor,
   RefreshCcw,
   Smartphone,
 } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger, Button } from '@hanzo/ui';
-import { selected } from "@/lib/chrome";
+import { accent, selected } from "@/lib/chrome";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { PagePanel } from "@/components/editor/page-navigator";
 import { WorkspaceMenu } from "@/components/editor/workspace-menu";
 import type { Page, Project } from "@/types";
-// The ONE view switcher (a grouped segmented control). "Chat" only means anything
-// on mobile, where a single pane shows at a time — on desktop the chat pane is
-// always docked on the left, so Preview/Code drive the RIGHT pane and the Chat
-// segment is hidden.
-const TABS = [
-  { value: "chat", label: "Chat", icon: MessageCircleCode, mobileOnly: true },
-  { value: "preview", label: "Preview", icon: Eye },
-  { value: "code", label: "Code", icon: Code2 },
-] as const;
+// The panes come from `lib/panes` — the switcher and the body read one list, so
+// a pane cannot appear in the bar and render nothing.
+import { PANES, paneLabel } from "@/lib/panes";
 
 const DEVICES = [
   { name: "desktop", icon: Monitor },
@@ -190,12 +181,22 @@ export function Header({
           `justify-content: safe center` centres while it fits and falls back to
           start the moment it does not; there is no gui prop that says that. */}
       <XStack alignItems="center" gap="$2" flexGrow={1} flexShrink={1} flexBasis="auto" minWidth={0} overflow="scroll" className="no-scrollbar center-safe">
+        {/* NO group fill and NO group radius.
+
+            The segments used to sit in a `$color3` trough, which is the shape a
+            SEGMENTED control has — every option equally present, one of them
+            marked. This bar is not that: it is a set of places to go, and the
+            one you are in is the loud thing. So the inactive panes are bare
+            glyphs on the bar itself, and the active one is the raised
+            pushbutton (`accent` — $color5 on $color6) wearing its own name.
+            A trough behind that pill would draw a box around the only element
+            that is already a box. */}
         <XStack
           role="tablist"
           aria-label="Editor view"
-          flexShrink={0} alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color3"
+          flexShrink={0} alignItems="center" gap="$1"
         >
-          {TABS.map((item) => {
+          {PANES.map((item) => {
             const active = tab === item.value;
             const sel = selected(active);
             return (
@@ -207,23 +208,31 @@ export function Header({
                 aria-selected={active}
                 title={item.label}
                 onClick={() => onNewTab(item.value)}
-                // `size="sm"` (32), and the group carries NO padding, so the tab fills
-                // its container edge to edge — hovering paints the WHOLE segment, the
-                // way the device group beside it already did.
+                // ONE size for both states (`sm` = 32), so switching panes never
+                // changes the bar's height. A size variant sets a `minHeight`
+                // FLOOR, not a height, and a style prop cannot argue a floor
+                // down — asking for 28 here once drew 36 and left a 2px halo of
+                // group showing round the hover. Ask the ladder for a size.
                 //
-                // This asked for `height={28}` and got 36. A size variant sets
-                // `minHeight`, not `height` (HEIGHT.default = 36), and a floor cannot be
-                // argued below by a style prop — so the tab rendered 36 inside 2px of
-                // group padding, the pill measured 40, and hover lit a chip with a 2px
-                // halo of the group showing all round. Its 32px sibling lit flush. Two
-                // segmented controls, side by side, disagreeing about what a hover is.
-                // Same lesson as `iconBox`: ask the ladder for a size, never a raw box.
-                size="sm" alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2.5" {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, ...sel, hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
+                // The active pane is the pushbutton and carries its LABEL; the
+                // rest are glyphs. That is why only this one is `accent` and why
+                // only this one gets horizontal padding worth the name: a label
+                // needs room, an icon needs a square.
+                size="sm" alignItems="center" gap="$1.5" borderRadius={999} paddingHorizontal={active ? "$3" : "$2"} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, ...(active ? accent : sel), hoverStyle: active ? undefined : { backgroundColor: "$color3" } }}
               >
-                <SizableText color={sel.color}>
+                <SizableText color={active ? accent.color : sel.color}>
                   <item.icon size={16} />
                 </SizableText>
-                <SizableText display="none" $sm={{ display: "inline" }}>{item.label}</SizableText>
+                {/* The label belongs to the ACTIVE pane only. Every pane wearing
+                    its name turns a row of destinations into a menu bar, and the
+                    bar has three other clusters to fit; every pane wearing NONE
+                    leaves the open pane unnamed. One label, on the one that
+                    matters, is also what the reference does. */}
+                {active && (
+                  <SizableText display="none" $sm={{ display: "inline" }} color={accent.color}>
+                    {item.label}
+                  </SizableText>
+                )}
               </Button>
             );
           })}

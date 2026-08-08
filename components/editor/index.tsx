@@ -55,6 +55,9 @@ import { RevisionDetails, type DetailsRev } from "./history/details";
 import { ShareModal } from "./share-modal";
 import { Console } from "./console";
 import { VisualEditor } from "./visual-editor";
+import { FilesPane } from "./files";
+import { MorePane } from "./more";
+import { rightPane } from "@/lib/panes";
 import { OrgProvider } from "@/lib/org/client";
 
 export const AppEditor = ({
@@ -123,7 +126,7 @@ export const AppEditor = ({
    * an element in the preview sets the tab back to `chat` (it opens the chat to
    * ask about that element), which disarmed editing again on every use.
    */
-  const rightView = currentTab === "code" ? "code" : "preview";
+  const rightView = rightPane(currentTab);
   // The left pane is ALWAYS the chat composer; a history/rollback ICON in the
   // header toggles the version-history panel as an OVERLAY over it (item 10).
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -559,6 +562,19 @@ export const AppEditor = ({
                 }}
   />
             )}
+            {/* FILES view — a browser over the project's real file list, with a
+                preview of whatever is selected. Distinct from Code, which is an
+                editor: this answers "what is in here", that answers "change it". */}
+            {rightView === "files" && (
+              <FilesPane
+                pages={pages}
+                currentPage={currentPage}
+                onSelectPage={setCurrentPage}
+  />
+            )}
+            {/* MORE view — everything about the project that is not its source:
+                the Hanzo services behind it, analytics, connectors, payments. */}
+            {rightView === "more" && <MorePane projectId={project?.space_id ?? null} />}
             {/* CODE view — the CodeMirror editor overlaid inside the card when the
                 header switches to Code. The left panel stays chat; code lives here. */}
             {rightView === "code" && (

@@ -76,11 +76,27 @@ export function ChatThread({
   );
 }
 
+/**
+ * What you asked for, as a pill.
+ *
+ * A tail (`borderBottomRightRadius: $1`) and a hairline made this a speech
+ * BUBBLE — the shape a messaging app uses because two people are talking and
+ * the tail says which one. Here only one side ever speaks in this shape, so the
+ * tail pointed at nothing and the border drew a box around a sentence that
+ * needs no box. Fully rounded, no border: the prompt reads as a thing you
+ * placed, and the assistant's cards below it are the only rectangles in the
+ * column, which is what makes them scannable.
+ *
+ * `borderRadius={999}` rather than a token: this is a pill, and a pill's radius
+ * is not a rung on a ramp — it is "half my own height", whatever that turns out
+ * to be. A `$` value would be a specific number that happens to look round at
+ * one line and stops looking round at three.
+ */
 function UserBubble({ text }: { text: string }) {
   return (
     <XStack justifyContent="flex-end">
-      <YStack maxWidth="85%" borderRadius="$5" borderBottomRightRadius="$1" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5">
-        <SizableText whiteSpace="pre-wrap" fontSize="$2" color="$color">
+      <YStack maxWidth="85%" borderRadius={999} backgroundColor="$color3" paddingHorizontal="$4" paddingVertical="$2">
+        <SizableText whiteSpace="pre-wrap" fontSize="$2" lineHeight="1.45" color="$color">
           {text}
         </SizableText>
       </YStack>
