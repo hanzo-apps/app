@@ -170,17 +170,17 @@ export function Settings({
   return (
     <Popover open={open} onOpenChange={onClose} placement="top-end">
       <PopoverTrigger asChild>
+        {/* Anchor only — the composer's [+] menu owns the visible Settings
+            entry and clicks this. See uploader.tsx for the same shape. */}
         <Button
+          id="composer-settings"
           variant="ghost"
           size="icon"
-          title="Settings — model, mode & options"
-          aria-label="Settings"
-          group
-          borderRadius="$10" hoverStyle={{ backgroundColor: "$color3" }}
+          aria-hidden
+          tabIndex={-1}
+          style={{ position: "absolute", width: 1, height: 1, minWidth: 1, minHeight: 1, opacity: 0, pointerEvents: "none" }}
         >
-          <SizableText color="$color11" $group-hover={{ color: "$color" }}>
-            <SettingsIcon size={16} />
-          </SizableText>
+          <SettingsIcon size={16} />
         </Button>
       </PopoverTrigger>
       {/* ONE popover surface: solid bg-card, a single hairline border, high

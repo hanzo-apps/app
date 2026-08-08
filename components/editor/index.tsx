@@ -345,6 +345,15 @@ export const AppEditor = ({
     setTimeout(() => URL.revokeObjectURL(url), 60_000);
   };
 
+  // ONE history toggle — the header's icon and the composer's [+] menu share
+  // it, so the two ways in cannot drift.
+  const toggleHistory = () => {
+    const next = !historyOpen;
+    setHistoryOpen(next);
+    // Opening history must reveal the left pane if it was collapsed.
+    if (next) setSidebarCollapsed(false);
+  };
+
   return (
     <OrgProvider>
     {/* overflow="hidden" as well as the exact height: the height alone only says
@@ -366,12 +375,7 @@ export const AppEditor = ({
         chatOpen={!sidebarCollapsed}
         onToggleChat={() => setSidebarCollapsed((v) => !v)}
         historyOpen={historyOpen}
-        onToggleHistory={() => {
-          const next = !historyOpen;
-          setHistoryOpen(next);
-          // Opening history must reveal the left pane if it was collapsed.
-          if (next) setSidebarCollapsed(false);
-        }}
+        onToggleHistory={toggleHistory}
         project={project}
       >
         {/* Two lean actions, Codex-minimal: Share (a preview link) and Publish
@@ -444,6 +448,7 @@ export const AppEditor = ({
               the history panel OVERLAYS it when toggled from the header icon. */}
           <YStack minHeight={0} flex={1} {...(fresh ? { width: "100%", maxWidth: 860, alignSelf: "center" } : null)}>
             <AskAI
+              onToggleHistory={toggleHistory}
               isNew={isNew}
               project={project}
               images={images}

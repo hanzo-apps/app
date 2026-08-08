@@ -9,10 +9,11 @@ import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
 // the two-copies problem the rest of this migration exists to prevent.
 import type { GuiElement } from '@hanzo/gui';
 import { useState, useMemo, useRef, useEffect } from "react";
-import { toast, Button, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
+import { useRouter } from "next/navigation";
+import { toast, Button, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
 import { useLocalStorage } from "react-use";
-import { ArrowUp, Bell, ChevronDown, CircleStop, ImagePlus, MoreHorizontal, X } from "lucide-react";
+import { ArrowUp, Bell, ChevronDown, CircleStop, History as HistoryGlyph, ImagePlus, Plug, Plus, Settings as SettingsGlyph, Sparkles, Wrench, X } from "lucide-react";
 
 import ProModal from "@/components/pro-modal";
 import { useUsageLimit } from "@/components/usage/usage-limit";
@@ -111,6 +112,7 @@ export function AskAI({
   onSuccess,
   setPages,
   setCurrentPage,
+  onToggleHistory,
 }: {
   project?: Project | null;
   currentPage: Page;
@@ -132,6 +134,8 @@ export function AskAI({
   setSelectedFiles: React.Dispatch<React.SetStateAction<string[]>>;
   setPages: React.Dispatch<React.SetStateAction<Page[]>>;
   setCurrentPage: React.Dispatch<React.SetStateAction<string>>;
+  /** Toggle the version-history panel — the [+] menu's History entry. */
+  onToggleHistory?: () => void;
 }) {
   const { models, defaultModel, loading: modelsLoading } = useModels();
   const routingDefaults = useRoutingDefaults();
@@ -158,6 +162,16 @@ export function AskAI({
   const model = safeStoredModel ?? (smartOn ? AUTO_MODEL : defaultModel);
   const [routedModel, setRoutedModel] = useState<string | null>(null);
   const [openProvider, setOpenProvider] = useState(false);
+  // The [+] menu's open state — the trigger draws an X while it is up.
+  const [plusOpen, setPlusOpen] = useState(false);
+  const router = useRouter();
+  // The per-project settings page, when this project has an identity.
+  // space_id is the `${org}/${slug}` pivot the editor keys everything off.
+  const projectSettingsHref = (() => {
+    const id = project?.space_id ?? "";
+    const cut = id.indexOf("/");
+    return cut > 0 ? `/dev/${id.slice(0, cut)}/${id.slice(cut + 1)}/settings` : null;
+  })();
   const [providerError, setProviderError] = useState("");
   const [openProModal, setOpenProModal] = useState(false);
   // The ONE "Need more usage?" modal — raised on an out-of-credit (402) signal
@@ -1229,7 +1243,7 @@ export function AskAI({
                 tabIndex={0}
                 onPress={() => runSuggestion(s)}
                 className="glass"
-                flexShrink={0} alignItems="center" height={26} borderRadius={999} paddingHorizontal="$2.5" cursor="pointer" hoverStyle={{ backgroundColor: "$color3" }}
+                flexShrink={0} alignItems="center" height={26} borderRadius={999} borderWidth={1} borderColor="$color04" backgroundColor="$color2" paddingHorizontal="$2.5" cursor="pointer" hoverStyle={{ backgroundColor: "$color3" }}
               >
                 <SizableText whiteSpace="nowrap" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>{s}</SizableText>
               </XStack>
@@ -1439,63 +1453,97 @@ export function AskAI({
               project={project}
   />
             {isNew && <ReImagine onRedesign={(md) => callAi(md)} />}
-            {/* The two working modes, behind ONE control.
-                They were two icon-only buttons on the bar — a wrench and a
-                crosshair — which is two mysteries the bar had to carry at all
-                times to say something each is one word long. In the menu they
-                get their names, their state gets a checkmark, and the bar keeps
-                one trigger. It accents when either mode is on, so nothing is
-                hidden that is currently doing something. */}
-            {!isSameHtml && (
-              <DropdownMenu placement="top-start">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        size="icon-sm"
-                        variant="ghost"
-                        aria-label={
-                          modes.length
-                            ? `More — ${modes.join(", ")} on`
-                            : "More composer modes"
-                        }
-                        borderRadius="$5"
-                        {...{ color: modes.length ? selected(true).color : "$color11" }}
-                      >
-                        <MoreHorizontal size={16} />
-                      </Button>
-                    </DropdownMenuTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {modes.length ? `${modes.join(", ")} on` : "More"}
-                  </TooltipContent>
-                </Tooltip>
-                <DropdownMenuContent width={256}>
-                  <DropdownMenuCheckboxItem
-                    checked={isEditableModeEnabled}
-                    onCheckedChange={(v: boolean) => setIsEditableModeEnabled?.(!!v)}
-                  >
-                    <YStack>
-                      <SizableText>Select an element</SizableText>
-                      <SizableText fontSize="$1" color="$color11">
-                        Click something on the page to edit it directly
-                      </SizableText>
-                    </YStack>
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={isFixMode}
-                    onCheckedChange={(v: boolean) => setIsFixMode(!!v)}
-                  >
-                    <YStack>
-                      <SizableText>Match a reference</SizableText>
-                      <SizableText fontSize="$1" color="$color11">
-                        Attach an image; Hanzo changes only what differs
-                      </SizableText>
-                    </YStack>
-                  </DropdownMenuCheckboxItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+            {/* THE ONE [+] — everything the composer can bring in, one menu.
+                Attach, reference, the two working modes, Settings (collapsed
+                here from the action row, per the owner), History, and the
+                project surfaces. The trigger flips to an X while open. Items
+                that act on OTHER popovers click their hidden 1px anchors
+                (uploader/settings) so those keep their own placement and
+                logic. EVERY item is real — nothing lists a surface that does
+                not exist. */}
+            <DropdownMenu open={plusOpen} onOpenChange={setPlusOpen} placement="top-start">
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
+                  aria-label={plusOpen ? "Close menu" : "Add to this build"}
+                  aria-expanded={plusOpen}
+                  borderRadius={999}
+                  {...{ color: modes.length ? selected(true).color : "$color11" }}
+                  hoverStyle={{ backgroundColor: "$color3" }}
+                >
+                  {plusOpen ? <X size={16} /> : <Plus size={16} />}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent width={264}>
+                <DropdownMenuItem onSelect={() => document.getElementById("composer-attach")?.click()}>
+                  <XStack alignItems="center" gap="$2">
+                    <ImagePlus size={15} />
+                    <SizableText>Attach images</SizableText>
+                  </XStack>
+                </DropdownMenuItem>
+                {!isSameHtml && (
+                  <>
+                    <DropdownMenuCheckboxItem
+                      checked={isEditableModeEnabled}
+                      onCheckedChange={(v: boolean) => setIsEditableModeEnabled?.(!!v)}
+                    >
+                      <YStack>
+                        <SizableText>Select an element</SizableText>
+                        <SizableText fontSize="$1" color="$color11">
+                          Click something on the page to edit it directly
+                        </SizableText>
+                      </YStack>
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={isFixMode}
+                      onCheckedChange={(v: boolean) => setIsFixMode(!!v)}
+                    >
+                      <YStack>
+                        <SizableText>Match a reference</SizableText>
+                        <SizableText fontSize="$1" color="$color11">
+                          Attach an image; Hanzo changes only what differs
+                        </SizableText>
+                      </YStack>
+                    </DropdownMenuCheckboxItem>
+                  </>
+                )}
+                <DropdownMenuItem onSelect={() => document.getElementById("composer-settings")?.click()}>
+                  <XStack alignItems="center" gap="$2">
+                    <SettingsGlyph size={15} />
+                    <SizableText>Settings</SizableText>
+                  </XStack>
+                </DropdownMenuItem>
+                {onToggleHistory && (
+                  <DropdownMenuItem onSelect={() => onToggleHistory()}>
+                    <XStack alignItems="center" gap="$2">
+                      <HistoryGlyph size={15} />
+                      <SizableText>History</SizableText>
+                    </XStack>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onSelect={() => router.push("/connectors")}>
+                  <XStack alignItems="center" gap="$2">
+                    <Plug size={15} />
+                    <SizableText>Project connectors</SizableText>
+                  </XStack>
+                </DropdownMenuItem>
+                {projectSettingsHref && (
+                  <DropdownMenuItem onSelect={() => router.push(projectSettingsHref)}>
+                    <XStack alignItems="center" gap="$2">
+                      <Wrench size={15} />
+                      <SizableText>Project settings</SizableText>
+                    </XStack>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onSelect={() => router.push("/skills")}>
+                  <XStack alignItems="center" gap="$2">
+                    <Sparkles size={15} />
+                    <SizableText>Add skill</SizableText>
+                  </XStack>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             {/* <InviteFriends /> */}
           </XStack>
           <XStack flexShrink={0} alignItems="center" justifyContent="flex-end" gap="$2">
@@ -1511,7 +1559,7 @@ export function AskAI({
                   variant="ghost"
                   aria-label={`Mode: ${mode}`}
                   title={mode === "plan" ? "Plan: chat about your app without changing it" : "Build: generate and modify your app"}
-                  height={28} alignItems="center" gap="$1" borderRadius={999} backgroundColor="$color3" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color4" }}
+                  height={26} minHeight={26} alignItems="center" gap="$1" borderRadius={999} backgroundColor="$color3" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color4" }}
                 >
                   <SizableText fontWeight="500" textTransform="capitalize" color="$color">{mode}</SizableText>
                   <SizableText color="$color11"><ChevronDown size={12} /></SizableText>
@@ -1567,7 +1615,7 @@ export function AskAI({
                 size="icon-sm"
                 variant="destructive"
                 onClick={stopController}
-                gap="$1" borderRadius={999}
+                gap="$1" height={28} minHeight={28} width={28} minWidth={28} borderRadius={999}
               >
                 <CircleStop size={16} />
               </Button>
@@ -1575,7 +1623,7 @@ export function AskAI({
               <Button
                 size="icon-sm"
                 {...accent}
-                borderRadius={999}
+                height={28} minHeight={28} width={28} minWidth={28} borderWidth={0} borderRadius={999}
                 disabled={
                   isUploading ||
                   (!prompt.trim() &&
