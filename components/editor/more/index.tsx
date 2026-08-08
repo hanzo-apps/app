@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Paragraph, SizableText, XStack, YStack } from '@hanzo/ui';
-import { ChevronDown, ChevronRight, Plug } from 'lucide-react';
+import { Boxes, ChevronDown, ChevronRight, Plug } from 'lucide-react';
 
 import { panel } from '@/lib/chrome';
 import { fetchConnectors, type Provider } from '@/lib/connectors';
 import { useModels } from '@/lib/hooks/use-models';
+import { fetchMcpServers, fetchMcpToolCount, type McpServer } from '@/lib/mcp';
 import { SECTIONS, findSection, type Section } from './sections';
 
 /**
@@ -150,6 +151,7 @@ function SectionBody({ section, projectId }: { section: Section; projectId?: str
   // The sections whose readers already exist render the real thing.
   if (section.id === 'connectors') return <ConnectorsBody />;
   if (section.id === 'ai') return <ModelsBody />;
+  if (section.id === 'agents') return <McpBody />;
   return (
     <YStack {...panel} padding="$4" gap="$2">
       {section.where ? (
@@ -273,6 +275,69 @@ function ModelsBody() {
           ))}
         </XStack>
       </YStack>
+    </YStack>
+  );
+}
+
+/**
+ * The org's MCP registry — servers and the tools they contribute.
+ *
+ * Three states, and the middle one is the honest work: `null` from the client
+ * means the registry did not answer in a shape this build understands, and
+ * that renders as COULD NOT READ — never as none-registered, because an org
+ * that has servers being told it has none re-registers duplicates. Only a
+ * well-formed empty answer claims emptiness.
+ */
+function McpBody() {
+  const [servers, setServers] = useState<McpServer[] | null | undefined>(undefined);
+  const [tools, setTools] = useState<number | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    fetchMcpServers().then((s) => alive && setServers(s));
+    fetchMcpToolCount().then((n) => alive && setTools(n));
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  return (
+    <YStack {...panel} padding="$4" gap="$3">
+      {servers === undefined ? (
+        <SizableText fontSize="$2" color="$color11">Reading the registry…</SizableText>
+      ) : servers === null ? (
+        <YStack gap="$1">
+          <SizableText fontSize="$3" color="$color">The registry could not be read</SizableText>
+          <Paragraph fontSize="$2" color="$color11">
+            This is not the same as having no servers — the answer did not arrive, so nothing
+            here is claimed either way.
+          </Paragraph>
+        </YStack>
+      ) : servers.length === 0 ? (
+        <YStack gap="$1">
+          <SizableText fontSize="$3" color="$color">No MCP servers registered</SizableText>
+          <Paragraph fontSize="$2" color="$color11">
+            Register one and every agent this workspace runs can use its tools.
+          </Paragraph>
+        </YStack>
+      ) : (
+        <YStack gap="$0.5">
+          {tools !== null && (
+            <SizableText fontSize="$2" color="$color11" paddingBottom="$1">
+              {tools} tool{tools === 1 ? '' : 's'} across {servers.length} server{servers.length === 1 ? '' : 's'}
+            </SizableText>
+          )}
+          {servers.map((s) => (
+            <XStack key={s.id} alignItems="center" gap="$2.5" paddingVertical="$2" borderBottomWidth={1} borderColor="$color04">
+              <SizableText color="$color11"><Boxes size={14} /></SizableText>
+              <YStack flex={1} minWidth={0}>
+                <SizableText fontSize="$2" color="$color">{s.name}</SizableText>
+                {s.url && <SizableText fontSize="$1" color="$color11" numberOfLines={1}>{s.url}</SizableText>}
+              </YStack>
+            </XStack>
+          ))}
+        </YStack>
+      )}
     </YStack>
   );
 }
