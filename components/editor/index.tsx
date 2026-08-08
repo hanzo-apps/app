@@ -150,6 +150,10 @@ export const AppEditor = ({
   // The chat pane can be collapsed on desktop to give preview/code the full
   // width; on mobile the tab switcher already shows one pane at a time.
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // The chat pane's width in px — the ONE number the pane, the resizer and the
+  // header all read, so the chrome above the split can sit exactly over the
+  // pane it controls. 0 = no docked chat (mobile, collapsed, boot).
+  const [chatW, setChatW] = useState(0);
   // Live mirror so the once-registered window-resize listener always sees the
   // current collapsed state in the split math (no stale closure, no re-register).
   const sidebarCollapsedRef = useRef(false);
@@ -191,9 +195,12 @@ export const AppEditor = ({
       const resizerWidth = r && 'scrollTo' in r ? r.offsetWidth : 8; // w-2 = 8px
       const availableWidth = window.innerWidth - resizerWidth;
       // Chat ~27% (v2: 24–28%); the preview gets the room.
-      el.style.width = `${Math.round(availableWidth * 0.27)}px`;
+      const w = Math.round(availableWidth * 0.27);
+      el.style.width = `${w}px`;
+      setChatW(w);
     } else {
       el.style.width = "";
+      setChatW(0);
     }
   };
 
@@ -212,6 +219,7 @@ export const AppEditor = ({
     );
     // Set ONLY the chat pane; the preview region (flex-1) absorbs the rest.
     el.style.width = `${clampedEditorWidth}px`;
+    setChatW(clampedEditorWidth);
   };
 
   const handleMouseDown = () => {
@@ -345,6 +353,14 @@ export const AppEditor = ({
     setTimeout(() => URL.revokeObjectURL(url), 60_000);
   };
 
+  // The split is re-stamped when the states that suspend it change: boot
+  // ending (the unfurl), the sidebar toggling. resetLayout reads refs, so it is
+  // stable to call from here.
+  useEffect(() => {
+    resetLayout();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fresh, sidebarCollapsed]);
+
   // ONE history toggle — the header's icon and the composer's [+] menu share
   // it, so the two ways in cannot drift.
   const toggleHistory = () => {
@@ -372,6 +388,7 @@ export const AppEditor = ({
         onSelectPage={setCurrentPage}
         onOpenExternal={openInNewTab}
         booted={!fresh}
+        leftWidth={!fresh && !sidebarCollapsed ? chatW : 0}
         chatOpen={!sidebarCollapsed}
         onToggleChat={() => setSidebarCollapsed((v) => !v)}
         historyOpen={historyOpen}
@@ -442,7 +459,14 @@ export const AppEditor = ({
           // Mobile: one pane at a time, chosen by the tab. Desktop: chat docked
           // left unless collapsed, preview beside it.
           display={currentTab === "chat" || fresh ? "flex" : "none"}
-          $lg={{ flex: 1, flexShrink: 0, display: !fresh && sidebarCollapsed ? "none" : "flex" }}
+          // flexGrow 0 on desktop, and that zero is the whole resizer. The pane
+          // carried `flex: 1`, and grow re-expands past any width the drag
+          // writes — resetLayout stamped 27%, grow pulled it straight back to
+          // half, so the split sat pinned at 50/50 and the drag was a no-op
+          // that read as "I can't even resize it". One authoritative width
+          // (style.width, owned by resetLayout + the drag), one flex fill (the
+          // preview). Boot is the exception: the conversation IS the window.
+          $lg={{ flexGrow: fresh ? 1 : 0, flexShrink: 0, display: !fresh && sidebarCollapsed ? "none" : "flex" }}
         >
           {/* Chat — ALWAYS the left pane (composer/thread live here permanently);
               the history panel OVERLAYS it when toggled from the header icon. */}

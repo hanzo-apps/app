@@ -74,6 +74,7 @@ export function Header({
   historyOpen,
   onToggleHistory,
   booted = true,
+  leftWidth = 0,
   chatOpen,
   onToggleChat,
   project,
@@ -99,6 +100,13 @@ export function Header({
    * that does not exist yet — chrome for a missing thing reads as broken.
    */
   booted?: boolean;
+  /**
+   * The chat pane's current width in px (0 = none docked). The bar mirrors the
+   * split below it: identity sits over the chat, the pane switcher and the
+   * preview tooling sit over the pane they control. Without this the switcher
+   * floated beside the project name while its subject was half a screen away.
+   */
+  leftWidth?: number;
   /** Whether the chat column is showing. */
   chatOpen?: boolean;
   /** Show/hide the chat column — the PanelLeft toggle, in the reference's seat. */
@@ -133,7 +141,7 @@ export function Header({
     <XStack zIndex={20} alignItems="center" gap="$2" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" $sm={{ gap: "$3" }} $lg={{ paddingHorizontal: "$4" }}>
       {/* LEFT — the workspace menu (identity/home anchor) + version history.
           Everything about who/where you are lives in the menu. */}
-      <XStack flexShrink={1} minWidth={0} alignItems="center" gap="$1.5" overflow="scroll" className="no-scrollbar">
+      <XStack flexShrink={1} minWidth={0} alignItems="center" gap="$1.5" overflow="scroll" className="no-scrollbar" {...(leftWidth > 0 ? { $lg: { width: leftWidth, flexShrink: 0 } } : null)}>
         {/* The ONE Hanzo block-H (mark from @hanzo/logo MARK_PATHS, via the
             shared HanzoLogo). Home anchor, top-left — the IDE's brand corner. */}
         <Link
@@ -180,6 +188,8 @@ export function Header({
             <PanelLeft size={16} />
           </Button>
         )}
+      </XStack>
+
         {/* NO group fill and NO group radius.
 
             The segments used to sit in a `$color3` trough, which is the shape a
@@ -238,7 +248,6 @@ export function Header({
           })}
         </XStack>
         )}
-      </XStack>
 
       {/* CENTER — view switcher + device switcher + refresh + page selector +
           open-in-new-tab, one control cluster.
