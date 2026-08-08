@@ -60,7 +60,7 @@ export function SaveButton({ save }: { save: () => Promise<boolean> }) {
       <View $lg={{ display: "none" }}>
         <Save size={14} />
       </View>
-      <SizableText fontSize="$1" color="$color12">{loading ? "Saving…" : "Publish"}</SizableText>
+      <SizableText color="$color12">{loading ? "Saving…" : "Publish"}</SizableText>
       {loading && <Loading overlay={false} size={14} />}
     </Button>
   );

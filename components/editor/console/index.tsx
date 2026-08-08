@@ -6,9 +6,7 @@ import { SizableText, YStack, XStack, Paragraph } from '@hanzo/ui';
 import { useEffect, useRef, useState } from "react";
 import { Check, GitBranch, Square } from "lucide-react";
 
-import { Voice } from "@hanzo/voice";
 
-import { useMic } from "@/components/editor/ask-ai/mic";
 import { currentProject } from "@/lib/dev/workspace";
 import { HOME, TIMEOUT } from "@/lib/shell";
 
@@ -234,7 +232,6 @@ export function Console({
   // The live run, or null. Its sandbox is the handle Stop acts on.
   const run = useRun();
   // The composer's voice, drawn here. Null until a composer is mounted.
-  const voice = useMic();
 
   // OLD: `const branch = "main"` — stated unconditionally. Builder projects are
   // single-branch when they have a repo, but MOST HAVE NONE: the only paths that
@@ -421,13 +418,6 @@ export function Console({
               and has no sandbox to stop. An always-visible Stop that sometimes
               does nothing is worse than one that appears when it can act. */}
           {run?.sandbox && <Stop sandbox={run.sandbox} />}
-          {voice && (
-            <Voice
-              voice={voice}
-              disabled={isAiWorking}
-              className="voice-control"
-  />
-          )}
           {/* Enso mounts HERE (public/edit.js, `hanzo:anchor` in app/dev/layout),
               to the RIGHT of the mic. It used to float at the viewport corner, on
               top of the customer's preview — so /dev turned it off entirely. In

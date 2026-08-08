@@ -41,13 +41,12 @@ import { useCallAi } from "@/hooks/useCallAi";
 import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signal";
 import { SelectedFiles } from "./selected-files";
 import { Uploader } from "./uploader";
-import { offer } from "./mic";
 import { sentence } from "./sentence";
 import { ChatThread, type ThreadMessage } from "./chat-thread";
 import { codeTurn } from "./code-turn";
 import type { Runtime } from "@/lib/agent/sandbox";
 import { isConversational } from "./intent";
-import { useVoice, speech } from "@hanzo/voice";
+import { Voice, useVoice, speech } from "@hanzo/voice";
 
 // The builder's ear and voice, lent the caller's IAM session by the app's own
 // `/v1/audio/*` proxy — so the browser never carries a gateway token.
@@ -801,8 +800,8 @@ export function AskAI({
   //
   // The composer owns the voice because it owns all three things a conversation
   // needs: the prompt the transcript lands in, the submit path a finished turn
-  // goes through, and the reply to read back. The mic itself lives on the
-  // console bar and is handed this machine by `mic.ts`.
+  // goes through, and the reply to read back. The mic renders right here in
+  // the action row (Build ⌄ · mic · send), beside the turn it feeds.
   //
   // Anything already typed is kept: the transcript is appended to it, and the
   // turn that gets sent is the whole line, exactly as if it had been typed.
@@ -826,8 +825,11 @@ export function AskAI({
     },
   });
 
-  // The console bar draws it.
-  useEffect(() => offer(voice), [voice]);
+  // The composer draws its own mic now — Build ⌄ · mic · send, the reference
+  // row. It used to OFFER the machine to the console bar through a seam
+  // (ask-ai/mic.ts, deleted with this); once the console's rest state became an
+  // invisible edge, a mic that lived there was a voice feature nobody could
+  // see. The machine and the control are in one component again.
 
   // Read the settled reply back. `say` is a no-op outside a conversation, so a
   // typed turn stays silent without asking anyone here whether it was spoken.
@@ -1621,6 +1623,7 @@ export function AskAI({
               error={providerError}
               onClose={setOpenProvider}
   />
+            <Voice voice={voice} disabled={isAiWorking} className="voice-control" />
             {isAiWorking ? (
               <Button
                 size="icon-sm"

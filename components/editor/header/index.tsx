@@ -204,7 +204,7 @@ export function Header({
         <XStack
           role="tablist"
           aria-label="Editor view"
-          flexShrink={0} alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color3"
+          flexShrink={0} alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color4"
         >
           {PANES.map((item) => {
             const active = tab === item.value;
@@ -228,7 +228,7 @@ export function Header({
                 // rest are glyphs. That is why only this one is `accent` and why
                 // only this one gets horizontal padding worth the name: a label
                 // needs room, an icon needs a square.
-                size="sm" alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal={active ? "$3" : "$2"} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, ...(active ? { ...accent, borderWidth: 0 } : sel), hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
+                size="sm" alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal={active ? "$3" : "$2"} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, ...(active ? { ...accent, borderWidth: 0 } : sel), hoverStyle: active ? undefined : { backgroundColor: "$color5" } }}
               >
                 <SizableText color={active ? accent.color : sel.color}>
                   <item.icon size={16} />
@@ -299,7 +299,7 @@ export function Header({
           <XStack
             role="tablist"
             aria-label="Preview device"
-            alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color3"
+            alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color4"
           >
             {DEVICES.map((d) => {
               const active = device === d.name;
@@ -313,7 +313,7 @@ export function Header({
                   aria-selected={active}
                   title={`${d.name[0].toUpperCase()}${d.name.slice(1)} preview`}
                   onClick={() => setDevice(d.name as "desktop" | "mobile")}
-                  size="icon-sm" borderRadius="$3" {...{ ...sel, hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
+                  size="icon-sm" borderRadius="$3" {...{ ...sel, hoverStyle: active ? undefined : { backgroundColor: "$color5" } }}
                 >
                   <SizableText color={sel.color}>
                     <d.icon size={16} />
@@ -359,7 +359,7 @@ export function Header({
                 type="button"
                 title="Browse pages"
                 aria-label="Browse pages"
-                minWidth={0} $md={{ minWidth: 180 }} maxWidth="14rem" size="sm" alignItems="center" justifyContent="center" gap="$1.5" borderRadius="$4" backgroundColor="$color3" paddingHorizontal="$3" hoverStyle={{ backgroundColor: "$color4" }}
+                minWidth={0} $md={{ minWidth: 180 }} maxWidth="14rem" size="sm" alignItems="center" justifyContent="center" gap="$1.5" borderRadius="$4" backgroundColor="$color4" paddingHorizontal="$3" hoverStyle={{ backgroundColor: "$color5" }}
               >
                 {/* The NAME, not the filename: a person calls index.html the
                     Homepage, and the picker inside still shows real paths for

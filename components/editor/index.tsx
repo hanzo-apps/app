@@ -426,7 +426,7 @@ export const AppEditor = ({
           // emphasis. It was an outline rect on a translucent fill next to a
           // raised rounded primary: two shapes for two siblings, which is what
           // read as "weirdly different".
-          height={32} gap="$1.5" paddingHorizontal="$3" borderRadius={999} backgroundColor="$color3" hoverStyle={{ backgroundColor: "$color4" }}
+          height={32} gap="$1.5" paddingHorizontal="$3" borderRadius={999} backgroundColor="$color4" hoverStyle={{ backgroundColor: "$color5" }}
         >
           <Share2 size={14} />
           <SizableText display="none" $md={{ display: "inline" }}>Share</SizableText>
@@ -582,16 +582,20 @@ export const AppEditor = ({
             card is the only element that lifts off the flat workspace. Preview
             stays mounted (iframe warm, iframeRef valid); Code overlays it. */}
         <YStack
-          position="relative" flex={1} minWidth={0} height="100%" padding={0}
+          position="relative" flex={1} minWidth={0} height="100%" padding="$2"
           display={currentTab === "chat" || fresh ? "none" : "flex"}
-          $lg={{ padding: 0, display: fresh ? "none" : "flex" }}
+          $lg={{ padding: "$2", display: fresh ? "none" : "flex" }}
         >
           {/* FULL-BLEED, the owner's call: the preview IS the workspace's right
               region, not a card floating in it. The gutter, the hairline and
               the elevation are gone — the resizer's hover seam is the only
               boundary, and the canvas runs to the window edges (the console at
               rest is an invisible pull-up edge, so the bottom is the window's). */}
-          <YStack position="relative" height="100%" width="100%" overflow="hidden" backgroundColor="$background" className="preview-stage">
+          {/* A PANEL you can see: one step off true black, hairline edge,
+              rounded — an 8px gutter, not the old padded float. Full-bleed on a
+              black field made the pane's own surface invisible; this keeps the
+              space and restores the shape. */}
+          <YStack position="relative" height="100%" width="100%" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$color04" backgroundColor="$color1" className="preview-stage">
             {/* Faint top highlight — a crisp edge that reads as raised glass. */}
             <YStack pointerEvents="none" position="absolute" left="$0" right="$0" top="$0" zIndex={20} height={1} />
             <Preview
