@@ -1,6 +1,7 @@
 "use client";
 
-import { Button } from '@hanzo/ui';
+import { Button, Input } from '@hanzo/ui';
+import { sends } from '@hanzo/ui/chat';
 import { SizableText, YStack, XStack, Paragraph } from '@hanzo/ui';
 import { useEffect, useRef, useState } from "react";
 import { Check, GitBranch, PanelLeft, Square } from "lucide-react";
@@ -8,9 +9,128 @@ import { Check, GitBranch, PanelLeft, Square } from "lucide-react";
 import { Voice } from "@hanzo/voice";
 
 import { useMic } from "@/components/editor/ask-ai/mic";
+import { currentProject } from "@/lib/dev/workspace";
+import { HOME, TIMEOUT } from "@/lib/shell";
 
 import { BAR, DEFAULT_OPEN, MIN_OPEN, STEP, maxOpen, useDock } from "./dock";
 import { push, useConsoleLog, useRun } from "./log";
+
+/**
+ * The prompt — the half of this dock you can type into.
+ *
+ * The agent has always been able to run commands on the project's pod; this is
+ * the same door for the person, and it lands in the SAME sandbox: when a run is
+ * live the shell borrows its id, so what you `ls` is the checkout the agent is
+ * editing, not a second copy of it.
+ *
+ * The directory is held HERE rather than on the pod because each command is its
+ * own process (see lib/shell) — carrying it is what makes `cd` mean anything.
+ * Nothing else survives between commands, and the placeholder does not claim
+ * otherwise.
+ */
+function Prompt() {
+  const run = useRun();
+  const [command, setCommand] = useState("");
+  const [cwd, setCwd] = useState(HOME);
+  const [busy, setBusy] = useState(false);
+  const held = useRef("");
+  // What was typed, newest last. ArrowUp walks back through it; `at` is where
+  // the walk has got to, and length means "not walking" — the draft is at the
+  // end of the list, which is exactly where a fresh line belongs.
+  const past = useRef<string[]>([]);
+  const at = useRef(0);
+
+  const send = async () => {
+    const typed = command.trim();
+    if (!typed || busy) return;
+    past.current.push(typed);
+    at.current = past.current.length;
+    setCommand("");
+    setBusy(true);
+    // Echo before the round trip: at 60s a command can outlive your memory of
+    // asking for it, and a prompt that swallows the line looks broken.
+    push("you", "info", typed);
+    try {
+      const res = await fetch("/v1/shell", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          command: typed,
+          cwd,
+          project: currentProject(),
+          // The live run's pod wins: one sandbox, one checkout.
+          sandbox: run?.sandbox || held.current || undefined,
+        }),
+      });
+      const body = (await res.json().catch(() => null)) as {
+        error?: string; stdout?: string; stderr?: string;
+        exitCode?: number; timedOut?: boolean; sandbox?: string; cwd?: string;
+      } | null;
+
+      if (!res.ok || !body || body.error) {
+        push("sandbox", "error", body?.error || `The shell could not run that (${res.status}).`);
+        return;
+      }
+      held.current = body.sandbox || held.current;
+      setCwd(body.cwd || cwd);
+      if (body.stdout?.trim()) push("sandbox", "log", body.stdout.replace(/\n+$/, ""));
+      if (body.stderr?.trim()) push("sandbox", "error", body.stderr.replace(/\n+$/, ""));
+      // A non-zero status is the whole answer for a command that printed
+      // nothing, and silence would read as success.
+      if (body.timedOut) push("sandbox", "warn", `timed out after ${TIMEOUT}s`);
+      else if (body.exitCode) push("sandbox", "warn", `exit ${body.exitCode}`);
+    } catch {
+      push("sandbox", "error", "Could not reach the shell.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  /** Walk the history. Returns false when there is nothing that way. */
+  const walk = (by: number) => {
+    const next = at.current + by;
+    if (next < 0 || next > past.current.length) return false;
+    at.current = next;
+    setCommand(past.current[next] ?? "");
+    return true;
+  };
+
+  return (
+    <XStack alignItems="center" gap="$1.5" paddingTop="$1.5" data-field-box>
+      {/* The path IS the prompt, and it is the only place the shell says where
+          you are — so it never collapses to nothing. */}
+      <SizableText
+        fontFamily="$mono" fontSize={11} lineHeight="1.625"
+        color="$color11" flexShrink={0} maxWidth={180} numberOfLines={1}
+      >
+        {cwd === HOME ? "$" : `${cwd.split("/").slice(-2).join("/")} $`}
+      </SizableText>
+      <Input
+        flex={1}
+        value={command}
+        onChangeText={setCommand}
+        disabled={busy}
+        placeholder="Run a command — cd is remembered, exports are not"
+        aria-label="Run a command in this project's sandbox"
+        fontFamily="$mono"
+        fontSize={11}
+        borderWidth={0}
+        backgroundColor="transparent"
+        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+          if (sends(e.key, e.nativeEvent)) {
+            e.preventDefault();
+            void send();
+            return;
+          }
+          // Only steal the arrows while walking is possible, so a caret moving
+          // through a long command still moves.
+          if (e.key === "ArrowUp" && walk(-1)) e.preventDefault();
+          else if (e.key === "ArrowDown" && walk(1)) e.preventDefault();
+        }}
+      />
+    </XStack>
+  );
+}
 
 /**
  * Stop what the sandbox is running.
@@ -351,24 +471,28 @@ export function Console({
           ) : (
             entries.map((entry) => (
               <XStack key={entry.id} gap="$1.5" alignItems="flex-start">
-                {/* One character says which machine spoke. `$` is the sandbox —
-                    a real shell on a real pod — and its absence is the page's
+                {/* One character says who spoke. `$` is the prompt — a line you
+                    typed — `›` is the sandbox answering, and `·` is the page's
                     own console. A source column of words would be wider than
-                    most of the lines it labels. */}
+                    most of the lines it labels.
+
+                    Your own lines are the only ones drawn in the foreground.
+                    That is how a terminal is read: you scan for what you asked,
+                    and the output belongs to it. */}
                 <SizableText
                   aria-hidden
                   fontFamily="$mono"
                   fontSize={11}
                   lineHeight="1.625"
-                  color={entry.source === "sandbox" ? "var(--brand-accent)" : "$color06"}
+                  color={entry.source === "you" ? "$color" : "$color06"}
                 >
-                  {entry.source === "sandbox" ? "$" : "·"}
+                  {entry.source === "you" ? "$" : entry.source === "sandbox" ? "›" : "·"}
                 </SizableText>
                 <Paragraph
                   className="break-words"
                   flex={1}
                   fontFamily="$mono" fontSize={11} lineHeight="1.625"
-                  whiteSpace="pre-wrap" {...{ color: entry.level === "error" ? "var(--destructive)" : entry.level === "warn"
+                  whiteSpace="pre-wrap" {...{ color: entry.level === "error" ? "var(--destructive)" : entry.level === "warn" || entry.source === "you"
                         ? "$color"
                         : "$color11" }}
                 >
@@ -378,6 +502,13 @@ export function Console({
             ))
           )}
           <div ref={tail} />
+        </YStack>
+      )}
+      {/* The prompt sits OUTSIDE the scroller so it stays put while output runs
+          past it — the one row of this dock that is always reachable once open. */}
+      {open && (
+        <YStack borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingBottom="$2">
+          <Prompt />
         </YStack>
       )}
     </YStack>

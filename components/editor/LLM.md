@@ -365,3 +365,48 @@ emits.
 asserts the request body carries `selectedElementAt`. Only a browser can tell a
 correct recipe from one that arrives — the same reason `editor-toolbar.spec.ts`
 exists rather than a unit test on `iconBox`.
+
+### The dock got a prompt: `cd` is the only state it claims
+
+The console was output-only — a log you could read and not talk to. It now has
+a prompt (`Prompt` in `components/editor/console/index.tsx` → `/v1/shell`), and
+the interesting part is what it does NOT pretend.
+
+**Cloud runs every command as its own process.** The `session` field on cloud's
+`/run` is a NARRATION channel — it copies output into a run's log as it is
+produced — not a PTY. So nothing survives between commands on its own, and a
+surface calling itself a shell while `cd` silently did nothing would be lying in
+the most ordinary way a person could find.
+
+So the working directory is carried by the CLIENT and re-applied per command
+(`lib/shell.ts`): `wrap()` prefixes `cd <cwd> || cd .` and appends a `printf` of
+`$PWD`; `unwrap()` splits that marker back off. Three details are load-bearing
+and each is pinned in `tests/unit/shell.test.ts`:
+
+- **`||`, never `&&`.** A command can delete the directory it ran in. `&&` would
+  refuse to run anything afterwards and strand the shell with no way to type its
+  way out.
+- **`__hz=$?` BEFORE the printf.** `printf` succeeds, so capturing the status
+  after it would report 0 for every failed command.
+- **`lastIndexOf`, not `indexOf`.** `cat lib/shell.ts` prints the marker;
+  anchoring on the first occurrence truncates the command's own output.
+
+The path is single-quoted with `'\''` escaping because it comes back FROM the
+sandbox and a directory may legally be named `'; rm -rf /`.
+
+Environment variables and background jobs do not survive, and the placeholder
+says so rather than leaving it to be discovered.
+
+**One sandbox, one checkout.** When an agent run is live the prompt borrows its
+`sandbox` id (`useRun()`), so what you `ls` is the checkout the agent is editing
+— not a second copy. Otherwise the first command opens the project's sandbox and
+the id is held for the rest of the session; without that every line would open a
+new pod and bill one per keystroke. Ownership is never asserted client-side: the
+route forwards the IAM session and cloud decides which sandbox that identity may
+open, so a sandbox id in the body is not a capability.
+
+**`Source` gained `you`.** Authorship, not severity — which is why it is a
+`Source` and not a `Level`. A typed line renders `$` in the foreground; the
+sandbox answers with `›` and the preview with `·`, both dimmed. Without it a
+transcript gives a command and its output the same weight and you cannot find
+where you were.

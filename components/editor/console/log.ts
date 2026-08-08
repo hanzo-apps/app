@@ -30,7 +30,13 @@ import { useCallback, useEffect, useSyncExternalStore } from "react";
  */
 
 export type Level = "log" | "info" | "warn" | "error" | "debug";
-export type Source = "preview" | "sandbox";
+/**
+ * Who spoke. `preview` is the page, `sandbox` is the pod, and `you` is a line
+ * TYPED at the prompt — authorship, not severity, which is why it belongs here
+ * and not on `Level`. Without it a transcript gives a command and its output the
+ * same weight and you cannot find where you were.
+ */
+export type Source = "preview" | "sandbox" | "you";
 
 export interface Entry {
   id: number;
