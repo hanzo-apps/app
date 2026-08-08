@@ -12,7 +12,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: [
         "/v1/",
-        "/v1/",
         "/dashboard",
         "/settings",
         "/profile",
