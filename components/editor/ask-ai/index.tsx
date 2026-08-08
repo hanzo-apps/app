@@ -10,7 +10,7 @@ import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
 import type { GuiElement } from '@hanzo/gui';
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { toast, Button, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
+import { toast, Button, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
 import { useLocalStorage } from "react-use";
 import { ArrowUp, Bell, ChevronDown, CircleStop, History as HistoryGlyph, ImagePlus, Plug, Plus, Settings as SettingsGlyph, Sparkles, Wrench, X } from "lucide-react";
@@ -1484,7 +1484,7 @@ export function AskAI({
                   {plusOpen ? <X size={16} /> : <Plus size={16} />}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent width={264}>
+              <DropdownMenuContent width={288}>
                 <DropdownMenuItem onSelect={() => document.getElementById("composer-attach")?.click()}>
                   <XStack alignItems="center" gap="$2">
                     <ImagePlus size={15} />
@@ -1517,6 +1517,7 @@ export function AskAI({
                     </DropdownMenuCheckboxItem>
                   </>
                 )}
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={() => document.getElementById("composer-settings")?.click()}>
                   <XStack alignItems="center" gap="$2">
                     <SettingsGlyph size={15} />
@@ -1531,6 +1532,7 @@ export function AskAI({
                     </XStack>
                   </DropdownMenuItem>
                 )}
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={() => router.push("/connectors")}>
                   <XStack alignItems="center" gap="$2">
                     <Plug size={15} />
