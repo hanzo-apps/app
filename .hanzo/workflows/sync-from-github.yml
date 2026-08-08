@@ -2,13 +2,13 @@ name: Sync from GitHub
 # git.hanzo.ai is the build plane (release.yml cuts every image natively) but
 # development also lands on github.com/hanzoai/app. The old push-based mirror
 # (GitHub sync.yml nudge → /v1/.../mirror-sync) is DEAD: the repo is not a
-# Gitea mirror (mirror:false) and the external git.hanzo.ai HTTP surface routes
-# to cloud:8000, so the nudge "succeeds" against a SPA page while Gitea goes
+# Hanzo Git mirror (mirror:false) and the external git.hanzo.ai HTTP surface
+# routes to cloud:8000, so the nudge "succeeds" against a SPA page while this git goes
 # stale and NO images build (bit twice: 07-23 and 07-24, each time needing a
 # manual port-forward push).
 #
 # This is the ONE deterministic direction instead: an in-cluster PULL. The
-# runner reaches both ends — GitHub outbound and this Gitea via the instance
+# runner reaches both ends — GitHub outbound and this git via the instance
 # URL actions/checkout already uses — no ingress dependency. Fast-forward only:
 # a divergence fails LOUDLY here rather than force-pushing either side.
 on:
@@ -22,7 +22,7 @@ jobs:
   ff-main:
     runs-on: [hanzo-build-linux-amd64]
     steps:
-      - name: Checkout Gitea main (full history for the ancestry check)
+      - name: Checkout main (full history for the ancestry check)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -55,9 +55,9 @@ jobs:
               -d '{"ref":"main"}' \
               && echo "release dispatched" || echo "release dispatch failed (non-fatal — next direct push will build)"
           elif git merge-base --is-ancestor "$REMOTE" "$LOCAL"; then
-            echo "Gitea is AHEAD of GitHub ($REMOTE ancestor of $LOCAL) — nothing to pull."
+            echo "this git is AHEAD of GitHub ($REMOTE ancestor of $LOCAL) — nothing to pull."
             echo "(GitHub catch-up is a separate concern; never force from here.)"
           else
-            echo "::error::main DIVERGED between GitHub ($REMOTE) and Gitea ($LOCAL) — refusing to force. Reconcile manually."
+            echo "::error::main DIVERGED between GitHub ($REMOTE) and this git ($LOCAL) — refusing to force. Reconcile manually."
             exit 1
           fi
