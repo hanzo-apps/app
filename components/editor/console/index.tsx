@@ -4,7 +4,7 @@ import { Button, Input } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
 import { SizableText, YStack, XStack, Paragraph } from '@hanzo/ui';
 import { useEffect, useRef, useState } from "react";
-import { Check, GitBranch, PanelLeft, Square } from "lucide-react";
+import { Check, GitBranch, Square } from "lucide-react";
 
 import { Voice } from "@hanzo/voice";
 
@@ -222,8 +222,6 @@ export function Console({
   saveText,
   branch,
   pageCount,
-  sidebarCollapsed,
-  onToggleSidebar,
 }: {
   isAiWorking: boolean;
   /** Honest persistence state — see lib/pages/save-label. */
@@ -231,8 +229,6 @@ export function Console({
   /** The linked repo's branch, or undefined when the project has no repo. */
   branch?: string;
   pageCount: number;
-  sidebarCollapsed: boolean;
-  onToggleSidebar: () => void;
 }) {
   const { height, open, setHeight, toggle, nudge } = useDock();
   const { entries } = useConsoleLog();
@@ -347,30 +343,6 @@ export function Console({
           <SizableText pointerEvents="none" position="absolute" left="50%" top={3} height="$1" width="$6" x="-50%" borderRadius="$10" backgroundColor="transparent" $group-hover={{ backgroundColor: "$color06" }} $group-focus={{ backgroundColor: "$color06" }} $group-press={{ backgroundColor: "$color" }} />
         </YStack>
 
-        {/* Far LEFT — the chat/AI panel toggle. It shows and hides the LEFT pane,
-            so it belongs on the left: a right-side control that collapsed the left
-            pane read as belonging to the preview, and people could not find it.
-            Floated over the bar like the right cluster so the separator underneath
-            stays one clean, uninterrupted drag target. */}
-        <XStack position="absolute" left="$2" top="$0" height="100%" alignItems="center">
-          <Button
-            type="button"
-            onClick={onToggleSidebar}
-            aria-label="Chat panel"
-            aria-expanded={!sidebarCollapsed}
-            variant="ghost"
-            group
-            width="$4.5" height="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}
-          >
-            {/* ONE glyph for the left panel — `PanelLeft`, open or shut (the
-                fleet rule; see components/sidebar). `aria-expanded` above already
-                says which it is. `size={16}` is the rest of that rule: one glyph
-                means one SIZE too, and this was the app's only 14. */}
-            <SizableText color="$color11" $group-hover={{ color: "$color" }}>
-              <PanelLeft size={16} />
-            </SizableText>
-          </Button>
-        </XStack>
 
         {/* State, inert: it rides on the bar but never eats the drag. Padded to
             clear the panel toggle on the left and the mic + Enso on the right —

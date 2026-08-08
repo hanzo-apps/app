@@ -8,7 +8,9 @@ import { YStack, XStack, SizableText } from '@hanzo/ui';
 // the two-copies problem the rest of this migration exists to prevent.
 import type { GuiElement } from '@hanzo/gui';
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, Copy, ThumbsDown, ThumbsUp } from "lucide-react";
+import { useAnalytics } from "@hanzo/event/react";
+import { EVENTS } from "@hanzo/event";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 
 // ONE conversation turn as rendered in the builder chat thread. The thread is a
@@ -145,6 +147,7 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
           ) : (
             <SizableText fontSize="$2" className="thread-shimmer-text">Thinking…</SizableText>
           )}
+          {done && text ? <Feedback text={text} /> : null}
         </YStack>
       </XStack>
     );
@@ -190,10 +193,22 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
               <ActivityItems labels={files} settled />
             </CollapsibleSection>
           )}
-          <XStack alignItems="center" gap="$1.5">
-            <Check size={14} color="var(--brand-accent-muted)" />
-            <SizableText fontSize="$1" color="$color11">{text || "Done"}</SizableText>
-          </XStack>
+          {/* The settled summary is PROSE, at body weight. It rendered as a
+              $1 $color11 footnote beside a check — the one part of the turn
+              written for the person to READ was the most muted thing in the
+              column, while the reference sets it as plain paragraphs under
+              the card. The check survives only for a turn with no words. */}
+          {text ? (
+            <YStack width="100%">
+              <MarkdownRenderer content={text} compact />
+            </YStack>
+          ) : (
+            <XStack alignItems="center" gap="$1.5">
+              <Check size={14} color="var(--brand-accent-muted)" />
+              <SizableText fontSize="$1" color="$color11">Done</SizableText>
+            </XStack>
+          )}
+          <Feedback text={text} />
         </>
       )}
 
@@ -205,6 +220,61 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
         </YStack>
       )}
     </YStack>
+  );
+}
+
+/**
+ * The row under a settled assistant turn: copy it, judge it.
+ *
+ * Three controls and every one DOES something, which is the bar for putting it
+ * on screen at all. Copy puts the turn's text on the clipboard. The thumbs are
+ * product telemetry through the ONE client (`@hanzo/event` — the same stream
+ * pageviews and errors ride), so "was this build any good" becomes a queryable
+ * series instead of a feeling. A row of decorative icons that swallow clicks
+ * would be worse than no row: it teaches that the quiet controls here do
+ * nothing.
+ *
+ * One verdict per turn. Voting again reverses it rather than stacking events —
+ * aria-pressed carries which way it stands.
+ */
+function Feedback({ text }: { text?: string }) {
+  const analytics = useAnalytics();
+  const [copied, setCopied] = useState(false);
+  const [verdict, setVerdict] = useState<"up" | "down" | null>(null);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(text ?? "");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Clipboard can be refused (permissions, insecure context); the button
+      // simply not confirming is the honest rendering of that.
+    }
+  };
+
+  const judge = (next: "up" | "down") => {
+    const settled = verdict === next ? null : next;
+    setVerdict(settled);
+    if (settled) {
+      analytics.capture(EVENTS.FEATURE_USED, { feature: "builder_turn_feedback", verdict: settled });
+    }
+  };
+
+  const dim = { color: "$color11", hoverStyle: { backgroundColor: "$color3", color: "$color" } } as const;
+
+  return (
+    <XStack alignItems="center" gap="$0.5">
+      <Button type="button" variant="ghost" size="icon-sm" borderRadius="$4" title={copied ? "Copied" : "Copy"} aria-label="Copy reply" onClick={copy} {...dim}>
+        {copied ? <Check size={13} /> : <Copy size={13} />}
+      </Button>
+      <Button type="button" variant="ghost" size="icon-sm" borderRadius="$4" title="Good result" aria-label="Good result" aria-pressed={verdict === "up"} onClick={() => judge("up")} {...(verdict === "up" ? { color: "$color", backgroundColor: "$color3" } : dim)}>
+        <ThumbsUp size={13} />
+      </Button>
+      <Button type="button" variant="ghost" size="icon-sm" borderRadius="$4" title="Bad result" aria-label="Bad result" aria-pressed={verdict === "down"} onClick={() => judge("down")} {...(verdict === "down" ? { color: "$color", backgroundColor: "$color3" } : dim)}>
+        <ThumbsDown size={13} />
+      </Button>
+    </XStack>
   );
 }
 
@@ -229,11 +299,11 @@ function CollapsibleSection({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <YStack width="100%" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
+    <YStack width="100%" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2">
       <Button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        width="100%" alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color4" }}
+        width="100%" alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingVertical="$2" hoverStyle={{ backgroundColor: "$color3" }}
       >
         <SizableText
           fontSize="$2" fontWeight="500" {...{ color: live ? undefined : "$color11" }} className="thread-shimmer-text"

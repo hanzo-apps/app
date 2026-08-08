@@ -8,6 +8,7 @@ import {
   ExternalLink,
   History,
   Monitor,
+  PanelLeft,
   RefreshCcw,
   Smartphone,
 } from "lucide-react";
@@ -71,6 +72,8 @@ export function Header({
   onOpenExternal,
   historyOpen,
   onToggleHistory,
+  chatOpen,
+  onToggleChat,
   project,
   onRenamed,
 }: {
@@ -88,6 +91,10 @@ export function Header({
   historyOpen?: boolean;
   /** Toggle the history/rollback panel over the chat pane. */
   onToggleHistory?: () => void;
+  /** Whether the chat column is showing. */
+  chatOpen?: boolean;
+  /** Show/hide the chat column — the PanelLeft toggle, in the reference's seat. */
+  onToggleChat?: () => void;
   project?: Project | null;
   onRenamed?: (name: string) => void;
 }) {
@@ -118,7 +125,7 @@ export function Header({
     <XStack zIndex={20} alignItems="center" gap="$2" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" $sm={{ gap: "$3" }} $lg={{ paddingHorizontal: "$4" }}>
       {/* LEFT — the workspace menu (identity/home anchor) + version history.
           Everything about who/where you are lives in the menu. */}
-      <XStack flexShrink={1} minWidth={0} alignItems="center" gap="$1.5">
+      <XStack flexShrink={1} minWidth={0} alignItems="center" gap="$1.5" overflow="scroll" className="no-scrollbar">
         {/* The ONE Hanzo block-H (mark from @hanzo/logo MARK_PATHS, via the
             shared HanzoLogo). Home anchor, top-left — the IDE's brand corner. */}
         <Link
@@ -143,44 +150,28 @@ export function Header({
             aria-label={historyOpen ? "Back to chat" : "Version history"}
             aria-pressed={Boolean(historyOpen)}
             variant="ghost"
-            display="none" $lg={{ display: "flex" }} size="icon-sm" borderRadius="$5" {...{ ...selected(Boolean(historyOpen)), hoverStyle: historyOpen ? undefined : { backgroundColor: "$color3" } }}
+            display="none" $lg={{ display: "flex" }} size="icon-sm" borderRadius={999} {...{ ...selected(Boolean(historyOpen)), hoverStyle: historyOpen ? undefined : { backgroundColor: "$color3" } }}
           >
             <History size={16} />
           </Button>
         )}
-      </XStack>
-
-      {/* CENTER — view switcher + device switcher + refresh + page selector +
-          open-in-new-tab, one control cluster.
-
-          THE CONTROLS WERE BEING STARVED, and the older note here called it an
-          overlap because it measured the DESCENDANTS. They do not overlap: the
-          three clusters tile cleanly at every width (390: 12→204, 212→241,
-          249→378). What looked like overlap was this cluster's own
-          `overflow: scroll` — a descendant's `getBoundingClientRect()` reports
-          where it WOULD be, un-clipped, so controls scrolled out of view read
-          as sitting on top of the Publish button. Measure the clusters, not
-          the buttons.
-
-          The real fault was `flex={1}` — `flex: 1 1 0`, a ZERO basis, so this
-          cluster asked for nothing and took only what the other two left over.
-          Measured on prod at 390px: 29px of width holding 254px of controls,
-          which is why the page selector read "index.htm" cut mid-word. With
-          `flexBasis: auto` it asks for its content and shrinks from there:
-
-            390px   29px → 128px      560px  199px → 226px      860px  448px → 476px
-
-          The other half is in the workspace menu: the project NAME now gives up
-          its room below $sm, because it is a label and these are the tools.
-
-          `center-safe`, a CLASS rather than `justifyContent="center"`, because
-          this row scrolls. Plain centring overflows equally in BOTH directions
-          and the half that goes past the scroll origin cannot be scrolled back
-          to — at 390px this box holds 254px of controls in 128px, so the
-          Preview/Code tabs would sit permanently out of reach. CSS
-          `justify-content: safe center` centres while it fits and falls back to
-          start the moment it does not; there is no gui prop that says that. */}
-      <XStack alignItems="center" gap="$2" flexGrow={1} flexShrink={1} flexBasis="auto" minWidth={0} overflow="scroll" className="no-scrollbar center-safe">
+        {/* The chat-column toggle, beside history — the reference's seat for it,
+            and now its ONLY seat: it lived on the console bar, which is where
+            you look for the SHELL, not for the chat. One glyph (PanelLeft, the
+            fleet rule), state on aria-expanded. */}
+        {onToggleChat && (
+          <Button
+            type="button"
+            onClick={onToggleChat}
+            title={chatOpen ? "Hide chat" : "Show chat"}
+            aria-label="Chat panel"
+            aria-expanded={Boolean(chatOpen)}
+            variant="ghost"
+            display="none" $lg={{ display: "flex" }} size="icon-sm" borderRadius={999} hoverStyle={{ backgroundColor: "$color3" }}
+          >
+            <PanelLeft size={16} />
+          </Button>
+        )}
         {/* NO group fill and NO group radius.
 
             The segments used to sit in a `$color3` trough, which is the shape a
@@ -237,56 +228,39 @@ export function Header({
             );
           })}
         </XStack>
+      </XStack>
 
-        {/* THE PAGE BROWSER IS NAVIGATION, NOT PREVIEW TOOLING, so it is not
-            behind the `$md` gate below. It was, and that meant a phone could
-            not switch pages AT ALL: the whole cluster is `display: none` under
-            md, and the only page list — and the only SEARCH over it, which is
-            the one way to find a page in a project with more than a handful —
-            went with it. The device toggle and refresh legitimately stay
-            desktop-only; a device switcher on a phone is answering a question
-            nobody asked.
+      {/* CENTER — view switcher + device switcher + refresh + page selector +
+          open-in-new-tab, one control cluster.
 
-            It sits in the centre cluster's scroll track, so on a narrow screen
-            it is reachable by scrolling rather than by being dropped. */}
-        {/* Page browser — search + folder-grouped list of every page in the
-            project (not just index.html). The working page is highlighted. */}
-        {pages.length > 0 && (
-          <Popover open={pageMenuOpen} onOpenChange={setPageMenuOpen}>
-          {/* `size="sm"` (32) — this sits between the two segmented groups and
-                has to be their height exactly. It said `height={32}` and drew 36:
-                the size variant sets a `minHeight` FLOOR (default 36) and a style
-                prop cannot argue a floor down, so the picker stood 4px proud of
-                the groups on either side of it. */}
-            <PopoverTrigger asChild>
-              <Button
-                type="button"
-                title="Browse pages"
-                aria-label="Browse pages"
-                maxWidth="12rem" size="sm" alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color3" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color4" }}
-              >
-                <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1">
-                  {currentPage}
-                </SizableText>
-                <ChevronDown size={14} />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              align="center"
-              sideOffset={6}
-              width={256} overflow="hidden" padding="$0"
-            >
-              <PagePanel
-                pages={pages}
-                currentPage={currentPage}
-                onSelectPage={onSelectPage}
-                onClose={() => setPageMenuOpen(false)}
-                autoFocus
-  />
-            </PopoverContent>
-          </Popover>
-        )}
+          THE CONTROLS WERE BEING STARVED, and the older note here called it an
+          overlap because it measured the DESCENDANTS. They do not overlap: the
+          three clusters tile cleanly at every width (390: 12→204, 212→241,
+          249→378). What looked like overlap was this cluster's own
+          `overflow: scroll` — a descendant's `getBoundingClientRect()` reports
+          where it WOULD be, un-clipped, so controls scrolled out of view read
+          as sitting on top of the Publish button. Measure the clusters, not
+          the buttons.
 
+          The real fault was `flex={1}` — `flex: 1 1 0`, a ZERO basis, so this
+          cluster asked for nothing and took only what the other two left over.
+          Measured on prod at 390px: 29px of width holding 254px of controls,
+          which is why the page selector read "index.htm" cut mid-word. With
+          `flexBasis: auto` it asks for its content and shrinks from there:
+
+            390px   29px → 128px      560px  199px → 226px      860px  448px → 476px
+
+          The other half is in the workspace menu: the project NAME now gives up
+          its room below $sm, because it is a label and these are the tools.
+
+          `center-safe`, a CLASS rather than `justifyContent="center"`, because
+          this row scrolls. Plain centring overflows equally in BOTH directions
+          and the half that goes past the scroll origin cannot be scrolled back
+          to — at 390px this box holds 254px of controls in 128px, so the
+          Preview/Code tabs would sit permanently out of reach. CSS
+          `justify-content: safe center` centres while it fits and falls back to
+          start the moment it does not; there is no gui prop that says that. */}
+      <XStack alignItems="center" gap="$2" flexGrow={1} flexShrink={1} flexBasis="auto" minWidth={0} overflow="scroll" className="no-scrollbar center-safe">
 
         {/* Preview-frame TOOLING — device, refresh, open-in-new. Desktop only:
             below `md` there is no room, and none of the three answers a
@@ -334,6 +308,60 @@ export function Header({
             <RefreshCcw size={14} />
           </Button>
 
+        </XStack>
+
+        {/* THE PAGE BROWSER IS NAVIGATION, NOT PREVIEW TOOLING, so it is not
+            behind the `$md` gate below. It was, and that meant a phone could
+            not switch pages AT ALL: the whole cluster is `display: none` under
+            md, and the only page list — and the only SEARCH over it, which is
+            the one way to find a page in a project with more than a handful —
+            went with it. The device toggle and refresh legitimately stay
+            desktop-only; a device switcher on a phone is answering a question
+            nobody asked.
+
+            It sits in the centre cluster's scroll track, so on a narrow screen
+            it is reachable by scrolling rather than by being dropped. */}
+        {/* Page browser — search + folder-grouped list of every page in the
+            project (not just index.html). The working page is highlighted. */}
+        {pages.length > 0 && (
+          <Popover open={pageMenuOpen} onOpenChange={setPageMenuOpen}>
+          {/* `size="sm"` (32) — this sits between the two segmented groups and
+                has to be their height exactly. It said `height={32}` and drew 36:
+                the size variant sets a `minHeight` FLOOR (default 36) and a style
+                prop cannot argue a floor down, so the picker stood 4px proud of
+                the groups on either side of it. */}
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                title="Browse pages"
+                aria-label="Browse pages"
+                minWidth={0} $md={{ minWidth: 180 }} maxWidth="14rem" size="sm" alignItems="center" justifyContent="center" gap="$1.5" borderRadius="$4" backgroundColor="$color3" paddingHorizontal="$3" hoverStyle={{ backgroundColor: "$color4" }}
+              >
+                <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1">
+                  {currentPage}
+                </SizableText>
+                <ChevronDown size={14} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="center"
+              sideOffset={6}
+              width={256} overflow="hidden" padding="$0"
+            >
+              <PagePanel
+                pages={pages}
+                currentPage={currentPage}
+                onSelectPage={onSelectPage}
+                onClose={() => setPageMenuOpen(false)}
+                autoFocus
+  />
+            </PopoverContent>
+          </Popover>
+        )}
+
+
+
+        <XStack display="none" $md={{ display: "flex" }} alignItems="center">
           <Button
             type="button"
             onClick={onOpenExternal}

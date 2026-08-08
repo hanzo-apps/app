@@ -348,6 +348,8 @@ export const AppEditor = ({
         currentPage={currentPage}
         onSelectPage={setCurrentPage}
         onOpenExternal={openInNewTab}
+        chatOpen={!sidebarCollapsed}
+        onToggleChat={() => setSidebarCollapsed((v) => !v)}
         historyOpen={historyOpen}
         onToggleHistory={() => {
           const next = !historyOpen;
@@ -676,8 +678,6 @@ export const AppEditor = ({
         saveText={saveLabel(autosave.state, autosave.at)}
         branch={project?.repo?.branch}
         pageCount={pages.length}
-        sidebarCollapsed={sidebarCollapsed}
-        onToggleSidebar={() => setSidebarCollapsed((v) => !v)}
   />
 
       <ShareModal

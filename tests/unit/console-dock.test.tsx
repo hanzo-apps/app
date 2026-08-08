@@ -69,7 +69,7 @@ function Composer({ voice }: { voice: ReturnType<typeof machine> }) {
  *  suite locates is whatever was passed in, named once here. */
 const SAVE_TEXT = "Saved 9:15 PM";
 
-const setup = (onToggleSidebar = jest.fn(), voice: ReturnType<typeof machine> | null = machine(), branch?: string) => {
+const setup = (voice: ReturnType<typeof machine> | null = machine(), branch?: string) => {
   const view = render(
     // The app mounts one TooltipProvider in `app/providers.tsx`; the dock lives
     // under it, and the mic's tooltip needs it.
@@ -80,8 +80,6 @@ const setup = (onToggleSidebar = jest.fn(), voice: ReturnType<typeof machine> | 
         saveText={SAVE_TEXT}
         branch={branch}
         pageCount={1}
-        sidebarCollapsed={false}
-        onToggleSidebar={onToggleSidebar}
       />
     </TooltipProvider>,
     // The Console renders @hanzo/gui primitives, which read a createGui config
@@ -91,7 +89,7 @@ const setup = (onToggleSidebar = jest.fn(), voice: ReturnType<typeof machine> | 
   );
   const handle = screen.getByRole("separator", { name: /console/i });
   const dock = view.container.querySelector("[data-console]") as HTMLElement;
-  return { ...view, handle, dock, onToggleSidebar, voice };
+  return { ...view, handle, dock, voice };
 };
 
 /** Height the dock is actually painting, in px. */
@@ -106,7 +104,6 @@ const heightOf = (dock: HTMLElement) => parseInt(dock.style.height, 10);
  * a CSS variable — the emitted class is the only honest evidence available here
  * that an offset is set at all.
  */
-const LEFT_OFFSET = "._l-c-space-2";
 const RIGHT_OFFSET = "._r-c-space-2";
 
 /**
@@ -131,12 +128,12 @@ describe("the bar is a resize handle", () => {
     // Most builder projects have none — only publish or an explicit git sync
     // creates one. The bar used to print a hardcoded "main" regardless, drawing
     // a version-control state that did not exist.
-    const { container } = setup(jest.fn(), machine(), undefined);
+    const { container } = setup(machine(), undefined);
     expect(container.textContent).not.toMatch(/\bmain\b/);
   });
 
   it("shows the REAL branch when the project is linked to a repo", () => {
-    const { container } = setup(jest.fn(), machine(), "release/v2");
+    const { container } = setup(machine(), "release/v2");
     expect(container.textContent).toContain("release/v2");
   });
 
@@ -271,14 +268,13 @@ describe("the bar is not labelled with a verb", () => {
 });
 
 describe("the workspace controls ride far right on the bar", () => {
-  it("carries the chat/AI panel toggle, wired and stateful", () => {
-    const onToggleSidebar = jest.fn();
-    const { dock } = setup(onToggleSidebar);
-    const ai = screen.getByRole("button", { name: /chat panel/i });
-    expect(dock).toContainElement(ai);
-    expect(ai).toHaveAttribute("aria-expanded", "true");
-    fireEvent.click(ai);
-    expect(onToggleSidebar).toHaveBeenCalledTimes(1);
+  it("does NOT carry the chat toggle — that moved to the header", () => {
+    // One control, one seat. It sat here and people looked for it at the top,
+    // where the column it governs is; the reference bar keeps it beside the
+    // project name, and so does ours now. A second copy here would be two
+    // controls answering one question.
+    setup();
+    expect(screen.queryByRole("button", { name: /chat panel/i })).toBeNull();
   });
 
   it("carries the composer's mic, and clicking it opens the conversation", () => {
@@ -290,23 +286,8 @@ describe("the workspace controls ride far right on the bar", () => {
   });
 
   it("shows no mic at all until a composer offers its voice", () => {
-    setup(jest.fn(), null);
+    setup(null);
     expect(screen.queryByRole("button", { name: /talk to hanzo/i })).toBeNull();
-  });
-
-  it("sits the panel toggle on the LEFT, by the pane it controls", () => {
-    // The toggle shows and hides the LEFT chat pane, so it lives on the left: a
-    // right-side control that collapsed the left pane read as belonging to the
-    // preview and people could not find it.
-    setup();
-    const ai = screen.getByRole("button", { name: /chat panel/i });
-    const cluster = clusterFor(ai, LEFT_OFFSET);
-    expect(cluster).not.toBeNull();
-    expect(getComputedStyle(cluster).position).toBe("absolute");
-    // Its own cluster, at the other end of the bar from the AI controls.
-    expect(cluster).not.toContainElement(
-      screen.getByRole("button", { name: /talk to hanzo/i }),
-    );
   });
 
   it("sits the mic and Enso on the RIGHT, mic first", () => {
@@ -332,18 +313,25 @@ describe("the workspace controls ride far right on the bar", () => {
   it("clicking a control does not resize or toggle the dock", () => {
     const { dock } = setup();
     const before = heightOf(dock);
-    fireEvent.click(screen.getByRole("button", { name: /chat panel/i }));
+    fireEvent.click(screen.getByRole("button", { name: /talk to hanzo/i }));
     expect(heightOf(dock)).toBe(before);
   });
 });
 
-describe("the header no longer holds the panel toggle", () => {
-  it("moved it — the console owns it now, so the header cannot also", () => {
+describe("the panel toggle lives in the header, once", () => {
+  it("the header owns it, so the console cannot also", () => {
     const header = readFileSync(
       join(__dirname, "..", "..", "components/editor/header/index.tsx"),
       "utf8",
     );
-    expect(header).not.toMatch(/onToggleSidebar/);
-    expect(header).not.toMatch(/PanelLeftClose/);
+    const console_ = readFileSync(
+      join(__dirname, "..", "..", "components/editor/console/index.tsx"),
+      "utf8",
+    );
+    expect(header).toMatch(/<PanelLeft\b/);
+    expect(header).toMatch(/aria-expanded=\{Boolean\(chatOpen\)\}/);
+    // The glyph rule holds in its new seat too.
+    expect(header).not.toMatch(/PanelLeft(Close|Open)/);
+    expect(console_).not.toMatch(/<PanelLeft\b/);
   });
 });

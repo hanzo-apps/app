@@ -12,7 +12,7 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { toast, Button, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
 import { useLocalStorage } from "react-use";
-import { ArrowUp, CircleStop, ImagePlus, MoreHorizontal, X } from "lucide-react";
+import { ArrowUp, ChevronDown, CircleStop, ImagePlus, MoreHorizontal, X } from "lucide-react";
 
 import ProModal from "@/components/pro-modal";
 import { useUsageLimit } from "@/components/usage/usage-limit";
@@ -1438,52 +1438,43 @@ export function AskAI({
             {/* <InviteFriends /> */}
           </XStack>
           <XStack flexShrink={0} alignItems="center" justifyContent="flex-end" gap="$2">
-            {/* Build vs Plan mode. Build (default) generates/patches the app;
-                Plan is a conversational turn that never modifies it. Persisted. */}
-            <XStack
-              role="group"
-              aria-label="Composer mode"
-              // A compact macOS segmented control — a rounded RECT, not a fat
-              // full-round pill. `$10` rounded it into a lozenge that read as the
-              // loudest thing in the toolbar; `$3` + tighter padding makes it a
-              // quiet inset switch that sits with the icon buttons beside it.
-              flexShrink={0} alignItems="center" borderRadius="$5" backgroundColor="$color3" padding="$0.5"
-            >
-              {/* "Code" was the SECOND thing called Code on this screen — the
-                  header's Preview/Code toggle chooses what you LOOK at, this
-                  chooses what the agent DOES, and one word for two ideas is
-                  what made the row unreadable. The mode is the agent working in
-                  a sandbox where it can run commands, so it is named for that.
-                  The stored value stays `code`; only the word you read changes. */}
-              {(["build", "plan"] as const).map((m) => {
-                const label = m;
-                // The app's ONE selected look, so the composer's mode agrees
-                // with the header's tabs and the sidebar's rows. It read
-                // `var(--brand-accent)`, which resolves to #ffffff here — a pure
-                // white pill, paired with a near-black label. Both segments were
-                // white, in fact: the inactive one passed `undefined`, and an
-                // unset background is not "no background" but the Button's
-                // `default` variant, which is also white.
-                const sel = selected(mode === m);
-                return (
+            {/* Build vs Plan mode — ONE pill naming the current mode, menu on
+                press. It was a two-segment switch, which spends bar width
+                saying both answers at all times; the reference (and the point)
+                is to say the CURRENT one and offer the other on demand. The
+                stored value and the two-mode domain are unchanged. */}
+            <DropdownMenu placement="top-end">
+              <DropdownMenuTrigger asChild>
                 <Button
-                  key={m}
                   type="button"
                   variant="ghost"
-                  aria-pressed={mode === m}
-                  title={
-                    m === "plan"
-                      ? "Plan: chat about your app without changing it"
-                      : "Build: generate and modify your app"
-                  }
-                  onClick={() => setMode(m)}
-                  height={28} borderRadius="$3" paddingHorizontal="$2.5" {...sel} hoverStyle={mode === m ? undefined : { backgroundColor: "$color4" }}
+                  aria-label={`Mode: ${mode}`}
+                  title={mode === "plan" ? "Plan: chat about your app without changing it" : "Build: generate and modify your app"}
+                  height={28} alignItems="center" gap="$1" borderRadius={999} backgroundColor="$color3" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color4" }}
                 >
-                  <SizableText fontWeight="500" textTransform="capitalize" color={sel.color}>{label}</SizableText>
+                  <SizableText fontWeight="500" textTransform="capitalize" color="$color">{mode}</SizableText>
+                  <SizableText color="$color11"><ChevronDown size={12} /></SizableText>
                 </Button>
-                );
-              })}
-            </XStack>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent width={240}>
+                {(["build", "plan"] as const).map((m) => (
+                  <DropdownMenuCheckboxItem
+                    key={m}
+                    checked={mode === m}
+                    onCheckedChange={() => setMode(m)}
+                  >
+                    <YStack>
+                      <SizableText textTransform="capitalize">{m}</SizableText>
+                      <SizableText fontSize="$1" color="$color11">
+                        {m === "plan"
+                          ? "Chat about your app without changing it"
+                          : "Generate and modify your app"}
+                      </SizableText>
+                    </YStack>
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
             {isSmartRouting(model) && routedModel && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -1515,7 +1506,7 @@ export function AskAI({
                 size="icon-sm"
                 variant="destructive"
                 onClick={stopController}
-                gap="$1" borderRadius="$5"
+                gap="$1" borderRadius={999}
               >
                 <CircleStop size={16} />
               </Button>
@@ -1523,7 +1514,7 @@ export function AskAI({
               <Button
                 size="icon-sm"
                 {...accent}
-                borderRadius="$5"
+                borderRadius={999}
                 disabled={
                   isUploading ||
                   (!prompt.trim() &&
