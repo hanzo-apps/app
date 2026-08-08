@@ -22,6 +22,7 @@ import type { Page, Project } from "@/types";
 // The panes come from `lib/panes` — the switcher and the body read one list, so
 // a pane cannot appear in the bar and render nothing.
 import { PANES, paneLabel } from "@/lib/panes";
+import { pageName } from "@/lib/pages/name";
 
 const DEVICES = [
   { name: "desktop", icon: Monitor },
@@ -193,7 +194,7 @@ export function Header({
         <XStack
           role="tablist"
           aria-label="Editor view"
-          flexShrink={0} alignItems="center" gap="$1"
+          flexShrink={0} alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color3"
         >
           {PANES.map((item) => {
             const active = tab === item.value;
@@ -217,7 +218,7 @@ export function Header({
                 // rest are glyphs. That is why only this one is `accent` and why
                 // only this one gets horizontal padding worth the name: a label
                 // needs room, an icon needs a square.
-                size="sm" alignItems="center" gap="$1.5" borderRadius={999} paddingHorizontal={active ? "$3" : "$2"} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, ...(active ? accent : sel), hoverStyle: active ? undefined : { backgroundColor: "$color3" } }}
+                size="sm" alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal={active ? "$3" : "$2"} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, ...(active ? accent : sel), hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
               >
                 <SizableText color={active ? accent.color : sel.color}>
                   <item.icon size={16} />
@@ -351,8 +352,11 @@ export function Header({
                 aria-label="Browse pages"
                 minWidth={0} $md={{ minWidth: 180 }} maxWidth="14rem" size="sm" alignItems="center" justifyContent="center" gap="$1.5" borderRadius="$4" backgroundColor="$color3" paddingHorizontal="$3" hoverStyle={{ backgroundColor: "$color4" }}
               >
-                <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1">
-                  {currentPage}
+                {/* The NAME, not the filename: a person calls index.html the
+                    Homepage, and the picker inside still shows real paths for
+                    anyone who needs them. */}
+                <SizableText numberOfLines={1} fontSize="$2">
+                  {pageName(currentPage)}
                 </SizableText>
                 <ChevronDown size={14} />
               </Button>

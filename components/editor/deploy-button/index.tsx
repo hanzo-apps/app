@@ -49,7 +49,7 @@ export function DeployButton({
                 <Button
                   {...accent}
                   size="sm"
-                  height={28} gap="$1.5" paddingHorizontal="$2.5"
+                  height={28} gap="$1.5" paddingHorizontal="$3" borderRadius={999}
                   disabled={disabled}
                 >
                   <View $lg={{ display: "none" }}>
@@ -71,7 +71,7 @@ export function DeployButton({
           <Button
             {...accent}
             size="sm"
-            height={28} gap="$1.5" paddingHorizontal="$2.5"
+            height={28} gap="$1.5" paddingHorizontal="$3" borderRadius={999}
             onClick={() => setOpen(true)}
             disabled={disabled}
           >

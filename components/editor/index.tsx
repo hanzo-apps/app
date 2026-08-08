@@ -383,10 +383,14 @@ export const AppEditor = ({
             on its own. Load is gone too — you are already inside a project
             editing it, so "load a project" here was a door to nowhere. */}
         <Button
-          variant="outline"
+          variant="ghost"
           size="sm"
           onClick={() => setIsShareModalOpen(true)}
-          height={28} gap="$1.5" paddingHorizontal="$2.5" borderRadius="$4" borderColor="$color06" backgroundColor="$color04" hoverStyle={{ backgroundColor: "$color08", borderColor: "$color8" }}
+          // The same pill as Publish beside it — one family, differing only in
+          // emphasis. It was an outline rect on a translucent fill next to a
+          // raised rounded primary: two shapes for two siblings, which is what
+          // read as "weirdly different".
+          height={28} gap="$1.5" paddingHorizontal="$3" borderRadius={999} backgroundColor="$color3" hoverStyle={{ backgroundColor: "$color4" }}
         >
           <Share2 size={14} />
           <SizableText display="none" $md={{ display: "inline" }}>Share</SizableText>

@@ -1218,14 +1218,21 @@ export function AskAI({
         <XStack marginBottom="$2" alignItems="center" gap="$1.5">
           <XStack ref={pillsRef} flex={1} alignItems="center" gap="$1.5" overflow="scroll" className="no-scrollbar scroll-fade-r">
             {SUGGESTIONS.map((s) => (
-              <Button
+              // An XStack wearing role="button", NOT a Button: a Button's size
+              // variant floors its height (default 36) and a floor cannot be
+              // argued down by a style prop — which is exactly why these chips
+              // towered over the composer they decorate. A chip is a hint, and
+              // a hint is small. Glass, like the composer it belongs to.
+              <XStack
                 key={s}
-                type="button"
-                onClick={() => runSuggestion(s)}
-                flexShrink={0} borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1" hoverStyle={{ borderColor: "$color8", backgroundColor: "$color4" }}
+                role="button"
+                tabIndex={0}
+                onPress={() => runSuggestion(s)}
+                className="glass"
+                flexShrink={0} alignItems="center" height={26} borderRadius={999} paddingHorizontal="$2.5" cursor="pointer" hoverStyle={{ backgroundColor: "$color3" }}
               >
-                <SizableText whiteSpace="nowrap" fontSize="$1" color="$color11">{s}</SizableText>
-              </Button>
+                <SizableText whiteSpace="nowrap" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>{s}</SizableText>
+              </XStack>
             ))}
           </XStack>
           <Button
