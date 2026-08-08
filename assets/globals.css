@@ -252,6 +252,23 @@ a {
  *
  * Past `--hz-composer-max` the box stops and scrolls: an unbounded field walks
  * the send button off the bottom of a phone. */
+/* A finger needs 44px; a mouse does not.
+ *
+ * The starter chips render 34px tall, which is fine to click and small to tap —
+ * iOS asks for 44 and Android for 48dp. The query is `pointer: coarse` rather
+ * than a width breakpoint on purpose: the constraint is the INPUT DEVICE, not
+ * the viewport. A narrow desktop window is still a mouse, and a large tablet is
+ * still a thumb; sizing off width gets both of those backwards.
+ *
+ * `min-height` rather than `height`, so a chip whose label wraps still grows. */
+@media (pointer: coarse) {
+  [data-starter] {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
 .hz-composer textarea {
   resize: none;
   max-height: var(--hz-composer-max, 40vh);
