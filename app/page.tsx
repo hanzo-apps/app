@@ -1,11 +1,12 @@
 "use client";
 
 import { SizableText, YStack, XStack, H1, Paragraph, H2, H3 } from '@hanzo/ui';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Github } from "lucide-react";
+import { fetchPublishedSlugs } from "@/lib/api/templates";
 import Header from "@/components/layout/header";
 import Reveal from "@/components/landing/reveal";
 import LazySection from "@/components/landing/lazy-section";
@@ -39,10 +40,26 @@ import {
 // per slug — a generated placeholder tile on the landing page reads as broken.
 // Ordered by the colour of the shot rather than by rating, so scrolling the
 // strip runs the spectrum instead of shuffling unrelated pictures.
-function qcTemplates(templates: GalleryTemplate[]): GalleryTemplate[] {
+/**
+ * The starter strip: real templates, each with a real shot, that really open.
+ *
+ * `openable` is the set the platform publishes source for, and it is a
+ * SEPARATE question from having a screenshot. Measured 2026-08-08: of the 49
+ * templates that cleared the shot list here, 27 — more than half — answered 404
+ * on /v1/templates/<slug>/pages, so the front page's showcase was mostly
+ * pictures of designs a visitor could pick and then not receive. 22 survive,
+ * which is more than a strip shows.
+ *
+ * An EMPTY `openable` means the warehouse has not answered yet (or at all), and
+ * then this filters on nothing — the strip is exactly what it was before rather
+ * than blank. A front page that renders no templates because a background fetch
+ * failed would be a worse bug than the one being fixed.
+ */
+function qcTemplates(templates: GalleryTemplate[], openable: Set<string>): GalleryTemplate[] {
   const seen = new Set<string>();
   const qc = popularTemplates(templates, 100).filter((t) => {
     if (!TEMPLATE_SHOTS.has(t.slug) || seen.has(t.slug)) return false;
+    if (openable.size > 0 && !openable.has(t.slug)) return false;
     seen.add(t.slug);
     return true;
   });
@@ -85,8 +102,16 @@ export default function LandingPage() {
   // A few real gallery templates surfaced beside the prompt: the bundled
   // snapshot seeds them instantly, then the live catalog (gallery.hanzo.ai)
   // refreshes below.
-  const [starterTemplates, setStarterTemplates] = useState<GalleryTemplate[]>(
-    () => qcTemplates(snapshotCatalog().templates),
+  // The gallery rows and the set that can be opened arrive separately, so both
+  // are held and the strip is derived — otherwise whichever landed second would
+  // have to remember the first.
+  const [galleryRows, setGalleryRows] = useState<GalleryTemplate[]>(
+    () => snapshotCatalog().templates,
+  );
+  const [openable, setOpenable] = useState<Set<string>>(() => new Set());
+  const starterTemplates = useMemo(
+    () => qcTemplates(galleryRows, openable),
+    [galleryRows, openable],
   );
 
   // Fetch the user's REAL projects from the ONE canonical org store (the same
@@ -142,10 +167,13 @@ export default function LandingPage() {
       .then((res) => res.json())
       .then((data) => {
         if (alive && Array.isArray(data.templates) && data.templates.length) {
-          setStarterTemplates(qcTemplates(data.templates));
+          setGalleryRows(data.templates);
         }
       })
       .catch(() => {});
+    // The shop window and the warehouse are different services that disagree by
+    // 43 rows, which is why both are asked.
+    fetchPublishedSlugs().then((s) => alive && setOpenable(s));
     return () => {
       alive = false;
     };
