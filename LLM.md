@@ -414,3 +414,55 @@ So the alerts are real and the exposure is nil. Fixing them means pnpm
 they clear when `next` bumps. **Re-check the reachability, not the count**: the
 number will keep climbing, and the question that matters is whether anything
 here imports one, or whether `unoptimized` ever flips.
+
+### The sandbox is a working copy, and git.hanzo.ai is the only git
+
+A Code turn is a `dev` process inside a gVisor pod, and for a long time that pod
+was a shadow of the forge rather than a clone of it. `openSandbox` never cloned,
+so the agent's first run on any project started in an EMPTY directory;
+`runHarness` never committed, so the work stayed on the released volume and
+reached git.hanzo.ai never. What the history panel drew was the browser
+rebuilding a checkout it could not see, out of the `done` event's file list.
+
+Three files carry the fix and nothing else needs to know:
+
+- **`lib/agent/checkout.ts`** — the two verbs that bracket a turn. `checkout()`
+  clones the project's repo into the pod (guarded by `[ -d .git ] ||`, because the
+  volume re-attaches and a re-clone would throw away `node_modules`); `land()`
+  adds, commits, fetches, rebases and pushes. Both answer with a SENTENCE, empty
+  when nothing is wrong.
+- **`openSandbox({ repo })`** does the first, so every door into a project's pod
+  — the agent and the terminal — gets the project. **`runHarness({ repo })`** does
+  the second, after `dev` exits 0.
+- **`lib/git/forge.ts`** owns the credential. `forgeRemote()` hands back a CLEAN
+  url plus the `git credential-store` line separately, and the line travels on the
+  command's **stdin** (`Sandbox.exec`'s third argument → cloud's `RunIn.Stdin`).
+  Cloud has no env field on `/run` and `sh -c` puts a command in the pod's process
+  table, so stdin is the only channel a secret may take. Nothing puts a token in a
+  URL: it would land in `.git/config` and in every error git prints.
+
+Consequences worth knowing before you touch any of it:
+
+- **The commit is the record; the `done` event is a display.** A harness run emits
+  `files: []` and only `changed`. The browser takes files up ONLY when the run was
+  not durable (`components/editor/ask-ai/index.tsx`) — an in-memory run is the one
+  case where the tab holds the only copy. Feeding a durable run's files back into
+  `pages` is what committed `.tsx` and `.json` as HTML pages.
+- **`land` rebases before pushing.** `/v1/git/native` (autosave) commits the
+  browser's pages to the SAME repo, so a project used in both modes has a branch
+  that moved under the pod's clone; a straight push is a non-fast-forward.
+- **`.git/info/exclude`** is written at checkout with `node_modules`, `.next`,
+  `dist`, … — `git add -A` takes everything, and a browser-built project's repo has
+  no `.gitignore` at all, because its pages went through the forge API and never
+  through a git client.
+- **One backend.** `lib/git/sync.ts` is the export path to somebody ELSE's forge:
+  `PushOptions.provider` is `Exclude<GitProvider, 'hanzo'>` and the type is what
+  keeps the second one from growing back. Publish (`/v1/git/sync` with
+  `provider: 'hanzo'`) goes through `forge.ts` to `git.hanzo.ai/<user>/<slug>` —
+  the same owner+slug the sandbox clones and `/v1/git/native` commits to. Owner is
+  always the session's IAM username, never anything the browser names.
+- **Still on `api.hanzo.ai/v1/git`:** the READ half in `lib/git/log.ts`
+  (`listCommitsHanzo` / `getCommitHanzo`). It is unreachable — `/v1/git/commits`
+  short-circuits `provider === 'hanzo'` to `forge.ts` before it — but it is still
+  compiled and still tested by `tests/unit/git-log.test.ts`. Delete it and its
+  tests together, or leave it alone; do not half-cut it.

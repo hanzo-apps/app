@@ -17,6 +17,7 @@ import { NextResponse } from "next/server";
 
 import { Sandbox, openSandbox, SandboxError } from "@/lib/agent/sandbox";
 import { session } from "@/lib/iam";
+import { slugifyProject } from "@/lib/org/policy";
 import { HOME, TIMEOUT, unwrap, wrap } from "@/lib/shell";
 
 export const runtime = "nodejs";
@@ -32,10 +33,11 @@ function text(v: unknown): string {
 }
 
 export async function POST(request: NextRequest) {
-  const token = (await session(request))?.token;
-  if (!token) {
+  const id = await session(request);
+  if (!id?.token) {
     return NextResponse.json({ error: "Sign in to use the shell." }, { status: 401 });
   }
+  const token = id.token;
 
   let body: Record<string, unknown>;
   try {
@@ -67,24 +69,32 @@ export async function POST(request: NextRequest) {
   try {
     // A held id is reused as-is. Only the first command of a session pays for
     // `openSandbox`, which gets-or-creates the project's sandbox.
-    let id = held;
-    if (!id) {
-      const opened = await openSandbox({ baseUrl: HANZO_AI_BASE_URL, token, project });
+    let box = held;
+    if (!box) {
+      const slug = slugifyProject(project);
+      const opened = await openSandbox({
+        baseUrl: HANZO_AI_BASE_URL,
+        token,
+        project,
+        // The same repo the coding agent clones, so a person typing `ls` in the
+        // terminal and the agent editing the project are standing in ONE tree.
+        ...(id.name && slug ? { repo: { owner: id.name, name: slug } } : {}),
+      });
       if ("why" in opened) {
         // Cloud's own sentence — a quota, a cold pull, a refused runtime. It is
         // what the person needs to read, so it travels unchanged.
         return NextResponse.json({ error: opened.why }, { status: 502 });
       }
-      id = opened.sandbox.id;
+      box = opened.sandbox.id;
     }
 
-    const sandbox = new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id, token });
+    const sandbox = new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id: box, token });
     const cwd = text(body.cwd).trim() || HOME;
     const r = await sandbox.exec(wrap(command, cwd), TIMEOUT);
     const { out, cwd: landed } = unwrap(r.stdout);
 
     return NextResponse.json({
-      sandbox: id,
+      sandbox: box,
       // An unreported directory means the shell never got to print one; keeping
       // the one the caller had is better than silently sending them home.
       cwd: landed || cwd,

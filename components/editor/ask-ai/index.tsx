@@ -615,9 +615,18 @@ export function AskAI({
             updateAssistant(codeId, { text: answer, phase: "building" });
           },
         });
-        // A durable run's files live in the sandbox; take up what it changed so
-        // the preview and the editor show the same thing the disk holds.
-        if (result.files.length) {
+        // ONLY A RUN THAT HAD NOWHERE ELSE TO PUT ITS WORK.
+        //
+        // A durable run edits a real checkout and commits it to git.hanzo.ai from
+        // inside the pod, so there is nothing here to take up — and taking it up
+        // was actively wrong: `pages` is the HTML the preview renders and the
+        // autosave commits, so a run that touched `App.tsx` and `tsconfig.json`
+        // put both into the page set, which committed them a second time as pages
+        // and left the preview trying to render TypeScript.
+        //
+        // A run with no sandbox is the opposite case: the browser is the only
+        // copy of what it wrote, and dropping it would lose the turn outright.
+        if (!result.durable && result.files.length) {
           onSuccess(
             result.files.map((f) => ({ path: f.path, html: f.content })),
             promptToUse.trim(),

@@ -1,18 +1,25 @@
 /**
- * /v1/git/sync — push a builder project to the user's own GitHub/GitLab repo.
+ * /v1/git/sync — push a builder project to its repo.
  *
  * The REVERSE of the repo-import path. The builder holds a generated static
  * project (the same `pages[]` that `/v1/publish` deploys); this route:
- *   1. Resolves the signed-in user's linked-provider OAuth token from IAM
- *      SERVER-SIDE (the user's own bearer; the token NEVER reaches the browser).
- *      No linked token ⇒ 401 `{connected:false}` — the UI shows the honest
- *      "Connect GitHub/GitLab first" CTA (a service token is NEVER substituted).
+ *   1. Resolves who is pushing and where. `hanzo` is our own forge and needs no
+ *      link — the server commits with its forge credential to the SESSION's
+ *      account. GitHub/GitLab need the user's linked OAuth token, resolved from
+ *      IAM SERVER-SIDE (it never reaches the browser); no linked token ⇒ 401
+ *      `{connected:false}` and the honest "connect first" CTA.
  *   2. Ensures the org-scoped `/v1/projects` record exists (idempotent), reusing
  *      its already-linked repo when set so re-syncs push to the SAME repo.
- *   3. Creates-or-targets the repo and pushes the files as ONE atomic commit via
- *      the provider REST APIs (no local git binary / clone) — see lib/git/sync.ts.
+ *   3. Creates-or-targets the repo and pushes the files as ONE atomic commit.
  *   4. Records the link on the project (PATCH `repo:{url,branch}`) so the console
  *      shows it and future publishes can re-sync.
+ *
+ * ONE HOME FOR A PROJECT. `hanzo` used to mean `api.hanzo.ai/v1/git/<org>/<slug>`
+ * here while the coding agent and the per-turn commit wrote to
+ * `git.hanzo.ai/<user>/<slug>`. Same project, two repos, two owners, two
+ * histories — and a person looking at either found half their work missing. It
+ * now goes through `lib/git/forge.ts`, to the same owner+slug `/v1/git/native`
+ * commits to and the sandbox clones from.
  *
  * Auth-required, same-origin (CSRF), size/file-count capped like publish, fail-
  * closed. Org + billing are derived server-side from the bearer owner claim — the
@@ -25,7 +32,14 @@ import { session } from '@/lib/iam';
 import { requireSameOrigin } from '@/lib/org/csrf';
 import { slugifyProject } from '@/lib/org/policy';
 import { resolveConnection } from '@/lib/git/server';
-import { GitSyncError, pushProject, toFiles, type GitProvider } from '@/lib/git/sync';
+import { ForgeError, commitFiles, ensureRepo, forgeConfigured } from '@/lib/git/forge';
+import {
+  GitSyncError,
+  pushProject,
+  toFiles,
+  type GitProvider,
+  type SyncResult,
+} from '@/lib/git/sync';
 import { commitMessage } from '@/lib/git/coauthor';
 
 export const runtime = 'nodejs';
@@ -43,11 +57,13 @@ interface PageIn {
 
 /**
  * The connect surface each provider points the user at when no token is linked.
- * Hanzo is our own git — the only "unlinked" state is being signed out, so its
- * hint is the sign-in CTA (never an OAuth-link hint).
+ *
+ * Our own forge is absent, and the TYPE is what keeps it absent: there is no
+ * OAuth link to offer for it — the caller is already signed in and the server
+ * commits with its own forge credential — so a hint for it could only ever be
+ * shown by a mistake.
  */
-const CONNECT_HINT: Record<GitProvider, string> = {
-  hanzo: 'Sign in to push to Hanzo git.',
+const CONNECT_HINT: Record<Exclude<GitProvider, 'hanzo'>, string> = {
   github: 'Connect GitHub in your account settings, then try again.',
   gitlab: 'Connect GitLab in your account settings, then try again.',
 };
@@ -146,16 +162,35 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No valid files to sync.' }, { status: 400 });
   }
 
+  // OUR forge needs no link: the caller is signed in, the owner is their IAM
+  // username, and the credential is the server's. What it does need is to BE
+  // wired, and saying so beats pretending to publish — the same 501 and the same
+  // sentence `/v1/git/native` answers with, because it is the same missing
+  // credential.
+  if (provider === 'hanzo' && !forgeConfigured()) {
+    return NextResponse.json(
+      { error: 'git.hanzo.ai is not wired on this deployment (GIT_FORGE_TOKEN).' },
+      { status: 501 },
+    );
+  }
+  if (provider === 'hanzo' && !id.name) {
+    return NextResponse.json({ error: 'No account name on this session.' }, { status: 401 });
+  }
+
   // Resolve the linked-provider connection SERVER-SIDE (the user's own bearer ⇒
   // token comes back unmasked). Fail-closed to an honest "connect first" when
   // unlinked. resolveConnection is the ONE shared token-resolution path (also
   // used by the accounts/repos routes) — no duplicate get-account round-trip.
-  const conn = await resolveConnection(req, provider);
-  if (!conn) {
-    return NextResponse.json(
-      { error: CONNECT_HINT[provider], connected: false, provider },
-      { status: 401 },
-    );
+  let linkedToken = '';
+  if (provider !== 'hanzo') {
+    const conn = await resolveConnection(req, provider);
+    if (!conn) {
+      return NextResponse.json(
+        { error: CONNECT_HINT[provider], connected: false, provider },
+        { status: 401 },
+      );
+    }
+    linkedToken = conn.token;
   }
 
   // Org gating: `id` is VALIDATED, so effectiveOrg honors a cross-org X-Org-Id
@@ -217,34 +252,65 @@ export async function POST(req: NextRequest) {
     existingRepoUrl = repoView.url;
   }
 
-  // 2) Push the files as ONE commit to the provider.
-  let result;
+  // Attribution: the trailer is added unless a PAYING caller asked to omit it.
+  // `omitAttribution` arrives from the browser and is only a preference; the tier
+  // is resolved here from the caller's own bearer, because a paywall the client
+  // can answer is not a paywall. An unreadable entitlements service leaves `tier`
+  // empty, which fails CLOSED — the trailer stays, which is the safe direction to
+  // be wrong in.
+  const message = commitMessage(
+    (body.message || `Sync ${name} from hanzo.app`).slice(0, 500),
+    { omitAttribution: body.omitAttribution === true, tier: await resolveTier(id.token) },
+  );
+
+  // 2) Push the files as ONE commit.
+  let result: SyncResult;
   try {
-    result = await pushProject({
-      provider,
-      token: conn.token,
-      files,
-      // Attribution: the trailer is added unless a PAYING caller asked to omit
-      // it. `omitAttribution` arrives from the browser and is only a preference;
-      // the tier is resolved here from the caller's own bearer, because a
-      // paywall the client can answer is not a paywall. An unreadable
-      // entitlements service leaves `tier` empty, which fails CLOSED — the
-      // trailer stays, which is the safe direction to be wrong in.
-      message: commitMessage(
-        (body.message || `Sync ${name} from hanzo.app`).slice(0, 500),
-        { omitAttribution: body.omitAttribution === true, tier: await resolveTier(id.token) },
-      ),
-      existingRepoUrl: existingRepoUrl || undefined,
-      account: body.account?.trim() || undefined,
-      repoName: body.repo?.trim() || slug,
-      private: body.private,
-      description: (body.description || '').trim(),
-    });
+    if (provider === 'hanzo') {
+      // The OWNER is the session's IAM username and nothing else — the same
+      // binding `/v1/git/native` uses, and the only thing that makes it safe for
+      // the server to act with an admin-scoped forge credential. `body.account`
+      // is ignored here on purpose: a caller cannot publish into someone else's
+      // account by naming it.
+      const owner = id.name;
+      const { repo, created } = await ensureRepo(owner, slug);
+      const branch = repo.default_branch || 'main';
+      const { commit } = await commitFiles(owner, slug, branch, files, message);
+      result = {
+        provider: 'hanzo',
+        repoUrl: `${repo.html_url}.git`,
+        htmlUrl: repo.html_url,
+        branch,
+        commitSha: commit ?? '',
+        created,
+      };
+    } else {
+      result = await pushProject({
+        provider,
+        token: linkedToken,
+        files,
+        message,
+        existingRepoUrl: existingRepoUrl || undefined,
+        account: body.account?.trim() || undefined,
+        repoName: body.repo?.trim() || slug,
+        private: body.private,
+        description: (body.description || '').trim(),
+      });
+    }
   } catch (e) {
     if (e instanceof GitSyncError) {
       const payload: Record<string, unknown> = { error: e.message, provider };
       if (e.code === 'forbidden') payload.connected = false;
       return NextResponse.json(payload, { status: e.status });
+    }
+    if (e instanceof ForgeError) {
+      // A forge 4xx is about this request (name taken, no such account); anything
+      // else is the service. Passing the status through is what lets the UI tell
+      // the two apart instead of calling both an outage.
+      return NextResponse.json(
+        { error: e.message, provider },
+        { status: e.status >= 400 && e.status < 500 ? e.status : 502 },
+      );
     }
     return NextResponse.json({ error: 'Sync failed.', provider }, { status: 502 });
   }

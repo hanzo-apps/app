@@ -74,8 +74,9 @@ describe("translate", () => {
  * the file that now exists, and an untracked file inside a new directory, which
  * only appears at all because of `-uall`.
  *
- * This list is what the browser hands to commitTurn, so a path lost here is a
- * revision that never reaches git.hanzo.ai.
+ * This list is what the thread SHOWS for a turn — the record of the turn is the
+ * commit the pod pushes right after this is read, which is also why it is read
+ * first: once the commit lands the tree is clean and this answers nothing.
  */
 import { parsePorcelain } from "../../lib/agent/harness";
 

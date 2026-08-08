@@ -35,9 +35,18 @@ export interface CodeTurnResult {
   reason?: string;
   /** The model's closing summary, or the error that ended the run. */
   text: string;
-  /** Project-relative paths the run wrote. */
+  /** Project-relative paths the run wrote — for display. On a durable run the
+   *  record of what happened is the commit the pod pushed, not this list. */
   changed: string[];
-  /** The files as they now stand, for the workspace to take up. */
+  /**
+   * The files, for the workspace to take up — and ONLY ever on a run that had
+   * nowhere else to put them.
+   *
+   * A durable run commits its own work to git.hanzo.ai from the sandbox, so this
+   * arrives empty and must: the alternative is the browser rebuilding a checkout
+   * it cannot see into an HTML page set it can, which is how `.tsx` ended up
+   * committed as a page.
+   */
   files: AgentFile[];
   ok: boolean;
 }

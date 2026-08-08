@@ -31,6 +31,29 @@ export function forgeConfigured(): boolean {
   return Boolean(TOKEN);
 }
 
+/**
+ * What a git client needs to speak to the forge as us: a repo URL with NO secret
+ * in it, and the one line `git credential-store` reads the secret out of.
+ *
+ * Two values rather than the obvious `https://user:token@host/owner/repo.git`,
+ * because a URL carrying a credential is a credential that leaks: it lands in the
+ * clone's `.git/config`, in the argv of every git process (so in `ps`), and in
+ * the text of every error git prints about the remote. The pair below keeps the
+ * secret off every command line — it travels on the command's STDIN and lands in
+ * a 0600 file — while the URL that appears in configs and logs is clean.
+ *
+ * The token is percent-encoded because git parses that line as a URL and decodes
+ * it; a `@` or `:` in a credential would otherwise re-cut the line in the wrong
+ * places.
+ */
+export function forgeRemote(owner: string, name: string): { url: string; credential: string } {
+  const origin = new URL(BASE);
+  return {
+    url: `${BASE}/${encodeURIComponent(owner)}/${encodeURIComponent(name)}.git`,
+    credential: `${origin.protocol}//x-access-token:${encodeURIComponent(TOKEN)}@${origin.host}`,
+  };
+}
+
 export class ForgeError extends Error {
   constructor(message: string, readonly status = 502) {
     super(message);
@@ -98,15 +121,24 @@ export async function getRepo(owner: string, name: string): Promise<ForgeRepo | 
  *
  * `auto_init` matters: an EMPTY repo has no default branch, and committing into
  * one fails in a way that reads as a permissions problem. Initialising at
- * creation means the first turn commits onto a branch that already exists.
+ * creation means the first turn commits onto a branch that already exists — and
+ * that a clone of it lands on a branch rather than in a detached void.
+ *
+ * `created` comes back because the lookup that answers it already happened here.
+ * A caller that wants to say "repository created" would otherwise have to ask the
+ * forge the same question a second time, and could get a different answer.
  */
-export async function ensureRepo(owner: string, name: string): Promise<ForgeRepo> {
+export async function ensureRepo(
+  owner: string,
+  name: string,
+): Promise<{ repo: ForgeRepo; created: boolean }> {
   const existing = await getRepo(owner, name);
-  if (existing) return existing;
-  return forge<ForgeRepo>(`/admin/users/${encodeURIComponent(owner)}/repos`, {
+  if (existing) return { repo: existing, created: false };
+  const repo = await forge<ForgeRepo>(`/admin/users/${encodeURIComponent(owner)}/repos`, {
     method: 'POST',
     body: JSON.stringify({ name, private: true, auto_init: true, default_branch: 'main' }),
   });
+  return { repo, created: true };
 }
 
 export interface ForgeFile {
@@ -200,11 +232,39 @@ export async function listForgeCommits(
 }
 
 /**
+ * Binary by extension, so it is never decoded as text.
+ *
+ * A revision is read in order to be PREVIEWED and FORKED, and a fork writes every
+ * file back as UTF-8 — which turns a PNG into a corrupt PNG. Extension rather than
+ * sniffing because the tree already names every path and nothing else about a blob
+ * is known before it is fetched; a wrong guess here costs one skipped asset, and
+ * the alternative costs a broken file with no sign that anything happened.
+ */
+const BINARY =
+  /\.(png|jpe?g|gif|webp|avif|ico|bmp|tiff?|svgz|mp[34]|m4a|wav|ogg|opus|webm|mov|avi|mkv|woff2?|ttf|otf|eot|zip|gz|tgz|bz2|xz|7z|rar|pdf|wasm|so|dylib|dll|exe|bin|class|jar|db|sqlite3?|node|psd)$/i;
+
+/** A blob past this is not source, and a revision is not a file server. */
+const MAX_BLOB_BYTES = 1024 * 1024;
+
+/** And a revision is not a whole dependency tree either. */
+const MAX_BLOBS = 500;
+
+/**
  * A commit's files as { path, html } — for previewing and FORKING a revision.
  *
- * The tree at the sha names the blobs; each text blob is fetched raw. Binary
- * files are skipped rather than decoded as text, exactly as the checkpoint
- * reader does, because a fork writes these into a new project as UTF-8.
+ * EVERY TEXT BLOB, not just `.html`. The filter used to be `/\.html?$/i`, from
+ * when a project was a bag of generated pages and nothing else. A project is now
+ * a repo the coding agent pushes to from its sandbox, so its files are `.tsx`,
+ * `.ts`, `.json`, `.css` — and every one of them was dropped here, which made a
+ * native repo's history preview and its fork both come back EMPTY while the
+ * commits sat right there in the timeline.
+ *
+ * `html` is the field name the whole builder speaks for "the contents of a file
+ * at a path"; it is the transport, not a claim about the language.
+ *
+ * Bounded twice, because a real repo is not a bag of pages: binaries are skipped
+ * by extension and anything oversized or past `MAX_BLOBS` is left out rather than
+ * fetched one round trip at a time.
  */
 export async function forgeCommitPages(
   owner: string,
@@ -213,10 +273,15 @@ export async function forgeCommitPages(
 ): Promise<{ path: string; html: string }[]> {
   const o = encodeURIComponent(owner);
   const n = encodeURIComponent(name);
-  const tree = await forge<{ tree?: { path: string; type: string }[] }>(
+  const tree = await forge<{ tree?: { path: string; type: string; size?: number }[] }>(
     `/repos/${o}/${n}/git/trees/${encodeURIComponent(sha)}?recursive=true`,
   );
-  const blobs = (tree?.tree ?? []).filter((e) => e.type === 'blob' && /\.html?$/i.test(e.path));
+  const blobs = (tree?.tree ?? [])
+    .filter(
+      (e) =>
+        e.type === 'blob' && !BINARY.test(e.path) && (e.size ?? 0) <= MAX_BLOB_BYTES,
+    )
+    .slice(0, MAX_BLOBS);
   const pages: { path: string; html: string }[] = [];
   for (const b of blobs) {
     try {

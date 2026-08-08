@@ -42,7 +42,9 @@
  */
 
 import type { AgentEvent } from "./types";
-import type { Sandbox } from "./sandbox";
+import type { ProjectExec } from "./fs";
+import { land, type Repo } from "./checkout";
+import { quote } from "@/lib/shell";
 
 /** The gateway `dev` talks to. Its own `/v1`, never a vendor's. */
 const HANZO_BASE = (process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai").replace(/\/+$/, "");
@@ -97,7 +99,6 @@ const HANZO_BASE = (process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai").rep
  * argv array with no shell in between. The difference is the transport, not the
  * config, so the values below stay identical to the ones it passes.
  */
-const quote = (s: string): string => `'${s.replace(/'/g, `'\\''`)}'`;
 const cfg = (assignment: string): string[] => ["-c", quote(assignment)];
 
 function mcpArgs(cwd: string): string[] {
@@ -229,8 +230,18 @@ export type HarnessResult = {
   lastMessage: string;
   /** Non-zero means the harness itself failed, not the task. */
   exitCode: number;
-  /** Paths this run wrote, as the sandbox's own git reports them. */
+  /** Paths this run wrote, as the sandbox's own git reports them. FOR DISPLAY —
+   *  the record of what happened is the commit, not this list. */
   changed: string[];
+  /**
+   * Why the turn did not reach git.hanzo.ai, when it did not.
+   *
+   * Absent means it is on the forge — or that nobody asked for it to be, which is
+   * the scratch case and not a failure. A turn whose work is only on the volume
+   * is exactly the state this module used to leave EVERY turn in, silently, so it
+   * is the one thing worth saying out loud when it happens.
+   */
+  unpushed?: string;
 };
 
 /**
@@ -262,19 +273,18 @@ export function parsePorcelain(out: string): string[] {
  * pod with its own tools, and the client never learns a thing — so asking it
  * would report NOTHING CHANGED after a run that rewrote the project.
  *
- * That matters beyond a display: the `done` event's file list is what the
- * browser hands to `commitTurn`, and `commitTurn` is what writes the revision to
- * git.hanzo.ai. An empty list is a turn that silently records no history — the
- * project's version panel stays empty while the work is real and on disk.
+ * This is now FOR DISPLAY, and asking it is still the pod's job. The record of
+ * the turn is the commit `land` pushes a moment later; this list is what the
+ * thread shows while it does. It is read BEFORE the commit for the obvious
+ * reason — afterwards the tree is clean and the honest answer is "nothing".
  *
- * So the question goes to the thing that actually watched: the checkout. Tracked
- * modifications and untracked additions both count, because a new file is as
- * much of the turn as an edited one. A directory that is not a repo answers
- * empty, honestly — there is nothing to commit from and nothing to claim.
+ * Tracked modifications and untracked additions both count, because a new file is
+ * as much of the turn as an edited one. A directory that is not a repo answers
+ * empty, honestly — there is nothing to enumerate and nothing to claim.
  */
-async function changedInSandbox(box: Sandbox, cwd: string): Promise<string[]> {
+async function changedInSandbox(box: ProjectExec, cwd: string): Promise<string[]> {
   const script = [
-    `cd ${JSON.stringify(cwd)} 2>/dev/null || cd .`,
+    `cd ${quote(cwd)} 2>/dev/null || cd .`,
     `git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0`,
     // -uall so a new directory lists its files rather than just itself; -z is
     // avoided because the porcelain path is parsed line-wise below.
@@ -302,10 +312,26 @@ async function changedInSandbox(box: Sandbox, cwd: string): Promise<string[]> {
  * The token is passed as HANZO_API_KEY through the command's environment, and
  * the prompt through a heredoc, so neither is interpolated into a shell word
  * where a quote in a user's task could end the argument.
+ *
+ * AND IT ENDS WITH A COMMIT. Given a `repo`, the turn is added, committed and
+ * pushed to git.hanzo.ai from inside the pod — by the thing that made the edits,
+ * to the repo it was cloned from. It used to end with nothing: the pod was
+ * released, the volume kept the files, and the only record anyone got was
+ * whatever the browser could rebuild out of the `done` event. That is why the
+ * file list below is now for display and the commit is the history.
  */
 export async function runHarness(
-  box: Sandbox,
-  opts: { task: string; token: string; model?: string; cwd?: string; timeoutSec?: number },
+  box: ProjectExec,
+  opts: {
+    task: string;
+    token: string;
+    model?: string;
+    cwd?: string;
+    timeoutSec?: number;
+    /** The repo this pod is a working copy of. Absent ⇒ nowhere to push, which
+     *  is the scratch case and not a failure. */
+    repo?: Repo;
+  },
   emit: (e: AgentEvent) => void | Promise<void>,
 ): Promise<HarnessResult> {
   const cwd = opts.cwd || ".";
@@ -318,7 +344,7 @@ export async function runHarness(
   // escaping rules for the caller to get wrong, and nothing of the task visible
   // in the process table.
   const script = [
-    `cd ${JSON.stringify(cwd)} 2>/dev/null || cd .`,
+    `cd ${quote(cwd)} 2>/dev/null || cd .`,
     `unset OPENAI_API_KEY OPENAI_BASE_URL`,
     `export HANZO_API_KEY=${JSON.stringify(opts.token)}`,
     `dev ${args} -- "$(cat <<'HANZO_TASK_EOF'`,
@@ -352,9 +378,21 @@ export async function runHarness(
     await emit({ type: "error", message: r.stderr.trim().slice(0, 600) });
   }
 
+  const exitCode = r.exitCode ?? 0;
+  // Before the commit: afterwards the tree is clean and this answers "nothing".
+  const changed = await changedInSandbox(box, cwd);
+
+  // A harness that fell over left a tree in whatever state it got to, and a
+  // commit of a half-finished edit is a revision somebody has to work out how to
+  // undo. The files stay on the volume, so the next turn resumes from them and
+  // lands them once the work is actually finished.
+  const unpushed =
+    opts.repo && exitCode === 0 ? await land(box, opts.repo, cwd, opts.task) : "";
+
   return {
     lastMessage: last,
-    exitCode: r.exitCode ?? 0,
-    changed: await changedInSandbox(box, cwd),
+    exitCode,
+    changed,
+    ...(unpushed ? { unpushed } : {}),
   };
 }

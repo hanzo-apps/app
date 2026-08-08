@@ -61,12 +61,17 @@ export function wrap(command: string, cwd: string): string {
 }
 
 /**
- * Single-quote for `sh`.
+ * Single-quote for `sh`. The one place any of this codebase spells this.
  *
  * A path is not ours to trust just because it came back from our own marker: the
  * shell that produced it will accept a directory named `'; rm -rf /`, and this
  * value is spliced into a command line. The one escape a POSIX single-quoted
  * string needs is closing it around each embedded quote.
+ *
+ * Exported because everything that builds a command for a sandbox needs it —
+ * this shell, the coding harness's `-c` overrides, the checkout's clone and push
+ * — and three private copies of one escaping rule is three chances to fix a bug
+ * in two of them.
  */
 export function quote(s: string): string {
   return `'${s.replaceAll("'", `'\\''`)}'`;

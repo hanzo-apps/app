@@ -57,6 +57,7 @@ import type {
   SearchMatch,
 } from "./fs";
 import { applyPatchOps, normalizePath } from "./patch";
+import { checkout, type Repo } from "./checkout";
 
 /**
  * The path as the SANDBOX addresses it.
@@ -214,7 +215,21 @@ export interface Info {
  * true of all four and useful for none — and the person reading it is the one who
  * has to decide whether to wait, delete something, or give up.
  */
-export type Opened = { sandbox: Info } | { why: string };
+export type Opened =
+  | {
+      sandbox: Info;
+      /**
+       * Why the pod is NOT a working copy of the project's repo.
+       *
+       * Absent when it is one, and absent when no `repo` was asked for — the
+       * second is a caller that did not ask, not a failure. Present, it means the
+       * run can still edit the disk but nothing it does will become history, and
+       * that is exactly the silence this whole module exists to end: the work was
+       * real, it was stranded on the volume, and every surface said "saved".
+       */
+      stranded?: string;
+    }
+  | { why: string };
 
 export interface SandboxOptions {
   /** Gateway base URL, e.g. `https://api.hanzo.ai/v1` — the same one the rest
@@ -265,6 +280,14 @@ export interface SandboxOptions {
  * A refusal is REPORTED, never collapsed: the caller can still fall back to an
  * in-memory project rather than failing the user's run, but it does so holding
  * cloud's own sentence for why.
+ *
+ * AND IT COMES BACK HOLDING THE PROJECT. Name a `repo` and the pod is a working
+ * copy of it before this returns — cloned on the first run, left alone on every
+ * one after (the volume kept it). Getting a sandbox and getting the project's
+ * FILES were two facts here, and only the first was ever established: `dev` coded
+ * in an empty directory on the first run of every project, and the work it did
+ * there never reached the forge. The clone belongs on this side of the door so
+ * that every surface which opens a project sandbox gets the project.
  */
 export async function openSandbox(opts: {
   baseUrl: string;
@@ -283,6 +306,16 @@ export async function openSandbox(opts: {
    * hand somebody gVisor's numbers under Firecracker's name.
    */
   runtime?: Runtime;
+  /**
+   * The project's repo on git.hanzo.ai. Given one, the pod is made a WORKING COPY
+   * of it before this function answers — so whatever runs in it next is standing
+   * in the project rather than in an empty directory.
+   *
+   * It is here rather than at each call site because there are several doors into
+   * a project's sandbox — the coding agent, the terminal — and a door that opened
+   * onto an empty pod would be this bug again, one surface over.
+   */
+  repo?: Repo;
   timeoutMs?: number;
   ttlSec?: number;
 }): Promise<Opened> {
@@ -313,7 +346,7 @@ export async function openSandbox(opts: {
       // ready yet. Saying so is the difference between "wait a moment" and
       // "something is broken".
       return sandbox
-        ? { sandbox }
+        ? hold(opts, sandbox)
         : { why: `${opts.project} already has a sandbox and it is still starting up.` };
     }
     if (!res.ok) {
@@ -322,7 +355,7 @@ export async function openSandbox(opts: {
     }
     const sandbox = (await res.json()) as Info;
     return sandbox?.id
-      ? { sandbox }
+      ? hold(opts, sandbox)
       : { why: "The sandbox service answered without a sandbox id." };
   } catch (e) {
     // A timeout here is OUR deadline, not cloud's, and it is worth naming as such:
@@ -335,6 +368,31 @@ export async function openSandbox(opts: {
         : `The sandbox service could not be reached: ${e instanceof Error ? e.message : String(e)}`,
     };
   }
+}
+
+/**
+ * Hand the sandbox back, holding the project.
+ *
+ * Both ways in end here — the one cloud just created and the one it already had —
+ * because a resumed sandbox needs this as much as a fresh one does: the checkout
+ * survives on the volume, the credential that reaches the forge does not (it
+ * lives in the container's `$HOME`, which goes with the pod).
+ *
+ * A pod that could not be made a working copy is still HANDED BACK. It has a disk
+ * and a toolchain and the run can use both; what it has lost is the ability to
+ * turn the turn into history, and that is said out loud rather than discovered
+ * later by someone looking for their commits.
+ */
+async function hold(
+  opts: { baseUrl: string; token: string; repo?: Repo },
+  sandbox: Info,
+): Promise<Opened> {
+  if (!opts.repo) return { sandbox };
+  const stranded = await checkout(
+    new Sandbox({ baseUrl: opts.baseUrl, id: sandbox.id, token: opts.token }),
+    opts.repo,
+  );
+  return stranded ? { sandbox, stranded } : { sandbox };
 }
 
 /**
@@ -499,7 +557,7 @@ export class Sandbox implements ProjectFs, ProjectExec {
    * program — the same distinction `wire.ExecResult` draws, kept here so the
    * model can tell "your tests failed" from "the sandbox is broken".
    */
-  async exec(command: string, timeoutSec = 120): Promise<ExecResult> {
+  async exec(command: string, timeoutSec = 120, stdin?: string): Promise<ExecResult> {
     // Give the HTTP call the sandbox's own deadline plus a margin, so a command
     // that legitimately runs for two minutes is not cut off by a 20s default.
     // A failed COMMAND is a 200 carrying a non-zero exitCode and is returned as
@@ -518,6 +576,10 @@ export class Sandbox implements ProjectFs, ProjectExec {
         id: this.opts.id,
         command,
         timeoutSec,
+        // Piped straight into the process, so a secret or a person's prose
+        // reaches the command without passing through a shell word — nothing to
+        // quote, nothing to escape wrong, nothing in the process table.
+        ...(stdin !== undefined ? { stdin } : {}),
         ...(this.session ? { session: this.session } : {}),
       },
       timeoutMs: (timeoutSec + 10) * 1000,
