@@ -92,6 +92,12 @@ const setup = (voice: ReturnType<typeof machine> | null = machine(), branch?: st
   return { ...view, handle, dock, voice };
 };
 
+/** Open the dock — at rest it is an invisible edge and shows NOTHING, so any
+ *  test that reads the bar's chrome opens it first, the way a person does. */
+const openDock = (handle: HTMLElement) => {
+  fireEvent.keyDown(handle, { key: "Enter" });
+};
+
 /** Height the dock is actually painting, in px. */
 const heightOf = (dock: HTMLElement) => parseInt(dock.style.height, 10);
 
@@ -133,7 +139,8 @@ describe("the bar is a resize handle", () => {
   });
 
   it("shows the REAL branch when the project is linked to a repo", () => {
-    const { container } = setup(machine(), "release/v2");
+    const { container, handle } = setup(machine(), "release/v2");
+    openDock(handle);
     expect(container.textContent).toContain("release/v2");
   });
 
@@ -278,7 +285,8 @@ describe("the workspace controls ride far right on the bar", () => {
   });
 
   it("carries the composer's mic, and clicking it opens the conversation", () => {
-    const { dock, voice } = setup();
+    const { dock, voice, handle } = setup();
+    openDock(handle);
     const mic = screen.getByRole("button", { name: /talk to hanzo/i });
     expect(dock).toContainElement(mic);
     fireEvent.click(mic);
@@ -291,7 +299,8 @@ describe("the workspace controls ride far right on the bar", () => {
   });
 
   it("sits the mic and Enso on the RIGHT, mic first", () => {
-    setup();
+    const { handle } = setup();
+    openDock(handle);
     const mic = screen.getByRole("button", { name: /talk to hanzo/i });
     const status = screen.getByText(SAVE_TEXT);
 
@@ -311,10 +320,21 @@ describe("the workspace controls ride far right on the bar", () => {
   });
 
   it("clicking a control does not resize or toggle the dock", () => {
-    const { dock } = setup();
+    const { dock, handle } = setup();
+    openDock(handle);
     const before = heightOf(dock);
     fireEvent.click(screen.getByRole("button", { name: /talk to hanzo/i }));
     expect(heightOf(dock)).toBe(before);
+  });
+
+  it("at rest the dock shows NOTHING — an edge, not a bar", () => {
+    // The owner's call: the workspace runs to the window edge, and the console
+    // is a pull. The named separator (with its cursor and hover grip) is the
+    // whole affordance; the status readout and the AI controls live behind it.
+    setup();
+    expect(screen.queryByText(/^Live$/)).toBeNull();
+    expect(screen.queryByText(SAVE_TEXT)).toBeNull();
+    expect(screen.queryByRole("button", { name: /talk to hanzo/i })).toBeNull();
   });
 });
 

@@ -334,7 +334,7 @@ export function Console({
             else return;
             e.preventDefault();
           }}
-          position="absolute" top={0} right={0} bottom={0} left={0} cursor="row-resize" userSelect="none" borderTopWidth={1} borderColor="$borderColor" group
+          position="absolute" top={0} right={0} bottom={0} left={0} cursor="row-resize" userSelect="none" borderTopWidth={open ? 1 : 0} borderColor="$borderColor" group
         >
           {/* The affordance: a hairline that lifts and a grip that fades in on
               hover, focus or drag. Nothing is drawn while the bar is at rest. */}
@@ -345,7 +345,10 @@ export function Console({
 
         {/* State, inert: it rides on the bar but never eats the drag. Padded to
             clear the panel toggle on the left and the mic + Enso on the right —
-            measured clearances, so they stay the measurements they are. */}
+            measured clearances, so they stay the measurements they are.
+            OPEN ONLY: at rest the dock is an invisible edge, and everything
+            this row says lives behind the pull. */}
+        {open && (
         <XStack
           pointerEvents="none"
           position="relative"
@@ -402,12 +405,17 @@ export function Console({
             )}
           </XStack>
         </XStack>
+        )}
 
         {/* Far right — the workspace AI controls, floated over the bar so the
             separator underneath stays one clean, uninterrupted drag target.
             Order is mic then Enso: the mic is the conversation, Enso the editor,
             and the user asked for the mark to sit to the RIGHT of the mic. */}
-        <XStack position="absolute" right="$2" top="$0" height="100%" alignItems="center" gap="$0.5">
+        {/* display, not unmount: #enso-dock inside is the anchor an external
+            script (public/edit.js) injects into, and unmounting it on collapse
+            would strand Enso. Hidden at rest with everything else — the edge
+            shows nothing. */}
+        <XStack position="absolute" right="$2" top="$0" height="100%" alignItems="center" gap="$0.5" display={open ? "flex" : "none"}>
           {/* Only while there is a command to interrupt, and only when it runs
               somewhere interruptible: a scratch run edits a map in this process
               and has no sandbox to stop. An always-visible Stop that sometimes
