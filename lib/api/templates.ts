@@ -18,9 +18,9 @@
 
 import type { Page } from '@/types';
 
-// --- Type (cloud clients/templates.Template) ---
+// --- Types (mirror cloud clients/templates.{Template,Variant}) ---
 
-export interface GalleryTemplate {
+export interface Template {
   slug: string;
   title: string;
   category: string;
@@ -37,11 +37,11 @@ export interface GalleryTemplate {
   /** Live demo (<slug>.hanzo.app), when one is deployed. */
   demo?: string;
   /** The shapes this template ships in — format/page/theme, picked at fork time. */
-  variants?: GalleryVariant[];
+  variants?: Variant[];
 }
 
 /** One shape of a template (cloud clients/templates.Variant). */
-export interface GalleryVariant {
+export interface Variant {
   id: string;
   label: string;
   /** The axis it varies: format | page | theme. */
@@ -50,19 +50,13 @@ export interface GalleryVariant {
   source: string;
 }
 
-export interface GalleryResult {
-  templates: GalleryTemplate[];
-  /** True when served from the live cloud gallery; false for the local fallback. */
-  live: boolean;
-}
-
 /**
  * Honest fallback — a few real built-in starters shipped in the app itself
  * (app/templates/*). Shown ONLY when the live gallery is unreachable/empty, with
  * a banner saying so. NOT fabricated marketing — these are actual starters, and
  * their `source` uses the same gallery pattern the live catalog does.
  */
-export const LOCAL_FALLBACK: GalleryTemplate[] = [
+export const LOCAL_FALLBACK: Template[] = [
   {
     slug: 'saas-landing',
     title: 'SaaS Landing',
@@ -146,7 +140,7 @@ function num(v: unknown): number | undefined {
 }
 
 /** Coerce one raw catalog entry; return null to drop a dead/incomplete card. */
-export function normalizeTemplate(raw: unknown): GalleryTemplate | null {
+export function normalizeTemplate(raw: unknown): Template | null {
   if (!raw || typeof raw !== 'object') return null;
   const r = raw as Record<string, unknown>;
   const slug = str(r.slug).trim();
@@ -172,7 +166,7 @@ export function normalizeTemplate(raw: unknown): GalleryTemplate | null {
 }
 
 /** Coerce a template's variants; drop any that could not be selected. */
-function normalizeVariants(v: unknown): GalleryVariant[] {
+function normalizeVariants(v: unknown): Variant[] {
   if (!Array.isArray(v)) return [];
   return v.flatMap((raw) => {
     const x = (raw ?? {}) as Record<string, unknown>;
@@ -192,7 +186,7 @@ function normalizeVariants(v: unknown): GalleryVariant[] {
  * returns the honest local fallback with `live:false` so the picker still works
  * and can show a "gallery unreachable" banner.
  */
-export async function fetchGalleryTemplates(): Promise<GalleryResult> {
+export async function fetchTemplates(): Promise<{ templates: Template[]; live: boolean }> {
   try {
     const res = await fetch('/v1/templates', {
       headers: { Accept: 'application/json' },
@@ -203,7 +197,7 @@ export async function fetchGalleryTemplates(): Promise<GalleryResult> {
     if (!Array.isArray(rows)) return { templates: LOCAL_FALLBACK, live: false };
     const templates = rows
       .map(normalizeTemplate)
-      .filter((t): t is GalleryTemplate => t !== null);
+      .filter((t): t is Template => t !== null);
     if (templates.length === 0) return { templates: LOCAL_FALLBACK, live: false };
     return { templates, live: true };
   } catch {
@@ -276,11 +270,11 @@ export async function fetchTemplatePages(slug: string): Promise<Page[] | null> {
  * app declining to promise what it cannot deliver.
  */
 export async function fetchPublishedSlugs(): Promise<Set<string>> {
-  // `fetchGalleryTemplates` already asks the warehouse and normalises its rows.
+  // `fetchTemplates` already asks the warehouse and normalises its rows.
   // Asking it a second way here would be a second answer to maintain — and its
   // `live` flag is exactly the distinction this needs: false means the warehouse
   // did not speak, which must mark NOTHING.
-  const { templates, live } = await fetchGalleryTemplates();
+  const { templates, live } = await fetchTemplates();
   return live ? new Set(templates.map((t) => t.slug)) : new Set();
 }
 

@@ -22,9 +22,9 @@ import {
 import Link from "next/link";
 import Header from "@/components/layout/header";
 import {
-  fetchGalleryTemplates,
+  fetchTemplates,
   templateBuilderLink,
-  type GalleryTemplate,
+  type Template,
 } from "@/lib/api/templates";
 import { ImportGitPanel } from "@/components/import-git-panel";
 import { useUser } from "@/hooks/useUser";
@@ -131,13 +131,13 @@ function NewProjectInner() {
 
   // Real starter-kit gallery (hanzoai/gallery via the /v1/templates BFF). Always
   // resolves — an unreachable/empty gallery yields the honest local fallback.
-  const [templates, setTemplates] = useState<GalleryTemplate[]>([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
   const [galleryLive, setGalleryLive] = useState(true);
   const [galleryLoading, setGalleryLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
-    fetchGalleryTemplates().then(({ templates, live }) => {
+    fetchTemplates().then(({ templates, live }) => {
       if (!active) return;
       setTemplates(templates);
       setGalleryLive(live);
