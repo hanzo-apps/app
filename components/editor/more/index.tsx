@@ -152,6 +152,8 @@ function SectionBody({ section, projectId }: { section: Section; projectId?: str
   if (section.id === 'connectors') return <ConnectorsBody />;
   if (section.id === 'ai') return <ModelsBody />;
   if (section.id === 'agents') return <McpBody />;
+  if (section.id === 'payments') return <PaymentsBody projectId={projectId} />;
+  if (section.id === 'cloud-database') return <DatabaseBody />;
   return (
     <YStack {...panel} padding="$4" gap="$2">
       {section.where ? (
@@ -337,6 +339,138 @@ function McpBody() {
             </XStack>
           ))}
         </YStack>
+      )}
+    </YStack>
+  );
+}
+
+/**
+ * Payments — the org's REAL commerce state for this project.
+ *
+ * /v1/store/products answers four ways and each is a different sentence:
+ * an array is the catalog; [] is a bound store with nothing in it yet; 409 is
+ * the meaningful "no store bound to this project" state (not an error — most
+ * projects sell nothing); anything else is could-not-read. Never a fixture.
+ */
+function PaymentsBody({ projectId }: { projectId?: string | null }) {
+  const [state, setState] = useState<
+    | { kind: 'loading' }
+    | { kind: 'catalog'; count: number }
+    | { kind: 'unbound' }
+    | { kind: 'unreadable' }
+  >({ kind: 'loading' });
+
+  useEffect(() => {
+    let alive = true;
+    const q = projectId ? `?space_id=${encodeURIComponent(projectId)}` : '';
+    fetch(`/v1/store/products${q}`, { credentials: 'include', cache: 'no-store' })
+      .then(async (r) => {
+        if (!alive) return;
+        if (r.status === 409) return setState({ kind: 'unbound' });
+        if (!r.ok) return setState({ kind: 'unreadable' });
+        const body = await r.json().catch(() => null);
+        const rows = Array.isArray(body) ? body : Array.isArray(body?.products) ? body.products : null;
+        setState(rows ? { kind: 'catalog', count: rows.length } : { kind: 'unreadable' });
+      })
+      .catch(() => alive && setState({ kind: 'unreadable' }));
+    return () => {
+      alive = false;
+    };
+  }, [projectId]);
+
+  return (
+    <YStack {...panel} padding="$4" gap="$2">
+      {state.kind === 'loading' ? (
+        <SizableText fontSize="$2" color="$color11">Reading the catalog…</SizableText>
+      ) : state.kind === 'unbound' ? (
+        <>
+          <SizableText fontSize="$3" color="$color">No store bound to this project</SizableText>
+          <Paragraph fontSize="$2" color="$color11">
+            Most projects sell nothing, and that is fine. Bind a store and the catalog,
+            checkout and orders light up here — the same commerce plane the /store page sells from.
+          </Paragraph>
+        </>
+      ) : state.kind === 'catalog' ? (
+        <>
+          <SizableText fontSize="$3" color="$color">
+            {state.count === 0 ? 'Store bound — catalog is empty' : `${state.count} product${state.count === 1 ? '' : 's'} in the catalog`}
+          </SizableText>
+          <Paragraph fontSize="$2" color="$color11">
+            Live from commerce. Checkout and orders ride the same plane.
+          </Paragraph>
+        </>
+      ) : (
+        <>
+          <SizableText fontSize="$3" color="$color">The catalog could not be read</SizableText>
+          <Paragraph fontSize="$2" color="$color11">
+            Not the same as empty — the answer did not arrive, so nothing is claimed either way.
+          </Paragraph>
+        </>
+      )}
+      <Link href="/store">
+        <SizableText fontSize="$2" color="$color11" hoverStyle={{ color: '$color' }} textDecorationLine="underline">
+          Open the storefront
+        </SizableText>
+      </Link>
+    </YStack>
+  );
+}
+
+/**
+ * Database — Hanzo Base, proven rather than described.
+ *
+ * There is no list-collections endpoint on the record-scoped BFF, so this does
+ * not invent one: it probes a collection that cannot exist and reads the SHAPE
+ * of the refusal. A 404 travelled session → BFF → Base and back — the whole
+ * chain answers, which is the fact a person opening this section wants. 401
+ * names the session; anything else is could-not-read. Collections appear as
+ * the app creates them; records ride /v1/base/<collection>.
+ */
+function DatabaseBody() {
+  const [door, setDoor] = useState<'checking' | 'answers' | 'session' | 'unreachable'>('checking');
+
+  useEffect(() => {
+    let alive = true;
+    fetch('/v1/base/__door_probe__', { credentials: 'include', cache: 'no-store' })
+      .then((r) => {
+        if (!alive) return;
+        if (r.status === 404) setDoor('answers');
+        else if (r.status === 401) setDoor('session');
+        else if (r.ok) setDoor('answers');
+        else setDoor('unreachable');
+      })
+      .catch(() => alive && setDoor('unreachable'));
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  return (
+    <YStack {...panel} padding="$4" gap="$2">
+      {door === 'checking' ? (
+        <SizableText fontSize="$2" color="$color11">Knocking on the data door…</SizableText>
+      ) : door === 'answers' ? (
+        <>
+          <SizableText fontSize="$3" color="$color">Base answers</SizableText>
+          <Paragraph fontSize="$2" color="$color11">
+            The data door (session → app → Base) is live for this workspace. Collections appear
+            as your app creates them; records ride{' '}
+            <SizableText fontFamily="$mono" fontSize="$1" color="$color">/v1/base/&lt;collection&gt;</SizableText>
+            , with identity injected server-side — the browser never holds a Base credential.
+          </Paragraph>
+        </>
+      ) : door === 'session' ? (
+        <>
+          <SizableText fontSize="$3" color="$color">The door wants a session</SizableText>
+          <Paragraph fontSize="$2" color="$color11">Sign in again and this section re-checks.</Paragraph>
+        </>
+      ) : (
+        <>
+          <SizableText fontSize="$3" color="$color">Base did not answer</SizableText>
+          <Paragraph fontSize="$2" color="$color11">
+            Not a claim about your data — the door itself is unreachable right now.
+          </Paragraph>
+        </>
       )}
     </YStack>
   );

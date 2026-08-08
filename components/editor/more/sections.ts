@@ -68,7 +68,7 @@ export const SECTIONS: Section[] = [
         label: 'Database',
         icon: Database,
         where: '/v1/base',
-        blurb: 'Hanzo Base — the per-project store your app reads and writes.',
+        blurb: 'Hanzo Base — the data door your app reads and writes, proven live.',
       },
       {
         id: 'cloud-users',
@@ -123,7 +123,7 @@ export const SECTIONS: Section[] = [
     label: 'Payments',
     icon: CreditCard,
     where: '/v1/commerce',
-    blurb: 'Take money in your app — catalog, checkout and orders.',
+    blurb: 'Take money in your app — the real catalog, checkout and orders from commerce.',
   },
   {
     id: 'connectors',
