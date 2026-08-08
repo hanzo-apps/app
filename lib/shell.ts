@@ -68,7 +68,7 @@ export function wrap(command: string, cwd: string): string {
  * value is spliced into a command line. The one escape a POSIX single-quoted
  * string needs is closing it around each embedded quote.
  */
-function quote(s: string): string {
+export function quote(s: string): string {
   return `'${s.replaceAll("'", `'\\''`)}'`;
 }
 
