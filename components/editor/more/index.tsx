@@ -154,6 +154,8 @@ function SectionBody({ section, projectId }: { section: Section; projectId?: str
   if (section.id === 'agents') return <McpBody />;
   if (section.id === 'payments') return <PaymentsBody projectId={projectId} />;
   if (section.id === 'cloud-database') return <DatabaseBody />;
+  if (section.id === 'cloud-usage') return <UsageBody />;
+  if (section.id === 'cloud-logs') return <LogsBody />;
   return (
     <YStack {...panel} padding="$4" gap="$2">
       {section.where ? (
@@ -426,6 +428,164 @@ function PaymentsBody({ projectId }: { projectId?: string | null }) {
  * names the session; anything else is could-not-read. Collections appear as
  * the app creates them; records ride /v1/base/<collection>.
  */
+/**
+ * Account usage, from `/v1/usage` — which is honest by construction: the only
+ * metered figure today is the real project count, and the endpoint SAYS the
+ * rest is not metered yet. This reader renders exactly that, limits included
+ * when they exist, and never invents a bar for a number nobody measured.
+ */
+function UsageBody() {
+  type Metric = { label: string; value: number; limit: number | null };
+  const [read, setRead] = useState<
+    null | { metered: boolean; metrics: Metric[]; note?: string } | 'unreachable'
+  >(null);
+
+  useEffect(() => {
+    let alive = true;
+    fetch('/v1/usage', { credentials: 'include', cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((b: { usage?: { metered: boolean; metrics: Metric[]; note?: string } }) => {
+        if (!alive) return;
+        setRead(b.usage ?? 'unreachable');
+      })
+      .catch(() => alive && setRead('unreachable'));
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  return (
+    <YStack {...panel} padding="$4" gap="$2.5">
+      {read === null ? (
+        <SizableText fontSize="$2" color="$color11">Reading usage…</SizableText>
+      ) : read === 'unreachable' ? (
+        <>
+          <SizableText fontSize="$3" color="$color">Usage did not answer</SizableText>
+          <Paragraph fontSize="$2" color="$color11">
+            Not a claim about your consumption — the reader itself is unreachable right now.
+          </Paragraph>
+        </>
+      ) : (
+        <>
+          {read.metrics.map((m) => (
+            <XStack key={m.label} alignItems="baseline" justifyContent="space-between" gap="$3">
+              <SizableText fontSize="$2" color="$color11">{m.label}</SizableText>
+              <SizableText fontSize="$3" color="$color" fontFamily="$mono">
+                {m.value}
+                {m.limit !== null ? ` / ${m.limit}` : ''}
+              </SizableText>
+            </XStack>
+          ))}
+          {read.note ? (
+            <Paragraph fontSize="$1" color="$color11">{read.note}</Paragraph>
+          ) : null}
+        </>
+      )}
+    </YStack>
+  );
+}
+
+/**
+ * The org's request log, from `/v1/o11y/logs` — the same org-pinned stream the
+ * console reads, so the two surfaces show one truth. The shape is read
+ * TOLERANTLY (rows under `logs`/`rows`/bare array; a row's time, product and
+ * message under their common names) because the reader's job is to show what
+ * arrived — and the three-valued contract stays strict: null is "couldn't
+ * read", an empty list is the stream ANSWERING "nothing logged", and only a
+ * well-formed answer may claim emptiness.
+ */
+function LogsBody() {
+  type Row = { at: string; product: string; status: string; text: string };
+  const [rows, setRows] = useState<Row[] | null | 'unreachable'>(null);
+
+  useEffect(() => {
+    let alive = true;
+    const word = (v: unknown): string =>
+      typeof v === 'string' ? v : typeof v === 'number' ? String(v) : '';
+    fetch('/v1/o11y/logs?limit=50', { credentials: 'include', cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((b: unknown) => {
+        if (!alive) return;
+        const list = Array.isArray(b)
+          ? b
+          : Array.isArray((b as { logs?: unknown[] })?.logs)
+            ? (b as { logs: unknown[] }).logs
+            : Array.isArray((b as { rows?: unknown[] })?.rows)
+              ? (b as { rows: unknown[] }).rows
+              : null;
+        if (!list) {
+          setRows('unreachable');
+          return;
+        }
+        setRows(
+          list.slice(0, 50).map((raw) => {
+            const r = (raw ?? {}) as Record<string, unknown>;
+            return {
+              at: word(r.at) || word(r.time) || word(r.timestamp),
+              product: word(r.product) || word(r.service),
+              status: word(r.status) || word(r.code),
+              text: word(r.msg) || word(r.message) || word(r.path) || word(r.route),
+            };
+          }),
+        );
+      })
+      .catch(() => alive && setRows('unreachable'));
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  return (
+    <YStack {...panel} padding="$4" gap="$2">
+      {rows === null ? (
+        <SizableText fontSize="$2" color="$color11">Reading the request log…</SizableText>
+      ) : rows === 'unreachable' ? (
+        <>
+          <SizableText fontSize="$3" color="$color">The log did not answer</SizableText>
+          <Paragraph fontSize="$2" color="$color11">
+            Not a claim that nothing happened — the stream itself is unreachable right now.
+          </Paragraph>
+        </>
+      ) : rows.length === 0 ? (
+        <>
+          <SizableText fontSize="$3" color="$color">Nothing logged yet</SizableText>
+          <Paragraph fontSize="$2" color="$color11">
+            The stream answered and it is empty — requests appear here as your org makes them.
+          </Paragraph>
+        </>
+      ) : (
+        <YStack gap="$1" maxHeight={420} overflow="scroll">
+          {rows.map((r, i) => (
+            <XStack key={i} gap="$2" alignItems="baseline">
+              <SizableText fontFamily="$mono" fontSize="$1" color="$color06" flexShrink={0}>
+                {r.at.slice(0, 19)}
+              </SizableText>
+              {r.product ? (
+                <SizableText fontFamily="$mono" fontSize="$1" color="$color11" flexShrink={0}>
+                  {r.product}
+                </SizableText>
+              ) : null}
+              {r.status ? (
+                <SizableText
+                  fontFamily="$mono"
+                  fontSize="$1"
+                  flexShrink={0}
+                  {...{ color: /^[45]/.test(r.status) ? 'var(--destructive)' : '$color11' }}
+                >
+                  {r.status}
+                </SizableText>
+              ) : null}
+              <SizableText fontFamily="$mono" fontSize="$1" color="$color" numberOfLines={1}>
+                {r.text}
+              </SizableText>
+            </XStack>
+          ))}
+        </YStack>
+      )}
+    </YStack>
+  );
+}
+
 function DatabaseBody() {
   const [door, setDoor] = useState<'checking' | 'answers' | 'session' | 'unreachable'>('checking');
 

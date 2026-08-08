@@ -33,3 +33,32 @@ describe("DatabaseBody", () => {
     expect(src).toMatch(/Base did not answer/);
   });
 });
+
+describe("UsageBody", () => {
+  it("renders the endpoint's own honesty — metrics plus its not-metered note", () => {
+    expect(src).toMatch(/fetch\('\/v1\/usage'/);
+    expect(src).toMatch(/read\.note/);
+  });
+
+  it("draws a limit only when one exists — no invented caps", () => {
+    expect(src).toMatch(/m\.limit !== null \? ` \/ \$\{m\.limit\}` : ''/);
+  });
+
+  it("unreachable is named, not rendered as zeros", () => {
+    expect(src).toMatch(/Usage did not answer/);
+  });
+});
+
+describe("LogsBody", () => {
+  it("keeps the three-valued contract: null, unreachable, and answered-empty", () => {
+    expect(src).toMatch(/Reading the request log…/);
+    expect(src).toMatch(/The log did not answer/);
+    expect(src).toMatch(/Nothing logged yet/);
+  });
+
+  it("only a well-formed answer may claim emptiness", () => {
+    // A body that is not an array under any known name is 'unreachable',
+    // never an empty list.
+    expect(src).toMatch(/if \(!list\) \{\s*setRows\('unreachable'\)/);
+  });
+});
