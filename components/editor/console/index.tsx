@@ -4,7 +4,7 @@ import { Button, Input } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
 import { SizableText, YStack, XStack, Paragraph } from '@hanzo/ui';
 import { useEffect, useRef, useState } from "react";
-import { Check, GitBranch, Square } from "lucide-react";
+import { Check, GitBranch, Square, SquareTerminal } from "lucide-react";
 
 
 import { currentProject } from "@/lib/dev/workspace";
@@ -12,6 +12,7 @@ import { HOME, TIMEOUT } from "@/lib/shell";
 
 import { BAR, DEFAULT_OPEN, MIN_OPEN, STEP, maxOpen, useDock } from "./dock";
 import { currentSandbox, holdSandbox, push, useConsoleLog, useRun } from "./log";
+import { Terminal } from "./terminal";
 
 /**
  * The prompt — the half of this dock you can type into.
@@ -229,6 +230,11 @@ export function Console({
 }) {
   const { height, open, setHeight, toggle, nudge } = useDock();
   const { entries } = useConsoleLog();
+  // The dock's second face: the REAL terminal (cloud's framed emulator) in
+  // place of the log + line-prompt. Same pod either way — the frame and the
+  // prompt share the held sandbox — so this is a view choice, not a session
+  // choice, and flipping back loses nothing.
+  const [term, setTerm] = useState(false);
   // The live run, or null. Its sandbox is the handle Stop acts on.
   const run = useRun();
   // The composer's voice, drawn here. Null until a composer is mounted.
@@ -417,6 +423,23 @@ export function Console({
               somewhere interruptible: a scratch run edits a map in this process
               and has no sandbox to stop. An always-visible Stop that sometimes
               does nothing is worse than one that appears when it can act. */}
+          {/* The cloud shell — the same real terminal console.hanzo.ai frames,
+              in this project's pod. A toggle, not a door: the dock's body flips
+              between the log and the frame, and the bar stays the bar. */}
+          <Button
+            type="button"
+            onClick={() => setTerm((t) => !t)}
+            variant="ghost"
+            aria-label="Open a cloud shell — a real terminal in your sandbox"
+            aria-pressed={term}
+            title="Cloud shell — a real terminal in your sandbox"
+            height="$4.5" width="$4.5" minWidth="$4.5" alignItems="center" justifyContent="center"
+            paddingHorizontal={0} borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}
+          >
+            <SizableText color={term ? "$color" : "$color11"}>
+              <SquareTerminal size={14} />
+            </SizableText>
+          </Button>
           {run?.sandbox && <Stop sandbox={run.sandbox} />}
           {/* Enso mounts HERE (public/edit.js, `hanzo:anchor` in app/dev/layout),
               to the RIGHT of the mic. It used to float at the viewport corner, on
@@ -430,7 +453,16 @@ export function Console({
         </XStack>
       </YStack>
 
-      {open && (
+      {/* The second face: the framed terminal replaces the log AND the prompt —
+          a real shell brings its own prompt. Mount/unmount is the session
+          boundary (a fresh ticket each mount); the tmux session named per
+          project is what makes that cheap, reattaching to the shell it left. */}
+      {open && term && (
+        <YStack minHeight={0} flex={1} borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background">
+          <Terminal project={currentProject()} />
+        </YStack>
+      )}
+      {open && !term && (
         <YStack minHeight={0} flex={1} borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" overflow="scroll">
           {entries.length === 0 ? (
             <Paragraph fontFamily="$mono" fontSize="$1" lineHeight="1.625" color="$color11">
@@ -475,7 +507,7 @@ export function Console({
       )}
       {/* The prompt sits OUTSIDE the scroller so it stays put while output runs
           past it — the one row of this dock that is always reachable once open. */}
-      {open && (
+      {open && !term && (
         <YStack borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingBottom="$2">
           <Prompt />
         </YStack>
