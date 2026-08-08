@@ -78,20 +78,54 @@ const HANZO_BASE = (process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai").rep
  * server's idea of "the project" is wherever it happened to start, and a tool
  * that edits the wrong tree is worse than one that is absent.
  */
+/**
+ * Every `-c` value crosses a SHELL on its way to dev, because the run is a
+ * script handed to the sandbox rather than an argv array. So each one is
+ * single-quoted here.
+ *
+ * Unquoted, the shell strips the inner double quotes and dev receives
+ * `mcp_servers.hanzo.args=[--project-dir,.]` — a bare string where the config
+ * declares a sequence, which is exactly the error the live e2e reported:
+ * `invalid type: string "[--project-dir,.]", expected a sequence`.
+ *
+ * The same bite is quieter one line up: `name="Hanzo Code"` splits on its space
+ * into two shell words, so the provider was being named `Hanzo` with a stray
+ * `Code` argument behind it. One rule fixes both, which is why this is a
+ * function and not five careful string literals.
+ *
+ * hanzoai/cli does not need any of this (src/commands/code/dev.rs) — it execs an
+ * argv array with no shell in between. The difference is the transport, not the
+ * config, so the values below stay identical to the ones it passes.
+ */
+const quote = (s: string): string => `'${s.replace(/'/g, `'\\''`)}'`;
+const cfg = (assignment: string): string[] => ["-c", quote(assignment)];
+
 function mcpArgs(cwd: string): string[] {
   return [
-    "-c", `mcp_servers.hanzo.command="hanzo-mcp"`,
-    "-c", `mcp_servers.hanzo.args=["--project-dir","${cwd}"]`,
+    ...cfg(`mcp_servers.hanzo.command="hanzo-mcp"`),
+    ...cfg(`mcp_servers.hanzo.args=["--project-dir","${cwd}"]`),
   ];
 }
 
 function providerArgs(): string[] {
   return [
-    "-c", `model_providers.hanzocode.name="Hanzo Code"`,
-    "-c", `model_providers.hanzocode.base_url="${HANZO_BASE}/v1"`,
-    "-c", `model_providers.hanzocode.wire_api="responses"`,
-    "-c", `model_providers.hanzocode.env_key="HANZO_API_KEY"`,
-    "-c", `model_provider="hanzocode"`,
+    ...cfg(`model_providers.hanzocode.name="Hanzo Code"`),
+    ...cfg(`model_providers.hanzocode.base_url="${HANZO_BASE}/v1"`),
+    ...cfg(`model_providers.hanzocode.wire_api="responses"`),
+    ...cfg(`model_providers.hanzocode.env_key="HANZO_API_KEY"`),
+    ...cfg(`model_provider="hanzocode"`),
+  ];
+}
+
+/** The `dev exec` argv, assembled and shell-safe. Exported so a test can read it. */
+export function devArgs(cwd: string, model?: string): string[] {
+  return [
+    "exec", "--json", "--skip-git-repo-check",
+    ...providerArgs(),
+    ...mcpArgs(cwd),
+    ...cfg(`approval_policy="never"`),
+    ...cfg(`sandbox_mode="workspace-write"`),
+    ...(model ? cfg(`model="${model}"`) : []),
   ];
 }
 
@@ -275,19 +309,10 @@ export async function runHarness(
   emit: (e: AgentEvent) => void | Promise<void>,
 ): Promise<HarnessResult> {
   const cwd = opts.cwd || ".";
-  const model = opts.model ? ["-c", `model="${opts.model}"`] : [];
-  const args = [
-    "exec", "--json", "--skip-git-repo-check",
-    ...providerArgs(),
-    ...mcpArgs(cwd),
-    // Auto-approve, workspace-write: the same default hanzoai/cli documents. It
-    // stops the harness asking a question nobody is there to answer, and KEEPS
-    // the workspace sandbox — a headless run that blocks on approval is a run
-    // that hangs until it times out.
-    "-c", `approval_policy="never"`,
-    "-c", `sandbox_mode="workspace-write"`,
-    ...model,
-  ].join(" ");
+  // Auto-approve, workspace-write: the same default hanzoai/cli documents. A
+  // headless run that blocks for approval does not fail, it HANGS until it times
+  // out, which reads as a slow model rather than a missing answer.
+  const args = devArgs(cwd, opts.model).join(" ");
 
   // The prompt reaches dev on stdin via a quoted heredoc — no expansion, no
   // escaping rules for the caller to get wrong, and nothing of the task visible

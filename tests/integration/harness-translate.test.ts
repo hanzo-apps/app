@@ -1,4 +1,6 @@
-import { translate } from "../../lib/agent/harness";
+import { execFileSync } from "node:child_process";
+
+import { devArgs, translate } from "../../lib/agent/harness";
 
 /**
  * These fixtures are REAL lines from `dev exec --json`, captured in a live
@@ -98,5 +100,45 @@ describe("parsePorcelain", () => {
   it("is empty for a clean tree, and for a directory that is not a repo", () => {
     expect(parsePorcelain("")).toEqual([]);
     expect(parsePorcelain("\n  \n")).toEqual([]);
+  });
+});
+
+/**
+ * The `-c` values reach dev THROUGH A SHELL, because a run is a script handed to
+ * the sandbox rather than an argv array. So the only honest test of the quoting
+ * is to let a real shell split it and look at what comes out the other side.
+ *
+ * This is the bug the live e2e caught: unquoted, `["--project-dir","."]` arrived
+ * as the bare string `[--project-dir,.]` and dev refused it —
+ * `invalid type: string "[--project-dir,.]", expected a sequence`.
+ */
+describe("devArgs survives the shell", () => {
+  // Ask `sh` to split the command line exactly as it will when the sandbox runs
+  // it, and print one argument per line.
+  const asShellWouldSplit = (line: string): string[] =>
+    execFileSync("sh", ["-c", `printf '%s\n' ${line}`], { encoding: "utf8" })
+      .split("\n")
+      .filter((s) => s.length > 0);
+
+  it("hands dev a SEQUENCE for the MCP args, not a string that looks like one", () => {
+    const tokens = asShellWouldSplit(devArgs(".").join(" "));
+    expect(tokens).toContain(`mcp_servers.hanzo.args=["--project-dir","."]`);
+  });
+
+  it("keeps a provider name with a space in it as ONE argument", () => {
+    const tokens = asShellWouldSplit(devArgs(".").join(" "));
+    expect(tokens).toContain(`model_providers.hanzocode.name="Hanzo Code"`);
+    // CONTROL: the space must not have produced a stray word of its own.
+    expect(tokens).not.toContain("Code");
+  });
+
+  it("keeps a path with a space in it whole", () => {
+    const tokens = asShellWouldSplit(devArgs("/work/my project").join(" "));
+    expect(tokens).toContain(`mcp_servers.hanzo.args=["--project-dir","/work/my project"]`);
+  });
+
+  it("pairs every value with its own -c", () => {
+    const a = devArgs(".", "enso");
+    expect(a.filter((x) => x === "-c")).toHaveLength((a.length - 3) / 2);
   });
 });
