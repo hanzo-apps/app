@@ -24,7 +24,6 @@ export interface GuidedTourStepContent {
   target?: string;
   primaryLabel?: string;
   secondaryLabel?: string;
-  showBack?: boolean;
   autoAdvanceMs?: number;
   hideNav?: boolean;
 }
