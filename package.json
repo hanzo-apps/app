@@ -32,7 +32,7 @@
     "@hanzo/ai": "^0.3.0",
     "@hanzo/base": "^0.2.1",
     "@hanzo/brand": "^1.4.5",
-    "@hanzo/appearance": "^0.1.0",
+    "@hanzo/appearance": "^0.1.2",
     "@hanzo/design": "^0.4.12",
     "@hanzo/event": "^0.3.9",
     "@hanzo/gui": "^8.1.0",

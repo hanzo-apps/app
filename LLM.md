@@ -380,3 +380,29 @@ Two rules the types cannot state:
 Tenancy is never ours to assert: cloud `middleware_identity.go` STRIPS every
 client-supplied authority header and re-mints `X-Org-Id` from the validated
 bearer, so the BFF forwards the token and nothing else.
+
+### The ten dependabot alerts: transitive, and none reachable
+
+Every push prints "10 vulnerabilities (7 high, 3 moderate)". Triaged
+2026-08-08 — **not one is a direct dependency and not one is imported by this
+app.** `sharp`, `image-size`, `postcss`, `nanoid`, `brace-expansion` and
+`@hey-api/openapi-ts` appear nowhere in `app/`, `lib/` or `components/`; they
+arrive under `next@16` and build tooling.
+
+The only one with a runtime path is **`sharp` (libvips CVEs), reached through
+`next/image` — and `next.config.ts` sets `images: { unoptimized: true }`, so
+nothing passes through the optimizer.** That line is load-bearing for this
+triage: turning optimization on puts attacker-influenced bytes into a
+vulnerable `sharp 0.34.5`, so treat it as a security decision and not only a
+performance one. (The `remotePatterns` beside it are dead config — they are
+only consulted when optimization is on.)
+
+`postcss` runs at BUILD, over CSS from this repo. Generated sites never touch
+it: the builder renders one self-contained HTML document in an iframe and
+publish writes static bytes to S3, so no user CSS reaches the toolchain.
+
+So the alerts are real and the exposure is nil. Fixing them means pnpm
+`overrides` on packages we do not use, which risks the build for no gain —
+they clear when `next` bumps. **Re-check the reachability, not the count**: the
+number will keep climbing, and the question that matters is whether anything
+here imports one, or whether `unoptimized` ever flips.

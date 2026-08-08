@@ -67,8 +67,8 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0
       '@hanzo/appearance':
-        specifier: ^0.1.0
-        version: 0.1.0(react@19.2.8)
+        specifier: ^0.1.2
+        version: 0.1.2(react@19.2.8)
       '@hanzo/base':
         specifier: ^0.2.1
         version: 0.2.1(react@19.2.8)
@@ -824,8 +824,8 @@ packages:
     peerDependencies:
       typescript: '>=5'
 
-  '@hanzo/appearance@0.1.0':
-    resolution: {integrity: sha512-lN38BpvNgVMz4SZdUq1EKxiY8ohzP1rPDuVZFabnFEE/XL8u11bSx1uAUOiN7K0UOT8Zq8NRIkY/kTMKCj81Ow==}
+  '@hanzo/appearance@0.1.2':
+    resolution: {integrity: sha512-Oc67xzdurgX0dTz4GM5IBGjKD7mOOeVfDU6VvjTABU6hjT6rKfwrEPbSaVNCVK1ZGyJ5qdHHzwYmjFU1GTmLpw==}
     peerDependencies:
       react: '>=19'
 
@@ -8010,7 +8010,7 @@ snapshots:
     dependencies:
       typescript: 5.9.3
 
-  '@hanzo/appearance@0.1.0(react@19.2.8)':
+  '@hanzo/appearance@0.1.2(react@19.2.8)':
     dependencies:
       '@hanzo/design': 0.4.12
       react: 19.2.8
