@@ -6,10 +6,18 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerAdapter } from '@/lib/vfs/adapters/server';
+import { requireSession } from '@/lib/iam';
 import { Deployment } from '@/lib/vfs/types';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    // Every sibling that reaches this adapter requires a session — sync/projects
+    // and sync/files do. These did not, and the store answering "not found"
+    // rather than "not signed in" is what hid it: an existing id would have
+    // been returned to anyone. It reads empty in production today, and empty is
+    // not protected.
+    await requireSession(request);
+
     const adapter = await createServerAdapter();
     await adapter.init();
 
@@ -19,6 +27,9 @@ export async function GET() {
 
     return NextResponse.json(deployments);
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('[Deployments API] Error listing deployments:', error);
     return NextResponse.json(
       { error: 'Failed to list deployments' },
@@ -29,6 +40,13 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    // Every sibling that reaches this adapter requires a session — sync/projects
+    // and sync/files do. These did not, and the store answering "not found"
+    // rather than "not signed in" is what hid it: an existing id would have
+    // been returned to anyone. It reads empty in production today, and empty is
+    // not protected.
+    await requireSession(request);
+
     const body = await request.json();
     const { projectId, name, slug } = body;
 
@@ -91,6 +109,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(deployment, { status: 201 });
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('[Deployments API] Error creating deployment:', error);
     return NextResponse.json(
       { error: 'Failed to create deployment' },

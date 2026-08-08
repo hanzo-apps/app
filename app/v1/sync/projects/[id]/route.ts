@@ -8,6 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerAdapter } from '@/lib/vfs/adapters/server';
+import { requireSession } from '@/lib/iam';
 import { Project, VirtualFile } from '@/lib/vfs/types';
 import { serializeFilesForResponse } from '@/lib/vfs/sync-utils';
 import { logger } from '@/lib/utils';
@@ -26,6 +27,12 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Reaches the server adapter, which carries no tenancy of its own — so this
+    // check is the only thing between a caller and the store. Its siblings had
+    // it; these did not, and answering "not found" instead of "not signed in"
+    // is what made that invisible.
+    await requireSession(request);
+
     const { id } = await params;
     const body: PushRequestBody = await request.json();
     const { project, files } = body;
@@ -90,6 +97,9 @@ export async function POST(
       fileCount: files.length
     });
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     logger.error('[API /api/sync/projects/[id] POST] Error:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to push project' },
@@ -107,6 +117,12 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Reaches the server adapter, which carries no tenancy of its own — so this
+    // check is the only thing between a caller and the store. Its siblings had
+    // it; these did not, and answering "not found" instead of "not signed in"
+    // is what made that invisible.
+    await requireSession(request);
+
     const { id } = await params;
 
     let adapter;
@@ -143,6 +159,9 @@ export async function GET(
       files: serializeFilesForResponse(files)
     });
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     logger.error('[API /api/sync/projects/[id] GET] Error:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to pull project' },

@@ -8,6 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerAdapter } from '@/lib/vfs/adapters/server';
+import { requireSession } from '@/lib/iam';
 import { logger } from '@/lib/utils';
 import { Project, CustomTemplate } from '@/lib/vfs/types';
 import { Skill } from '@/lib/vfs/skills/types';
@@ -49,8 +50,15 @@ function safeParseDate(value: Date | string | null | undefined, fallback: Date =
  * GET /api/sync/status
  * Get timestamps for all server projects, skills, templates and summary stats
  */
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
+    // Every sibling that reaches this adapter requires a session — sync/projects
+    // and sync/files do. These did not, and the store answering "not found"
+    // rather than "not signed in" is what hid it: an existing id would have
+    // been returned to anyone. It reads empty in production today, and empty is
+    // not protected.
+    await requireSession(request);
+
     let adapter;
     try {
       adapter = await createServerAdapter();
@@ -143,6 +151,9 @@ export async function GET(_request: NextRequest) {
     return NextResponse.json(response);
   } catch (error) {
     logger.error('[API /api/sync/status] Error:', error);
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to fetch sync status' },
       { status: 500 }

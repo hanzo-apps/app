@@ -6,11 +6,18 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerAdapter } from '@/lib/vfs/adapters/server';
+import { requireSession } from '@/lib/iam';
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Reaches the server adapter, which carries no tenancy of its own — so this
+    // check is the only thing between a caller and the store. Its siblings had
+    // it; these did not, and answering "not found" instead of "not signed in"
+    // is what made that invisible.
+    await requireSession(request);
+
     const { id } = await params;
 
     const adapter = await createServerAdapter();
@@ -44,6 +51,9 @@ export async function GET(
 
     return NextResponse.json(settings);
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('[Deployments API] Error getting deployment settings:', error);
     return NextResponse.json(
       { error: 'Failed to get deployment settings' },
@@ -57,6 +67,12 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Reaches the server adapter, which carries no tenancy of its own — so this
+    // check is the only thing between a caller and the store. Its siblings had
+    // it; these did not, and answering "not found" instead of "not signed in"
+    // is what made that invisible.
+    await requireSession(request);
+
     const { id } = await params;
     const body = await request.json();
 
@@ -111,6 +127,9 @@ export async function PUT(
 
     return NextResponse.json(settings);
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('[Deployments API] Error updating deployment settings:', error);
     return NextResponse.json(
       { error: 'Failed to update deployment settings' },
