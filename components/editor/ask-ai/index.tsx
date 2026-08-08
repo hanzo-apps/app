@@ -254,6 +254,26 @@ export function AskAI({
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const rootRef = useRef<GuiElement>(null);
 
+  // The suggestion row's right fade is an affordance — it claims there is more
+  // to scroll to. Only `.scroll-fade-r[data-more]` masks, so the claim has to
+  // be measured: at desktop width the row fits, and an unconditional fade sat
+  // on top of the last pill, dimming a live action with nothing behind it.
+  const pillsRef = useRef<GuiElement>(null);
+  useEffect(() => {
+    const el = pillsRef.current as HTMLElement | null;
+    if (!el) return;
+    const measure = () =>
+      el.toggleAttribute("data-more", el.scrollWidth - el.clientWidth - el.scrollLeft > 1);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    el.addEventListener("scroll", measure, { passive: true });
+    return () => {
+      ro.disconnect();
+      el.removeEventListener("scroll", measure);
+    };
+  }, [suggestionsDismissed, isAiWorking]);
+
   const maxComposerH = () => {
     const el = rootRef.current;
     const base =
@@ -1166,7 +1186,7 @@ export function AskAI({
           Hidden while the AI is working and once dismissed for this project. */}
       {!suggestionsDismissed && !isAiWorking && (
         <XStack marginBottom="$2" alignItems="center" gap="$1.5">
-          <XStack flex={1} alignItems="center" gap="$1.5" overflow="scroll" className="no-scrollbar scroll-fade-r">
+          <XStack ref={pillsRef} flex={1} alignItems="center" gap="$1.5" overflow="scroll" className="no-scrollbar scroll-fade-r">
             {SUGGESTIONS.map((s) => (
               <Button
                 key={s}

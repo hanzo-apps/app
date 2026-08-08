@@ -1141,7 +1141,11 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
   mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
 }
-.scroll-fade-r {
+/* The right fade means "there is more to the right", so it is drawn only when
+   there is — hence `[data-more]`, set by whoever owns the scroller. Unmasked
+   is the safe default: an always-on fade dims the last item for no reason
+   once the row fits, and CSS cannot ask an element whether it can scroll. */
+.scroll-fade-r[data-more] {
   -webkit-mask-image: linear-gradient(to right, #000 88%, transparent);
   mask-image: linear-gradient(to right, #000 88%, transparent);
 }
