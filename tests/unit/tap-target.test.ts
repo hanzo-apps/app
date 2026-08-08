@@ -40,10 +40,13 @@ describe("the voice control is a real tap target", () => {
     expect(pxOf(body, "height")).toBeGreaterThanOrEqual(24);
   });
 
-  it("matches the 44px height of the controls sharing its row", () => {
-    // The composer's mode picker and send button are both 44; a control that is
-    // shorter than its row is a visible dent, which is how this was first seen.
-    expect(pxOf(body, "height")).toBe(44);
+  it("matches the 28px send circle sharing its row", () => {
+    // The mic and the send are a PAIR of round controls in the action row —
+    // same 28px circle, different fill (send carries the accent, mic a neutral
+    // wash). This pinned 44 when the row's controls were 44; the row changed
+    // deliberately (globals.css states the pairing), so the pin follows the
+    // row. The WCAG floor above is the invariant that never moves.
+    expect(pxOf(body, "height")).toBe(28);
   });
 
   it("stays square, so the glyph sits centred rather than drifting", () => {
