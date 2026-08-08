@@ -74,7 +74,12 @@ const SPECULATION_RULES = JSON.stringify({
 });
 
 export const metadata: Metadata = {
-  title: "Hanzo AI | Build with AI",
+  // The brand is appended HERE and nowhere else. Every page used to carry its
+  // own suffix, which meant twelve chances to write it and three spellings in
+  // use — "— Hanzo", "| Hanzo", "— Built on Hanzo" — plus `/store`, which said
+  // only "Store" and named nobody. A `template` is Next's own mechanism for
+  // exactly this: a page states what IT is, the root says who WE are.
+  title: { default: "Hanzo AI | Build with AI", template: "%s — Hanzo AI" },
   description:
     "Hanzo AI is a cutting-edge web development platform that helps you build websites with AI, no code required. Create, deploy, and scale your projects with the power of AI.",
   // Absolute base for OG/Twitter/canonical URL resolution; white-label overridable
@@ -82,8 +87,13 @@ export const metadata: Metadata = {
   // the canonical don't resolve and Next warns at build.
   metadataBase: new URL(SITE_URL),
   alternates: { canonical: "/" },
+  // NO `title` here, and that omission is the whole mechanism. Metadata is
+  // inherited segment by segment, so a `title` declared on this object is
+  // inherited by every child — and og:title on /pricing read "Hanzo AI | Build
+  // with AI" while its tab correctly read "Pricing". Left absent, Next falls
+  // og:title back to the page's own resolved title, template and all. Twelve
+  // pages fixed by deleting one line; the same for `twitter` below.
   openGraph: {
-    title: "Hanzo AI | Build with AI",
     description:
       "Hanzo AI is a cutting-edge web development platform that helps you build websites with AI, no code required. Create, deploy, and scale your projects with the power of AI.",
     url: SITE_URL,
@@ -99,7 +109,6 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hanzo AI | Build with AI",
     description:
       "Hanzo AI is a cutting-edge web development platform that helps you build websites with AI, no code required. Create, deploy, and scale your projects with the power of AI.",
     images: ["/banner.png"],

@@ -61,7 +61,7 @@ export const CATEGORIES: readonly CategoryDescriptor[] = [
     slug: "websites",
     label: "Websites",
     blurb: "Complete marketing and brand sites for businesses, agencies and studios.",
-    seoTitle: "Website Templates — Fork & Deploy Free | Hanzo",
+    seoTitle: "Website Templates — Fork & Deploy Free",
     seoDescription:
       "Browse free website templates for businesses, agencies and brands. Fork any design, edit it with AI, and ship it live on Hanzo in minutes.",
   },
@@ -69,7 +69,7 @@ export const CATEGORIES: readonly CategoryDescriptor[] = [
     slug: "apps",
     label: "Apps",
     blurb: "Full-stack web and mobile app starters with real product surfaces.",
-    seoTitle: "Web & Mobile App Templates | Hanzo",
+    seoTitle: "Web & Mobile App Templates",
     seoDescription:
       "Start from a working app template — social, full-stack and mobile starters you can fork, extend with AI, and deploy on Hanzo.",
   },
@@ -77,7 +77,7 @@ export const CATEGORIES: readonly CategoryDescriptor[] = [
     slug: "portfolio",
     label: "Portfolio",
     blurb: "Showcases for designers, developers, photographers and creative studios.",
-    seoTitle: "Portfolio Website Templates — Free to Fork | Hanzo",
+    seoTitle: "Portfolio Website Templates — Free to Fork",
     seoDescription:
       "Free portfolio templates for designers, developers and photographers. Grid, masonry and case-study layouts you can fork and publish today.",
   },
@@ -85,7 +85,7 @@ export const CATEGORIES: readonly CategoryDescriptor[] = [
     slug: "saas",
     label: "SaaS",
     blurb: "SaaS product platforms and high-intent marketing sites, ready to monetize.",
-    seoTitle: "SaaS Website & Platform Templates | Hanzo",
+    seoTitle: "SaaS Website & Platform Templates",
     seoDescription:
       "Fork a SaaS template — AI platforms, pricing pages and animated product sites built in Next.js and React. Edit with AI and launch on Hanzo.",
   },
@@ -93,7 +93,7 @@ export const CATEGORIES: readonly CategoryDescriptor[] = [
     slug: "blog",
     label: "Blog",
     blurb: "Clean, readable layouts for writing, publishing and content.",
-    seoTitle: "Blog Templates — Fork & Publish | Hanzo",
+    seoTitle: "Blog Templates — Fork & Publish",
     seoDescription:
       "Readable blog and publishing templates you can fork, style with AI and deploy on Hanzo. More designs added continuously.",
   },
@@ -101,7 +101,7 @@ export const CATEGORIES: readonly CategoryDescriptor[] = [
     slug: "internal-tools",
     label: "Internal Tools",
     blurb: "Admin dashboards, CRMs and analytics consoles for running the business.",
-    seoTitle: "Admin Dashboard & Internal Tool Templates | Hanzo",
+    seoTitle: "Admin Dashboard & Internal Tool Templates",
     seoDescription:
       "Fork a dashboard, CRM or analytics console. Charts, tables and admin layouts ready to wire to your data and ship on Hanzo.",
   },
@@ -109,7 +109,7 @@ export const CATEGORIES: readonly CategoryDescriptor[] = [
     slug: "developer-tools",
     label: "Developer Tools",
     blurb: "Component libraries and layout kits that make you build faster.",
-    seoTitle: "Developer UI Kits & Component Templates | Hanzo",
+    seoTitle: "Developer UI Kits & Component Templates",
     seoDescription:
       "Component libraries and bento-card layout kits for shipping interfaces faster. Fork the blocks, compose your pages, deploy on Hanzo.",
   },
@@ -117,7 +117,7 @@ export const CATEGORIES: readonly CategoryDescriptor[] = [
     slug: "editorial",
     label: "Editorial",
     blurb: "Magazine and long-form layouts built around typography.",
-    seoTitle: "Editorial & Magazine Templates | Hanzo",
+    seoTitle: "Editorial & Magazine Templates",
     seoDescription:
       "Editorial, typography-led templates for stories and long-form content. Fork, restyle with AI and publish on Hanzo.",
   },
@@ -125,7 +125,7 @@ export const CATEGORIES: readonly CategoryDescriptor[] = [
     slug: "music",
     label: "Music",
     blurb: "Sites for artists, releases, labels and audio products.",
-    seoTitle: "Music & Artist Website Templates | Hanzo",
+    seoTitle: "Music & Artist Website Templates",
     seoDescription:
       "Templates for artists, releases and audio products you can fork and deploy on Hanzo. More music designs added continuously.",
   },
@@ -133,7 +133,7 @@ export const CATEGORIES: readonly CategoryDescriptor[] = [
     slug: "product-management",
     label: "Product Management",
     blurb: "Roadmaps, changelogs and feedback surfaces for product teams.",
-    seoTitle: "Product Management Templates | Hanzo",
+    seoTitle: "Product Management Templates",
     seoDescription:
       "Roadmap, changelog and feedback templates for product teams. Fork a starter, connect your data and ship on Hanzo.",
   },
@@ -141,7 +141,7 @@ export const CATEGORIES: readonly CategoryDescriptor[] = [
     slug: "ecommerce",
     label: "Ecommerce",
     blurb: "Storefronts, shops and ordering flows built to sell.",
-    seoTitle: "Ecommerce & Online Store Templates | Hanzo",
+    seoTitle: "Ecommerce & Online Store Templates",
     seoDescription:
       "Fork an ecommerce template — storefronts, shops and food-ordering flows. Edit with AI, wire up checkout and launch on Hanzo.",
   },
@@ -149,7 +149,7 @@ export const CATEGORIES: readonly CategoryDescriptor[] = [
     slug: "project-management",
     label: "Project Management",
     blurb: "Boards, trackers and team workspaces for shipping work.",
-    seoTitle: "Project Management Templates | Hanzo",
+    seoTitle: "Project Management Templates",
     seoDescription:
       "Board, tracker and workspace templates for teams. Fork a starter, wire it to your data and deploy on Hanzo.",
   },
@@ -157,7 +157,7 @@ export const CATEGORIES: readonly CategoryDescriptor[] = [
     slug: "events",
     label: "Events",
     blurb: "Conference, meetup and ticketing sites that fill the room.",
-    seoTitle: "Event & Conference Website Templates | Hanzo",
+    seoTitle: "Event & Conference Website Templates",
     seoDescription:
       "Event, conference and ticketing templates you can fork, personalize with AI and publish on Hanzo. More designs added continuously.",
   },
@@ -165,7 +165,7 @@ export const CATEGORIES: readonly CategoryDescriptor[] = [
     slug: "services",
     label: "Services",
     blurb: "Booking-driven sites for fitness, studios and local service businesses.",
-    seoTitle: "Service Business & Booking Templates | Hanzo",
+    seoTitle: "Service Business & Booking Templates",
     seoDescription:
       "Fork a service-business template with booking and class scheduling — built for fitness, studios and local providers. Launch on Hanzo.",
   },
@@ -173,7 +173,7 @@ export const CATEGORIES: readonly CategoryDescriptor[] = [
     slug: "resume",
     label: "Resume",
     blurb: "Personal resume, bio and about pages that introduce you well.",
-    seoTitle: "Resume, Bio & About Page Templates | Hanzo",
+    seoTitle: "Resume, Bio & About Page Templates",
     seoDescription:
       "Fork a personal resume, bio or about-page template. Clean, responsive and ready to publish on Hanzo in minutes.",
   },
@@ -181,7 +181,7 @@ export const CATEGORIES: readonly CategoryDescriptor[] = [
     slug: "landing-page",
     label: "Landing Page",
     blurb: "High-converting launch and marketing pages for any product.",
-    seoTitle: "Landing Page Templates — Free to Fork | Hanzo",
+    seoTitle: "Landing Page Templates — Free to Fork",
     seoDescription:
       "High-converting landing and launch page templates for apps and products. Fork, edit with AI and deploy on Hanzo in minutes.",
   },
@@ -324,7 +324,7 @@ const RAW: RawEntry[] = [
       "Launches that need pricing on day one",
     ],
     framework: "Next.js 14.2 + TS",
-    seoTitle: "Synapse — AI SaaS Platform Template | Hanzo",
+    seoTitle: "Synapse — AI SaaS Platform Template",
     seoDescription:
       "Fork Synapse, a Next.js 14 AI SaaS starter with chat, audio/video, photo editing and pricing. Free to remix with AI and deploy on Hanzo.",
   },
@@ -352,7 +352,7 @@ const RAW: RawEntry[] = [
       "Adding social features to an existing product",
     ],
     framework: "Next.js 14.2 + TS",
-    seoTitle: "Circle — Social Network App Template | Hanzo",
+    seoTitle: "Circle — Social Network App Template",
     seoDescription:
       "Fork Circle, a Next.js 14 social app template with feed, DMs, profiles and notifications. Remix it with AI and launch on Hanzo.",
   },
@@ -380,7 +380,7 @@ const RAW: RawEntry[] = [
       "A shared design system for internal tools",
     ],
     framework: "Next.js 13.3 + TS",
-    seoTitle: "Metrics — Admin Dashboard Template | Hanzo",
+    seoTitle: "Metrics — Admin Dashboard Template",
     seoDescription:
       "Fork Metrics, a Next.js admin dashboard with analytics, CRM, finance and project views plus 60+ components. Wire your data and ship on Hanzo.",
   },
@@ -407,7 +407,7 @@ const RAW: RawEntry[] = [
       "Standing out with tasteful animation",
     ],
     framework: "Next.js 14.2 + TS",
-    seoTitle: "Kinetic — Animated Portfolio Template | Hanzo",
+    seoTitle: "Kinetic — Animated Portfolio Template",
     seoDescription:
       "Fork Kinetic, a Next.js 14 portfolio with GSAP motion and smooth scroll. Remix it with AI and publish your work on Hanzo.",
   },
@@ -434,7 +434,7 @@ const RAW: RawEntry[] = [
       "Teams that want motion without the build cost",
     ],
     framework: "Next.js 14.1",
-    seoTitle: "Quantum — Animated SaaS Landing Template | Hanzo",
+    seoTitle: "Quantum — Animated SaaS Landing Template",
     seoDescription:
       "Fork Quantum, a Next.js 14 SaaS landing page with Framer Motion animation. Edit with AI and launch a polished product site on Hanzo.",
   },
@@ -461,7 +461,7 @@ const RAW: RawEntry[] = [
       "Shipping UI faster across projects",
     ],
     framework: "Next.js 14 + shadcn",
-    seoTitle: "Blocks — shadcn/ui Component Kit | Hanzo",
+    seoTitle: "Blocks — shadcn/ui Component Kit",
     seoDescription:
       "Fork Blocks, 100+ shadcn/ui sections and components for Next.js. Compose pages fast, remix with AI and deploy on Hanzo.",
   },
@@ -488,7 +488,7 @@ const RAW: RawEntry[] = [
       "Any menu-plus-checkout product",
     ],
     framework: "Next.js 14.2 + TS",
-    seoTitle: "Savor — Food Delivery App Template | Hanzo",
+    seoTitle: "Savor — Food Delivery App Template",
     seoDescription:
       "Fork Savor, a Next.js 14 food-ordering template with menus, cart and delivery flow. Remix with AI and launch your restaurant online on Hanzo.",
   },
@@ -515,7 +515,7 @@ const RAW: RawEntry[] = [
       "A portfolio you can update quickly",
     ],
     framework: "Next.js 14 + TS",
-    seoTitle: "Mint — Creative Portfolio Template | Hanzo",
+    seoTitle: "Mint — Creative Portfolio Template",
     seoDescription:
       "Fork Mint, a clean Next.js 14 creative portfolio. Remix it with AI, add your work and publish a modern portfolio on Hanzo.",
   },
@@ -542,7 +542,7 @@ const RAW: RawEntry[] = [
       "Composing pages from layout tiles",
     ],
     framework: "Next.js 14.2 + TS",
-    seoTitle: "Matrix — AI Bento Card Layout Template | Hanzo",
+    seoTitle: "Matrix — AI Bento Card Layout Template",
     seoDescription:
       "Fork Matrix, a Next.js 14 bento-card layout kit with an AI aesthetic and 30 layouts. Compose modern landing pages and ship on Hanzo.",
   },
@@ -569,7 +569,7 @@ const RAW: RawEntry[] = [
       "A flexible bento starting point",
     ],
     framework: "Next.js 14.2 + TS",
-    seoTitle: "Mosaic — Bento Card Layout Template | Hanzo",
+    seoTitle: "Mosaic — Bento Card Layout Template",
     seoDescription:
       "Fork Mosaic, a general-purpose Next.js 14 bento-card layout kit with 30 layouts. Build modern pages fast and deploy on Hanzo.",
   },
@@ -596,7 +596,7 @@ const RAW: RawEntry[] = [
       "A modern site without a heavy framework",
     ],
     framework: "React 18 + Vite",
-    seoTitle: "Prism — Modern SaaS Landing (React) | Hanzo",
+    seoTitle: "Prism — Modern SaaS Landing (React)",
     seoDescription:
       "Fork Prism, a React 18 + Vite SaaS landing page with animation. Remix with AI and launch a polished product site on Hanzo.",
   },
@@ -623,7 +623,7 @@ const RAW: RawEntry[] = [
       "Composable feature grids",
     ],
     framework: "React 18",
-    seoTitle: "Matrix — AI Bento Layout (React) | Hanzo",
+    seoTitle: "Matrix — AI Bento Layout (React)",
     seoDescription:
       "Fork Matrix (React), an AI-themed bento-card layout kit in React 18 with 30 layouts. Build modern pages and deploy on Hanzo.",
   },
@@ -650,7 +650,7 @@ const RAW: RawEntry[] = [
       "A neutral bento starting point",
     ],
     framework: "React 18 + CRA",
-    seoTitle: "Mosaic — Bento Layout Kit (React) | Hanzo",
+    seoTitle: "Mosaic — Bento Layout Kit (React)",
     seoDescription:
       "Fork Mosaic (React), a multipurpose React 18 bento-card kit with 30 layouts. Compose modern pages fast and ship on Hanzo.",
   },
@@ -677,7 +677,7 @@ const RAW: RawEntry[] = [
       "Any booking-driven local brand",
     ],
     framework: "React 18 + CRA",
-    seoTitle: "Soar — Fitness & Class Booking Template | Hanzo",
+    seoTitle: "Soar — Fitness & Class Booking Template",
     seoDescription:
       "Fork Soar, a React fitness template with class schedules and booking. Remix with AI and launch your studio site on Hanzo.",
   },
@@ -704,7 +704,7 @@ const RAW: RawEntry[] = [
       "Any data-dense operator console",
     ],
     framework: "React 17",
-    seoTitle: "Cipher — Crypto Trading Dashboard (React) | Hanzo",
+    seoTitle: "Cipher — Crypto Trading Dashboard (React)",
     seoDescription:
       "Fork Cipher, a React crypto trading dashboard with charts, portfolio views and 40+ components. Wire your data and deploy on Hanzo.",
   },
@@ -731,7 +731,7 @@ const RAW: RawEntry[] = [
       "A clean marketing page in a day",
     ],
     framework: "Next.js 13",
-    seoTitle: "Launch — SaaS Landing Page Template | Hanzo",
+    seoTitle: "Launch — SaaS Landing Page Template",
     seoDescription:
       "Fork Launch, a clean Next.js SaaS landing page. Remix it with AI, drop in your product and go live on Hanzo the same day.",
   },
@@ -758,7 +758,7 @@ const RAW: RawEntry[] = [
       "Pre-launch and waitlist pages",
     ],
     framework: "Next.js 14",
-    seoTitle: "Construct — App Landing Page Template | Hanzo",
+    seoTitle: "Construct — App Landing Page Template",
     seoDescription:
       "Fork Construct, a Next.js 14 app landing page built for conversions. Remix with AI and launch your app site on Hanzo.",
   },
@@ -785,7 +785,7 @@ const RAW: RawEntry[] = [
       "A neutral landing starting point",
     ],
     framework: "Next.js 14",
-    seoTitle: "Deploy — Marketing Landing Page Template | Hanzo",
+    seoTitle: "Deploy — Marketing Landing Page Template",
     seoDescription:
       "Fork Deploy, a versatile Next.js 14 marketing landing page. Remix with AI and ship a campaign or product page on Hanzo.",
   },
@@ -812,7 +812,7 @@ const RAW: RawEntry[] = [
       "Refreshing an older bento look",
     ],
     framework: "React 18",
-    seoTitle: "Loop — Bento Layout Kit v3 (React) | Hanzo",
+    seoTitle: "Loop — Bento Layout Kit v3 (React)",
     seoDescription:
       "Fork Loop, a v3 React 18 bento-card layout kit with 30 layouts. Build expressive modern pages and deploy on Hanzo.",
   },
@@ -839,7 +839,7 @@ const RAW: RawEntry[] = [
       "A distinct React layout base",
     ],
     framework: "React 18",
-    seoTitle: "Unfixed — Alternate Bento Layout (React) | Hanzo",
+    seoTitle: "Unfixed — Alternate Bento Layout (React)",
     seoDescription:
       "Fork Unfixed, an alternate React 18 bento-card layout kit with 30 layouts. Build a distinct modern page and ship on Hanzo.",
   },
@@ -866,7 +866,7 @@ const RAW: RawEntry[] = [
       "A typed app foundation",
     ],
     framework: "Next.js 14 + TS",
-    seoTitle: "Unity — Full-Stack App Template | Hanzo",
+    seoTitle: "Unity — Full-Stack App Template",
     seoDescription:
       "Fork Unity, a modern Next.js 14 full-stack app starter. Remix with AI, add your features and deploy your product on Hanzo.",
   },
@@ -893,7 +893,7 @@ const RAW: RawEntry[] = [
       "Standing out with animation craft",
     ],
     framework: "HTML/SCSS + GSAP",
-    seoTitle: "Prism — Creative Agency Portfolio Template | Hanzo",
+    seoTitle: "Prism — Creative Agency Portfolio Template",
     seoDescription:
       "Fork Prism, a GSAP-animated HTML/SCSS agency portfolio. Remix with AI and publish a motion-rich studio site on Hanzo.",
   },
@@ -920,7 +920,7 @@ const RAW: RawEntry[] = [
       "A motion-accented portfolio",
     ],
     framework: "HTML/SCSS + GSAP",
-    seoTitle: "Canvas — Design Studio Portfolio Template | Hanzo",
+    seoTitle: "Canvas — Design Studio Portfolio Template",
     seoDescription:
       "Fork Canvas, a GSAP HTML/SCSS design-studio portfolio. Remix with AI and publish a curated studio site on Hanzo.",
   },
@@ -947,7 +947,7 @@ const RAW: RawEntry[] = [
       "A restrained, professional portfolio",
     ],
     framework: "HTML/CSS/JS",
-    seoTitle: "Vault — Architecture Portfolio Template | Hanzo",
+    seoTitle: "Vault — Architecture Portfolio Template",
     seoDescription:
       "Fork Vault, a clean HTML/CSS architecture portfolio. Remix with AI and publish a structural, photography-led site on Hanzo.",
   },
@@ -974,7 +974,7 @@ const RAW: RawEntry[] = [
       "Pitching work to prospects",
     ],
     framework: "HTML/CSS/JS",
-    seoTitle: "Studio — Digital Agency Template | Hanzo",
+    seoTitle: "Studio — Digital Agency Template",
     seoDescription:
       "Fork Studio, a professional HTML/CSS digital agency site. Remix with AI and publish a services-and-work portfolio on Hanzo.",
   },
@@ -1001,7 +1001,7 @@ const RAW: RawEntry[] = [
       "Freelancers building a presence",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Kalli — Creative Portfolio Template | Hanzo",
+    seoTitle: "Kalli — Creative Portfolio Template",
     seoDescription:
       "Fork Kalli, a modern HTML/Gulp creative portfolio. Remix with AI and publish a curated, professional portfolio on Hanzo.",
   },
@@ -1028,7 +1028,7 @@ const RAW: RawEntry[] = [
       "A credible business presence",
     ],
     framework: "HTML/CSS",
-    seoTitle: "Innovise — Agency & Business Website Template | Hanzo",
+    seoTitle: "Innovise — Agency & Business Website Template",
     seoDescription:
       "Fork Innovise, a modern HTML/CSS agency and business website. Remix with AI and publish a professional company site on Hanzo.",
   },
@@ -1055,7 +1055,7 @@ const RAW: RawEntry[] = [
       "Any auto-industry site",
     ],
     framework: "HTML/CSS",
-    seoTitle: "Drive — Automotive Website Template | Hanzo",
+    seoTitle: "Drive — Automotive Website Template",
     seoDescription:
       "Fork Drive, a modern HTML/CSS automotive website for dealers and brands. Remix with AI and publish an auto site on Hanzo.",
   },
@@ -1082,7 +1082,7 @@ const RAW: RawEntry[] = [
       "Teams on a Gulp toolchain",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Drive (HTML) — Automotive Website Template | Hanzo",
+    seoTitle: "Drive (HTML) — Automotive Website Template",
     seoDescription:
       "Fork Drive (HTML), a Gulp-built automotive website for dealers and brands. Remix with AI and publish an auto site on Hanzo.",
   },
@@ -1109,7 +1109,7 @@ const RAW: RawEntry[] = [
       "Any stay that sells atmosphere",
     ],
     framework: "HTML/CSS",
-    seoTitle: "Oasis — Resort & Hospitality Website Template | Hanzo",
+    seoTitle: "Oasis — Resort & Hospitality Website Template",
     seoDescription:
       "Fork Oasis, an elegant HTML/CSS resort and hospitality website. Remix with AI and publish a luxury stay site on Hanzo.",
   },
@@ -1136,7 +1136,7 @@ const RAW: RawEntry[] = [
       "Teams that value simplicity",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Solo — Simple SaaS Landing Template | Hanzo",
+    seoTitle: "Solo — Simple SaaS Landing Template",
     seoDescription:
       "Fork Solo, a simple HTML/Gulp SaaS landing page. Remix with AI and publish a focused product page on Hanzo.",
   },
@@ -1163,7 +1163,7 @@ const RAW: RawEntry[] = [
       "A polished page that ships fast",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Prism (HTML) — SaaS Landing Template | Hanzo",
+    seoTitle: "Prism (HTML) — SaaS Landing Template",
     seoDescription:
       "Fork Prism (HTML), an animated static SaaS landing page. Remix with AI and publish a polished product site on Hanzo.",
   },
@@ -1190,7 +1190,7 @@ const RAW: RawEntry[] = [
       "A static, fast back office",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Forge — Admin Dashboard Template | Hanzo",
+    seoTitle: "Forge — Admin Dashboard Template",
     seoDescription:
       "Fork Forge, an HTML/Gulp admin dashboard with analytics and 30+ components. Wire your data and deploy an internal tool on Hanzo.",
   },
@@ -1217,7 +1217,7 @@ const RAW: RawEntry[] = [
       "Data-dense operator consoles",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Cipher (HTML) — Crypto Trading Dashboard | Hanzo",
+    seoTitle: "Cipher (HTML) — Crypto Trading Dashboard",
     seoDescription:
       "Fork Cipher (HTML), a static crypto trading dashboard with charts and 40+ components. Wire your data and deploy on Hanzo.",
   },
@@ -1244,7 +1244,7 @@ const RAW: RawEntry[] = [
       "Customer management surfaces",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Beta — CRM Dashboard Template | Hanzo",
+    seoTitle: "Beta — CRM Dashboard Template",
     seoDescription:
       "Fork Beta, an HTML/Gulp CRM dashboard with pipeline views and 25+ components. Wire your data and deploy an internal tool on Hanzo.",
   },
@@ -1271,7 +1271,7 @@ const RAW: RawEntry[] = [
       "Business back-office admins",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Beta (Variant) — CRM Dashboard Template | Hanzo",
+    seoTitle: "Beta (Variant) — CRM Dashboard Template",
     seoDescription:
       "Fork Beta (Variant), an alternate HTML/Gulp CRM dashboard with pipeline views and 25+ components. Deploy an internal tool on Hanzo.",
   },
@@ -1298,7 +1298,7 @@ const RAW: RawEntry[] = [
       "Any catalog-plus-cart store",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Hygge — Ecommerce Store Template | Hanzo",
+    seoTitle: "Hygge — Ecommerce Store Template",
     seoDescription:
       "Fork Hygge, a clean HTML/Gulp ecommerce storefront with product pages and cart. Remix with AI and launch your shop on Hanzo.",
   },
@@ -1325,7 +1325,7 @@ const RAW: RawEntry[] = [
       "Fast, familiar store customization",
     ],
     framework: "HTML/Gulp + Bootstrap 5",
-    seoTitle: "Hygge (Bootstrap) — Ecommerce Store Template | Hanzo",
+    seoTitle: "Hygge (Bootstrap) — Ecommerce Store Template",
     seoDescription:
       "Fork Hygge (Bootstrap 5), a clean ecommerce storefront with product pages and cart. Remix with AI and launch your shop on Hanzo.",
   },
@@ -1352,7 +1352,7 @@ const RAW: RawEntry[] = [
       "Booking-driven local brands",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Soar (HTML) — Fitness & Booking Template | Hanzo",
+    seoTitle: "Soar (HTML) — Fitness & Booking Template",
     seoDescription:
       "Fork Soar (HTML), a static fitness site with class schedules and booking. Remix with AI and launch your studio site on Hanzo.",
   },
@@ -1379,7 +1379,7 @@ const RAW: RawEntry[] = [
       "A framework-free bento base",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Loop (HTML) — Bento Layout Kit v3 | Hanzo",
+    seoTitle: "Loop (HTML) — Bento Layout Kit v3",
     seoDescription:
       "Fork Loop (HTML), a static v3 bento-card layout kit with 30 layouts. Build modern pages without a framework and ship on Hanzo.",
   },
@@ -1406,7 +1406,7 @@ const RAW: RawEntry[] = [
       "Framework-free fintech pages",
     ],
     framework: "HTML/CSS",
-    seoTitle: "Cipher Cards (HTML) — Crypto Bento Layout | Hanzo",
+    seoTitle: "Cipher Cards (HTML) — Crypto Bento Layout",
     seoDescription:
       "Fork Cipher Cards (HTML), a crypto-themed static bento layout kit with 30 layouts. Build a web3 landing page and ship on Hanzo.",
   },
@@ -1433,7 +1433,7 @@ const RAW: RawEntry[] = [
       "Modern tiled feature grids",
     ],
     framework: "React 18",
-    seoTitle: "Cipher Cards (React) — Crypto Bento Layout | Hanzo",
+    seoTitle: "Cipher Cards (React) — Crypto Bento Layout",
     seoDescription:
       "Fork Cipher Cards (React), a crypto-themed React 18 bento layout kit with 30 layouts. Build a web3 landing page and ship on Hanzo.",
   },
@@ -1460,7 +1460,7 @@ const RAW: RawEntry[] = [
       "A complete, professional presence",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Multi-Layout Portfolio Template | Hanzo",
+    seoTitle: "Folio — Multi-Layout Portfolio Template",
     seoDescription:
       "Fork Folio Main, a flexible HTML/Gulp portfolio with multiple layouts. Remix with AI and publish a professional portfolio on Hanzo.",
   },
@@ -1487,7 +1487,7 @@ const RAW: RawEntry[] = [
       "Immersive creative sites",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Full-Width Portfolio Template | Hanzo",
+    seoTitle: "Folio — Full-Width Portfolio Template",
     seoDescription:
       "Fork Folio Full, an edge-to-edge HTML/Gulp portfolio for large-format work. Remix with AI and publish an immersive site on Hanzo.",
   },
@@ -1514,7 +1514,7 @@ const RAW: RawEntry[] = [
       "Tying multiple pages together",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Portfolio Hub Template | Hanzo",
+    seoTitle: "Folio — Portfolio Hub Template",
     seoDescription:
       "Fork Folio Index, an HTML/Gulp portfolio hub and index page. Remix with AI and publish a cohesive portfolio site on Hanzo.",
   },
@@ -1541,7 +1541,7 @@ const RAW: RawEntry[] = [
       "Introducing yourself well",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — About & Bio Page Template | Hanzo",
+    seoTitle: "Folio — About & Bio Page Template",
     seoDescription:
       "Fork Folio About, a polished HTML/Gulp about and bio page. Remix with AI and publish a personal resume or profile on Hanzo.",
   },
@@ -1568,7 +1568,7 @@ const RAW: RawEntry[] = [
       "Completing a portfolio site",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Contact Page Template | Hanzo",
+    seoTitle: "Folio — Contact Page Template",
     seoDescription:
       "Fork Folio Contact, a clean HTML/Gulp contact page with a form. Remix with AI and publish a get-in-touch page on Hanzo.",
   },
@@ -1595,7 +1595,7 @@ const RAW: RawEntry[] = [
       "A portfolio-grade agency site",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Creative Agency Template | Hanzo",
+    seoTitle: "Folio — Creative Agency Template",
     seoDescription:
       "Fork Folio Creative Agency, an HTML/Gulp agency portfolio. Remix with AI and publish a studio site with case work on Hanzo.",
   },
@@ -1622,7 +1622,7 @@ const RAW: RawEntry[] = [
       "A distinct agency portfolio",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Creative Agency Variant Template | Hanzo",
+    seoTitle: "Folio — Creative Agency Variant Template",
     seoDescription:
       "Fork Folio Creative Agency 2, an alternate HTML/Gulp agency portfolio. Remix with AI and publish a studio site on Hanzo.",
   },
@@ -1649,7 +1649,7 @@ const RAW: RawEntry[] = [
       "Freelance designers",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Designer Portfolio Template | Hanzo",
+    seoTitle: "Folio — Designer Portfolio Template",
     seoDescription:
       "Fork Folio Designer, an HTML/Gulp designer portfolio. Remix with AI and publish a craft-led showcase of your work on Hanzo.",
   },
@@ -1676,7 +1676,7 @@ const RAW: RawEntry[] = [
       "Freelance designers",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Designer Portfolio Variant Template | Hanzo",
+    seoTitle: "Folio — Designer Portfolio Variant Template",
     seoDescription:
       "Fork Folio Designer 2, an alternate HTML/Gulp designer portfolio. Remix with AI and publish a craft-led showcase on Hanzo.",
   },
@@ -1703,7 +1703,7 @@ const RAW: RawEntry[] = [
       "A sharp, professional presence",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Developer Portfolio Template | Hanzo",
+    seoTitle: "Folio — Developer Portfolio Template",
     seoDescription:
       "Fork Folio Developer, an HTML/Gulp developer portfolio for projects and skills. Remix with AI and publish your dev site on Hanzo.",
   },
@@ -1730,7 +1730,7 @@ const RAW: RawEntry[] = [
       "Job-seeking technical portfolios",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Developer Portfolio Variant Template | Hanzo",
+    seoTitle: "Folio — Developer Portfolio Variant Template",
     seoDescription:
       "Fork Folio Developer 2, an alternate HTML/Gulp developer portfolio. Remix with AI and publish your dev site on Hanzo.",
   },
@@ -1757,7 +1757,7 @@ const RAW: RawEntry[] = [
       "Visual artists",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Photography Portfolio Template | Hanzo",
+    seoTitle: "Folio — Photography Portfolio Template",
     seoDescription:
       "Fork Folio Photography, an image-first HTML/Gulp photography portfolio. Remix with AI and publish a gallery site on Hanzo.",
   },
@@ -1784,7 +1784,7 @@ const RAW: RawEntry[] = [
       "Gallery and series showcases",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Photography Portfolio Variant Template | Hanzo",
+    seoTitle: "Folio — Photography Portfolio Variant Template",
     seoDescription:
       "Fork Folio Photography 2, an alternate image-first photography portfolio. Remix with AI and publish a gallery site on Hanzo.",
   },
@@ -1811,7 +1811,7 @@ const RAW: RawEntry[] = [
       "Detail-rich project thumbnails",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Two-Column Grid Portfolio Template | Hanzo",
+    seoTitle: "Folio — Two-Column Grid Portfolio Template",
     seoDescription:
       "Fork Folio Grid 2 Columns, an HTML/Gulp two-column portfolio grid. Remix with AI and publish a balanced work grid on Hanzo.",
   },
@@ -1838,7 +1838,7 @@ const RAW: RawEntry[] = [
       "A balanced, reliable grid",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Three-Column Grid Portfolio Template | Hanzo",
+    seoTitle: "Folio — Three-Column Grid Portfolio Template",
     seoDescription:
       "Fork Folio Grid 3 Columns, a versatile HTML/Gulp portfolio grid. Remix with AI and publish a balanced work grid on Hanzo.",
   },
@@ -1865,7 +1865,7 @@ const RAW: RawEntry[] = [
       "Designers and photographers",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Fluid Three-Column Grid Template | Hanzo",
+    seoTitle: "Folio — Fluid Three-Column Grid Template",
     seoDescription:
       "Fork Folio Grid 3 Fluid, a full-width HTML/Gulp portfolio grid. Remix with AI and publish an immersive work grid on Hanzo.",
   },
@@ -1892,7 +1892,7 @@ const RAW: RawEntry[] = [
       "A dense, breadth-first grid",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Four-Column Grid Portfolio Template | Hanzo",
+    seoTitle: "Folio — Four-Column Grid Portfolio Template",
     seoDescription:
       "Fork Folio Grid 4 Columns, a dense HTML/Gulp portfolio grid. Remix with AI and publish a large work catalog on Hanzo.",
   },
@@ -1919,7 +1919,7 @@ const RAW: RawEntry[] = [
       "Maximum-density showcases",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Fluid Four-Column Grid Template | Hanzo",
+    seoTitle: "Folio — Fluid Four-Column Grid Template",
     seoDescription:
       "Fork Folio Grid 4 Fluid, a full-width dense HTML/Gulp portfolio grid. Remix with AI and publish a large immersive catalog on Hanzo.",
   },
@@ -1946,7 +1946,7 @@ const RAW: RawEntry[] = [
       "A natural, flowing gallery",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Two-Column Masonry Portfolio Template | Hanzo",
+    seoTitle: "Folio — Two-Column Masonry Portfolio Template",
     seoDescription:
       "Fork Folio Masonry 2 Columns, an HTML/Gulp masonry portfolio. Remix with AI and publish a flowing mixed-format gallery on Hanzo.",
   },
@@ -1973,7 +1973,7 @@ const RAW: RawEntry[] = [
       "A flexible, flowing gallery",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Three-Column Masonry Portfolio Template | Hanzo",
+    seoTitle: "Folio — Three-Column Masonry Portfolio Template",
     seoDescription:
       "Fork Folio Masonry 3 Columns, an HTML/Gulp masonry portfolio. Remix with AI and publish a flowing mixed-media gallery on Hanzo.",
   },
@@ -2000,7 +2000,7 @@ const RAW: RawEntry[] = [
       "Photographers and illustrators",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Fluid Three-Column Masonry Template | Hanzo",
+    seoTitle: "Folio — Fluid Three-Column Masonry Template",
     seoDescription:
       "Fork Folio Masonry 3 Fluid, a full-width HTML/Gulp masonry portfolio. Remix with AI and publish an immersive gallery on Hanzo.",
   },
@@ -2027,7 +2027,7 @@ const RAW: RawEntry[] = [
       "A dense, flowing gallery",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Four-Column Masonry Portfolio Template | Hanzo",
+    seoTitle: "Folio — Four-Column Masonry Portfolio Template",
     seoDescription:
       "Fork Folio Masonry 4 Columns, a dense HTML/Gulp masonry portfolio. Remix with AI and publish a large mixed-media gallery on Hanzo.",
   },
@@ -2054,7 +2054,7 @@ const RAW: RawEntry[] = [
       "Maximum-density showcases",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Fluid Four-Column Masonry Template | Hanzo",
+    seoTitle: "Folio — Fluid Four-Column Masonry Template",
     seoDescription:
       "Fork Folio Masonry 4 Fluid, a full-width dense HTML/Gulp masonry portfolio. Remix with AI and publish an immersive gallery on Hanzo.",
   },
@@ -2081,7 +2081,7 @@ const RAW: RawEntry[] = [
       "Turning work into narrative",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Project Case Study Template | Hanzo",
+    seoTitle: "Folio — Project Case Study Template",
     seoDescription:
       "Fork Folio Details, an HTML/Gulp project case-study page. Remix with AI and publish a detailed project story on Hanzo.",
   },
@@ -2108,7 +2108,7 @@ const RAW: RawEntry[] = [
       "Detailed project stories",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Project Case Study Variant Template | Hanzo",
+    seoTitle: "Folio — Project Case Study Variant Template",
     seoDescription:
       "Fork Folio Details 2, an alternate HTML/Gulp case-study page. Remix with AI and publish a detailed project story on Hanzo.",
   },
@@ -2135,7 +2135,7 @@ const RAW: RawEntry[] = [
       "Detailed project stories",
     ],
     framework: "HTML/Gulp",
-    seoTitle: "Folio — Project Case Study Alt Template | Hanzo",
+    seoTitle: "Folio — Project Case Study Alt Template",
     seoDescription:
       "Fork Folio Details 3, a third HTML/Gulp case-study layout. Remix with AI and publish a detailed project story on Hanzo.",
   },
@@ -2162,7 +2162,7 @@ const RAW: RawEntry[] = [
       "React Native starters",
     ],
     framework: "React Native",
-    seoTitle: "Job Finder — Mobile Job Search App Template | Hanzo",
+    seoTitle: "Job Finder — Mobile Job Search App Template",
     seoDescription:
       "Fork Job Finder, a React Native job-search app with listings and search for iOS and Android. Remix with AI and ship on Hanzo.",
   },
@@ -2189,7 +2189,7 @@ const RAW: RawEntry[] = [
       "A modern portfolio-grade site",
     ],
     framework: "HTML/CSS/JS",
-    seoTitle: "Pixel — Creative Studio Template | Hanzo",
+    seoTitle: "Pixel — Creative Studio Template",
     seoDescription:
       "Fork Pixel, a modern HTML/CSS creative studio site. Remix with AI and publish a studio-and-work portfolio on Hanzo.",
   },
@@ -2216,7 +2216,7 @@ const RAW: RawEntry[] = [
       "A complete product site",
     ],
     framework: "Next.js 14.2",
-    seoTitle: "SaaS Landing — Pricing & Features Template | Hanzo",
+    seoTitle: "SaaS Landing — Pricing & Features Template",
     seoDescription:
       "Fork SaaS Landing, a complete Next.js 14 product page with pricing and feature sections. Remix with AI and launch on Hanzo.",
   },
@@ -2243,7 +2243,7 @@ const RAW: RawEntry[] = [
       "Teams who like a Sass workflow",
     ],
     framework: "HTML/Sass",
-    seoTitle: "Serif — Portfolio & Agency Template | Hanzo",
+    seoTitle: "Serif — Portfolio & Agency Template",
     seoDescription:
       "Fork Serif, a typographic HTML/Sass portfolio and agency template. Remix with AI and publish a refined editorial site on Hanzo.",
   },
@@ -2291,7 +2291,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/shop-storefront.git",
-    seoTitle: "Shop Storefront — Product Storefront Template | Hanzo",
+    seoTitle: "Shop Storefront — Product Storefront Template",
     seoDescription:
       "Fork Shop Storefront, a React + Hanzo monochrome storefront with grid, product and cart on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -2324,7 +2324,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/waitlist-launchpad.git",
-    seoTitle: "Launchpad Waitlist — Signup Countdown Template | Hanzo",
+    seoTitle: "Launchpad Waitlist — Signup Countdown Template",
     seoDescription:
       "Fork Launchpad, a React + Hanzo waitlist landing with a live countdown and admin dashboard on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -2356,7 +2356,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/bistro-site.git",
-    seoTitle: "Bistro Site — Restaurant Website Template | Hanzo",
+    seoTitle: "Bistro Site — Restaurant Website Template",
     seoDescription:
       "Fork Ember, a React + Hanzo restaurant site with a live menu and reservation requests on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -2389,7 +2389,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/photo-essay.git",
-    seoTitle: "Frame Story — Visual Photo Essay Template | Hanzo",
+    seoTitle: "Frame Story — Visual Photo Essay Template",
     seoDescription:
       "Fork Frame Story, a React + Hanzo long-scroll photo essay builder with full-bleed image beats and org-scoped Base storage. Remix with AI and deploy on Hanzo.",
   },
@@ -2421,7 +2421,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/digital-dropstore.git",
-    seoTitle: "Digital Dropstore — Digital Downloads Template | Hanzo",
+    seoTitle: "Digital Dropstore — Digital Downloads Template",
     seoDescription:
       "Fork Digital Dropstore, a React + Hanzo storefront for digital drops with a personal library on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -2453,7 +2453,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/changelog-ship.git",
-    seoTitle: "Shipwright — Product Changelog & Blog Template | Hanzo",
+    seoTitle: "Shipwright — Product Changelog & Blog Template",
     seoDescription:
       "Fork Shipwright, a React + Hanzo changelog and blog with typed release entries, a timeline feed and PKCE sign-in on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -2486,7 +2486,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/longform-essays.git",
-    seoTitle: "Longform — Personal Essay Blog Template | Hanzo",
+    seoTitle: "Longform — Personal Essay Blog Template",
     seoDescription:
       "Fork Longform, a distraction-free React + Hanzo essay blog with a book-serif reading column, markdown editor and org-scoped Base storage. Remix with AI and deploy on Hanzo.",
   },
@@ -2519,7 +2519,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/engineering-devlog.git",
-    seoTitle: "Devlog — Team Engineering Blog Template | Hanzo",
+    seoTitle: "Devlog — Team Engineering Blog Template",
     seoDescription:
       "Fork Devlog, a multi-author React + Hanzo engineering blog with topic tags, code blocks and author pages on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -2552,7 +2552,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/issue-press.git",
-    seoTitle: "Press — Digital Magazine Template | Hanzo",
+    seoTitle: "Press — Digital Magazine Template",
     seoDescription:
       "Fork Press, an issue-based React + Hanzo magazine with a cover story, department sections and a print-inspired reader on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -2584,7 +2584,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/dispatch-newsletter.git",
-    seoTitle: "Dispatch — Newsletter Archive Template | Hanzo",
+    seoTitle: "Dispatch — Newsletter Archive Template",
     seoDescription:
       "Fork Dispatch, a React + Hanzo newsletter archive with subscriber capture and a signed-in composer on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -2617,7 +2617,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/artist-epk.git",
-    seoTitle: "Pressroom — Artist EPK Template | Hanzo",
+    seoTitle: "Pressroom — Artist EPK Template",
     seoDescription:
       "Fork Pressroom, a React + Hanzo electronic press kit with releases, tour dates and press assets on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -2650,7 +2650,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/release-smartlink.git",
-    seoTitle: "Dropmark — Release Smart Link Template | Hanzo",
+    seoTitle: "Dropmark — Release Smart Link Template",
     seoDescription:
       "Fork Dropmark, a mobile-first React + Hanzo release smart link with every streaming button and real per-link clicks on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -2683,7 +2683,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/band-setlist.git",
-    seoTitle: "Setlist — Show & Setlist Tracker Template | Hanzo",
+    seoTitle: "Setlist — Show & Setlist Tracker Template",
     seoDescription:
       "Fork Setlist, a React + Hanzo band gig log with per-show setlists and a stage-sheet reader on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -2716,7 +2716,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/feature-upvote.git",
-    seoTitle: "Upvote — Feature Request Board Template | Hanzo",
+    seoTitle: "Upvote — Feature Request Board Template",
     seoDescription:
       "Fork Upvote, a React + Hanzo feature-request board with vote-sorted columns, comments and org-scoped Base storage. Remix with AI and deploy on Hanzo.",
   },
@@ -2749,7 +2749,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/product-trailmap.git",
-    seoTitle: "Trailmap — Public Product Roadmap Template | Hanzo",
+    seoTitle: "Trailmap — Public Product Roadmap Template",
     seoDescription:
       "Fork Trailmap, a React + Hanzo public roadmap with Now/Next/Later lanes, themed cards and org-scoped Base storage. Remix with AI and deploy on Hanzo.",
   },
@@ -2781,7 +2781,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/feedback-signal.git",
-    seoTitle: "Signal — Product Feedback Inbox Template | Hanzo",
+    seoTitle: "Signal — Product Feedback Inbox Template",
     seoDescription:
       "Fork Signal, a React + Hanzo two-pane feedback triage inbox with sentiment and theme tagging on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -2814,7 +2814,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/event-rally.git",
-    seoTitle: "Rally — Event RSVP Page Template | Hanzo",
+    seoTitle: "Rally — Event RSVP Page Template",
     seoDescription:
       "Fork Rally, a mobile-first React + Hanzo single-event RSVP page with a live guest list on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -2847,7 +2847,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/agenda-grid.git",
-    seoTitle: "Sched — Conference Agenda Template | Hanzo",
+    seoTitle: "Sched — Conference Agenda Template",
     seoDescription:
       "Fork Sched, a React + Hanzo multi-track conference agenda with a color-coded timetable and org-scoped Base storage. Remix with AI and deploy on Hanzo.",
   },
@@ -2880,7 +2880,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/meetup-gather.git",
-    seoTitle: "Meetup Gather — Community RSVP Page Template | Hanzo",
+    seoTitle: "Meetup Gather — Community RSVP Page Template",
     seoDescription:
       "Fork Meetup Gather, a React + Hanzo meetup page with live RSVPs and a who's-coming wall on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -2913,7 +2913,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/daily-standup.git",
-    seoTitle: "Daily Standup — Async Standup Tracker Template | Hanzo",
+    seoTitle: "Daily Standup — Async Standup Tracker Template",
     seoDescription:
       "Fork Daily Standup, a React + Hanzo async standup tracker with status rollups on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -2945,7 +2945,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/sprint-retro.git",
-    seoTitle: "Sprint Retro — Team Retrospective Template | Hanzo",
+    seoTitle: "Sprint Retro — Team Retrospective Template",
     seoDescription:
       "Fork Sprint Retro, a React + Hanzo retrospective board with voting and tracked actions on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -2977,7 +2977,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/kanban-lane.git",
-    seoTitle: "Kanban Lane — Kanban Board Template | Hanzo",
+    seoTitle: "Kanban Lane — Kanban Board Template",
     seoDescription:
       "Fork Kanban Lane, a React + Hanzo drag-free kanban board with org-scoped tasks on Base. Remix with AI and deploy on Hanzo.",
   },
@@ -3010,7 +3010,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/habit-streak.git",
-    seoTitle: "Habit Streak — Habit Tracker Template | Hanzo",
+    seoTitle: "Habit Streak — Habit Tracker Template",
     seoDescription:
       "Fork Habit Streak, a React + Hanzo habit tracker with streaks and a green heatmap on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -3043,7 +3043,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/expense-spend.git",
-    seoTitle: "Expense Spend — Expense Tracker Template | Hanzo",
+    seoTitle: "Expense Spend — Expense Tracker Template",
     seoDescription:
       "Fork Expense Spend, a React + Hanzo expense tracker with category and monthly spend charts on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -3076,7 +3076,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/reading-shelf.git",
-    seoTitle: "Reading Shelf — Book Tracker Template | Hanzo",
+    seoTitle: "Reading Shelf — Book Tracker Template",
     seoDescription:
       "Fork Reading Shelf, a React + Hanzo book tracker with a warm shelf of spine cards on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -3109,7 +3109,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/link-onepage.git",
-    seoTitle: "Link Onepage — Link-in-Bio Template | Hanzo",
+    seoTitle: "Link Onepage — Link-in-Bio Template",
     seoDescription:
       "Fork Link Onepage, a React + Hanzo link-in-bio page with real tap analytics on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -3142,7 +3142,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/helpdesk-deskline.git",
-    seoTitle: "Deskline Helpdesk — Support Ticket Queue Template | Hanzo",
+    seoTitle: "Deskline Helpdesk — Support Ticket Queue Template",
     seoDescription:
       "Fork Deskline, a React + Hanzo support ticket queue with triage and threaded replies on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -3175,7 +3175,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/inventory-stockroom.git",
-    seoTitle: "Stockroom Inventory — Stock Tracker Template | Hanzo",
+    seoTitle: "Stockroom Inventory — Stock Tracker Template",
     seoDescription:
       "Fork Stockroom, a React + Hanzo inventory tracker with low-stock alerts on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -3208,7 +3208,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/gear-locker.git",
-    seoTitle: "Gear Locker — Equipment Tracking Template | Hanzo",
+    seoTitle: "Gear Locker — Equipment Tracking Template",
     seoDescription:
       "Fork Gear Locker, a React + Hanzo equipment tracker with full hand-off history on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -3241,7 +3241,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/team-roster.git",
-    seoTitle: "Team Roster — Team Directory Template | Hanzo",
+    seoTitle: "Team Roster — Team Directory Template",
     seoDescription:
       "Fork Team Roster, a React + Hanzo searchable employee directory on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -3274,7 +3274,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/booking-timeslot.git",
-    seoTitle: "Cadence — Timeslot Booking Template | Hanzo",
+    seoTitle: "Cadence — Timeslot Booking Template",
     seoDescription:
       "Fork Cadence, a React + Hanzo timeslot-booking scheduler with a slot grid on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -3306,7 +3306,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/proposal-quotewright.git",
-    seoTitle: "Quotewright — Proposal & Quoting Template | Hanzo",
+    seoTitle: "Quotewright — Proposal & Quoting Template",
     seoDescription:
       "Fork Quotewright, a React + Hanzo proposal and quoting tool with live totals on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
@@ -3338,7 +3338,7 @@ const RAW: RawEntry[] = [
     kind: "repo",
     featured: true,
     repo: "https://github.com/hanzo-apps/resume-curriculum.git",
-    seoTitle: "Curriculum Resume — Online Resume Template | Hanzo",
+    seoTitle: "Curriculum Resume — Online Resume Template",
     seoDescription:
       "Fork Curriculum, a React + Hanzo print-ready online resume on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },

@@ -9,7 +9,7 @@ import { listBuilds } from '@/lib/builds';
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Builds | Hanzo",
+  title: "Builds",
   description:
     "The agent sessions behind Hanzo products — every turn bound to the commit it produced, forkable from any point.",
   alternates: { canonical: "https://hanzo.app/builds" },
