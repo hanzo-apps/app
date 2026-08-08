@@ -276,23 +276,12 @@ export async function fetchTemplatePages(slug: string): Promise<Page[] | null> {
  * app declining to promise what it cannot deliver.
  */
 export async function fetchPublishedSlugs(): Promise<Set<string>> {
-  try {
-    const res = await fetch('/v1/templates', { headers: { Accept: 'application/json' } });
-    if (!res.ok) return new Set();
-    const body = (await res.json()) as { data?: unknown; templates?: unknown };
-    const rows = Array.isArray(body?.data)
-      ? body.data
-      : Array.isArray(body?.templates)
-        ? body.templates
-        : [];
-    return new Set(
-      rows
-        .map((r) => (r && typeof r === 'object' ? (r as { slug?: unknown }).slug : null))
-        .filter((s): s is string => typeof s === 'string' && s.length > 0),
-    );
-  } catch {
-    return new Set();
-  }
+  // `fetchGalleryTemplates` already asks the warehouse and normalises its rows.
+  // Asking it a second way here would be a second answer to maintain — and its
+  // `live` flag is exactly the distinction this needs: false means the warehouse
+  // did not speak, which must mark NOTHING.
+  const { templates, live } = await fetchGalleryTemplates();
+  return live ? new Set(templates.map((t) => t.slug)) : new Set();
 }
 
 // --- Seed resolution (the ONE way /dev turns a template slug into a real seed) ---
