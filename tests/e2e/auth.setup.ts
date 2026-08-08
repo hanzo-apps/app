@@ -28,6 +28,18 @@ setup('authenticate via Hanzo IAM (hanzo.id OIDC)', async ({ page }) => {
   await page.goto('/dashboard');
   await page.waitForURL(/hanzo\.id\/login\/oauth\/authorize/, { timeout: 30_000 });
 
+  // WAIT FOR THE FORM'S OWN CONFIG. The login SPA fetches `get-app-login`,
+  // which supplies the ORGANIZATION the credential belongs to; submit before it
+  // lands and IAM answers 400 "organization, username and password are
+  // required" while the form silently stays put — measured on the wire, twice.
+  // A person types slower than the fetch; a harness must wait for it.
+  await page
+    .waitForResponse((r) => r.url().includes('get-app-login') && r.ok(), { timeout: 15_000 })
+    .catch(() => {
+      /* already loaded before we attached — fine */
+    });
+  await page.waitForLoadState('networkidle').catch(() => {});
+
   // The identity field is found by what it SAYS, not by what it is typed as.
   //
   // This read `input[type="text"]`, and hanzo.id's form now labels that field

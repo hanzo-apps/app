@@ -194,8 +194,12 @@ export const AppEditor = ({
       const r = resizer.current;
       const resizerWidth = r && 'scrollTo' in r ? r.offsetWidth : 8; // w-2 = 8px
       const availableWidth = window.innerWidth - resizerWidth;
-      // Chat ~27% (v2: 24–28%); the preview gets the room.
-      const w = Math.round(availableWidth * 0.27);
+      // Chat 27% BUT CAPPED IN PIXELS. A percentage scales with the monitor
+      // and a conversation does not: on an ultrawide, 27% is a thousand pixels
+      // of mostly-empty column and the owner's exact words were "too wide".
+      // The reference sits ~500; drag past the cap any time — this is only
+      // where a fresh layout starts.
+      const w = Math.min(520, Math.max(360, Math.round(availableWidth * 0.27)));
       el.style.width = `${w}px`;
       setChatW(w);
     } else {

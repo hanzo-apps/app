@@ -98,7 +98,38 @@ execSync(
 )
 const { default: config } = await import(new URL('../.guicfg.gen.mjs', import.meta.url))
 const full = config.getCSS()
-const pruned = pruneRules(splitRules(full)).join('\n')
+
+/**
+ * UNWRAP the dark-scheme media gates. Tamagui emits the dark theme's ROOT
+ * variables inside `@media (prefers-color-scheme: dark)`, which asks the OS a
+ * question this app has already answered: hanzo.app is dark-only, stated by
+ * the server-rendered `.dark` class and providers' `defaultTheme="dark"`. On a
+ * light-scheme browser those blocks never applied, so the gui token table
+ * ($background, $color3, …) resolved to the LIGHT base and the whole editor
+ * painted white while the class-token surfaces beside it stayed dark —
+ * measured on prod via Playwright (colorScheme defaults to light). Unwrapping
+ * makes the dark values the unconditional ones: they sit AFTER the light base
+ * in the sheet, so they win by order at equal specificity, whatever the OS
+ * prefers.
+ */
+const unwrapDark = (rules) =>
+  rules.flatMap((rule) => {
+    const open = rule.indexOf('{')
+    const sel = rule.slice(0, open).trim()
+    if (/^@media\s*\(\s*prefers-color-scheme\s*:\s*dark\s*\)$/.test(sel)) {
+      return splitRules(rule.slice(open + 1, rule.lastIndexOf('}')))
+    }
+    // The LIGHT theme does not ship at all. It only existed behind this media
+    // gate, it sits AFTER the dark rules in source order, and on a light-OS
+    // browser it beat the unwrapped dark values — the same bug from the other
+    // side. A dark-only product has exactly one theme in its sheet.
+    if (/^@media\s*\(\s*prefers-color-scheme\s*:\s*light\s*\)$/.test(sel)) {
+      return []
+    }
+    return [rule]
+  })
+
+const pruned = pruneRules(unwrapDark(splitRules(full))).join('\n')
 writeFileSync(new URL('../app/gui.css', import.meta.url), pruned)
 rmSync(new URL('../.guicfg.gen.mjs', import.meta.url))
 console.log(`app/gui.css regenerated: ${full.length} -> ${pruned.length} bytes`)
