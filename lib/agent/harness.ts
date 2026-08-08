@@ -63,6 +63,28 @@ const HANZO_BASE = (process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai").rep
  * variable set below is the machine one. Reading only the human variable is what
  * made a live pod answer "Authentication expired" to an authenticated caller.
  */
+/**
+ * MCP, attached the way hanzoai/cli attaches it (src/commands/code/dev.rs:105):
+ * `-c mcp_servers.hanzo.*`, ADDITIVE. It adds a server to whatever the harness
+ * already has rather than repointing its config home, so nothing a user
+ * configured is touched.
+ *
+ * `hanzo-mcp` ships in the sandbox image (/usr/local/bin/hanzo-mcp, verified in
+ * a live pod), so this needs no install and no network — the tools run in the
+ * same pod as the checkout they operate on, which is the only place they could
+ * usefully run.
+ *
+ * `--project-dir` scopes the filesystem tools to the project. Without it the
+ * server's idea of "the project" is wherever it happened to start, and a tool
+ * that edits the wrong tree is worse than one that is absent.
+ */
+function mcpArgs(cwd: string): string[] {
+  return [
+    "-c", `mcp_servers.hanzo.command="hanzo-mcp"`,
+    "-c", `mcp_servers.hanzo.args=["--project-dir","${cwd}"]`,
+  ];
+}
+
 function providerArgs(): string[] {
   return [
     "-c", `model_providers.hanzocode.name="Hanzo Code"`,
@@ -254,7 +276,18 @@ export async function runHarness(
 ): Promise<HarnessResult> {
   const cwd = opts.cwd || ".";
   const model = opts.model ? ["-c", `model="${opts.model}"`] : [];
-  const args = ["exec", "--json", "--skip-git-repo-check", ...providerArgs(), ...model].join(" ");
+  const args = [
+    "exec", "--json", "--skip-git-repo-check",
+    ...providerArgs(),
+    ...mcpArgs(cwd),
+    // Auto-approve, workspace-write: the same default hanzoai/cli documents. It
+    // stops the harness asking a question nobody is there to answer, and KEEPS
+    // the workspace sandbox — a headless run that blocks on approval is a run
+    // that hangs until it times out.
+    "-c", `approval_policy="never"`,
+    "-c", `sandbox_mode="workspace-write"`,
+    ...model,
+  ].join(" ");
 
   // The prompt reaches dev on stdin via a quoted heredoc — no expansion, no
   // escaping rules for the caller to get wrong, and nothing of the task visible
