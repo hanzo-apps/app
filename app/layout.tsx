@@ -28,6 +28,10 @@ import "@hanzo/ui/theme.css";
 // GuiProvider gets disableInjectCSS so the same 350KB is no longer inlined into
 // every HTML document, uncacheable.
 import "./gui.css";
+
+// The no-flash half of @hanzo/appearance. Imported from ./state so the panel
+// itself (and React) stay out of the root layout's bundle.
+import { bootScript as appearanceBoot } from "@hanzo/appearance/state";
 import { SITE_URL } from "@/lib/site";
 import AppContext from "@/components/contexts/app-context";
 import IframeDetector from "@/components/iframe-detector";
@@ -154,6 +158,16 @@ export default async function RootLayout({
       className={`dark ${geistSans.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        {/* A person's own type size and density, applied BEFORE first paint.
+            Same reasoning as the `dark` class above: a client controller
+            resolves after the page has painted, so a preference read in an
+            effect means every load renders at the default and then jumps. The
+            script is tiny and inert (a try/catch around two setProperty calls)
+            and @hanzo/appearance re-applies — and validates the accent — the
+            moment React mounts. */}
+        <script dangerouslySetInnerHTML={{ __html: appearanceBoot() }} />
+      </head>
       <body>
         {/* Providers is OUTERMOST. It owns createGui(), which registers the
             token and media tables in module-global state; anything rendered

@@ -9,6 +9,7 @@ import { CostCalculator } from '@/lib/llm/cost-calculator';
 import { AboutModal } from '@/components/about-modal';
 import { BackupService } from '@/lib/vfs/backup-service';
 import { setTelemetryOptIn } from '@/lib/telemetry';
+import { Appearance } from '@hanzo/appearance';
 
 interface SettingsPanelProps {
   onClose?: () => void;
@@ -154,7 +155,19 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
             <YStack rowGap="$4">
               {/* No theme tabs: hanzo.app is dark-only and the theme is FORCED in
                   app/providers.tsx, so Light/System could only write a preference
-                  nothing reads. */}
+                  nothing reads.
+
+                  Text size, density and accent DO read: @hanzo/design publishes
+                  them as knobs every ramp multiplies by, and since @hanzo/ui
+                  8.0.69 the `$n` type ladder resolves through `var(--text-*)`,
+                  so one of these moves the whole product rather than the handful
+                  of places that happen to read a token directly.
+
+                  It is @hanzo/appearance, not a panel written here, because
+                  hanzo.chat and the console need the same screen and three
+                  near-identical ones is how "the same product" stops looking
+                  like it. */}
+              <Appearance />
 
               {/* Telemetry */}
               <XStack alignItems="center" justifyContent="space-between">
