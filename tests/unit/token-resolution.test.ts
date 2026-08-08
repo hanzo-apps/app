@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { createRequire } from "node:module";
 
 /**
  * Every token this surface names must resolve.
@@ -49,6 +50,16 @@ const walk = (dir: string, out: string[] = []): string[] => {
   return out;
 };
 
+/** Where `@hanzo/ui/theme.css` actually lives, via the package's exports map. */
+const themeSheet = (): string => {
+  const require_ = createRequire(join(ROOT, "package.json"));
+  const pkg = require_.resolve("@hanzo/ui/package.json");
+  const exp = (JSON.parse(readFileSync(pkg, "utf8")).exports ?? {})["./theme.css"];
+  const rel = typeof exp === "string" ? exp : (exp?.default ?? exp?.style);
+  if (!rel) throw new Error("@hanzo/ui no longer exports ./theme.css");
+  return join(dirname(pkg), rel);
+};
+
 const stripComments = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "");
 
 /** Every custom property DECLARED in a stylesheet the browser loads. */
@@ -65,6 +76,21 @@ const declared = (): Set<string> => {
     // here while `referenced()` walks it made the suite report ~740 of gui.css's
     // own tokens as undeclared — a self-inflicted red that hid real ones.
     readFileSync(join(ROOT, "app/gui.css"), "utf8"),
+    // THE TOKEN LAYER. `app/layout.tsx` imports `@hanzo/ui/theme.css`, which
+    // carries @hanzo/design's whole sheet — the colour ramp, the radius ramp,
+    // the `--text-*`/`--space-*` scales and, since design 0.4.12, the
+    // `--type-scale`/`--density` knobs those scales multiply by.
+    //
+    // It was missing here, and that stayed invisible until gui.css began
+    // REFERENCING the ramp: @hanzo/ui 8.0.69 resolves its `$n` type ladder
+    // through `var(--text-*)` so a person's text-size preference reaches the
+    // ~1600 `fontSize="$n"` call sites, and this sweep promptly reported
+    // thirteen design tokens as undeclared. They ARE declared — in the one
+    // sheet the sweep did not read.
+    //
+    // Resolved through the package's exports, not a literal path: pnpm nests
+    // the real file under .pnpm/<pkg>@<version+hash>/.
+    readFileSync(themeSheet(), "utf8"),
   ];
   const set = new Set<string>();
   for (const sheet of sheets) {
