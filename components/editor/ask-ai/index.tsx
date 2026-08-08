@@ -12,7 +12,7 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { toast, Button, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
 import { useLocalStorage } from "react-use";
-import { ArrowUp, ChevronDown, CircleStop, ImagePlus, MoreHorizontal, X } from "lucide-react";
+import { ArrowUp, Bell, ChevronDown, CircleStop, ImagePlus, MoreHorizontal, X } from "lucide-react";
 
 import ProModal from "@/components/pro-modal";
 import { useUsageLimit } from "@/components/usage/usage-limit";
@@ -20,6 +20,7 @@ import { useModels } from "@/lib/hooks/use-models";
 import { useRoutingDefaults } from "@/lib/hooks/use-routing-defaults";
 import { AUTO_MODEL, isDeadModelId, isSmartRouting, resolveSmartRouting } from "@/lib/providers";
 import { accent, selected } from "@/lib/chrome";
+import { canAsk, dismiss, enable, notifySettled } from "@/lib/notify";
 import { HtmlHistory, Page, Project } from "@/types";
 // import { InviteFriends } from "@/components/invite-friends";
 import { Settings } from "@/components/editor/ask-ai/settings";
@@ -166,6 +167,12 @@ export function AskAI({
   // + explainer popover were removed (no one toggled it). Always on.
   const [isFollowUp] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  // Whether to offer build notifications. False on the server and until the
+  // effect runs, so SSR and the first client paint agree; then the real answer.
+  const [askNotify, setAskNotify] = useState(false);
+  useEffect(() => {
+    setAskNotify(canAsk());
+  }, []);
   const [files, setFiles] = useState<string[]>(images ?? []);
   // Fix mode: ONE flag. While on, the generate call is prefixed with a
   // fix-intent preamble and the send guard accepts a references-only submit.
@@ -396,7 +403,7 @@ export function AskAI({
     activeTurnKind.current = streaming ? "stream" : "edit";
     setMessages((prev) => [
       ...prev,
-      { id: genId(), role: "user", text: userText },
+      { id: genId(), role: "user", text: userText, images: selectedFiles.length ? [...selectedFiles] : undefined },
       {
         id: aid,
         role: "assistant",
@@ -413,6 +420,10 @@ export function AskAI({
 
   const finishTurn = (id: string, phase: "done" | "error", text: string) => {
     updateAssistant(id, { phase, text });
+    // The thread shows the result to whoever is LOOKING; this reaches the tab
+    // nobody is. notifySettled itself refuses when the tab is visible or the
+    // permission is anything but granted.
+    notifySettled(phase === "done", text);
     if (activeAssistantId.current === id) {
       activeAssistantId.current = null;
       activeTurnKind.current = null;
@@ -427,7 +438,7 @@ export function AskAI({
     activeTurnKind.current = "edit"; // not a streaming-pages turn
     setMessages((prev) => [
       ...prev,
-      { id: genId(), role: "user", text: userText },
+      { id: genId(), role: "user", text: userText, images: selectedFiles.length ? [...selectedFiles] : undefined },
       { id: aid, role: "assistant", kind: "chat", phase: "building", text: "" },
     ]);
     return aid;
@@ -1250,6 +1261,44 @@ export function AskAI({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
+        {/* Ask ONCE for build notifications, and only while the answer is
+            genuinely undecided — lib/notify owns the whole contract (denied is
+            a decision; a visible tab never gets one; ✕ is remembered). */}
+        {askNotify && (
+          <XStack alignItems="center" gap="$2" paddingHorizontal="$4" paddingTop="$2.5" paddingBottom="$1">
+            <SizableText color="$color11"><Bell size={14} /></SizableText>
+            <SizableText flex={1} minWidth={0} fontSize="$2" color="$color">
+              Get notified when a build finishes
+            </SizableText>
+            <Button
+              type="button"
+              size="sm"
+              {...accent}
+              borderRadius={999}
+              paddingHorizontal="$3"
+              onClick={async () => {
+                await enable();
+                // Granted or denied, the question is answered either way.
+                setAskNotify(false);
+              }}
+            >
+              <SizableText color="$color12">Enable</SizableText>
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              borderRadius={999}
+              aria-label="Dismiss"
+              onClick={() => {
+                dismiss();
+                setAskNotify(false);
+              }}
+            >
+              <X size={14} />
+            </Button>
+          </XStack>
+        )}
         {/* Resize grip — drag the input's top edge to grow/shrink it; keyboard
             accessible (↑ taller, ↓ shorter). The hit-area is the whole top
             edge, and the handle is INVISIBLE until that edge itself is hovered

@@ -25,6 +25,8 @@ export interface ThreadMessage {
   kind?: "build" | "chat";
   /** User text, the assistant's settled summary / error line, or (chat) reply. */
   text?: string;
+  /** Reference images the user attached to this turn — echoed as thumbnails. */
+  images?: string[];
   /** Assistant reasoning/plan, streamed from the model's <think> block. */
   plan?: string;
   /** Assistant live activity labels while building (one per file / edit). */
@@ -66,7 +68,7 @@ export function ChatThread({
       >
         {messages.map((m) =>
           m.role === "user" ? (
-            <UserBubble key={m.id} text={m.text ?? ""} />
+            <UserBubble key={m.id} text={m.text ?? ""} images={m.images} />
           ) : m.role === "system" ? (
             <SystemLine key={m.id} text={m.text ?? ""} />
           ) : (
@@ -94,15 +96,36 @@ export function ChatThread({
  * to be. A `$` value would be a specific number that happens to look round at
  * one line and stops looking round at three.
  */
-function UserBubble({ text }: { text: string }) {
+function UserBubble({ text, images }: { text: string; images?: string[] }) {
   return (
-    <XStack justifyContent="flex-end">
-      <YStack maxWidth="85%" borderRadius={999} backgroundColor="$color3" paddingHorizontal="$4" paddingVertical="$2">
-        <SizableText whiteSpace="pre-wrap" fontSize="$2" lineHeight="1.45" color="$color">
-          {text}
-        </SizableText>
-      </YStack>
-    </XStack>
+    <YStack alignItems="flex-end" gap="$1.5">
+      {/* What the agent is READING, shown as what it is. The reference draws a
+          "Read <file>" card with the image inline; here the images are the
+          user's own attachments, so they belong on the user's turn — the same
+          fact from the honest side. Real thumbnails, never a filename alone. */}
+      {images && images.length > 0 && (
+        <XStack flexWrap="wrap" justifyContent="flex-end" gap="$1.5" maxWidth="85%">
+          {images.map((src) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={src}
+              src={src}
+              alt="Attached reference"
+              style={{ width: 88, height: 66, objectFit: "cover", borderRadius: 8, border: "1px solid var(--border, rgba(255,255,255,0.08))" }}
+  />
+          ))}
+        </XStack>
+      )}
+      {text ? (
+        <XStack justifyContent="flex-end" width="100%">
+          <YStack maxWidth="85%" borderRadius={999} backgroundColor="$color3" paddingHorizontal="$4" paddingVertical="$2">
+            <SizableText whiteSpace="pre-wrap" fontSize="$2" lineHeight="1.45" color="$color">
+              {text}
+            </SizableText>
+          </YStack>
+        </XStack>
+      ) : null}
+    </YStack>
   );
 }
 
