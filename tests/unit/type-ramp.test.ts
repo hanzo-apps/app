@@ -27,8 +27,15 @@ import { join } from "node:path";
 
 const RAMP = new Set([11, 13, 14, 16, 18, 21, 26, 32, 40, 52, 64, 84, 112]);
 
-/** Off-ramp sizes that already exist. Lower this; never raise it. */
-const BASELINE = 20;
+/**
+ * Off-ramp sizes that already exist. Lower this; never raise it.
+ *
+ * Zero. The type-scale pass took the last 20 off the board, and the ratchet is
+ * exact by design — a baseline left above reality is the "temporary allowance"
+ * that silently re-admits drift, which is what the second test here exists to
+ * catch. It caught this one: the sizes went to 0 and the number stayed at 20.
+ */
+const BASELINE = 0;
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {
