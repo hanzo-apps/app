@@ -563,7 +563,11 @@ export const AppEditor = ({
           role="separator"
           aria-orientation="vertical"
           aria-label="Resize chat and preview panes"
-          position="relative" width="$3" height="100%" flexShrink={0} cursor="col-resize" alignItems="center" justifyContent="center"
+          // 10 in PX. `width="$3"` resolved through gui's SIZE scale to 36px —
+          // the $6=64 trap, on the one element between the panes — so a third
+          // of the owner's "too much gap" was the resizer track itself.
+          // Measured live: 36px. Ten is still a comfortable grab.
+          position="relative" width={10} height="100%" flexShrink={0} cursor="col-resize" alignItems="center" justifyContent="center"
           // Only where there are two panes to divide: hidden on mobile, shown on
           // desktop. It was exactly inverted.
           display="none" $lg={{ display: fresh ? "none" : "flex" }} className="group/resizer"
