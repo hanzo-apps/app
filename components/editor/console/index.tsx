@@ -465,8 +465,8 @@ export function Console({
         <YStack minHeight={0} flex={1} borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" overflow="scroll">
           {entries.length === 0 ? (
             <Paragraph fontFamily="$mono" fontSize={11} lineHeight="1.625" color="$color11">
-              Nothing logged yet — the preview&apos;s console and the commands the agent
-              runs in your sandbox both appear here.
+              Nothing logged yet — the preview&apos;s console, the commands the agent
+              runs in your sandbox, and anything you type below all appear here.
             </Paragraph>
           ) : (
             entries.map((entry) => (
