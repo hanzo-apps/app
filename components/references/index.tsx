@@ -260,7 +260,7 @@ export function References({ project }: { project?: string | null }) {
                   borderRadius="$2"
                   backgroundColor="rgba(0,0,0,0.7)"
                   paddingHorizontal="$1"
-                  fontSize={10}
+                  fontSize="$1"
                   color="white"
                 >
                   {a.mode === "gallery" ? "in app" : "inspiration"}
@@ -344,7 +344,7 @@ export function References({ project }: { project?: string | null }) {
             brand?.[field]?.length ? (
               <YStack key={field} gap="$1">
                 <SizableText
-                  fontSize={11}
+                  fontSize="$1"
                  
                   letterSpacing={0.3}
                   color="$color11"

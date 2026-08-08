@@ -85,9 +85,9 @@ export default function SocialFeed() {
 
   return (
     <YStack minHeight="100%" backgroundColor="$background">
-      <XStack maxWidth={1280} alignSelf="center">
+      <XStack maxWidth={1280} alignSelf="center" flexDirection="column" $lg={{ flexDirection: "row" }}>
         {/* Left Sidebar */}
-        <YStack width={256} borderRightWidth={1} minHeight="100%" padding="$5">
+        <YStack width="100%" $lg={{ width: 256 }} borderRightWidth={1} minHeight="100%" padding="$5">
           <YStack rowGap="$2">
             <Button variant="ghost" width="100%" justifyContent="flex-start" gap="$3">
               <Hash size={20} />
@@ -148,7 +148,7 @@ export default function SocialFeed() {
           </Card>
 
           {/* Feed */}
-          <ScrollArea height="calc(100vh-8rem)">
+          <ScrollArea height="calc(100vh - 8rem)">
             {posts.map(post => (
               <Card key={post.id} borderRadius={0} borderBottomWidth={1} borderLeftWidth={0} borderRightWidth={0}>
                 <CardHeader flexDirection="row" alignItems="flex-start" justifyContent="space-between" paddingBottom="$3">
@@ -210,7 +210,7 @@ export default function SocialFeed() {
         </YStack>
 
         {/* Right Sidebar */}
-        <YStack width={320} padding="$5" rowGap="$5">
+        <YStack width="100%" $lg={{ width: 320 }} padding="$5" rowGap="$5">
           {/* Trending */}
           <Card>
             <CardHeader>

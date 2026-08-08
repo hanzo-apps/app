@@ -142,7 +142,7 @@ export function MyBuilds() {
           <Paragraph fontSize="$3" color="$color11">
             No sessions yet. Publish the session that built a repo:
           </Paragraph>
-          <SizableText marginTop="$3" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$2.5" fontFamily="$mono" fontSize={11} color="$color11" overflow="scroll" whiteSpace="pre">
+          <SizableText marginTop="$3" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$2.5" fontFamily="$mono" fontSize="$1" color="$color11" overflow="scroll" whiteSpace="pre">
             hanzo agent publish &lt;project&gt; --bind
           </SizableText>
         </YStack>
@@ -162,7 +162,7 @@ export function MyBuilds() {
                     <Lock size={12} aria-label="private" />
                   )}
                 </XStack>
-                <SizableText marginTop="$1" fontFamily="$mono" fontSize={11} color="$color11">
+                <SizableText marginTop="$1" fontFamily="$mono" fontSize="$1" color="$color11">
                   {s.project ? `${s.project} · ` : ""}
                   {s.agent} · {s.events} turns · {s.status}
                 </SizableText>
@@ -171,7 +171,7 @@ export function MyBuilds() {
                 <Link
                   href={`/builds/${s.org}/${s.project}`}
                 ><XStack flexShrink={0} alignItems="center" gap="$1.5">
-                  <SizableText fontFamily="$mono" fontSize={11} color="$color11" hoverStyle={{ color: "$color" }}>Read</SizableText>
+                  <SizableText fontFamily="$mono" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>Read</SizableText>
                   <ArrowUpRight size={12} />
                 </XStack></Link>
               ) : null}

@@ -123,7 +123,7 @@ export default function DocsPage() {
             <Reveal>
               <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$3" paddingVertical="$1.5">
                 <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color5" />
-                <SizableText fontFamily="$mono" fontSize={11} color="$color11">
+                <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
                   Documentation
                 </SizableText>
               </XStack>
@@ -171,7 +171,7 @@ export default function DocsPage() {
         <YStack borderTopWidth={1} borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
           <YStack alignSelf="center" maxWidth={1152}>
             <Reveal>
-              <Paragraph fontFamily="$mono" fontSize={11} color="$color11">
+              <Paragraph fontFamily="$mono" fontSize="$1" color="$color11">
                 Quick start
               </Paragraph>
               <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }} lineHeight="1.1">
@@ -204,7 +204,7 @@ export default function DocsPage() {
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
           <YStack alignSelf="center" maxWidth={1152}>
             <Reveal>
-              <Paragraph fontFamily="$mono" fontSize={11} color="$color11">
+              <Paragraph fontFamily="$mono" fontSize="$1" color="$color11">
                 Explore
               </Paragraph>
               <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }} lineHeight="1.1">
@@ -257,7 +257,7 @@ export default function DocsPage() {
         <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
           <YStack alignSelf="center" maxWidth={1152} alignItems="center" gap="$8" $lg={{ gap: "$10" }} className="shrink-cells">
             <Reveal>
-              <Paragraph fontFamily="$mono" fontSize={11} color="$color11">
+              <Paragraph fontFamily="$mono" fontSize="$1" color="$color11">
                 API
               </Paragraph>
               <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }} lineHeight="1.1">
@@ -285,7 +285,7 @@ export default function DocsPage() {
                 <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
                 <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
               </XStack>
-              <SizableText fontFamily="$mono" fontSize={12} lineHeight="1.625" color="$color" overflow="scroll" whiteSpace="pre">
+              <SizableText fontFamily="$mono" fontSize="$1" lineHeight="1.625" color="$color" overflow="scroll" whiteSpace="pre">
 {`POST https://api.hanzo.ai/v1/chat/completions
 Authorization: Bearer $HANZO_KEY
 

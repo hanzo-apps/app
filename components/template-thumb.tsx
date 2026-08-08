@@ -159,7 +159,7 @@ export function TemplateThumb({
       </XStack>
       {showLabel && category ? (
         <YStack position="absolute" bottom="$2.5" left="$3">
-          <SizableText fontFamily="$mono" fontSize={10} color="$color11">
+          <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
             {category}
           </SizableText>
         </YStack>

@@ -120,7 +120,7 @@ export default function BlogPlatform() {
                   placeholder="Search articles..."
                   value={searchQuery}
                   onChangeText={(v: string) => setSearchQuery(v)}
-                  paddingLeft={36} width={250}
+                  paddingLeft={36} width="100%" $lg={{ width: 250 }}
   />
               </YStack>
               {/* Same defect as the /enterprise CTA: a hand-painted near-black

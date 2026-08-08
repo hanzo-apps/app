@@ -107,10 +107,10 @@ export const Uploader = ({
       <form>
         <PopoverTrigger asChild>
           <Button
-            size="icon"
+            size="icon-sm"
             variant="ghost"
             aria-label="Add images"
-            group borderRadius="$10" hoverStyle={{ backgroundColor: "$color3" }}
+            group borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
           >
             <SizableText color="$color11" $group-hover={{ color: "$color" }}>
               <Plus size={16} />
@@ -188,6 +188,7 @@ export const Uploader = ({
                       flex={1} minWidth={0} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color8" }}
   />
                     <Button
+                      variant="primary"
                       flexShrink={0}
                       onClick={() => void generateImage()}
                       disabled={generating || !prompt.trim()}
@@ -211,6 +212,7 @@ export const Uploader = ({
                     Or import images from your computer
                   </Paragraph>
                   <Button
+                    variant="primary"
                     position="relative" width="100%"
                     onClick={() => fileInputRef.current?.click()}
                   >
@@ -252,10 +254,10 @@ export const Uploader = ({
   ) : (
     <>
       <Button
-        size="icon"
+        size="icon-sm"
         variant="ghost"
         aria-label="Add images"
-        group borderRadius="$10" hoverStyle={{ backgroundColor: "$color3" }}
+        group borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
         onClick={() => setOpen(true)}
       >
         <SizableText color="$color11" $group-hover={{ color: "$color" }}>

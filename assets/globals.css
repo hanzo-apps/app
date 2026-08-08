@@ -739,20 +739,6 @@ html:root [data-field-box]:focus-within {
   outline-offset: -1px;
 }
 
-.background__noisy {
-  background-blend-mode: normal;
-  pointer-events: none;
-  opacity: 0.9;
-  background-size: 25ww auto;
-  background-image: url("/background_noisy.webp");
-  position: fixed;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-  top: 0;
-  left: 0;
-}
-
 .monaco-editor .margin {
   background-color: oklch(0.205 0 0) !important;
 }
@@ -1306,11 +1292,16 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
    styled by its PARENT's state — so neither can be a prop on the tile. */
 .ref-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
   margin: 0;
   padding: 0;
   list-style: none;
+}
+@media (min-width: 640px) {
+  .ref-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 .ref-grid li {
   position: relative;

@@ -249,14 +249,14 @@ function Hints() {
   return (
     <>
       <XStack alignItems="center" gap="$1.5">
-        <SizableText fontSize={11} color="$color11">Open published project</SizableText>
+        <SizableText fontSize="$1" color="$color11">Open published project</SizableText>
         <kbd>
           <CommandIcon size={12} />
           <CornerDownLeft size={12} />
         </kbd>
       </XStack>
       <XStack alignItems="center" gap="$1.5">
-        <SizableText fontSize={11} color="$color11">Open project</SizableText>
+        <SizableText fontSize="$1" color="$color11">Open project</SizableText>
         <kbd>
           <CornerDownLeft size={12} />
         </kbd>
@@ -270,7 +270,7 @@ function StatusDot({ status }: { status: string }) {
   return (
     <XStack alignItems="center" gap="$1" marginLeft="auto">
       <Circle size={6} color={st.text} />
-      <SizableText fontSize={10} letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
+      <SizableText fontSize="$1" letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
     </XStack>
   );
 }
@@ -297,7 +297,7 @@ function PreviewPanel({ project, authorName }: { project: PaletteProject | null;
           project; an honest monogram tile otherwise. */}
       <YStack position="relative" marginBottom="$3" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor">
         <ProjectThumb name={project.name} liveUrl={project.liveUrl} />
-        <SizableText position="absolute" bottom="$2" left="$2" numberOfLines={1} borderRadius="$2" backgroundColor="black" paddingHorizontal="$1.5" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} color="white" backdropFilter="blur(4px)">
+        <SizableText position="absolute" bottom="$2" left="$2" numberOfLines={1} borderRadius="$2" backgroundColor="black" paddingHorizontal="$1.5" paddingVertical="$0.5" fontFamily="$mono" fontSize="$1" color="white" backdropFilter="blur(4px)">
           {project.slug}
         </SizableText>
       </YStack>
@@ -314,7 +314,7 @@ function PreviewPanel({ project, authorName }: { project: PaletteProject | null;
         href={publishedUrl(project.slug)}
         target="_blank"
         rel="noopener noreferrer"
-        marginTop="auto" alignItems="center" gap="$1" paddingTop="$3" fontFamily="$mono" fontSize={11} color="$color11" hoverStyle={{ color: "$color" }}
+        marginTop="auto" alignItems="center" gap="$1" paddingTop="$3" fontFamily="$mono" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
       >
         {project.slug}.hanzo.app
         <ArrowUpRight size={12} />

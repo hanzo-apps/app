@@ -245,7 +245,7 @@ export function ImportGitPanel() {
     <YStack borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4.5" $sm={{ padding: "$5" }}>
       <XStack marginBottom="$1" alignItems="center" gap="$2">
         <Github size={18} />
-        <H2 fontSize={15} fontWeight="500">Import Git Repository</H2>
+        <H2 fontSize="$4" fontWeight="500">Import Git Repository</H2>
       </XStack>
       <Paragraph marginBottom="$4.5" fontSize="$3" color="$color11">
         Connect a repository and deploy it as a service, container, or site —
@@ -315,7 +315,7 @@ export function ImportGitPanel() {
                           <Icon size={16} />
                         )}
                         <SizableText numberOfLines={1}>{a.login}</SizableText>
-                        <SizableText marginLeft="auto" fontSize={11} color="$color11">
+                        <SizableText marginLeft="auto" fontSize="$1" color="$color11">
                           {a.provider === "gitlab"
                             ? "GitLab"
                             : a.type === "org"
@@ -349,7 +349,7 @@ export function ImportGitPanel() {
                   </DropdownMenuItem>
                   {showProviders && (
                     <YStack gap="$1.5" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2">
-                      <SizableText paddingHorizontal="$1" fontSize={11} letterSpacing={0.4} color="$color11">
+                      <SizableText paddingHorizontal="$1" fontSize="$1" letterSpacing={0.4} color="$color11">
                         Providers
                       </SizableText>
                       <Badge variant="outline" className="gap-1.5">

@@ -44,7 +44,7 @@ export function GamePlay() {
             </SizableText>
           </XStack></Link>
           {isPlaceholderBuild(game) && (
-            <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$0.5" fontSize={11} color="$color11">
+            <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$0.5" fontSize="$1" color="$color11">
               placeholder build
             </SizableText>
           )}

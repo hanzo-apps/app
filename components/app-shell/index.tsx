@@ -122,7 +122,7 @@ export function AppShell({
             onClick={() => setMobileOpen(true)}
             aria-label="Open menu"
             variant="ghost"
-            height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$3"
+            height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$3"
           >
             <Menu size={20} />
           </Button>
@@ -131,7 +131,7 @@ export function AppShell({
             onClick={() => setPaletteOpen(true)}
             aria-label="Search"
             variant="ghost"
-            marginLeft="auto" height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$3"
+            marginLeft="auto" height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$3"
           >
             <Search size={20} />
           </Button>

@@ -80,7 +80,7 @@ function UserBubble({ text }: { text: string }) {
   return (
     <XStack justifyContent="flex-end">
       <YStack maxWidth="85%" borderRadius="$5" borderBottomRightRadius="$1" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5">
-        <SizableText whiteSpace="pre-wrap" fontSize={13} color="$color">
+        <SizableText whiteSpace="pre-wrap" fontSize="$2" color="$color">
           {text}
         </SizableText>
       </YStack>
@@ -90,7 +90,7 @@ function UserBubble({ text }: { text: string }) {
 
 function SystemLine({ text }: { text: string }) {
   return (
-    <YStack paddingVertical="$0.5"><SizableText textAlign="center" fontSize={11.5} color="$color11">{text}</SizableText></YStack>
+    <YStack paddingVertical="$0.5"><SizableText textAlign="center" fontSize="$1" color="$color11">{text}</SizableText></YStack>
   );
 }
 
@@ -107,7 +107,7 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
     if (error) {
       return (
         <YStack>
-          <SizableText fontSize={12.5} color="$red8">
+          <SizableText fontSize="$2" color="$red8">
             {text || "Something went wrong — please try again."}
           </SizableText>
         </YStack>
@@ -127,7 +127,7 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
               )}
             </XStack>
           ) : (
-            <SizableText fontSize={13} className="thread-shimmer-text">Thinking…</SizableText>
+            <SizableText fontSize="$2" className="thread-shimmer-text">Thinking…</SizableText>
           )}
         </YStack>
       </XStack>
@@ -151,12 +151,12 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
         >
           {hasPlanBody ? (
             <YStack maxHeight={220} overflow="scroll">
-              <SizableText whiteSpace="pre-line" fontSize={12.5} lineHeight="1.625" color="$color11">
+              <SizableText whiteSpace="pre-line" fontSize="$2" lineHeight="1.625" color="$color11">
                 {plan}
               </SizableText>
             </YStack>
           ) : (
-            <YStack><SizableText fontSize={12.5} color="$color11">Analyzing your request…</SizableText></YStack>
+            <YStack><SizableText fontSize="$2" color="$color11">Analyzing your request…</SizableText></YStack>
           )}
         </CollapsibleSection>
       )}
@@ -176,14 +176,14 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
           )}
           <XStack alignItems="center" gap="$1.5">
             <Check size={14} color="var(--brand-accent-muted)" />
-            <SizableText fontSize={12} color="$color11">{text || "Done"}</SizableText>
+            <SizableText fontSize="$1" color="$color11">{text || "Done"}</SizableText>
           </XStack>
         </>
       )}
 
       {error && (
         <YStack>
-          <SizableText fontSize={12.5} color="$red8">
+          <SizableText fontSize="$2" color="$red8">
             {text || "Something went wrong — please try again."}
           </SizableText>
         </YStack>
@@ -220,7 +220,7 @@ function CollapsibleSection({
         width="100%" alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color4" }}
       >
         <SizableText
-          fontSize={13} fontWeight="500" {...{ color: live ? undefined : "$color11" }} className="thread-shimmer-text"
+          fontSize="$2" fontWeight="500" {...{ color: live ? undefined : "$color11" }} className="thread-shimmer-text"
         >
           {title}
           {typeof count === "number" && !live ? (
@@ -254,7 +254,7 @@ function ActivityItems({ labels, settled = false }: { labels: string[]; settled?
             ) : (
               <Check size={12} />
             )}
-            <SizableText fontSize={12} {...{ color: active ? undefined : "$color11" }} className="thread-shimmer-text">
+            <SizableText fontSize="$1" {...{ color: active ? undefined : "$color11" }} className="thread-shimmer-text">
               {label}
             </SizableText>
           </XStack>

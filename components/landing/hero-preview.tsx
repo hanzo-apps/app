@@ -92,7 +92,7 @@ function VibeApp({ v, compact }: { v: number; compact?: boolean }): ReactElement
           <XStack alignItems="center" gap="$1">
             <SizableText height={6} width={6} borderRadius="$10" backgroundColor="$color" className="livedot" />
             {!compact && (
-              <SizableText fontFamily="$mono" fontSize={8} color="$color11">realtime · Base</SizableText>
+              <SizableText fontFamily="$mono" fontSize="$1" color="$color11">realtime · Base</SizableText>
             )}
           </XStack>
         )}
@@ -268,7 +268,7 @@ export default function HeroPreview() {
             <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
           </XStack>
           <HMark size={14} color="var(--foreground)" />
-          <SizableText display="none" $sm={{ display: "inline" }} numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">
+          <SizableText display="none" $sm={{ display: "inline" }} numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
             maxpower / vibe-check
           </SizableText>
 
@@ -332,7 +332,7 @@ export default function HeroPreview() {
               ) : phase === "publishing" ? (
                 <Spinner size={10} />
               ) : null}
-              <SizableText fontSize={10} fontWeight="600" {...{ color: live ? "$color" : "$background" }}>
+              <SizableText fontSize="$1" fontWeight="600" {...{ color: live ? "$color" : "$background" }}>
                 {live ? "Published" : phase === "publishing" ? "Publishing" : "Publish"}
               </SizableText>
             </XStack>
@@ -347,7 +347,7 @@ export default function HeroPreview() {
           <YStack width="36%" minWidth={120} maxWidth={220} flexShrink={0} borderRightWidth={1} borderColor="$borderColor" backgroundColor="$background">
             <XStack alignItems="center" gap="$2" paddingHorizontal="$2.5" paddingTop="$2.5">
               <Sparkles size={12} />
-              <SizableText fontFamily="$mono" fontSize={9} color="$color11">
+              <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
                 Agent chat
               </SizableText>
             </XStack>
@@ -362,19 +362,19 @@ export default function HeroPreview() {
                     key={i}
                     alignSelf="flex-end" borderRadius="$5" borderBottomRightRadius="$1" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1.5" className="line"
                   >
-                    <SizableText fontSize={11} lineHeight="1.375" color="$color">{b.text}</SizableText>
+                    <SizableText fontSize="$1" lineHeight="1.375" color="$color">{b.text}</SizableText>
                   </YStack>
                 ) : (
                   <XStack key={i} alignItems="center" gap="$1.5" className="line">
                     <Check size={10} strokeWidth={3} />
-                    <SizableText numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">{b.text}</SizableText>
+                    <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">{b.text}</SizableText>
                   </XStack>
                 ),
               )}
               {streamLine && (
                 <XStack alignItems="center" gap="$1.5" className="line">
                   <Spinner size={10} />
-                  <SizableText numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">{streamLine}</SizableText>
+                  <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">{streamLine}</SizableText>
                 </XStack>
               )}
             </YStack>
@@ -382,7 +382,7 @@ export default function HeroPreview() {
             {/* The rounded chat input — mirrors the real composer. */}
             <YStack paddingHorizontal="$2.5" paddingBottom="$2.5">
               <XStack alignItems="center" gap="$2" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingVertical="$1.5">
-                <SizableText minWidth={0} flex={1} numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">
+                <SizableText minWidth={0} flex={1} numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
                   {typed || (busy ? "…" : "Ask Hanzo to change anything…")}
                   {phase === "typing" && (
                     <SizableText marginLeft="$0.25" height="$3" width={1} y={1} backgroundColor="$color" verticalAlign="middle" className="caret" />
@@ -405,13 +405,13 @@ export default function HeroPreview() {
                     <rect x="4" y="10" width="16" height="10" rx="2" />
                     <path d="M8 10V7a4 4 0 1 1 8 0v3" />
                   </svg>
-                  <SizableText numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">{SLUG}</SizableText>
+                  <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">{SLUG}</SizableText>
                 </XStack>
                 <XStack flexShrink={0} alignItems="center" gap="$1">
                   {live ? (
                     <>
                       <SizableText height={6} width={6} borderRadius="$10" backgroundColor="$color" className="livedot" />
-                      <SizableText display="none" $sm={{ display: "inline" }} fontFamily="$mono" fontSize={8} color="$color">
+                      <SizableText display="none" $sm={{ display: "inline" }} fontFamily="$mono" fontSize="$1" color="$color">
                         Live
                       </SizableText>
                     </>
@@ -447,7 +447,7 @@ export default function HeroPreview() {
                   )}
                 </YStack>
               </YStack>
-              <SizableText marginTop="$2" textAlign="center" fontFamily="$mono" fontSize={8} color="$color11">
+              <SizableText marginTop="$2" textAlign="center" fontFamily="$mono" fontSize="$1" color="$color11">
                 Mobile
               </SizableText>
             </YStack>
@@ -457,7 +457,7 @@ export default function HeroPreview() {
         {/* Status bar — git push payoff + live URL, exactly one line. */}
         <XStack alignItems="center" gap="$2" borderTopWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3.5" paddingVertical="$1.5">
           <XStack minWidth={0} alignItems="center" gap="$1.5">
-            <SizableText numberOfLines={1} fontFamily="$mono" fontSize={9} color="$color">
+            <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
               {busy ? (streamLine ?? "working…") : live ? "pushed to main · e4b21c7" : "main"}
             </SizableText>
           </XStack>
@@ -465,22 +465,22 @@ export default function HeroPreview() {
             {live ? (
               <>
                 <SizableText height={6} width={6} borderRadius="$10" backgroundColor="$color" className="livedot" />
-                <SizableText fontFamily="$mono" fontSize={9} color="$color">Live at {SLUG}</SizableText>
+                <SizableText fontFamily="$mono" fontSize="$1" color="$color">Live at {SLUG}</SizableText>
               </>
             ) : phase === "publishing" ? (
               <>
                 <Spinner size={10} />
-                <SizableText fontFamily="$mono" fontSize={9} color="$color">Publishing…</SizableText>
+                <SizableText fontFamily="$mono" fontSize="$1" color="$color">Publishing…</SizableText>
               </>
             ) : (
-              <SizableText fontFamily="$mono" fontSize={9} color="$color">{busy ? "Building…" : "Ready"}</SizableText>
+              <SizableText fontFamily="$mono" fontSize="$1" color="$color">{busy ? "Building…" : "Ready"}</SizableText>
             )}
           </XStack>
         </XStack>
       </YStack>
 
       {/* Honesty microcopy — a demo, simulated client-side. */}
-      <Paragraph marginTop="$4" textAlign="center" fontFamily="$mono" fontSize={10} color="$color11">
+      <Paragraph marginTop="$4" textAlign="center" fontFamily="$mono" fontSize="$1" color="$color11">
         Demo · watch the builder build, edit &amp; publish an app — desktop and mobile
       </Paragraph>
     </YStack>
@@ -491,7 +491,7 @@ function Generating(): ReactElement {
   return (
     <YStack height="100%" alignItems="center" justifyContent="center" gap="$2">
       <Spinner size={16} />
-      <SizableText fontFamily="$mono" fontSize={9} color="$color11">Generating</SizableText>
+      <SizableText fontFamily="$mono" fontSize="$1" color="$color11">Generating</SizableText>
     </YStack>
   );
 }

@@ -45,7 +45,7 @@ function WalletInner() {
           aria-hidden
   />
         <YStack minWidth={0} flex={1}>
-          <SizableText fontSize={11} fontWeight="500" color="$color11">Wallet</SizableText>
+          <SizableText fontSize="$1" fontWeight="500" color="$color11">Wallet</SizableText>
           <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
             {shortAddress(address)}
           </SizableText>

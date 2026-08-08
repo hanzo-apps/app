@@ -60,7 +60,7 @@ function Pill({
         {label}
       </SizableText>
       {count !== undefined && (
-        <SizableText marginLeft="$1.5" fontFamily="$mono" fontSize={10} opacity={0.6}>{count}</SizableText>
+        <SizableText marginLeft="$1.5" fontFamily="$mono" fontSize="$1" opacity={0.6}>{count}</SizableText>
       )}
     </Button>
   );
@@ -86,25 +86,25 @@ function Card({
   return (
     <YStack group position="relative" gap="$2" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4" hoverStyle={{ y: "$-1", borderColor: "$color" }} $sm={{ padding: "$4.5" }}>
       <XStack alignItems="center" gap="$2">
-        <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} color="$color11">
+        <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize="$1" color="$color11">
           {e.org}
         </SizableText>
         {/* The lane, on the card, because "what IS this" is the question the flat
             list could not answer: a curated starter, a stranger's remix and a
             bought UI kit all rendered identically here. */}
         {showOrigin && e.origin && (
-          <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} color="$color11">
+          <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize="$1" color="$color11">
             {ORIGIN_LABELS[e.origin] ?? e.origin}
           </SizableText>
         )}
         {e.archetype && (
-          <SizableText fontFamily="$mono" fontSize={10} color="$color11">
+          <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
             {e.archetype}
           </SizableText>
         )}
         {/* Provenance, never decoration: a row only this org can see says so. */}
         {e.scope === "org" && (
-          <SizableText borderRadius="$10" borderWidth={1} borderColor="$color02" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} color="$color">
+          <SizableText borderRadius="$10" borderWidth={1} borderColor="$color02" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize="$1" color="$color">
             private
           </SizableText>
         )}
@@ -112,13 +112,13 @@ function Card({
             official from a marker no tenant can raise. The same label the
             template gallery uses, so a reader meets one word, not two. */}
         {e.official && (
-          <SizableText borderRadius="$10" borderWidth={1} borderColor="$color02" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} color="$color">
+          <SizableText borderRadius="$10" borderWidth={1} borderColor="$color02" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize="$1" color="$color">
             {OFFICIAL_LABEL}
           </SizableText>
         )}
       </XStack>
 
-      <H3 display="flex" alignItems="flex-start" gap="$1.5" fontSize={15} fontWeight="500" lineHeight="1.375" letterSpacing={-0.4} color="$color">
+      <H3 display="flex" alignItems="flex-start" gap="$1.5" fontSize="$4" fontWeight="500" lineHeight="1.375" letterSpacing={-0.4} color="$color">
         <Anchor href={href} target="_blank" rel="noreferrer" className="stretch-link">
           <SizableText numberOfLines={1}>{e.title || e.name}</SizableText>
         </Anchor>
@@ -128,7 +128,7 @@ function Card({
   />
       </H3>
 
-      <Paragraph numberOfLines={2} minHeight="2.5rem" fontSize={13} lineHeight="1.625" color="$color11">
+      <Paragraph numberOfLines={2} minHeight="2.5rem" fontSize="$2" lineHeight="1.625" color="$color11">
         {e.description || (e.url ? e.url.replace(/^https?:\/\//, "") : "")}
       </Paragraph>
 
@@ -136,7 +136,7 @@ function Card({
           than a pile: what this was forked FROM, and who built it. The parent is
           a filter, so "everything built from folio" is one click, not a search. */}
       {e.template && (
-        <Paragraph fontSize={11} lineHeight="1.625" color="$color11">
+        <Paragraph fontSize="$1" lineHeight="1.625" color="$color11">
           Forked from{" "}
           {onParent ? (
             <Button
@@ -157,18 +157,18 @@ function Card({
           count — it is the first thing a reader needs in order to read the rest
           of the card correctly. */}
       {e.upstream && (
-        <Paragraph fontSize={11} lineHeight="1.625" color="$color11">
+        <Paragraph fontSize="$1" lineHeight="1.625" color="$color11">
           Third-party work, shown with credit: {e.upstream}
           {e.license ? ` · ${e.license}` : ""}
         </Paragraph>
       )}
 
       <XStack marginTop="auto" alignItems="center" gap="$3" paddingTop="$1">
-        {e.language && <SizableText fontFamily="$mono" fontSize={10} color="$color11">{e.language}</SizableText>}
+        {e.language && <SizableText fontFamily="$mono" fontSize="$1" color="$color11">{e.language}</SizableText>}
         {!!e.stars && (
           <XStack alignItems="center" gap="$1">
             <Star size={12} strokeWidth={1.6} />
-            <SizableText fontFamily="$mono" fontSize={10} color="$color11">{e.stars}</SizableText>
+            <SizableText fontFamily="$mono" fontSize="$1" color="$color11">{e.stars}</SizableText>
           </XStack>
         )}
         {/* Forkable is a DOOR, not an adjective. The card used to print the word
@@ -181,13 +181,13 @@ function Card({
         {e.forkable && e.repo && (
           <Anchor
             href={repoImportLink(e.repo)}
-            position="relative" zIndex={10} display="inline-flex" alignItems="center" gap="$1" fontFamily="$mono" fontSize={10} color="$color11" hoverStyle={{ color: "$color" }}
+            position="relative" zIndex={10} display="inline-flex" alignItems="center" gap="$1" fontFamily="$mono" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
           >
             <GitFork size={12} strokeWidth={1.6} />
             fork
           </Anchor>
         )}
-        {e.url && e.kind === "site" && <SizableText fontFamily="$mono" fontSize={10} color="$color11">live</SizableText>}
+        {e.url && e.kind === "site" && <SizableText fontFamily="$mono" fontSize="$1" color="$color11">live</SizableText>}
         {/* The trace out of a demo. z-10 puts it above the title's stretched
             hit area, so clicking "source" goes to the source. */}
         {e.repo && e.repo !== href && (
@@ -195,7 +195,7 @@ function Card({
             href={e.repo}
             target="_blank"
             rel="noreferrer"
-            position="relative" zIndex={10} fontFamily="$mono" fontSize={10} color="$color11" hoverStyle={{ color: "$color", textDecorationLine: "underline" }}
+            position="relative" zIndex={10} fontFamily="$mono" fontSize="$1" color="$color11" hoverStyle={{ color: "$color", textDecorationLine: "underline" }}
           >
             source
           </Anchor>
@@ -311,7 +311,7 @@ export function CatalogBrowser({
       <H1 fontSize="$8" fontWeight="500" letterSpacing={-0.4} color="$color" $sm={{ fontSize: "$10" }} lineHeight="1.1">
         {title}
       </H1>
-      <Paragraph marginTop="$2" maxWidth={672} fontSize={14} lineHeight="1.625" color="$color11">
+      <Paragraph marginTop="$2" maxWidth={672} fontSize="$3" lineHeight="1.625" color="$color11">
         {blurb ?? (
           <>
             Every project, app and site across Hanzo, Lux and Zoo — searchable in
@@ -467,7 +467,7 @@ export function CatalogBrowser({
         </XStack>
       )}
 
-      <Paragraph marginTop="$5" fontFamily="$mono" fontSize={11} color="$color11">
+      <Paragraph marginTop="$5" fontFamily="$mono" fontSize="$1" color="$color11">
         {err
           ? "Couldn't load the community feed — check your connection and refresh."
           : loading

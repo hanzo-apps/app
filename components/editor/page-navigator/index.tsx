@@ -118,7 +118,7 @@ export function PagePanel({
           aria-label="Search pages"
           width="100%" backgroundColor="transparent" paddingVertical="$1" fontSize="$3" color="$color" placeholderTextColor="$color11"
   />
-        <SizableText flexShrink={0} fontFamily="$mono" fontSize={10} color="$color11">
+        <SizableText flexShrink={0} fontFamily="$mono" fontSize="$1" color="$color11">
           {filteredPaths.length}
         </SizableText>
       </XStack>
@@ -134,7 +134,7 @@ export function PagePanel({
               {group.folder && (
                 <XStack alignItems="center" gap="$1.5" paddingHorizontal="$2.5" paddingVertical="$1">
                   <SizableText color="$color11"><Folder size={12} /></SizableText>
-                  <SizableText numberOfLines={1} fontSize={10} fontWeight="500" letterSpacing={0.4} color="$color11">{group.folder}</SizableText>
+                  <SizableText numberOfLines={1} fontSize="$1" fontWeight="500" letterSpacing={0.4} color="$color11">{group.folder}</SizableText>
                 </XStack>
               )}
               {group.items.map((item) => {

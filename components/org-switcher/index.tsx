@@ -73,7 +73,7 @@ export function OrgSwitcher({ direction = 'down' }: { direction?: 'up' | 'down' 
       footer={
         <YStack>
           {current?.isPersonal && (
-            <SizableText paddingHorizontal="$2" paddingVertical="$1" fontSize={10} color="$color11">
+            <SizableText paddingHorizontal="$2" paddingVertical="$1" fontSize="$1" color="$color11">
               Personal workspace
             </SizableText>
           )}

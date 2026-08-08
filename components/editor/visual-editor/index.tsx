@@ -450,7 +450,7 @@ export function VisualEditor({
                   <Icon size={16} />
                   <span>{label}</span>
                   {value === "bottom" && (
-                    <SizableText marginLeft="auto" fontSize={10} color="$color11">Default</SizableText>
+                    <SizableText marginLeft="auto" fontSize="$1" color="$color11">Default</SizableText>
                   )}
                 </DropdownMenuRadioItem>
               ))}
@@ -477,7 +477,7 @@ export function VisualEditor({
         </DropdownMenuCheckboxItem>
 
         <DropdownMenuSeparator backgroundColor="$borderColor" />
-        <DropdownMenuLabel fontSize={10} fontWeight="500" color="$color11">
+        <DropdownMenuLabel fontSize="$1" fontWeight="500" color="$color11">
           Theme
         </DropdownMenuLabel>
         <DropdownMenuRadioGroup

@@ -19,7 +19,7 @@ export default function HanzoModels() {
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
       <YStack alignSelf="center" maxWidth={1152}>
         <Reveal alignSelf="center" width="100%" maxWidth={672}>
-          <Paragraph fontFamily="$mono" fontSize={11} color="$color11" textAlign="center">
+          <Paragraph fontFamily="$mono" fontSize="$1" color="$color11" textAlign="center">
             Hanzo models
           </Paragraph>
           <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "2.75rem", lineHeight: "1.1" }}>
@@ -45,7 +45,7 @@ export default function HanzoModels() {
                 <XStack height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                   <Orbit size={20} strokeWidth={1.5} />
                 </XStack>
-                <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} color="$color11">
+                <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$0.5" fontFamily="$mono" fontSize="$1" color="$color11">
                   Proprietary
                 </SizableText>
               </XStack>
@@ -76,7 +76,7 @@ export default function HanzoModels() {
                 <XStack height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                   <Boxes size={20} strokeWidth={1.5} />
                 </XStack>
-                <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} color="$color11">
+                <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$0.5" fontFamily="$mono" fontSize="$1" color="$color11">
                   Open source
                 </SizableText>
               </XStack>

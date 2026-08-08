@@ -90,7 +90,7 @@ export function BuildTranscript({ build }: { build: Build }) {
         <YStack paddingHorizontal="$4" paddingTop={36} $md={{ paddingHorizontal: "$6", paddingTop: "$9" }}>
           <YStack alignSelf="center" maxWidth={896}>
             <nav aria-label="Breadcrumb">
-              <SizableText flexWrap="wrap" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} color="$color11" display="flex" flexDirection="row">
+              <SizableText flexWrap="wrap" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize="$1" color="$color11" display="flex" flexDirection="row">
                 <li>
                   <Link href="/builds"><SizableText hoverStyle={{ color: "$color" }}>
                     Builds
@@ -112,18 +112,18 @@ export function BuildTranscript({ build }: { build: Build }) {
             </H1>
 
             <XStack marginTop="$4.5" flexWrap="wrap" alignItems="center" gap="$2">
-              <SizableText display="inline-flex" alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1" fontFamily="$mono" fontSize={11} color="$color11">
+              <SizableText display="inline-flex" alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1" fontFamily="$mono" fontSize="$1" color="$color11">
                 {build.agent}
               </SizableText>
               {build.model ? (
-                <SizableText display="inline-flex" alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color11">
+                <SizableText display="inline-flex" alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize="$1" color="$color11">
                   {build.model}
                 </SizableText>
               ) : null}
-              <SizableText display="inline-flex" alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color11">
+              <SizableText display="inline-flex" alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize="$1" color="$color11">
                 {build.turns.length} turns
               </SizableText>
-              <SizableText display="inline-flex" alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color11">
+              <SizableText display="inline-flex" alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize="$1" color="$color11">
                 {bound} commits
               </SizableText>
             </XStack>
@@ -135,7 +135,7 @@ export function BuildTranscript({ build }: { build: Build }) {
                 Every commit below is bound to its turn by a git trailer or note on the
                 commit itself — not by a table on our side. Re-derive all of them:
               </Paragraph>
-              <SizableText marginTop="$3" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$3" fontFamily="$mono" fontSize={11} color="$color11" overflow="scroll" whiteSpace="pre">
+              <SizableText marginTop="$3" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$3" fontFamily="$mono" fontSize="$1" color="$color11" overflow="scroll" whiteSpace="pre">
                 {build.verify}
               </SizableText>
               {build.repo ? (
@@ -143,7 +143,7 @@ export function BuildTranscript({ build }: { build: Build }) {
                   href={build.repo}
                   target="_blank"
                   rel="noreferrer"
-                  marginTop="$3" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} color="$color11" hoverStyle={{ color: "$color" }}
+                  marginTop="$3" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
                 >
                   {build.repo}
                   <ArrowUpRight size={12} />
@@ -173,15 +173,15 @@ export function BuildTranscript({ build }: { build: Build }) {
                     </XStack>
 
                     <XStack flexWrap="wrap" alignItems="baseline" gap="$2">
-                      <SizableText fontFamily="$mono" fontSize={11} color="$color11">
+                      <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
                         Turn {t.turn}
                       </SizableText>
                       {t.actor ? (
-                        <SizableText fontFamily="$mono" fontSize={11} color="$color11">
+                        <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
                           {t.actor}
                         </SizableText>
                       ) : null}
-                      <SizableText fontFamily="$mono" fontSize={11} color="$color11" opacity={0.7}>{t.at}</SizableText>
+                      <SizableText fontFamily="$mono" fontSize="$1" color="$color11" opacity={0.7}>{t.at}</SizableText>
                     </XStack>
 
                     <YStack marginTop="$2">
@@ -192,7 +192,7 @@ export function BuildTranscript({ build }: { build: Build }) {
                       <YStack marginTop="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$3">
                         <XStack flexWrap="wrap" alignItems="center" gap="$2">
                           <GitCommit size={14} />
-                          <SizableText fontFamily="$mono" fontSize={11} color="$color">
+                          <SizableText fontFamily="$mono" fontSize="$1" color="$color">
                             {t.commit.slice(0, 12)}
                           </SizableText>
                           {t.subject ? (
@@ -202,7 +202,7 @@ export function BuildTranscript({ build }: { build: Build }) {
                         {cmd ? (
                           <>
                             <Paragraph marginTop="$3" className={`${EYEBROW}`}>Fork from here</Paragraph>
-                            <SizableText marginTop="$1.5" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$2.5" fontFamily="$mono" fontSize={11} color="$color11" overflow="scroll" whiteSpace="pre">
+                            <SizableText marginTop="$1.5" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$2.5" fontFamily="$mono" fontSize="$1" color="$color11" overflow="scroll" whiteSpace="pre">
                               {cmd}
                             </SizableText>
                           </>

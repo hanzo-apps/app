@@ -236,7 +236,7 @@ export default function KanbanBoard() {
               </CardHeader>
             </Card>
 
-            <ScrollArea height="calc(100vh-240px)">
+            <ScrollArea height="calc(100vh - 240px)">
               <YStack rowGap="$3">
                 {column.tasks.map(task => (
                   <Card

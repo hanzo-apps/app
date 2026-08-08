@@ -351,7 +351,7 @@ function SidebarContent({
                 <HanzoLogo size={20} color="var(--foreground)" />
                 <YStack minWidth={0}>
                   <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" lineHeight="1">Hanzo&nbsp;App</SizableText>
-                  <SizableText marginTop="$0.5" fontSize={10} lineHeight={10} color="$color11">
+                  <SizableText marginTop="$0.5" fontSize="$1" lineHeight={10} color="$color11">
                     {isServerMode ? `Server · v${VERSION}` : `v${VERSION}`}
                   </SizableText>
                 </YStack>
@@ -399,7 +399,7 @@ function SidebarContent({
               <Divider />
             ) : (
               <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingBottom="$1" paddingTop="$3">
-                <SizableText fontSize={11} fontWeight="500" color="$color11">
+                <SizableText fontSize="$1" fontWeight="500" color="$color11">
                   Projects
                 </SizableText>
                 <DropdownMenu placement="bottom-end">
@@ -442,7 +442,7 @@ function SidebarContent({
                 }}
                 onBlur={submitNewFolder}
                 placeholder="Folder name…"
-                marginHorizontal="$1" width="calc(100%-0.5rem)" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$3" outlineWidth={0} focusStyle={{ borderColor: "$color8" }}
+                marginHorizontal="$1" width="calc(100% - 0.5rem)" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$3" outlineWidth={0} focusStyle={{ borderColor: "$color8" }}
   />
             )}
             {!collapsed &&
@@ -468,7 +468,7 @@ function SidebarContent({
               <>
                 {collapsed ? <Divider /> : (
                   <YStack paddingHorizontal="$3" paddingBottom="$1" paddingTop="$3">
-                    <SizableText fontSize={11} fontWeight="500" color="$color11">
+                    <SizableText fontSize="$1" fontWeight="500" color="$color11">
                       Recents
                     </SizableText>
                   </YStack>
@@ -494,7 +494,7 @@ function SidebarContent({
             {/* Secondary (kept reachable) */}
             {collapsed ? <Divider /> : (
               <YStack paddingHorizontal="$3" paddingBottom="$1" paddingTop="$3">
-                <SizableText fontSize={11} fontWeight="500" color="$color11">
+                <SizableText fontSize="$1" fontWeight="500" color="$color11">
                   More
                 </SizableText>
               </YStack>
@@ -689,7 +689,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
           </Anchor>
         </XStack>
 
-        <Paragraph marginTop="$4" fontSize={11} lineHeight="1.625" color="$color11">
+        <Paragraph marginTop="$4" fontSize="$1" lineHeight="1.625" color="$color11">
           Free weeks are credited when a referred friend&apos;s paid subscription
           starts. Rewards cap at 52 weeks.
         </Paragraph>
