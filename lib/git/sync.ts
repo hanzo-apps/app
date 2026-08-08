@@ -24,7 +24,14 @@
  * HTTP status the route maps through). Fail-closed everywhere.
  */
 
-export type GitProvider = 'github' | 'gitlab' | 'hanzo';
+// The set of forges is ONE fact, declared in lib/api/git.ts and re-exported
+// here so this module's consumers keep importing it from the module they use.
+// It was declared independently in both, which is two truths that must agree by
+// hand: add a forge to one and the other silently keeps refusing it. A type-only
+// re-export is erased at build, so this module stays dependency-free at runtime
+// and unit-testable by mocking fetch, which is the property its header claims.
+export type { GitProvider } from '@/lib/api/git';
+import type { GitProvider } from '@/lib/api/git';
 
 /** A file to write: a site-relative path and its UTF-8 contents. */
 export interface SyncFile {

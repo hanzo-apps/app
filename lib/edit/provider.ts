@@ -17,15 +17,20 @@ import { GitSyncError } from '@/lib/git/sync';
 import { GitHubProvider } from './github';
 
 /**
- * The forges Hanzo Edit can open a PR against.
+ * The forges Hanzo Edit can open a PR against — the same set the rest of the app
+ * supports, sourced from its one declaration rather than restated here.
  *
- * `hanzo` is git.hanzo.ai — OUR git, and it is named for us rather than for the
- * project it forked. That is not cosmetic: the rest of the app already calls it
- * `hanzo` (lib/api/git.ts, lib/git/sync.ts), and while this module called the
- * same forge `gitea` a translator had to sit between them. One name, no
+ * `hanzo` is git.hanzo.ai: OUR git, named for us and not for the project it
+ * forked. That is not cosmetic — while this module called the same forge
+ * `gitea`, a translator had to sit between it and the IAM lookup. One name, no
  * translator.
+ *
+ * It is aliased because the two words mean different things HERE: `GitProvider`
+ * below is the driver INTERFACE a forge implements, and this is merely the
+ * forge's NAME. One noun for both would make the file unreadable.
  */
-export type ProviderName = 'github' | 'gitlab' | 'hanzo';
+export type { GitProvider as ProviderName } from '@/lib/api/git';
+import type { GitProvider as ProviderName } from '@/lib/api/git';
 
 /** An owner/repo pair (the unit every provider method addresses). */
 export interface RepoRef {
