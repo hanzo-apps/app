@@ -52,10 +52,18 @@ that IS typed may not behave the way the DOM one does:
 - **`$color` is the foreground** (white in dark). Never a container background —
   surfaces are `$color2/3/4`, alphas `$color005…$color06` for outline chrome.
 
-- The field emits **text**, not a change event: `onChangeText={(t) => …}`, never
-  `onChange={(e) => e.target.value}`. The DOM spelling type-checked only while
-  the package was declared `any`, and it never fired — six handlers in this app
-  were dead code that way.
+- The field emits text as well as an event. Prefer `onChangeText={(t) => …}` —
+  it hands you the string instead of an event to dig through — but **`onChange`
+  fires too, so that is a preference, not a bug report.** This line used to say
+  the DOM spelling "never fired"; measured at `@hanzo/ui@8.0.69`, both fire on
+  `Input` and on `Textarea`, because gui renders a real `<input>` on web and
+  forwards the handler. **70 call sites here use `onChange`; they work. Do not
+  sweep them.** `tests/unit/field-change.test.tsx` pins it, because the failure
+  would be invisible: a gui bump that stopped forwarding breaks no build, raises
+  no type error and throws nothing — 70 fields would just quietly stop accepting
+  input. (Six handlers really were dead once, in a different since-fixed shape.
+  Trusting that sentence at face value nearly bought a pointless 70-file
+  refactor — measure the claim before acting on it.)
 - Toast placement belongs to the `Toaster` viewport. There is no per-toast
   `position`.
 - Web-only attributes (`title`, `type`, `indicatorClassName`) are declared on
