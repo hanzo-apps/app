@@ -260,9 +260,16 @@ a {
  * the viewport. A narrow desktop window is still a mouse, and a large tablet is
  * still a thumb; sizing off width gets both of those backwards.
  *
- * `min-height` rather than `height`, so a chip whose label wraps still grows. */
+ * `min-height` rather than `height`, so a chip whose label wraps still grows.
+ *
+ * A CLASS, not a `data-` attribute. `SizableText` is a gui primitive, not a DOM
+ * element: it forwards `className` (as `.thread-shimmer-text` and `.hz-composer`
+ * already prove in production) and DROPS an unrecognised `data-` prop. The dev
+ * server kept it and the production build did not, so the first version of this
+ * rule matched four elements locally and zero on hanzo.app — green everywhere a
+ * human would have looked. */
 @media (pointer: coarse) {
-  [data-starter] {
+  .hz-starter {
     min-height: 44px;
     display: inline-flex;
     align-items: center;
