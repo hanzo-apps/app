@@ -66,3 +66,14 @@ describe("boot: the header is minimal", () => {
     expect(header).toMatch(/booted = true/);
   });
 });
+
+describe("the trough always names the open pane", () => {
+  it("desktop boots on preview — chat is a tab only where chat is a tab", () => {
+    // currentTab starts "chat" for mobile-first, but chat's segment is hidden
+    // above lg — so the bar highlighted NOTHING while the preview plainly
+    // showed. The two sites that could recreate the dead-bar state are pinned:
+    // the mount effect and the element-click flip.
+    expect(editor).toMatch(/setCurrentTab\(\(t\) => \(t === "chat" \? "preview" : t\)\)/);
+    expect(editor).toMatch(/window\.innerWidth < 1024[\s\S]{0,120}setCurrentTab\("chat"\)/);
+  });
+});

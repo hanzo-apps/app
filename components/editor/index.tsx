@@ -114,6 +114,17 @@ export const AppEditor = ({
   // docked on the left; this drives what the RIGHT pane shows — preview or the
   // code editor — and, on mobile, which single pane is visible.
   const [currentTab, setCurrentTab] = useState("chat");
+  // DESKTOP BOOTS ON PREVIEW. "chat" is the right initial tab only where chat
+  // is a TAB — on a phone, one pane at a time. On desktop the chat column is
+  // permanently docked and the right side shows the preview, so a currentTab
+  // of "chat" left the pane trough with NO active pill: the segment it named
+  // is hidden above lg, and the bar read as dead chrome over a live preview.
+  // State says what the screen shows.
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+      setCurrentTab((t) => (t === "chat" ? "preview" : t));
+    }
+  }, []);
   /**
    * What the RIGHT pane shows. Per the comment above, `currentTab` carries two
    * meanings, and `chat` belongs to only one of them: the right pane shows
@@ -598,7 +609,14 @@ export const AppEditor = ({
               onClickElement={(element) => {
                 setIsEditableModeEnabled(false);
                 setSelectedElement(element);
-                setCurrentTab("chat");
+                // "chat" is a destination only where chat is a TAB (mobile —
+                // one pane at a time, and the composer is what you need next).
+                // On desktop the composer is already docked beside the preview,
+                // and flipping the tab would only strip the trough's active
+                // pill — the same dead-bar state the boot fix removed.
+                if (typeof window === "undefined" || window.innerWidth < 1024) {
+                  setCurrentTab("chat");
+                }
               }}
   />
             {rightView === "preview" && (
