@@ -1,5 +1,6 @@
 "use client";
 
+import { sends } from '@hanzo/ui/chat';
 import { View, YStack, XStack, H2, Paragraph, Image, SizableText, H3 } from '@hanzo/ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -465,7 +466,7 @@ export function ImportGitPanel() {
             value={pasteUrl}
             onChange={(e) => setPasteUrl(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") submitPaste();
+              if (sends(e.key, e.nativeEvent)) submitPaste();
             }}
             placeholder="git.hanzo.ai/hanzoai/app  ·  github.com/org/repo  ·  git@…"
             height={36} flex={1}

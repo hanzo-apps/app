@@ -1,5 +1,6 @@
 'use client';
 
+import { sends } from '@hanzo/ui/chat';
 import { XStack, YStack, SizableText, Paragraph } from '@hanzo/ui';
 import { glass } from "@/lib/chrome";
 import { useState, useEffect, useCallback } from 'react';
@@ -158,7 +159,7 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
           height="$14" borderWidth={1} borderRadius="$5" overflow="hidden"
           onKeyDown={(e) => {
             // Cmd/Ctrl + Enter to execute (CodeMirror leaves this combo unbound)
-            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+            if ((e.metaKey || e.ctrlKey) && sends(e.key, e.nativeEvent)) {
               e.preventDefault();
               executeQuery();
             }

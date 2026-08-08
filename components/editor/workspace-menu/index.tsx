@@ -21,6 +21,7 @@
  *
  * Strictly monochrome: black / white / neutral, semantic green/red only.
  */
+import { sends } from '@hanzo/ui/chat';
 import { SizableText, XStack, YStack, Paragraph } from '@hanzo/ui';
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -357,7 +358,7 @@ export function WorkspaceMenu({
             placeholder="Project name"
             onChangeText={(v: string) => setRenameValue(v)}
             onKeyDown={(e: React.KeyboardEvent) => {
-              if (e.key === "Enter") {
+              if (sends(e.key, e.nativeEvent)) {
                 e.preventDefault();
                 if (!renaming) void submitRename();
               }

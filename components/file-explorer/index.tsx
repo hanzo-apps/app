@@ -1,5 +1,6 @@
 'use client';
 
+import { sends } from '@hanzo/ui/chat';
 import { SizableText, YStack, XStack, H3, Paragraph, ContextMenu } from '@hanzo/gui';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { VirtualFile, isFileSupported, FILE_SIZE_LIMITS, getFileTypeFromPath } from '@/lib/vfs/types';
@@ -541,7 +542,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
                 onChange={(e) => setNewName(e.target.value)}
                 onBlur={() => handleRename(item.path, item.type)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (sends(e.key, e.nativeEvent)) {
                     handleRename(item.path, item.type);
                   } else if (e.key === 'Escape') {
                     setRenamingPath(null);

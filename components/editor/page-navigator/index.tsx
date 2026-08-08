@@ -1,5 +1,6 @@
 "use client";
 
+import { sends } from '@hanzo/ui/chat';
 import { Input, Button } from '@hanzo/ui';
 import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -95,7 +96,7 @@ export function PagePanel({
 
   // Enter opens the first match — fast keyboard navigation from the search box.
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (sends(e.key, e.nativeEvent)) {
       const first = groups[0]?.items[0]?.path;
       if (first) {
         e.preventDefault();

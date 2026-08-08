@@ -5,6 +5,7 @@ import { SizableText, YStack, XStack, Image } from '@hanzo/ui';
 // type-only re-export, so it is not on the barrel yet. A type is erased at
 // build and cannot create a second runtime, so this does not reintroduce
 // the two-copies problem the rest of this migration exists to prevent.
+import { sends } from '@hanzo/ui/chat';
 import type { GuiElement } from '@hanzo/gui';
 import { useState, useEffect, useRef, useMemo, useCallback, DragEvent, ClipboardEvent } from 'react';
 import { MessageSquare, CheckCircle, XCircle, ChevronRight, FileCode, ClipboardList, Bot, RotateCcw, RefreshCw, Send, ChevronUp, ChevronDown, Code, Trash2, X, Brain, Image as ImageIcon } from 'lucide-react';
@@ -852,7 +853,20 @@ export function ChatPanel({
                 if (isTourLockingInput) {
                   return;
                 }
-                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                // `sends` is asked ONLY about the IME here, not about the rule.
+                // It is the one function that knows a keystroke can be claimed
+                // three different ways — `isComposing`, `key === 'Process'`, and
+                // Safari's legacy keyCode 229, which it sets when isComposing is
+                // absent — so a composer that checks the flag alone still sends
+                // a half-typed word out from under a Japanese, Chinese or Korean
+                // writer mid-candidate. This panel was checking none of them.
+                //
+                // The modifier stays because this surface's rule is its own:
+                // bare Enter writes a newline here, which is what its users have
+                // learned, and `sends` alone would make Enter submit. Reading
+                // the shared predicate and then narrowing it keeps both — the
+                // IME logic has one home, and the send rule is still local.
+                if (sends(e.key, e.nativeEvent) && (e.ctrlKey || e.metaKey)) {
                   e.preventDefault();
                   handleSend();
                 }

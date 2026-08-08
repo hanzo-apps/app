@@ -32,6 +32,7 @@
  *   ⌘↵    open the highlighted project's published site
  */
 
+import { sends } from '@hanzo/ui/chat';
 import { XStack, SizableText, YStack, H3 } from '@hanzo/ui';
 // `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
 // same way it drops the GuiElement type. Tracked; everything else in this
@@ -215,7 +216,9 @@ export function CommandPalette({
   useEffect(() => {
     if (!open || !activeProject) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      // A DOM listener, so `e` IS the native event — there is no `.nativeEvent`
+      // to unwrap, and `sends` reads the same three IME signals off it either way.
+      if (sends(e.key, e) && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         e.stopPropagation();
         openPublished(activeProject);

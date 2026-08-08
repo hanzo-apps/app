@@ -1,5 +1,6 @@
 'use client';
 
+import { sends } from '@hanzo/ui/chat';
 import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
 import { useEffect, useRef, useState } from "react";
 import { CircleCheck, Plus, Sparkles, Upload } from "lucide-react";
@@ -177,7 +178,7 @@ export const Uploader = ({
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
                       onKeyDown={(e) => {
-                        if (e.key === "Enter" && !generating) {
+                        if (sends(e.key, e.nativeEvent) && !generating) {
                           e.preventDefault();
                           void generateImage();
                         }
