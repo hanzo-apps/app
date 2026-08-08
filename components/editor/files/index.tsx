@@ -1,10 +1,13 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Input, Paragraph, SizableText, XStack, YStack, Button } from '@hanzo/ui';
-import { FileText, LayoutGrid, List, PanelRight, Search } from 'lucide-react';
+import { Download, FileText, LayoutGrid, List, PanelRight, RefreshCcw, Search } from 'lucide-react';
 
 import { panel } from '@/lib/chrome';
+import { useSandbox } from '@/components/editor/console/log';
+import { glyphFor } from '@/components/editor/file-tree/glyph';
+import { artifactUrl, artifacts, previewable } from './artifacts';
 import type { Page } from '@/types';
 
 /**
@@ -32,6 +35,36 @@ export function FilesPane({
   const [query, setQuery] = useState('');
   const [layout, setLayout] = useState<'list' | 'grid'>('list');
   const [preview, setPreview] = useState(true);
+
+  // The workspace's held pod — the same slot the shell and the agent use, so
+  // "one sandbox, one checkout" stays true here too. Empty until something has
+  // opened one, and this pane never opens one itself: a browser that billed a
+  // pod per visit would be a strange browser.
+  const sandboxId = useSandbox();
+  // null = no pod or not asked; [] = asked, pod is empty of extras.
+  const [pod, setPod] = useState<string[] | null>(null);
+  const [artifact, setArtifact] = useState<string | null>(null);
+
+  const refresh = useCallback(() => {
+    if (!sandboxId) {
+      setPod(null);
+      return;
+    }
+    let alive = true;
+    fetch(`/v1/shell/files?sandbox=${encodeURIComponent(sandboxId)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (alive) setPod(Array.isArray(d?.files) ? d.files : null);
+      })
+      .catch(() => alive && setPod(null));
+    return () => {
+      alive = false;
+    };
+  }, [sandboxId]);
+
+  useEffect(() => refresh(), [refresh]);
+
+  const extras = useMemo(() => artifacts(pod ?? [], pages), [pod, pages]);
 
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -110,16 +143,62 @@ export function FilesPane({
                 page={p}
                 open={p.path === currentPage}
                 grid={layout === 'grid'}
-                onOpen={() => onSelectPage(p.path)}
+                onOpen={() => {
+                  setArtifact(null);
+                  onSelectPage(p.path);
+                }}
   />
             ))}
+            {/* SANDBOX — what the pod holds beyond the app: the deck an agent
+                wrote, the CSV a command produced. Shown only when a pod exists
+                and answered; a project whose shell was never opened has no
+                group, not an empty one. Each row downloads through the
+                sandbox-file door; the refresh is manual because artifacts are
+                written mid-run and a one-shot listing goes stale. */}
+            {sandboxId && pod !== null && (
+              <>
+                <XStack alignItems="center" gap="$1.5" paddingHorizontal="$2.5" paddingTop="$3" paddingBottom="$1">
+                  <SizableText flex={1} minWidth={0} fontSize="$1" color="$color11">
+                    Sandbox
+                  </SizableText>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    borderRadius="$4"
+                    title="Refresh sandbox files"
+                    aria-label="Refresh sandbox files"
+                    onClick={() => refresh()}
+                  >
+                    <RefreshCcw size={13} />
+                  </Button>
+                </XStack>
+                {extras.length === 0 ? (
+                  <SizableText paddingHorizontal="$2.5" fontSize="$1" color="$color11">
+                    Nothing beyond the app's own files yet.
+                  </SizableText>
+                ) : (
+                  extras.map((path) => (
+                    <ArtifactRow
+                      key={path}
+                      path={path}
+                      sandbox={sandboxId}
+                      open={artifact === path}
+                      onOpen={() => setArtifact(path)}
+  />
+                  ))
+                )}
+              </>
+            )}
           </YStack>
         )}
       </YStack>
 
       {preview && (
         <YStack flex={1} minWidth={0} alignItems="center" justifyContent="center" padding="$4">
-          {open ? (
+          {artifact && sandboxId ? (
+            <ArtifactPreview sandbox={sandboxId} path={artifact} />
+          ) : open ? (
             <YStack {...panel} width="100%" height="100%" minHeight={0} overflow="hidden">
               <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingVertical="$2" borderBottomWidth={1} borderColor="$borderColor">
                 <SizableText fontFamily="$mono" fontSize="$1" color="$color11">{open.path}</SizableText>
@@ -201,4 +280,106 @@ function size(text: string): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
+function ArtifactRow({
+  path,
+  sandbox,
+  open,
+  onOpen,
+}: {
+  path: string;
+  sandbox: string;
+  open: boolean;
+  onOpen: () => void;
+}) {
+  const Glyph = glyphFor(path.split('/').pop() ?? path);
+  return (
+    <XStack
+      role="button"
+      tabIndex={0}
+      onPress={onOpen}
+      alignItems="center"
+      gap="$2"
+      borderRadius="$4"
+      paddingHorizontal="$2.5"
+      paddingVertical="$2"
+      cursor="pointer"
+      backgroundColor={open ? '$color3' : 'transparent'}
+      hoverStyle={open ? undefined : { backgroundColor: '$color2' }}
+    >
+      <SizableText color="$color11"><Glyph size={14} /></SizableText>
+      <SizableText flex={1} minWidth={0} numberOfLines={1} fontFamily="$mono" fontSize="$1" color={open ? '$color' : '$color11'}>
+        {path}
+      </SizableText>
+      {/* A plain anchor, because a download IS a navigation: the session
+          cookie rides the same-origin request and the door answers with
+          Content-Disposition. Stopping propagation keeps the row's own
+          select-for-preview separate from taking the bytes. */}
+      <a
+        href={artifactUrl(sandbox, path)}
+        download
+        aria-label={`Download ${path}`}
+        onClick={(e) => e.stopPropagation()}
+        style={{ display: 'inline-flex', color: 'inherit' }}
+      >
+        <SizableText color="$color11" hoverStyle={{ color: '$color' }}><Download size={14} /></SizableText>
+      </a>
+    </XStack>
+  );
+}
+
+/**
+ * What the preview column can honestly show for a sandbox file.
+ *
+ * An image renders; small text renders; everything else says what it is and
+ * offers the bytes. A .pptx gets no fake thumbnail — a picture of a deck that
+ * is not the deck is exactly the kind of plausible-but-wrong this pane bans.
+ */
+function ArtifactPreview({ sandbox, path }: { sandbox: string; path: string }) {
+  const kind = previewable(path);
+  const [text, setText] = useState<string | null>(null);
+
+  useEffect(() => {
+    setText(null);
+    if (kind !== 'text') return;
+    let alive = true;
+    fetch(artifactUrl(sandbox, path))
+      .then((r) => (r.ok ? r.text() : null))
+      .then((t) => alive && setText(t))
+      .catch(() => alive && setText(null));
+    return () => {
+      alive = false;
+    };
+  }, [sandbox, path, kind]);
+
+  return (
+    <YStack {...panel} width="100%" height="100%" minHeight={0} overflow="hidden">
+      <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingVertical="$2" borderBottomWidth={1} borderColor="$borderColor">
+        <SizableText fontFamily="$mono" fontSize="$1" color="$color11">{path}</SizableText>
+        <a href={artifactUrl(sandbox, path)} download aria-label={`Download ${path}`} style={{ display: 'inline-flex', color: 'inherit', textDecoration: 'none' }}>
+          <SizableText fontSize="$1" color="$color11" hoverStyle={{ color: '$color' }}>Download</SizableText>
+        </a>
+      </XStack>
+      <YStack flex={1} minHeight={0} alignItems="center" justifyContent="center" overflow="scroll" padding={kind === 'text' ? '$3' : 0}>
+        {kind === 'image' ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={artifactUrl(sandbox, path)} alt={path} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+        ) : kind === 'text' ? (
+          text === null ? (
+            <SizableText fontSize="$2" color="$color11">Loading…</SizableText>
+          ) : (
+            <SizableText alignSelf="stretch" whiteSpace="pre-wrap" fontFamily="$mono" fontSize="$1" color="$color">
+              {text.slice(0, 20000)}
+            </SizableText>
+          )
+        ) : (
+          <YStack alignItems="center" gap="$2">
+            <SizableText fontSize="$2" color="$color11">No preview for this file type.</SizableText>
+            <SizableText fontSize="$1" color="$color11">Download it to open it.</SizableText>
+          </YStack>
+        )}
+      </YStack>
+    </YStack>
+  );
 }

@@ -100,6 +100,34 @@ export interface Run {
 
 let run: Run | null = null;
 
+/**
+ * The workspace's held sandbox — ONE pod for the shell, the agent, and the
+ * Files pane's artifact listing.
+ *
+ * It lives in this store for the same reason the run does: the pod outlives
+ * whichever component first opened it, and "one sandbox, one checkout" is only
+ * true if every consumer reads the same slot. The live run's pod wins wherever
+ * both exist, which is the precedence the shell already applied.
+ */
+let held = "";
+
+export function holdSandbox(id: string): void {
+  const clean = (id ?? "").trim();
+  if (!clean || clean === held) return;
+  held = clean;
+  emit();
+}
+
+/** The pod every consumer should address right now, or "". */
+export function currentSandbox(): string {
+  return run?.sandbox || held;
+}
+
+/** Reactive view of the same fact — re-renders when a pod appears or changes. */
+export function useSandbox(): string {
+  return useSyncExternalStore(subscribe, currentSandbox, () => "");
+}
+
 export function beginRun(r: Run): void {
   run = r;
   emit();

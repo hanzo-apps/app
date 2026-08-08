@@ -13,7 +13,7 @@ import { currentProject } from "@/lib/dev/workspace";
 import { HOME, TIMEOUT } from "@/lib/shell";
 
 import { BAR, DEFAULT_OPEN, MIN_OPEN, STEP, maxOpen, useDock } from "./dock";
-import { push, useConsoleLog, useRun } from "./log";
+import { currentSandbox, holdSandbox, push, useConsoleLog, useRun } from "./log";
 
 /**
  * The prompt — the half of this dock you can type into.
@@ -33,7 +33,6 @@ function Prompt() {
   const [command, setCommand] = useState("");
   const [cwd, setCwd] = useState(HOME);
   const [busy, setBusy] = useState(false);
-  const held = useRef("");
   // What was typed, newest last. ArrowUp walks back through it; `at` is where
   // the walk has got to, and length means "not walking" — the draft is at the
   // end of the list, which is exactly where a fresh line belongs.
@@ -59,7 +58,7 @@ function Prompt() {
           cwd,
           project: currentProject(),
           // The live run's pod wins: one sandbox, one checkout.
-          sandbox: run?.sandbox || held.current || undefined,
+          sandbox: currentSandbox() || undefined,
         }),
       });
       const body = (await res.json().catch(() => null)) as {
@@ -71,7 +70,7 @@ function Prompt() {
         push("sandbox", "error", body?.error || `The shell could not run that (${res.status}).`);
         return;
       }
-      held.current = body.sandbox || held.current;
+      holdSandbox(body.sandbox ?? "");
       setCwd(body.cwd || cwd);
       if (body.stdout?.trim()) push("sandbox", "log", body.stdout.replace(/\n+$/, ""));
       if (body.stderr?.trim()) push("sandbox", "error", body.stderr.replace(/\n+$/, ""));
