@@ -7,6 +7,7 @@ import { ChevronDown, ChevronRight, Plug } from 'lucide-react';
 
 import { panel } from '@/lib/chrome';
 import { fetchConnectors, type Provider } from '@/lib/connectors';
+import { useModels } from '@/lib/hooks/use-models';
 import { SECTIONS, findSection, type Section } from './sections';
 
 /**
@@ -146,9 +147,9 @@ function NavRow({
  * lowest-common-denominator table that suits none of them.
  */
 function SectionBody({ section, projectId }: { section: Section; projectId?: string | null }) {
-  // Connectors is the one section whose reader already exists — the same
-  // client /connectors and the project settings read, resolve-never-throws.
+  // The sections whose readers already exist render the real thing.
   if (section.id === 'connectors') return <ConnectorsBody />;
+  if (section.id === 'ai') return <ModelsBody />;
   return (
     <YStack {...panel} padding="$4" gap="$2">
       {section.where ? (
@@ -232,6 +233,46 @@ function ConnectorsBody() {
           Manage connectors
         </SizableText>
       </Link>
+    </YStack>
+  );
+}
+
+/**
+ * The models this project can call — the SAME list the composer's picker shows,
+ * through the same session-shared hook, so the two surfaces cannot disagree.
+ * The default is named because "which model answers when I don't choose" is
+ * the first question this section exists to answer; changing it lives in the
+ * composer's settings, and this says so instead of growing a second control.
+ */
+function ModelsBody() {
+  const { models, defaultModel, loading } = useModels();
+  const families = new Map<string, number>();
+  for (const m of models) families.set(m.family, (families.get(m.family) ?? 0) + 1);
+  const fallback = models.find((m) => m.value === defaultModel)?.label ?? defaultModel;
+
+  return (
+    <YStack {...panel} padding="$4" gap="$3">
+      <YStack gap="$0.5">
+        <SizableText fontSize="$2" color="$color11">Default model</SizableText>
+        <SizableText fontSize="$4" color="$color">{fallback}</SizableText>
+        <Paragraph fontSize="$1" color="$color11">
+          Answers every build unless a turn picks otherwise — change it from the composer's
+          model picker.
+        </Paragraph>
+      </YStack>
+      <YStack gap="$0.5">
+        <SizableText fontSize="$2" color="$color11">
+          {loading ? 'Loading the live list…' : `${models.length} models across ${families.size} families`}
+        </SizableText>
+        <XStack flexWrap="wrap" gap="$1.5" paddingTop="$1">
+          {[...families.entries()].map(([family, count]) => (
+            <XStack key={family} alignItems="center" gap="$1.5" borderRadius={999} backgroundColor="$color2" paddingHorizontal="$2.5" paddingVertical="$1">
+              <SizableText fontSize="$1" color="$color">{family}</SizableText>
+              <SizableText fontSize="$1" color="$color11">{count}</SizableText>
+            </XStack>
+          ))}
+        </XStack>
+      </YStack>
     </YStack>
   );
 }
