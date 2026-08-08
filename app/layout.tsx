@@ -35,6 +35,7 @@ import { bootScript as appearanceBoot } from "@hanzo/appearance/state";
 import { SITE_URL } from "@/lib/site";
 import AppContext from "@/components/contexts/app-context";
 import IframeDetector from "@/components/iframe-detector";
+import { AccentSync } from "@/components/accent-sync";
 import { ChunkReloader } from "@/components/chunk-reloader";
 import { Providers } from "./providers";
 import { ErrorBoundary } from "@/components/error-boundary/error-boundary";
@@ -124,9 +125,19 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   initialScale: 1,
-  maximumScale: 1,
   themeColor: "#000000",
 };
+
+// The accent is the one axis the package's head script leaves for React, which
+// validates the colour on mount. Mirror an already-stored pick before first
+// paint too, so a non-default accent never flashes white on the way to it: the
+// design ramp reads --primary/--accent, the app's monochrome chrome (links, the
+// focus ring, ::selection, the product menu) reads --hanzo-accent. AccentSync
+// keeps --hanzo-accent in step after mount; an unset accent stays white.
+const ACCENT_BOOT =
+  "(function(){try{var a=(JSON.parse(localStorage.getItem('hanzo.appearance')||'{}')||{}).accent;" +
+  "if(typeof a==='string'&&a){var s=document.documentElement.style;" +
+  "s.setProperty('--primary',a);s.setProperty('--accent',a);s.setProperty('--hanzo-accent',a);}}catch(e){}})()";
 
 export default async function RootLayout({
   children,
@@ -166,7 +177,7 @@ export default async function RootLayout({
             script is tiny and inert (a try/catch around two setProperty calls)
             and @hanzo/appearance re-applies — and validates the accent — the
             moment React mounts. */}
-        <script dangerouslySetInnerHTML={{ __html: appearanceBoot() }} />
+        <script dangerouslySetInnerHTML={{ __html: appearanceBoot() + ";" + ACCENT_BOOT }} />
       </head>
       <body>
         {/* Providers is OUTERMOST. It owns createGui(), which registers the
@@ -174,6 +185,7 @@ export default async function RootLayout({
             above it reaches `useMedia()` before that state exists and the first
             responsive prop ($sm/$md/$lg) throws on `new Proxy(undefined)`. */}
         <Providers>
+          <AccentSync />
           <IframeDetector />
           <ChunkReloader />
           <ErrorBoundary level="app">

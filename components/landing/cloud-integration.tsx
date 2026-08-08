@@ -82,7 +82,7 @@ export default function CloudIntegration() {
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
       <YStack alignSelf="center" maxWidth={1152}>
         <Reveal alignSelf="center" width="100%" maxWidth={672}>
-          <Paragraph textAlign="center" fontFamily="$mono" fontSize={11} color="$color11">
+          <Paragraph textAlign="center" fontFamily="$mono" fontSize="$1" color="$color11">
             The difference
           </Paragraph>
           <H2 textAlign="center" marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "2.75rem", lineHeight: "1.1" }}>
@@ -116,7 +116,7 @@ export default function CloudIntegration() {
                   <XStack height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                     <Icon size={20} color="var(--foreground)" strokeWidth={1.5} />
                   </XStack>
-                  <SizableText fontFamily="$mono" fontSize={10} color="$color11">
+                  <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
                     {c.product}
                   </SizableText>
                 </XStack>
@@ -128,7 +128,7 @@ export default function CloudIntegration() {
                   {c.desc}
                 </Paragraph>
 
-                <SizableText marginTop="$3" numberOfLines={1} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" fontFamily="$mono" fontSize={11} color="$color11" $group-hover={{ color: "$color" }}>
+                <SizableText marginTop="$3" numberOfLines={1} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" fontFamily="$mono" fontSize="$1" color="$color11" $group-hover={{ color: "$color" }}>
                   {c.snippet}
                 </SizableText>
               </Anchor>
@@ -138,7 +138,7 @@ export default function CloudIntegration() {
         </div>
 
         <Reveal delay={120} marginTop={40}>
-          <Paragraph fontFamily="$mono" fontSize={12} color="$color11" textAlign="center">
+          <Paragraph fontFamily="$mono" fontSize="$1" color="$color11" textAlign="center">
             The same infrastructure that runs Hanzo, wired into every app you build.
           </Paragraph>
         </Reveal>

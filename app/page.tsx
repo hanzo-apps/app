@@ -215,7 +215,7 @@ export default function LandingPage() {
           <YStack alignSelf="center" maxWidth={768}>
             <Reveal>
               <XStack alignSelf="center" marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color0025" paddingHorizontal="$3" paddingVertical="$1.5">
-                <SizableText fontFamily="$mono" fontSize={11} color="$color11">
+                <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
                   Apps, wired to real data &amp; AI
                 </SizableText>
               </XStack>
@@ -256,7 +256,7 @@ export default function LandingPage() {
                   <YStack marginTop="$5">
                     <XStack marginBottom="$3" alignItems="center" justifyContent="center" gap="$2.5">
                       <SizableText height={1} width="$5" backgroundColor="$borderColor" />
-                      <SizableText fontFamily="$mono" fontSize={11} color="$color10">or start from a template</SizableText>
+                      <SizableText fontFamily="$mono" fontSize="$1" color="$color10">or start from a template</SizableText>
                       <SizableText height={1} width="$5" backgroundColor="$borderColor" />
                     </XStack>
                     {/* FULL-BLEED lane: breaks out of the hero column to the
@@ -295,7 +295,7 @@ export default function LandingPage() {
                               <Paragraph numberOfLines={1} fontSize="$2" fontWeight="500" color="$color">
                                 {t.displayName}
                               </Paragraph>
-                              <Paragraph numberOfLines={1} fontSize={11} color="$color10">
+                              <Paragraph numberOfLines={1} fontSize="$1" color="$color10">
                                 {t.category}
                               </Paragraph>
                             </YStack>
@@ -398,11 +398,11 @@ export default function LandingPage() {
                         {project.name}
                       </H3>
                       <XStack marginTop="$1" alignItems="center" gap="$2">
-                        <Paragraph fontSize={11} color="$color10">
+                        <Paragraph fontSize="$1" color="$color10">
                           {project.status === "live" ? "Live" : "Draft"}
                         </Paragraph>
                         {project.updatedAtIso && (
-                          <SizableText fontFamily="$mono" fontSize={11} color="$color10">
+                          <SizableText fontFamily="$mono" fontSize="$1" color="$color10">
                             {new Date(project.updatedAtIso).toLocaleDateString()}
                           </SizableText>
                         )}

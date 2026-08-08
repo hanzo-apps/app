@@ -32,8 +32,8 @@ export const SelectedFiles = ({
               objectFit="cover"
   />
             <Button
-              size="icon"
-              variant="secondary"
+              variant="ghost"
+              width={20} height={20} minWidth={20} minHeight={20} padding={0}
               position="absolute" top="$0.5" right="$0.5" {...{ opacity: isAiWorking ? 0.5 : undefined, cursor: isAiWorking ? "not-allowed" : undefined }}
               disabled={isAiWorking}
               onClick={() => onDelete(file)}

@@ -356,7 +356,7 @@ function ResourceCard({
         {typeof item.rating === 'number' && (
           <XStack position="absolute" left="$2" top="$2" alignItems="center" gap="$1" borderRadius="$10" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$0.5">
             <Star size={12} />
-            <SizableText fontSize={11} color="$color">{item.rating}</SizableText>
+            <SizableText fontSize="$1" color="$color">{item.rating}</SizableText>
           </XStack>
         )}
       </YStack>
@@ -374,7 +374,7 @@ function ResourceCard({
             one gets a fresh build from the description rather than the design in
             the shot. Said HERE because this is where the choice is made — the
             builder already says it, but only after the remix is committed. */}
-        <Paragraph marginTop="auto" paddingTop="$3" numberOfLines={1} fontSize={11} color="$color11">
+        <Paragraph marginTop="auto" paddingTop="$3" numberOfLines={1} fontSize="$1" color="$color11">
           {[item.meta || item.framework, rebuilt ? "rebuilt from its description" : ""]
             .filter(Boolean)
             .join(" · ")}

@@ -35,7 +35,7 @@ export default function FaqSection({
         {(title || eyebrow) && (
           <Reveal marginBottom={40} alignItems="center">
             {eyebrow && (
-              <Paragraph fontFamily="$mono" fontSize={11} color="$color11" textAlign="center">
+              <Paragraph fontFamily="$mono" fontSize="$1" color="$color11" textAlign="center">
                 {eyebrow}
               </Paragraph>
             )}

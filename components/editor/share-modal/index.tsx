@@ -34,7 +34,7 @@ interface Collaborator {
 function Avatar({ name }: { name: string }) {
   return (
     <XStack width={28} height={28} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$color3">
-      <SizableText fontSize={11} fontWeight="500" color="$color">{name.charAt(0).toUpperCase()}</SizableText>
+      <SizableText fontSize="$1" fontWeight="500" color="$color">{name.charAt(0).toUpperCase()}</SizableText>
     </XStack>
   );
 }
@@ -140,14 +140,14 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
                   <XStack minWidth={0} alignItems="center" gap="$2.5">
                     <Avatar name={collaborator.name} />
                     <YStack minWidth={0}>
-                      <Paragraph numberOfLines={1} fontSize={13} fontWeight="500">
+                      <Paragraph numberOfLines={1} fontSize="$2" fontWeight="500">
                         {collaborator.name}{collaborator.role === "owner" && " (you)"}
                       </Paragraph>
-                      <Paragraph numberOfLines={1} fontSize={11} color="$color11">{collaborator.email}</Paragraph>
+                      <Paragraph numberOfLines={1} fontSize="$1" color="$color11">{collaborator.email}</Paragraph>
                     </YStack>
                   </XStack>
                   {collaborator.role === "owner" ? (
-                    <SizableText fontSize={11} color="$color11">Owner</SizableText>
+                    <SizableText fontSize="$1" color="$color11">Owner</SizableText>
                   ) : (
                     <XStack alignItems="center" gap="$1.5">
                       <Select
@@ -184,8 +184,8 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
               <XStack minWidth={0} alignItems="center" gap="$2.5">
                 <Users size={16} />
                 <YStack minWidth={0}>
-                  <Paragraph fontSize={13}>Visible to your workspace</Paragraph>
-                  <Paragraph fontSize={11} color="$color11">Anyone in your workspace can view this project</Paragraph>
+                  <Paragraph fontSize="$2">Visible to your workspace</Paragraph>
+                  <Paragraph fontSize="$1" color="$color11">Anyone in your workspace can view this project</Paragraph>
                 </YStack>
               </XStack>
               <Select value={visibility} onValueChange={(v: string) => setVisibility(v as typeof visibility)}>
@@ -212,8 +212,8 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
             <XStack minWidth={0} alignItems="center" gap="$2.5">
               <Link2 size={16} />
               <YStack minWidth={0}>
-                <Paragraph fontSize={13}>Create invite link</Paragraph>
-                <Paragraph fontSize={11} color="$color11">Anyone with this link can join</Paragraph>
+                <Paragraph fontSize="$2">Create invite link</Paragraph>
+                <Paragraph fontSize="$1" color="$color11">Anyone with this link can join</Paragraph>
               </YStack>
             </XStack>
             <Button variant="outline" onClick={handleCopyInviteLink} gap="$1.5">
@@ -225,8 +225,8 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
           {/* Share + upgrade — footer actions, consistent buttons. */}
           <XStack alignItems="center" justifyContent="space-between" borderTopWidth={1} borderColor="$borderColor" paddingTop="$3">
             <div>
-              <Paragraph fontSize={13} fontWeight="500">Share project</Paragraph>
-              <Paragraph fontSize={11} color="$color11">
+              <Paragraph fontSize="$2" fontWeight="500">Share project</Paragraph>
+              <Paragraph fontSize="$1" color="$color11">
                 {visibility === "public" ? "Anyone with the link can view" : "Restricted to invited members"}
               </Paragraph>
             </div>
@@ -238,8 +238,8 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
 
           <XStack alignItems="center" justifyContent="space-between" borderTopWidth={1} borderColor="$borderColor" paddingTop="$3">
             <div>
-              <Paragraph fontSize={13} fontWeight="500">Upgrade to Enterprise</Paragraph>
-              <Paragraph fontSize={11} color="$color11">Advanced features &amp; enterprise support</Paragraph>
+              <Paragraph fontSize="$2" fontWeight="500">Upgrade to Enterprise</Paragraph>
+              <Paragraph fontSize="$1" color="$color11">Advanced features &amp; enterprise support</Paragraph>
             </div>
             <Button variant="outline">Contact us</Button>
           </XStack>

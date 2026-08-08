@@ -175,7 +175,7 @@ export function RevisionDetails({
           <ArrowLeft size={14} />
           <SizableText fontSize="$1" color="$color11">Back to latest</SizableText>
         </Button>
-        <SizableText marginLeft="$1" numberOfLines={1} fontSize={13} fontWeight="500" color="$color">Details</SizableText>
+        <SizableText marginLeft="$1" numberOfLines={1} fontSize="$2" fontWeight="500" color="$color">Details</SizableText>
         <XStack marginLeft="auto" alignItems="center" gap="$1.5">
           <XStack alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color3" padding="$0.5">
             {(["timeline", "changes"] as const).map((v) => (
@@ -268,7 +268,7 @@ function FileCard({
   />
           <StatusBadge status={file.status} />
           <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">{file.path}</SizableText>
-          <SizableText marginLeft="$1" flexShrink={0} fontFamily="$mono" fontSize={10} color="$color11">
+          <SizableText marginLeft="$1" flexShrink={0} fontFamily="$mono" fontSize="$1" color="$color11">
             <SizableText color="$green8">+{stat.added}</SizableText>{" "}
             <SizableText color="$red8">−{stat.removed}</SizableText>
           </SizableText>
@@ -298,7 +298,7 @@ function DiffView({ lines }: { lines: DiffLine[] }) {
   if (lines.length === 0) {
     return (
       <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2">
-        <SizableText fontFamily="$mono" fontSize={11} color="$color11">
+        <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
           No inline diff available — view the file to see its contents.
         </SizableText>
       </YStack>
@@ -311,16 +311,16 @@ function DiffView({ lines }: { lines: DiffLine[] }) {
           {lines.map((l, i) => (
             <YStack
               key={i}
-              {...{ backgroundColor: l.type === "hunk" ? "$color3" : l.type === "del" ? "$red9" : l.type === "add" ? "$green9" : undefined }}
+              {...{ backgroundColor: l.type === "hunk" ? "$color3" : l.type === "del" ? "$red3" : l.type === "add" ? "$green3" : undefined }}
             >
-              <SizableText userSelect="none" borderRightWidth={1} borderColor="$borderColor" paddingHorizontal="$2" textAlign="right" fontFamily="$mono" fontSize={11} color="$color11">
+              <SizableText userSelect="none" borderRightWidth={1} borderColor="$borderColor" paddingHorizontal="$2" textAlign="right" fontFamily="$mono" fontSize="$1" color="$color11">
                 {l.oldNo ?? ""}
               </SizableText>
-              <SizableText userSelect="none" borderRightWidth={1} borderColor="$borderColor" paddingHorizontal="$2" textAlign="right" fontFamily="$mono" fontSize={11} color="$color11">
+              <SizableText userSelect="none" borderRightWidth={1} borderColor="$borderColor" paddingHorizontal="$2" textAlign="right" fontFamily="$mono" fontSize="$1" color="$color11">
                 {l.newNo ?? ""}
               </SizableText>
               <SizableText
-                width="100%" whiteSpace="pre" paddingHorizontal="$2" fontFamily="$mono" fontSize={11} lineHeight="1.625" {...{ color: l.type === "ctx" ? "$color11" : l.type === "hunk" ? "$color11" : l.type === "del" ? "$red3" : l.type === "add" ? "$green3" : undefined }}
+                width="100%" whiteSpace="pre" paddingHorizontal="$2" fontFamily="$mono" fontSize="$1" lineHeight="1.625" {...{ color: l.type === "ctx" ? "$color11" : l.type === "hunk" ? "$color11" : l.type === "del" ? "$red11" : l.type === "add" ? "$green11" : undefined }}
               >
                 <SizableText userSelect="none" color="$color11">
                   {l.type === "add" ? "+" : l.type === "del" ? "−" : l.type === "hunk" ? "" : " "}
@@ -368,7 +368,7 @@ function Timeline({ rev, commit }: { rev: DetailsRev; commit: GitCommit | null }
     <YStack rowGap="$4" padding="$4">
       <XStack alignItems="center" gap="$2">
         <GitCommitHorizontal size={16} />
-        <SizableText fontSize={13} fontWeight="500" color="$color">{rev.title}</SizableText>
+        <SizableText fontSize="$2" fontWeight="500" color="$color">{rev.title}</SizableText>
       </XStack>
       <YStack rowGap="$1.5">
         {rows.map((r) => (
@@ -382,14 +382,14 @@ function Timeline({ rev, commit }: { rev: DetailsRev; commit: GitCommit | null }
         <div>
           <XStack marginBottom="$1" alignItems="center" gap="$1.5">
             <FileText size={12} />
-            <SizableText fontSize={11} letterSpacing={0.4} color="$color11">Message</SizableText>
+            <SizableText fontSize="$1" letterSpacing={0.4} color="$color11">Message</SizableText>
           </XStack>
-          <SizableText whiteSpace="pre" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$3" fontFamily="$mono" fontSize={11} lineHeight="1.625" color="$color">
+          <SizableText whiteSpace="pre" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$3" fontFamily="$mono" fontSize="$1" lineHeight="1.625" color="$color">
             {fullMessage}
           </SizableText>
         </div>
       )}
-      <Paragraph fontSize={11} color="$color11">
+      <Paragraph fontSize="$1" color="$color11">
         Step-by-step agent activity for a revision appears here as the builder records it.
       </Paragraph>
     </YStack>
@@ -405,7 +405,7 @@ function StatusBadge({ status }: { status: GitCommitFile["status"] }) {
         : { borderColor: "$borderColor", color: "$color11" };
   return (
     <SizableText
-      flexShrink={0} borderRadius="$3" borderWidth={1} paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" letterSpacing={0.4} {...tone}
+      flexShrink={0} borderRadius="$3" borderWidth={1} paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize="$1" fontWeight="500" letterSpacing={0.4} {...tone}
     >
       {STATUS_LABEL[status]}
     </SizableText>

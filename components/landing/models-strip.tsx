@@ -32,7 +32,7 @@ export default function ModelsStrip() {
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
       <YStack alignSelf="center" maxWidth={1152} alignItems="center" gap="$8" $lg={{ gap: "$10" }} className="shrink-cells">
         <Reveal>
-          <Paragraph fontFamily="$mono" fontSize={11} color="$color11">
+          <Paragraph fontFamily="$mono" fontSize="$1" color="$color11">
             Hanzo AI
           </Paragraph>
           <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }} lineHeight="1.1">
@@ -62,7 +62,7 @@ export default function ModelsStrip() {
             <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
             <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
           </XStack>
-          <SizableText fontFamily="$mono" fontSize={12} lineHeight="1.625" color="$color" overflow="scroll" whiteSpace="pre">
+          <SizableText fontFamily="$mono" fontSize="$1" lineHeight="1.625" color="$color" overflow="scroll" whiteSpace="pre">
 {`POST https://api.hanzo.ai/v1/chat/completions
 Authorization: Bearer $HANZO_KEY
 

@@ -1077,9 +1077,10 @@ export function AskAI({
               Queued Messages ({messageQueue.length})
             </SizableText>
             <Button
+              variant="linkMuted"
               onClick={() => setMessageQueue([])}
             >
-              <SizableText fontSize="$1" color="$color11" textDecorationLine="underline">Clear all</SizableText>
+              <SizableText fontSize="$1">Clear all</SizableText>
             </Button>
           </XStack>
           <YStack rowGap="$2" maxHeight={256} overflow="scroll">
@@ -1094,13 +1095,12 @@ export function AskAI({
                 <XStack alignItems="flex-start" justifyContent="space-between" gap="$2">
                   <Paragraph fontSize="$3" color="$color11" flex={1}>{msg.message}</Paragraph>
                   <Button
+                    size="icon-sm"
+                    variant="ghost"
+                    aria-label="Remove from queue"
                     onClick={() => setMessageQueue(prev => prev.filter(m => m.id !== msg.id))}
                   >
-                    <SizableText color="$color11">
-                      <svg width={16} height={16} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </SizableText>
+                    <X size={14} />
                   </Button>
                 </XStack>
                 <XStack alignItems="center" gap="$2" marginTop="$2">
@@ -1121,6 +1121,7 @@ export function AskAI({
                       drains as usual once the abort settles. */}
                   {isAiWorking && (
                     <Button
+                      variant="linkMuted"
                       onClick={() => {
                         setMessageQueue((prev) => [
                           msg,
@@ -1131,7 +1132,7 @@ export function AskAI({
                       marginLeft="auto"
                       title="Stop the current build and run this next"
                     >
-                      <SizableText fontSize="$1" color="$color11" textDecorationLine="underline">Send now</SizableText>
+                      <SizableText fontSize="$1">Send now</SizableText>
                     </Button>
                   )}
                 </XStack>
@@ -1165,30 +1166,32 @@ export function AskAI({
             {remixPending.map((p) => (
               <XStack
                 key={p.name}
-                flexShrink={0} alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1"
+                flexShrink={0} alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1"
               >
                 <SizableText whiteSpace="nowrap" fontSize="$1" color="$color">🔥 {p.name}</SizableText>
                 {p.skippable !== false && (
                   <>
                     <Button
                       type="button"
+                      variant="linkMuted"
                       onClick={() => skipIntegration(p.name)}
                     >
-                      <SizableText fontSize="$1" color="$color11">Skip</SizableText>
+                      <SizableText fontSize="$1">Skip</SizableText>
                     </Button>
                     <SizableText fontSize="$1" color="$color11">·</SizableText>
                   </>
                 )}
                 <Button
                   type="button"
+                  variant="link"
                   onClick={() => connectIntegration(p)}
                 >
-                  <SizableText fontWeight="500" fontSize="$1" color="$color" hoverStyle={{ textDecorationLine: "underline" }}>Connect</SizableText>
+                  <SizableText fontWeight="500" fontSize="$1">Connect</SizableText>
                 </Button>
               </XStack>
             ))}
           </XStack>
-          <Paragraph fontSize={11} color="$color11">
+          <Paragraph fontSize="$1" color="$color11">
             Tip: switch from Build to Plan mode to brainstorm or debug without
             code changes.
           </Paragraph>
@@ -1206,7 +1209,7 @@ export function AskAI({
                 key={s}
                 type="button"
                 onClick={() => runSuggestion(s)}
-                flexShrink={0} borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1" hoverStyle={{ borderColor: "$color8", backgroundColor: "$color3" }}
+                flexShrink={0} borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1" hoverStyle={{ borderColor: "$color8", backgroundColor: "$color4" }}
               >
                 <SizableText whiteSpace="nowrap" fontSize="$1" color="$color11">{s}</SizableText>
               </Button>
@@ -1386,15 +1389,15 @@ export function AskAI({
                   <TooltipTrigger asChild>
                     <DropdownMenuTrigger asChild>
                       <Button
-                        size="icon"
+                        size="icon-sm"
                         variant="ghost"
                         aria-label={
                           modes.length
                             ? `More — ${modes.join(", ")} on`
                             : "More composer modes"
                         }
-                        borderRadius="$10"
-                        {...{ color: modes.length > 0 ? "var(--brand-accent)" : "$color11" }}
+                        borderRadius="$5"
+                        {...{ color: modes.length ? selected(true).color : "$color11" }}
                       >
                         <MoreHorizontal size={16} />
                       </Button>
@@ -1442,7 +1445,7 @@ export function AskAI({
               // full-round pill. `$10` rounded it into a lozenge that read as the
               // loudest thing in the toolbar; `$3` + tighter padding makes it a
               // quiet inset switch that sits with the icon buttons beside it.
-              flexShrink={0} alignItems="center" borderRadius="$3" borderWidth={1} borderColor="$color06" backgroundColor="$color02" padding="$0.5"
+              flexShrink={0} alignItems="center" borderRadius="$5" backgroundColor="$color3" padding="$0.5"
             >
               {/* "Code" was the SECOND thing called Code on this screen — the
                   header's Preview/Code toggle chooses what you LOOK at, this
@@ -1472,9 +1475,9 @@ export function AskAI({
                       : "Build: generate and modify your app"
                   }
                   onClick={() => setMode(m)}
-                  height={24} borderRadius="$2" paddingHorizontal="$2" paddingVertical="$0" {...sel}
+                  height={28} borderRadius="$3" paddingHorizontal="$2.5" {...sel} hoverStyle={mode === m ? undefined : { backgroundColor: "$color4" }}
                 >
-                  <SizableText fontWeight="500" fontSize="$1" textTransform="capitalize" color={sel.color}>{label}</SizableText>
+                  <SizableText fontWeight="500" textTransform="capitalize" color={sel.color}>{label}</SizableText>
                 </Button>
                 );
               })}
@@ -1507,18 +1510,18 @@ export function AskAI({
   />
             {isAiWorking ? (
               <Button
-                size="icon"
+                size="icon-sm"
                 variant="destructive"
                 onClick={stopController}
-                gap="$1" borderRadius="$10"
+                gap="$1" borderRadius="$5"
               >
                 <CircleStop size={16} />
               </Button>
             ) : (
               <Button
-                size="icon"
+                size="icon-sm"
                 {...accent}
-                borderRadius="$10"
+                borderRadius="$5"
                 disabled={
                   isUploading ||
                   (!prompt.trim() &&

@@ -1370,7 +1370,7 @@ export default function TestGenerationPage() {
                                           </SizableText>
                                           <SizableText fontFamily="$mono" fontSize="$1" fontWeight="500" {...{ color: isInvalid ? "$orange9" : undefined }}>{tc.name}</SizableText>
                                           {isInvalid && (
-                                            <SizableText fontFamily="$mono" color="$orange9" fontSize={10} borderWidth={1} borderColor="$orange8" borderRadius="$2" paddingHorizontal="$1">invalid</SizableText>
+                                            <SizableText fontFamily="$mono" color="$orange9" fontSize="$1" borderWidth={1} borderColor="$orange8" borderRadius="$2" paddingHorizontal="$1">invalid</SizableText>
                                           )}
                                           {tc.args && (
                                             <SizableText fontFamily="$mono" fontSize="$1" color="$color11" numberOfLines={1} maxWidth={448}>

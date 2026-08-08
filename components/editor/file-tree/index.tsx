@@ -47,7 +47,7 @@ export function FileTree({
   return (
     <YStack height="100%" width="$19" flexShrink={0} borderRightWidth={1} borderColor="$borderColor" backgroundColor="$background">
       <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingVertical="$2.5">
-        <SizableText fontFamily="$mono" fontSize={10} color="$color11">
+        <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
           Files
         </SizableText>
         <Button
@@ -80,7 +80,7 @@ export function FileTree({
                     if (e.key === "Escape") setRenaming(null);
                   }}
                   onBlur={() => commitRename(page.path)}
-                  minWidth={0} flex={1} borderRadius="$2" backgroundColor="$background" paddingHorizontal="$1" paddingVertical="$0.5" fontFamily="$mono" fontSize={12} color="$color" outlineWidth={0}
+                  minWidth={0} flex={1} borderRadius="$2" backgroundColor="$background" paddingHorizontal="$1" paddingVertical="$0.5" fontFamily="$mono" fontSize="$1" color="$color" outlineWidth={0}
   />
               ) : (
                 <Button
@@ -89,7 +89,7 @@ export function FileTree({
                   minWidth={0} flex={1}
                   title={page.path}
                 >
-                  <SizableText flex={1} minWidth={0} numberOfLines={1} textAlign="left" fontFamily="$mono" fontSize={13} color={active ? "$color" : "$color11"} $group-hover={{ color: "$color" }}>{page.path}</SizableText>
+                  <SizableText flex={1} minWidth={0} numberOfLines={1} textAlign="left" fontFamily="$mono" fontSize="$2" color={active ? "$color" : "$color11"} $group-hover={{ color: "$color" }}>{page.path}</SizableText>
                 </Button>
               )}
 
@@ -129,7 +129,7 @@ export function FileTree({
         {pages.length === 0 && (
           <YStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$6">
             <X size={16} />
-            <Paragraph fontSize={11} color="$color11">No files yet.</Paragraph>
+            <Paragraph fontSize="$1" color="$color11">No files yet.</Paragraph>
           </YStack>
         )}
       </YStack>

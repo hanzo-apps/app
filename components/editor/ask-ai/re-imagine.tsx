@@ -58,11 +58,11 @@ export function ReImagine({
       <form>
         <PopoverTrigger asChild>
           <Button
-            size="icon"
+            size="icon-sm"
             variant="ghost"
             aria-label="Redesign from a URL"
             title="Redesign: recreate an existing site's look from its URL"
-            borderRadius="$10"
+            borderRadius="$5"
           >
             <Paintbrush size={16} />
           </Button>
@@ -121,6 +121,7 @@ export function ReImagine({
                 Then, let&apos;s redesign it!
               </Paragraph>
               <Button
+                variant="primary"
                 position="relative" width="100%"
                 onClick={handleClick}
               >

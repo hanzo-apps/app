@@ -88,6 +88,7 @@ const blackChrome = EditorView.theme(
     "&": { backgroundColor: "#0a0a0a", color: "#e5e5e5" },
     ".cm-content": {
       caretColor: "#fafafa",
+      fontSize: "var(--text-sm, 0.8125rem)",
       fontFamily:
         "var(--font-geist-mono), ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace",
     },
@@ -99,6 +100,7 @@ const blackChrome = EditorView.theme(
       backgroundColor: "#0a0a0a",
       color: "#525252",
       border: "none",
+      fontSize: "var(--text-sm, 0.8125rem)",
     },
     ".cm-activeLine": { backgroundColor: "rgba(255,255,255,0.04)" },
     ".cm-activeLineGutter": {
@@ -107,7 +109,7 @@ const blackChrome = EditorView.theme(
     },
     ".cm-cursor, .cm-dropCursor": { borderLeftColor: "#fafafa" },
     "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection":
-      { backgroundColor: "rgba(255,255,255,0.15)" },
+      { backgroundColor: "var(--hanzo-accent-soft, rgba(255,255,255,0.15))" },
     "&.cm-focused": { outline: "none" },
   },
   { dark: true }

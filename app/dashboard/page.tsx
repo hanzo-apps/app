@@ -137,7 +137,7 @@ export default function DashboardPage() {
             variant="ghost"
             group position="absolute" bottom="$5" left="50%" x="-50%" flexDirection="column" alignItems="center" gap="$1"
           >
-            <SizableText fontFamily="$mono" fontSize={10} color="$color11" $group-hover={{ color: "$color" }}>
+            <SizableText fontFamily="$mono" fontSize="$1" color="$color11" $group-hover={{ color: "$color" }}>
               Your projects
             </SizableText>
             <ChevronDown size={16} />
@@ -296,11 +296,11 @@ function ProjectGrid({
               <XStack marginTop="$1.5" alignItems="center" gap="$3">
                 <XStack alignItems="center" gap="$1">
                   <Circle size={6} />
-                  <SizableText fontSize={11} letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
+                  <SizableText fontSize="$1" letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
                 </XStack>
                 <XStack alignItems="center" gap="$1">
                   <Clock size={12} />
-                  <SizableText fontSize={11} color="$color11">{relativeTime(p.updatedAtIso)}</SizableText>
+                  <SizableText fontSize="$1" color="$color11">{relativeTime(p.updatedAtIso)}</SizableText>
                 </XStack>
               </XStack>
             </YStack>

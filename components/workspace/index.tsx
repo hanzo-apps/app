@@ -359,7 +359,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
         <XStack flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$2">
           <XStack alignItems="center" gap="$2">
             <SizableText fontWeight="500" fontSize="$1" letterSpacing={0.4} color="$color11">context</SizableText>
-            <SizableText fontSize={10} letterSpacing={0.4} color="$color11">included in next message</SizableText>
+            <SizableText fontSize="$1" letterSpacing={0.4} color="$color11">included in next message</SizableText>
           </XStack>
           <Button
             size="sm"
@@ -374,11 +374,11 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
         <YStack marginTop="$2" rowGap="$2">
         {focusContext.domPath && (
           <YStack className="break-all">
-            <SizableText fontSize={11} fontFamily="$mono" color="$color11" lineHeight="1.375">{focusContext.domPath}</SizableText>
+            <SizableText fontSize="$1" fontFamily="$mono" color="$color11" lineHeight="1.375">{focusContext.domPath}</SizableText>
           </YStack>
         )}
         {trimmedSnippet && (
-          <SizableText maxHeight="$12" overflow="scroll" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$1" fontSize={11} color="$color" lineHeight="1.625" fontFamily="$mono" whiteSpace="pre">
+          <SizableText maxHeight="$12" overflow="scroll" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$1" fontSize="$1" color="$color" lineHeight="1.625" fontFamily="$mono" whiteSpace="pre">
             <code>{trimmedSnippet}</code>
           </SizableText>
         )}
@@ -1204,7 +1204,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
             <Settings size={16} />
           </Button>
         </PopoverTrigger>
-        <PopoverContent width={460} maxHeight="min(720px,calc(100vh-5rem))" overflow="hidden" flexDirection="column" align="end">
+        <PopoverContent width={460} maxWidth="calc(100vw - 2rem)" maxHeight="min(720px,calc(100vh - 5rem))" overflow="hidden" flexDirection="column" align="end">
           <SettingsPanel />
         </PopoverContent>
       </Popover>
@@ -1240,7 +1240,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
             Settings
           </Button>
         </PopoverTrigger>
-        <PopoverContent width={460} maxWidth="calc(100vw-2rem)" maxHeight="min(720px,calc(100vh-5rem))" overflow="hidden" flexDirection="column" align="start">
+        <PopoverContent width={460} maxWidth="calc(100vw - 2rem)" maxHeight="min(720px,calc(100vh - 5rem))" overflow="hidden" flexDirection="column" align="start">
           <SettingsPanel />
         </PopoverContent>
       </Popover>

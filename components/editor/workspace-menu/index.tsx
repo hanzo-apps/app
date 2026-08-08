@@ -235,9 +235,9 @@ export function WorkspaceMenu({
                 <OrgMark org={display({ name: orgId, logo: activeOrg?.logo })} size={28} />
                 <YStack minWidth={0} flex={1}>
                   <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{orgName}</SizableText>
-                  <SizableText fontSize={11} color="$color11">Switch workspace</SizableText>
+                  <SizableText fontSize="$1" color="$color11">Switch workspace</SizableText>
                 </YStack>
-                <SizableText flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$color11">
+                <SizableText flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize="$1" fontWeight="500" color="$color11">
                   {orgKind}
                 </SizableText>
               </DropdownMenuSubTrigger>
@@ -263,9 +263,9 @@ export function WorkspaceMenu({
               <OrgMark org={display({ name: orgId, logo: activeOrg?.logo })} size={28} />
               <YStack minWidth={0} flex={1}>
                 <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{orgName}</SizableText>
-                <SizableText fontSize={11} color="$color11">Workspace</SizableText>
+                <SizableText fontSize="$1" color="$color11">Workspace</SizableText>
               </YStack>
-              <SizableText flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$color11">
+              <SizableText flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize="$1" fontWeight="500" color="$color11">
                 {orgKind}
               </SizableText>
             </XStack>
@@ -297,7 +297,7 @@ export function WorkspaceMenu({
                   style={{ width: `${pct}%` }}
   />
               </YStack>
-              <SizableText numberOfLines={1} fontSize={11} color="$color11">{creditHint}</SizableText>
+              <SizableText numberOfLines={1} fontSize="$1" color="$color11">{creditHint}</SizableText>
             </YStack></Link>
           </DropdownMenuItem>
 

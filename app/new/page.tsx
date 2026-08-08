@@ -245,7 +245,7 @@ function NewProjectInner() {
                   }
                 }}
                 placeholder="Describe the app you want, or paste a GitHub / GitLab repository URL…"
-                maxHeight="$17" minHeight={52} width="100%" backgroundColor="transparent" paddingHorizontal="$3" paddingTop="$2" fontSize={15} lineHeight="1.625" color="$color" placeholderTextColor="$color11" borderWidth={0}
+                maxHeight="$17" minHeight={52} width="100%" backgroundColor="transparent" paddingHorizontal="$3" paddingTop="$2" fontSize="$4" lineHeight="1.625" color="$color" placeholderTextColor="$color11" borderWidth={0}
   />
               <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$2" paddingBottom="$1" paddingTop="$1">
                 <XStack alignItems="center" gap="$1">
@@ -378,7 +378,7 @@ function NewProjectInner() {
             <XStack marginBottom="$4" alignItems="center" justifyContent="space-between" gap="$3">
               <XStack alignItems="center" gap="$2">
                 <Boxes size={18} />
-                <H2 fontSize={15} fontWeight="500">Clone a Template</H2>
+                <H2 fontSize="$4" fontWeight="500">Clone a Template</H2>
               </XStack>
               {/* An unpositioned sibling icon does not sit in the field — it
                   stacks above it, and the column then reads as one tall box

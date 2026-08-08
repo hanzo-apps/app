@@ -100,7 +100,7 @@ function Prompt() {
       {/* The path IS the prompt, and it is the only place the shell says where
           you are — so it never collapses to nothing. */}
       <SizableText
-        fontFamily="$mono" fontSize={11} lineHeight="1.625"
+        fontFamily="$mono" fontSize="$1" lineHeight="1.625"
         color="$color11" flexShrink={0} maxWidth={180} numberOfLines={1}
       >
         {cwd === HOME ? "$" : `${cwd.split("/").slice(-2).join("/")} $`}
@@ -113,7 +113,7 @@ function Prompt() {
         placeholder="Run a command — cd is remembered, exports are not"
         aria-label="Run a command in this project's sandbox"
         fontFamily="$mono"
-        fontSize={11}
+        fontSize="$1"
         borderWidth={0}
         backgroundColor="transparent"
         onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -187,7 +187,7 @@ function Stop({ sandbox }: { sandbox: string }) {
       <SizableText color="var(--destructive)">
         <Square size={12} fill="currentColor" />
       </SizableText>
-      <SizableText fontSize={11} color="$color11" $group-hover={{ color: "$color" }}>
+      <SizableText fontSize="$1" color="$color11" $group-hover={{ color: "$color" }}>
         {stopping ? "Stopping…" : "Stop"}
       </SizableText>
     </Button>
@@ -211,7 +211,7 @@ function Stop({ sandbox }: { sandbox: string }) {
  */
 function Sep() {
   return (
-    <SizableText aria-hidden fontSize={11} color="$color11">
+    <SizableText aria-hidden fontSize="$1" color="$color11">
       ·
     </SizableText>
   );
@@ -401,32 +401,32 @@ export function Console({
               <SizableText position="absolute" width={12} height={12} borderRadius="$10" backgroundColor="var(--brand-accent)" opacity={0.25} />
               <SizableText position="relative" width={6} height={6} borderRadius="$10" backgroundColor="var(--brand-accent)" />
             </XStack>
-            <SizableText fontSize={11} color="$color11">Live</SizableText>
+            <SizableText fontSize="$1" color="$color11">Live</SizableText>
           </XStack>
           <Sep />
           {/* The real save state. This said "Auto-saved" unconditionally, checked
               against nothing, while the project lived only in the browser. */}
-          <SizableText fontSize={11} color="$color11">{isAiWorking ? "Building…" : saveText}</SizableText>
+          <SizableText fontSize="$1" color="$color11">{isAiWorking ? "Building…" : saveText}</SizableText>
           {branch && (
             <>
               <Sep />
               <XStack alignItems="center" gap="$1">
                 <GitBranch size={12} />
-                <SizableText fontSize={11} color="$color11">{branch}</SizableText>
+                <SizableText fontSize="$1" color="$color11">{branch}</SizableText>
               </XStack>
             </>
           )}
           <Sep />
-          <SizableText fontSize={11} color="$color11">
+          <SizableText fontSize="$1" color="$color11">
             {pageCount} file{pageCount === 1 ? "" : "s"}
           </SizableText>
           <XStack marginLeft="auto" alignItems="center" gap="$1">
             {isAiWorking ? (
-              <SizableText className="thread-shimmer-text" fontSize={11} color="$color11">Working</SizableText>
+              <SizableText className="thread-shimmer-text" fontSize="$1" color="$color11">Working</SizableText>
             ) : (
               <>
                 <Check size={12} />
-                <SizableText fontSize={11} color="$color11">Ready</SizableText>
+                <SizableText fontSize="$1" color="$color11">Ready</SizableText>
               </>
             )}
           </XStack>
@@ -464,7 +464,7 @@ export function Console({
       {open && (
         <YStack minHeight={0} flex={1} borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" overflow="scroll">
           {entries.length === 0 ? (
-            <Paragraph fontFamily="$mono" fontSize={11} lineHeight="1.625" color="$color11">
+            <Paragraph fontFamily="$mono" fontSize="$1" lineHeight="1.625" color="$color11">
               Nothing logged yet — the preview&apos;s console, the commands the agent
               runs in your sandbox, and anything you type below all appear here.
             </Paragraph>
@@ -482,7 +482,7 @@ export function Console({
                 <SizableText
                   aria-hidden
                   fontFamily="$mono"
-                  fontSize={11}
+                  fontSize="$1"
                   lineHeight="1.625"
                   color={entry.source === "you" ? "$color" : "$color06"}
                 >
@@ -491,7 +491,7 @@ export function Console({
                 <Paragraph
                   className="break-words"
                   flex={1}
-                  fontFamily="$mono" fontSize={11} lineHeight="1.625"
+                  fontFamily="$mono" fontSize="$1" lineHeight="1.625"
                   whiteSpace="pre-wrap" {...{ color: entry.level === "error" ? "var(--destructive)" : entry.level === "warn" || entry.source === "you"
                         ? "$color"
                         : "$color11" }}

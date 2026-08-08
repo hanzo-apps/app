@@ -241,7 +241,7 @@ Start writing your content above!
       </YStack>
 
       {/* Editor Area */}
-      <XStack height="calc(100vh-4rem)">
+      <XStack height="calc(100vh - 4rem)">
         {/* Editor Panel */}
         {(viewMode === "edit" || viewMode === "split") && (
           <YStack {...{ width: viewMode === "split" ? "50%" : "100%", borderRightWidth: viewMode === "split" ? 1 : undefined }}>

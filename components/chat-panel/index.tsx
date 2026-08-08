@@ -702,7 +702,7 @@ export function ChatPanel({
       <XStack flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$2">
         <XStack alignItems="center" gap="$2">
           <SizableText fontWeight="500" fontSize="$1" letterSpacing={0.4} color="$color11">context</SizableText>
-          <SizableText fontSize={10} letterSpacing={0.4} color="$color11">included in next message</SizableText>
+          <SizableText fontSize="$1" letterSpacing={0.4} color="$color11">included in next message</SizableText>
         </XStack>
         <Button
           size="sm"
@@ -717,13 +717,13 @@ export function ChatPanel({
       <YStack marginTop="$2" rowGap="$2">
         {focusContext.domPath && (
           <YStack className="break-all">
-            <SizableText fontSize={11} fontFamily="$mono" color="$color11" lineHeight="1.375">
+            <SizableText fontSize="$1" fontFamily="$mono" color="$color11" lineHeight="1.375">
               {focusContext.domPath}
             </SizableText>
           </YStack>
         )}
         {trimmedSnippet && (
-          <SizableText maxHeight="$12" overflow="scroll" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$2" paddingVertical="$1" fontSize={11} color="$color" lineHeight="1.625" fontFamily="$mono" whiteSpace="pre">
+          <SizableText maxHeight="$12" overflow="scroll" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$2" paddingVertical="$1" fontSize="$1" color="$color" lineHeight="1.625" fontFamily="$mono" whiteSpace="pre">
             <code>{trimmedSnippet}</code>
           </SizableText>
         )}
@@ -918,7 +918,7 @@ export function ChatPanel({
                     )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent width={460} maxWidth="calc(100vw-2rem)" maxHeight="min(680px,calc(100vh-5rem))" overflow="hidden" flexDirection="column" align="start" data-tour-id="provider-settings-popup">
+                <PopoverContent width={460} maxWidth="calc(100vw - 2rem)" maxHeight="min(680px,calc(100vh - 5rem))" overflow="hidden" flexDirection="column" align="start" data-tour-id="provider-settings-popup">
                   <ModelSettingsPanel
                     onClose={() => setShowMobileSettings(false)}
                     onModelChange={(modelId) => setCurrentModel(modelId)}
@@ -1094,7 +1094,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                         <summary>
                           Stack trace
                         </summary>
-                        <SizableText fontSize={10} color="$red9" marginTop="$1" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
+                        <SizableText fontSize="$1" color="$red9" marginTop="$1" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
                           {item.data.stack}
                         </SizableText>
                       </details>
@@ -1205,7 +1205,7 @@ function ToolDisplay({ itemId, tool, isExpanded, onToggle }: ToolDisplayProps) {
           {tool.parameters && Object.keys(tool.parameters).length > 0 && (
             <YStack paddingHorizontal="$2">
               <YStack marginBottom="$1">
-                <SizableText fontSize={10} color="$color11">
+                <SizableText fontSize="$1" color="$color11">
                   Parameters
                 </SizableText>
               </YStack>
@@ -1219,7 +1219,7 @@ function ToolDisplay({ itemId, tool, isExpanded, onToggle }: ToolDisplayProps) {
           {tool.result && (
             <YStack paddingHorizontal="$2">
               <YStack marginBottom="$1">
-                <SizableText fontSize={10} color="$color11">
+                <SizableText fontSize="$1" color="$color11">
                   Result
                 </SizableText>
               </YStack>
@@ -1233,7 +1233,7 @@ function ToolDisplay({ itemId, tool, isExpanded, onToggle }: ToolDisplayProps) {
           {tool.error && (
             <YStack paddingHorizontal="$2">
               <YStack marginBottom="$1">
-                <SizableText fontSize={10} color="$red9">
+                <SizableText fontSize="$1" color="$red9">
                   Error
                 </SizableText>
               </YStack>

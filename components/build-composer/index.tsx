@@ -207,7 +207,7 @@ export function BuildComposer({
               the link (quiet by the global anchor reset). */}
           <a href="https://cloud.hanzo.ai" target="_blank" rel="noopener noreferrer">
             <XStack group alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color005" paddingHorizontal="$3" paddingVertical="$1.5" hoverStyle={{ borderColor: "$color06" }}>
-              <SizableText borderRadius="$10" backgroundColor="$color3" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" letterSpacing={0.4} color="$color">
+              <SizableText borderRadius="$10" backgroundColor="$color3" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize="$1" fontWeight="500" letterSpacing={0.4} color="$color">
                 New
               </SizableText>
               <SizableText whiteSpace="nowrap" fontSize="$1" color="$color11" $group-hover={{ color: "$color" }}>
@@ -237,7 +237,7 @@ export function BuildComposer({
             onBlur={() => setFocused(false)}
             placeholder={placeholder}
             aria-label="Ask Hanzo to build"
-            width="100%" backgroundColor="transparent" borderWidth={0} paddingHorizontal="$4" paddingBottom="$2" paddingTop="$4" fontSize={15} lineHeight="1.625" color="$color" placeholderTextColor="$color11" focusStyle={{ borderWidth: 0 }}
+            width="100%" backgroundColor="transparent" borderWidth={0} paddingHorizontal="$4" paddingBottom="$2" paddingTop="$4" fontSize="$4" lineHeight="1.625" color="$color" placeholderTextColor="$color11" focusStyle={{ borderWidth: 0 }}
   />
           <XStack alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$2.5" paddingBottom="$2.5">
             <XStack alignItems="center" gap="$1">
@@ -284,7 +284,7 @@ export function BuildComposer({
                 onClick={toggleBase}
                 aria-pressed={withBase}
                 title="Hanzo Base backend — database, auth, realtime for this app"
-                group alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} backgroundColor="$color005" {...{ borderColor: withBase ? "$color02" : "$borderColor" }} paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: withBase ? "$color" : "$color06" }}
+                group alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} backgroundColor="$color005" {...{ borderColor: withBase ? "$color8" : "$borderColor" }} paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: withBase ? "$color" : "$color06" }}
               >
                 <XStack alignItems="center" gap="$1.5">
                   <Database size={14} />
@@ -299,7 +299,7 @@ export function BuildComposer({
                 className="voice-control"
               >
                 {(state) => (
-                  <Mic size={16} />
+                  <Mic size={16} fill={state === "idle" ? "none" : "currentColor"} />
                 )}
               </Voice>
               <Button

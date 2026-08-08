@@ -20,7 +20,7 @@ export default function BuildsIndexPageView({
       <Header />
       <YStack position="relative" zIndex={10} paddingHorizontal="$4" paddingTop={36} $md={{ paddingHorizontal: "$6", paddingTop: "$9" }}>
         <YStack alignSelf="center" maxWidth={896}>
-          <Paragraph fontFamily="$mono" fontSize={11} color="$color11">
+          <Paragraph fontFamily="$mono" fontSize="$1" color="$color11">
             Builds
           </Paragraph>
           <H1 marginTop="$4" fontSize="$10" fontWeight="500" lineHeight="1.08" letterSpacing={-0.4} $sm={{ fontSize: "$11" }}>
@@ -38,7 +38,7 @@ export default function BuildsIndexPageView({
                 No builds published yet. An author publishes one from the repo the
                 session ran in:
               </Paragraph>
-              <SizableText marginTop="$3" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$3" fontFamily="$mono" fontSize={11} color="$color11" overflow="scroll" whiteSpace="pre">
+              <SizableText marginTop="$3" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$3" fontFamily="$mono" fontSize="$1" color="$color11" overflow="scroll" whiteSpace="pre">
                 hanzo agent publish &lt;project&gt; --bind
               </SizableText>
             </YStack>
@@ -53,7 +53,7 @@ export default function BuildsIndexPageView({
                       <SizableText numberOfLines={1} fontSize="$4" fontWeight="500">
                         {b.title || `${b.org}/${b.project}`}
                       </SizableText>
-                      <SizableText marginTop="$1" fontFamily="$mono" fontSize={11} color="$color11">
+                      <SizableText marginTop="$1" fontFamily="$mono" fontSize="$1" color="$color11">
                         {b.org}/{b.project} · {b.agent} · {b.turns} turns
                       </SizableText>
                     </YStack>

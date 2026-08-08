@@ -66,12 +66,12 @@ function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?
             the live-demo slot. Every catalog template is published by Hanzo itself,
             and a reader must not have to infer that from the author handle. */}
         <XStack position="absolute" left="$3" top="$3" flexWrap="wrap" alignItems="center" gap="$1.5">
-          <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color" backdropFilter="blur(8px)">
+          <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize="$1" color="$color" backdropFilter="blur(8px)">
             {t.category}
           </SizableText>
           <SizableText
             data-official="true"
-            borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color" backdropFilter="blur(8px)"
+            borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize="$1" color="$color" backdropFilter="blur(8px)"
           >
             {OFFICIAL_LABEL}
           </SizableText>
@@ -81,25 +81,25 @@ function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?
         {t.demo && (
           <XStack position="absolute" right="$3" top="$3" alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingVertical="$1" backdropFilter="blur(8px)">
             <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" />
-            <SizableText fontFamily="$mono" fontSize={10} color="$color">Live</SizableText>
+            <SizableText fontFamily="$mono" fontSize="$1" color="$color">Live</SizableText>
           </XStack>
         )}
       </YStack>
 
       <YStack flex={1} padding="$4" $sm={{ padding: "$4.5" }}>
-        <H3 display="flex" alignItems="flex-start" gap="$1.5" fontSize={15} fontWeight="500" lineHeight="1.375" letterSpacing={-0.4} color="$color">
+        <H3 display="flex" alignItems="flex-start" gap="$1.5" fontSize="$4" fontWeight="500" lineHeight="1.375" letterSpacing={-0.4} color="$color">
           <SizableText numberOfLines={1}>{t.name}</SizableText>
           <ArrowUpRight
             size={16}
             strokeWidth={1.6}
   />
         </H3>
-        <Paragraph marginTop="$1.5" numberOfLines={2} minHeight="2.5rem" fontSize={13} lineHeight="1.625" color="$color11">
+        <Paragraph marginTop="$1.5" numberOfLines={2} minHeight="2.5rem" fontSize="$2" lineHeight="1.625" color="$color11">
           {t.tagline}
         </Paragraph>
 
         <XStack marginTop="auto" alignItems="center" justifyContent="space-between" gap="$3" paddingTop="$4">
-          <SizableText numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color11">
+          <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color11">
             {showAuthor ? `by ${authorOf(t.slug)}` : t.framework}
           </SizableText>
           <Link
@@ -158,7 +158,7 @@ export function TemplateGallery({
     <YStack alignSelf="center" width="100%" maxWidth={1280} paddingHorizontal="$4.5" paddingVertical="$7" $sm={{ paddingHorizontal: "$6", paddingVertical: "$9" }} className={`${className}`}>
       {/* Header — true-black monochrome, landing aesthetic. */}
       <YStack maxWidth={672}>
-        <Paragraph fontFamily="$mono" fontSize={11} color="$color11">
+        <Paragraph fontFamily="$mono" fontSize="$1" color="$color11">
           {eyebrow}
         </Paragraph>
         <H1 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} color="$color" $sm={{ fontSize: "$11" }} $md={{ fontSize: "2.75rem", lineHeight: "1.05" }}>
@@ -179,7 +179,7 @@ export function TemplateGallery({
   />
         ))}
       </XStack>
-      <Paragraph marginTop="$3" fontFamily="$mono" fontSize={11} color="$color11">
+      <Paragraph marginTop="$3" fontFamily="$mono" fontSize="$1" color="$color11">
         {shown.length} template{shown.length === 1 ? "" : "s"}
       </Paragraph>
 

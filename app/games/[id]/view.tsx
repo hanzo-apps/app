@@ -277,7 +277,7 @@ export function GameDetail() {
 function Spec({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <YStack borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4">
-      <Paragraph marginBottom="$1.5" fontFamily="$mono" fontSize={10} color="$color11">
+      <Paragraph marginBottom="$1.5" fontFamily="$mono" fontSize="$1" color="$color11">
         {label}
       </Paragraph>
       {children}

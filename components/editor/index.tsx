@@ -598,13 +598,6 @@ export const AppEditor = ({
                   }}
   />
                 <YStack position="relative" minWidth={0} flex={1} overflow="hidden">
-                  <CopyIcon
-                    size={16}
-                    onClick={() => {
-                      copyToClipboard(currentPageData.html);
-                      toast.success("HTML copied to clipboard!");
-                    }}
-  />
                   <YStack
                     position="absolute"
                     top="$0"
@@ -632,6 +625,21 @@ export const AppEditor = ({
                     }}
                   />
                   </YStack>
+                  <Button
+                    size="icon-sm"
+                    variant="ghost"
+                    aria-label="Copy HTML"
+                    position="absolute"
+                    top="$2"
+                    right="$2"
+                    zIndex={20}
+                    onClick={() => {
+                      copyToClipboard(currentPageData.html);
+                      toast.success("HTML copied to clipboard!");
+                    }}
+                  >
+                    <CopyIcon size={16} />
+                  </Button>
                 </YStack>
               </XStack>
             )}

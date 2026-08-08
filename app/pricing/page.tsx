@@ -83,7 +83,7 @@ export default function PricingPage() {
           <YStack position="relative" alignSelf="center" maxWidth={768}>
             <Reveal>
               <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$3" paddingVertical="$1.5">
-                <SizableText fontFamily="$mono" fontSize={11} color="$color11">
+                <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
                   One plan · every Hanzo app
                 </SizableText>
               </XStack>
@@ -155,7 +155,7 @@ export default function PricingPage() {
                           >
                             {highlighted && (
                               <YStack position="absolute" top="$-3" left={28}>
-                                <SizableText borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$3" paddingVertical="$1" fontSize={11} fontWeight="500" color="$color12">
+                                <SizableText borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$3" paddingVertical="$1" fontSize="$1" fontWeight="500" color="$color12">
                                   Most popular
                                 </SizableText>
                               </YStack>
