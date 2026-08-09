@@ -275,25 +275,33 @@ export default function HeroPreview() {
             maxpower / vibe-check
           </SizableText>
 
-          {/* View tabs (chat | preview | code) — the builder's ONE view state. */}
-          {/* The pane trough, in miniature — the SAME grammar as the real
-              header (a $color3 full-round trough, the active pane a raised
-              $color5 pill), so the mockup and the product are one design. Sizes
-              in px: the mini control is 22, and the $-scale is exactly where
-              the $6=64 trap lives. */}
-          <XStack alignSelf="center" display="none" $sm={{ display: "flex" }} alignItems="center" gap="$0.5" borderRadius={999} backgroundColor="$color3" padding={2}>
+          {/* View tabs (chat | preview | code) — the builder's ONE view state,
+              in the SAME grammar the real header (editor/header) settled on: a
+              $color4 group at $3 radius, NOT a full-round trough. The inactive
+              panes are bare glyphs; the active pane is the raised accent
+              pushbutton ($color5, white label) wearing its NAME. The old
+              icon-only-pill-in-a-$color3-trough was the segmented look the real
+              header deliberately dropped — a set of destinations, not a segmented
+              control, so only where-you-are is loud. */}
+          <XStack alignSelf="center" display="none" $sm={{ display: "flex" }} alignItems="center" gap="$0.5" borderRadius="$3" backgroundColor="$color4">
             {[
-              { id: "chat", icon: MessageSquare },
-              { id: "preview", icon: Eye },
-              { id: "code", icon: Code2 },
-            ].map((tabItem, i) => (
-              <XStack
-                key={tabItem.id}
-                height={22} width={i === 1 ? 30 : 26} alignItems="center" justifyContent="center" borderRadius={999} {...{ backgroundColor: i === 1 ? "$color5" : undefined }}
-              >
-                <SizableText color={i === 1 ? "$color12" : "$color11"}><tabItem.icon size={11} /></SizableText>
-              </XStack>
-            ))}
+              { id: "chat", label: "Chat", icon: MessageSquare },
+              { id: "preview", label: "Preview", icon: Eye },
+              { id: "code", label: "Code", icon: Code2 },
+            ].map((tabItem, i) => {
+              const on = i === 1;
+              return (
+                <XStack
+                  key={tabItem.id}
+                  height={22} alignItems="center" justifyContent="center" gap="$1" borderRadius="$3" paddingHorizontal={on ? "$2" : "$1.5"} {...{ backgroundColor: on ? "$color5" : "transparent" }}
+                >
+                  <SizableText color={on ? "$color12" : "$color11"}><tabItem.icon size={11} /></SizableText>
+                  {on && (
+                    <SizableText fontSize={10} fontWeight="600" color="$color12">{tabItem.label}</SizableText>
+                  )}
+                </XStack>
+              );
+            })}
           </XStack>
 
           <XStack marginLeft="auto" alignItems="center" gap="$1.5" $sm={{ marginLeft: "$0" }}>
@@ -309,14 +317,18 @@ export default function HeroPreview() {
             <XStack display="none" height={22} width={22} alignItems="center" justifyContent="center" borderRadius={999} $sm={{ display: "flex" }}>
               <SizableText color="$color11"><Clock size={11} /></SizableText>
             </XStack>
-            <XStack alignItems="center" gap="$0.5" borderRadius={999} backgroundColor="$color3" padding={2} $lg={{ display: "none" }}>
+            {/* Device toggle — the real header's OTHER grouped control: a $color4
+                group (rounder, $4) holding two $3 buttons, the active one the
+                quiet `selected` fill ($color3 + white glyph), not the loud accent
+                the view tabs use. Two grouped controls, one material. */}
+            <XStack alignItems="center" gap="$0.5" borderRadius="$4" backgroundColor="$color4" $lg={{ display: "none" }}>
               <Button size="icon"
                 type="button"
                 variant="ghost"
                 aria-label="Desktop preview"
                 aria-pressed={device === "desktop"}
                 onClick={() => setDevice("desktop")}
-                height={22} width={22} minHeight={22} minWidth={22} alignItems="center" justifyContent="center" borderRadius={999} {...{ backgroundColor: device === "desktop" ? "$color5" : "transparent" }}
+                height={22} width={22} minHeight={22} minWidth={22} alignItems="center" justifyContent="center" borderRadius="$3" {...{ backgroundColor: device === "desktop" ? "$color3" : "transparent" }}
               >
                 <SizableText color={device === "desktop" ? "$color12" : "$color11"}><Monitor size={11} /></SizableText>
               </Button>
@@ -326,7 +338,7 @@ export default function HeroPreview() {
                 aria-label="Mobile preview"
                 aria-pressed={device === "mobile"}
                 onClick={() => setDevice("mobile")}
-                height={22} width={22} minHeight={22} minWidth={22} alignItems="center" justifyContent="center" borderRadius={999} {...{ backgroundColor: device === "mobile" ? "$color5" : "transparent" }}
+                height={22} width={22} minHeight={22} minWidth={22} alignItems="center" justifyContent="center" borderRadius="$3" {...{ backgroundColor: device === "mobile" ? "$color3" : "transparent" }}
               >
                 <SizableText color={device === "mobile" ? "$color12" : "$color11"}><Smartphone size={11} /></SizableText>
               </Button>
