@@ -716,14 +716,14 @@
     // on the page (ask, edit, suggest). It lights rather than grows, so it never
     // reflows content or competes with the page's own controls.
     //
-    // The mark IS the button: no disc, no plate, no shadow. It is drawn as a
-    // HAIRLINE — one weight, 1.25px, at every size — and it is monochrome and
-    // quiet until touched, at which point the stroke hands its own ring over to
-    // the prism. That handover is why the two never overlap into a double line.
+    // The mark IS the button: no disc, no plate, no shadow. It is the canonical
+    // Enso brush ring (see ENSO below) — one thick weight, monochrome and quiet
+    // until touched, then the SAME ring lights white over a soft, slowly-turning
+    // halo. One ring, one weight, in both states — no hairline, no handover to a
+    // second ring.
     //
-    // --mark is the drawn diameter and the only size to change; the prism sizes
-    // itself from it, and matches by construction because the SVG circle is r=45
-    // of a 100 viewBox — exactly .9 of the box.
+    // --mark is the drawn diameter and the only size to change; the halo sizes
+    // itself from it.
     ':host([data-hanzo-anchored]) .fab{--mark:18px;position:relative;right:auto;bottom:auto;' +
     'width:20px;height:20px}' +
     '.fab{--mark:34px;position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;' +
@@ -731,34 +731,32 @@
     'border-radius:999px;border:0;background:transparent;color:var(--hz-text);' +
     'cursor:pointer;line-height:0;-webkit-tap-highlight-color:transparent;' +
     'transition:transform .2s ease}' +
-    // `position:relative` puts the stroke in the same paint phase as the prism,
-    // so tree order alone stacks them: ::before (halo) under it, ::after (ring)
-    // over it. Without it the SVG paints below every positioned box and the halo
-    // covers the mark.
+    // `position:relative` puts the ring in the same paint phase as the halo, so
+    // tree order stacks the ::before halo UNDER the SVG ring. Without it the SVG
+    // paints below every positioned box and the halo covers the mark.
     '.fab svg{width:var(--mark);height:var(--mark);display:block;overflow:visible;position:relative;' +
     'color:var(--hz-dim);transition:color .25s ease}' +
-    '.fab:hover svg,.fab:focus-visible svg{color:transparent}' +
-    // One conic sweep, used twice: blurred into a halo, and masked down to a
-    // hairline ring on the ensō's own radius. Both are absent at rest — the
-    // mark is quiet until touched, then it lights white.
-    '.fab::before,.fab::after{content:"";position:absolute;left:50%;top:50%;' +
+    // The ring stays drawn on hover and lights white; it is never hidden, so the
+    // thick ensō is what you see in both states.
+    '.fab:hover svg,.fab:focus-visible svg{color:var(--hz-text)}' +
+    // One conic sweep, blurred into a soft halo BEHIND the ring — absent at
+    // rest, lit on touch and slowly turning. The ring itself is the SVG ensō
+    // above; the halo only glows around it.
+    '.fab::before{content:"";position:absolute;left:50%;top:50%;' +
     'width:calc(var(--mark) * .9);height:calc(var(--mark) * .9);border-radius:999px;' +
     'background:conic-gradient(var(--hz-glow));transform:translate(-50%,-50%);' +
-    'opacity:0;transition:opacity .25s ease;pointer-events:none}' +
+    'opacity:0;transition:opacity .25s ease;pointer-events:none;' +
     // No `saturate()` — there is no hue left to saturate, and pushing it only
     // hardened the blur's edge.
-    '.fab::before{filter:blur(calc(var(--mark) * .22))}' +
-    '.fab::after{-webkit-mask:radial-gradient(closest-side,transparent calc(100% - 1.25px),#000 0);' +
-    'mask:radial-gradient(closest-side,transparent calc(100% - 1.25px),#000 0)}' +
+    'filter:blur(calc(var(--mark) * .22))}' +
     '.fab:hover::before,.fab:focus-visible::before,.fab:active::before{opacity:.7}' +
-    '.fab:hover::after,.fab:focus-visible::after,.fab:active::after{opacity:1}' +
     '.fab:hover{transform:scale(1.05)}' +
     '.fab:focus-visible{outline:none}' +
     '.fab:active{transform:scale(.96)}' +
     // The sweep turns only while the mark is held, and only where motion is
     // welcome. Everywhere else it holds a still frame — lit, not moving.
     '@media (prefers-reduced-motion:no-preference){' +
-    '.fab:hover::before,.fab:hover::after,.fab:focus-visible::before,.fab:focus-visible::after' +
+    '.fab:hover::before,.fab:focus-visible::before' +
     '{animation:hzPrism 6s linear infinite}}' +
     '@keyframes hzPrism{from{transform:translate(-50%,-50%) rotate(0)}' +
     'to{transform:translate(-50%,-50%) rotate(360deg)}}' +
@@ -843,15 +841,16 @@
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
     '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
 
-  // The ensō — Hanzo's AI mark. `vector-effect` is what makes it a brush line
-  // instead of a donut: the stroke is measured in SCREEN pixels, so it stays
-  // 1.25px whether the mark draws at 34px in the corner or 18px in the dock. A
-  // viewBox-relative width cannot — the old stroke-width:14 came out 4.8px at
-  // one size and 2.5px at the other, both far too heavy for a 20px control.
-  // Radius 45 (up from 34) spends on the ring what the stroke gave back.
+  // The ensō — Hanzo's AI mark, the CANONICAL glyph: a closed brush ring, r=8.88
+  // on a 24 viewBox, stroke 2.64, round caps — byte-identical to the one
+  // @hanzo/logo carries and model-icon.tsx / the hanzo.ai models mark draw, so
+  // the ensō is one thick weight everywhere. The stroke scales with the mark
+  // (no `vector-effect`), like every other place this glyph is drawn: at the
+  // 18px dock size it lands ~2px, a bold little brush ring — the weight the mark
+  // is meant to have, not the thin hairline it briefly wore.
   var ENSO =
-    '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">' +
-    '<circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke"/></svg>';
+    '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">' +
+    '<circle cx="12" cy="12" r="8.88" fill="none" stroke="currentColor" stroke-width="2.64" stroke-linecap="round"/></svg>';
 
   var fab = document.createElement('button');
   fab.className = 'fab';
