@@ -99,8 +99,10 @@ const SECONDARY_ITEMS: SidebarItem[] = [
   { id: 'usage', label: 'Usage', icon: Activity, route: '/usage' },
   { id: 'docs', label: 'Docs', icon: BookOpen, route: '/docs' },
   { id: 'settings', label: 'Settings', icon: Settings, action: 'open-settings' },
-  { id: 'tour', label: 'Guided Tour', icon: Info, action: 'start-tour' },
-  { id: 'about', label: 'About', icon: Info, action: 'open-about' },
+  // Guided Tour + About are OUT of the nav: the tour does not work and About
+  // was a stub. A menu entry is a promise the click has to keep — a dead one
+  // is worse than an absent one. The handlers (onOpenAbout/start-tour) stay so
+  // nothing else that references them breaks; only the two nav rows are gone.
 ];
 
 const SYSTEM_ACTIONS: SidebarItem[] = [
