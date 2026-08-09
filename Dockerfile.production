@@ -11,7 +11,14 @@ RUN corepack enable && corepack prepare pnpm@10.17.1 --activate
 RUN apk add --no-cache libc6-compat python3 make g++
 WORKDIR /app
 
+# `patches/` travels with the manifest. package.json's
+# `pnpm.patchedDependencies` names a file inside it and pnpm hashes that file
+# during RESOLUTION, not at a later patch step, so without it the install dies:
+#   ENOENT: no such file or directory, open '/app/patches/@hanzo__ui@8.0.70.patch'
+# exit 254. That is what this lane did on every commit from 167cb522 on — the
+# `test` job stayed green beside it, so main kept moving and no image was cut.
 COPY package.json pnpm-lock.yaml* ./
+COPY patches/ ./patches/
 RUN pnpm install --no-frozen-lockfile
 
 COPY . .
