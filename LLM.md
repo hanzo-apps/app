@@ -336,6 +336,29 @@ declare the button an icon button and the padding is `0` by design. Reach for
 prop moves it, check specificity against `@hanzo/ui`'s own sheet before assuming
 the prop is unsupported.
 
+**This rule was written here and then lost twenty times, so it is now checked**
+(`tests/unit/icon-button.test.ts`). The worst of the twenty was on the FIRST
+screen a visitor sees: the hero's replay control declared `width={22}`, kept the
+24px it could not refuse, and rendered its icon at **0×0** — a control with
+nothing in it. Nothing errored, nothing typed wrong, the build was green. The
+comparison arrows declared 36 and drew a 10px glyph in it.
+
+Two things the test had to get right, both of which cost a wrong answer first:
+
+- **The scanner is brace- and quote-aware.** `onClick={() => run()}` contains a
+  `>`, so a regex that takes the first `>` as the tag end stops mid-props. That
+  version missed a third of the call sites — including every one on the landing
+  page — and would have shipped a guard that certified the bug.
+- **`size="icon"` is a FLOOR (30), not a box**, like every `@hanzo/ui` size. The
+  hero's mock browser chrome is drawn at 22, so those three controls are 22×30
+  rather than square. The icon is visible, which is what was broken; the row's
+  ground is transparent at rest, so the extra 8px shows only under a pointer.
+
+Eleven call sites are deliberately exempt and the test names each with its
+reason: seven render two glyphs side by side (an icon plus a close ✕) and are
+tabs, not squares — `size="icon"` would squash them; three carry a text label;
+one is a switch track.
+
 **A `<kbd>` is a hint, not a keycap** — one element rule in `assets/globals.css`,
 `var(--text-tertiary)` + `var(--text-xs)`, no box. Same shape hanzo.chat draws
 (`DropdownPopup.tsx`), and the colour and size come from `@hanzo/ui/theme.css`,
