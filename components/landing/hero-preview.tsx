@@ -419,7 +419,7 @@ export default function HeroPreview() {
                     <ChevronDown size={8} opacity={0.7} />
                   </XStack>
                   <XStack flex={1} />
-                  <XStack height={16} width={16} alignItems="center" justifyContent="center" borderRadius={999} borderWidth={1} borderColor="$color06">
+                  <XStack height={16} width={16} alignItems="center" justifyContent="center" borderRadius={999} backgroundColor="$color3">
                     <Mic size={9} opacity={0.7} />
                   </XStack>
                   <XStack height={16} width={16} alignItems="center" justifyContent="center" borderRadius={999} backgroundColor="$color5">
