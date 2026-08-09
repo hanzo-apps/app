@@ -62,3 +62,26 @@ describe("LogsBody", () => {
     expect(src).toMatch(/if \(!list\) \{\s*setRows\('unreachable'\)/);
   });
 });
+
+describe("AnalyticsBody", () => {
+  it("reads the lens's OWN honesty — available/items, not a guessed shape", () => {
+    // The bug this pins: the reader once parsed topPages.buckets/.total, which
+    // the cloud contract never returns — Breakdown is {available, items, reason}
+    // with each item {key, pageviews, visitors, pct}. That reader showed empty
+    // even with real data.
+    expect(src).toMatch(/topPages\?: \{ available\?: boolean; items\?: unknown\[\] \}/);
+    expect(src).toMatch(/lens\.available === false \|\| !Array\.isArray\(lens\.items\)/);
+    expect(src).not.toMatch(/topPages\?.*buckets/);
+  });
+
+  it("keeps the three-valued contract with the plane's flag as the source of truth", () => {
+    expect(src).toMatch(/Reading traffic…/);
+    expect(src).toMatch(/Analytics did not answer/);
+    expect(src).toMatch(/No pageviews yet/);
+  });
+
+  it("shows share honestly and invents no grand total", () => {
+    expect(src).toMatch(/p\.pct\.toFixed\(1\)/);
+    expect(src).not.toMatch(/read\.total/);
+  });
+});

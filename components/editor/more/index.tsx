@@ -431,16 +431,21 @@ function PaymentsBody({ projectId }: { projectId?: string | null }) {
  */
 /**
  * Web analytics, from cloud's org-scoped read surface. The WRITE half is the
- * hosted tag publish injects onto every page; this is the read: pageview
- * breakdowns over the events lens (`/v1/analytics/top` → topPages), org-wide
- * because the lens does not filter by project yet — the lede says so rather
- * than passing org totals off as this project's. Three-valued as ever: null
- * is couldn't-read, unreachable is named, and only a well-formed answer may
- * claim there is no traffic.
+ * hosted tag publish injects onto every page; this is the read: the topPages
+ * lens off `/v1/analytics/top`, org-wide because the lens does not filter by
+ * project yet — the lede says so rather than passing org totals off as this
+ * project's.
+ *
+ * The lens carries its OWN honesty (`Breakdown{available, reason, items}`,
+ * apps/analytics query.go): `available:false` means the warehouse table could
+ * not be read — that IS the three-valued "did not answer", stated by the plane
+ * itself rather than inferred from a parse. A page ranks by `pageviews` with
+ * `pct` its share of ALL in-window views (so a top-N shows the long tail
+ * honestly, which is why there is no fabricated grand total).
  */
 function AnalyticsBody() {
-  type Bucket = { k: string; pageviews: number; visitors: number };
-  const [read, setRead] = useState<null | 'unreachable' | { pages: Bucket[]; total: number }>(null);
+  type Page = { key: string; pageviews: number; visitors: number; pct: number };
+  const [read, setRead] = useState<null | 'unreachable' | { pages: Page[] }>(null);
 
   useEffect(() => {
     let alive = true;
@@ -448,23 +453,25 @@ function AnalyticsBody() {
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
       .then((b: unknown) => {
         if (!alive) return;
-        const lens = (b as { topPages?: { buckets?: unknown[]; total?: number } })?.topPages;
-        const raw = Array.isArray(lens?.buckets) ? lens.buckets : null;
-        if (!raw) {
+        const lens = (b as { topPages?: { available?: boolean; items?: unknown[] } })?.topPages;
+        // The plane says whether it could read. `available === false`, or a
+        // response with no topPages lens at all, is the honest unreachable.
+        if (!lens || lens.available === false || !Array.isArray(lens.items)) {
           setRead('unreachable');
           return;
         }
-        const pages = raw
+        const pages = lens.items
           .map((x) => {
             const r = (x ?? {}) as Record<string, unknown>;
             return {
-              k: typeof r.k === 'string' ? r.k : typeof r.key === 'string' ? (r.key as string) : '',
+              key: typeof r.key === 'string' ? r.key : '',
               pageviews: typeof r.pageviews === 'number' ? r.pageviews : 0,
               visitors: typeof r.visitors === 'number' ? r.visitors : 0,
+              pct: typeof r.pct === 'number' ? r.pct : 0,
             };
           })
-          .filter((x) => x.k);
-        setRead({ pages, total: typeof lens?.total === 'number' ? lens.total : pages.reduce((n, p) => n + p.pageviews, 0) });
+          .filter((x) => x.key);
+        setRead({ pages });
       })
       .catch(() => alive && setRead('unreachable'));
     return () => {
@@ -494,20 +501,22 @@ function AnalyticsBody() {
         </>
       ) : (
         <>
-          <XStack alignItems="baseline" justifyContent="space-between">
-            <SizableText fontSize="$2" color="$color11">Pageviews — this workspace</SizableText>
-            <SizableText fontSize="$4" color="$color" fontFamily="$mono">{read.total}</SizableText>
+          <XStack alignItems="baseline" justifyContent="space-between" paddingBottom="$1">
+            <SizableText fontSize="$2" color="$color11">Top pages — this workspace</SizableText>
+            <SizableText fontSize="$1" color="$color06">views · share</SizableText>
           </XStack>
-          <YStack gap="$1">
+          <YStack gap="$1.5">
             {read.pages.slice(0, 8).map((p) => (
-              <XStack key={p.k} alignItems="baseline" gap="$2">
-                <SizableText flex={1} numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">{p.k}</SizableText>
-                <SizableText fontFamily="$mono" fontSize="$1" color="$color11" flexShrink={0}>{p.pageviews}</SizableText>
+              <XStack key={p.key} alignItems="baseline" gap="$2">
+                <SizableText flex={1} numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">{p.key}</SizableText>
+                <SizableText fontFamily="$mono" fontSize="$1" color="$color" flexShrink={0}>{p.pageviews}</SizableText>
+                <SizableText fontFamily="$mono" fontSize="$1" color="$color11" flexShrink={0} width={44} textAlign="right">{p.pct.toFixed(1)}%</SizableText>
               </XStack>
             ))}
           </YStack>
           <Paragraph fontSize="$1" color="$color11">
-            Workspace-wide — per-project filtering follows the events lens.
+            Share is of all in-window views. Workspace-wide — per-project
+            filtering follows the events lens.
           </Paragraph>
         </>
       )}
