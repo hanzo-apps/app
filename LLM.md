@@ -359,6 +359,27 @@ reason: seven render two glyphs side by side (an icon plus a close ✕) and are
 tabs, not squares — `size="icon"` would squash them; three carry a text label;
 one is a switch track.
 
+**A tap target is a BOX, and the floor applies to the smaller side.** The
+`@media (pointer: coarse)` rule in `assets/globals.css` set `min-height` alone,
+and the deploy gate (universe `charts/app/templates/e2e-gate.yaml`) checked
+`r.height` alone — so rule and check agreed with each other and were both wrong.
+Six routes reported clean over four controls measuring 22, 28, 36 and 39 wide:
+the brand mark, the composer's mic and send, and a filter chip. Both assert
+`min(width, height)` now, `tests/unit/touch-target.test.ts` pins the CSS half,
+and the gate's failure line prints the box rather than one number.
+
+The `!important` on that rule is load-bearing and is the reason it is pinned:
+`size="icon"` writes its floor INLINE, which beats a stylesheet rule on the same
+property whatever the specificity (the collision `.t_group_true` needs it for).
+Without it the rule is a silent no-op on exactly the controls it exists for.
+
+Corollary for the composer: its two action controls are ONE box at 36. The mic
+comes from `@hanzo/voice` at 28 and the send from the icon floor at 36, so they
+sat 8px apart in one row. 36 is this app's icon box — Lovable's 32 is
+unreachable without either dropping `size="icon"` (which the test above forbids)
+or overriding the library's floor, and inventing a third authority for one box
+is worse than a 4px delta.
+
 **A `<kbd>` is a hint, not a keycap** — one element rule in `assets/globals.css`,
 `var(--text-tertiary)` + `var(--text-xs)`, no box. Same shape hanzo.chat draws
 (`DropdownPopup.tsx`), and the colour and size come from `@hanzo/ui/theme.css`,
@@ -375,6 +396,28 @@ The icon library needs no decision: both surfaces are already lucide (this app
 `lucide-react` direct, chat the same package plus the gui-wrapped
 `@hanzogui/lucide-icons-2`), so parity here is a matter of picking the same
 NAMES, never of adding a dependency.
+
+### The release lane: two things that stop an image existing
+
+`.hanzo/workflows/release.yml` builds **`Dockerfile.production`** (not the root
+`Dockerfile`, which nothing references, nor `docker/Dockerfile`, which is
+compose's), then moves the universe pin through `charts/app/pin.sh`.
+
+- **`patches/` must be copied with the manifest.** `package.json`'s
+  `pnpm.patchedDependencies` names a file inside it and pnpm hashes that file
+  during RESOLUTION, not at a later patch step. From `167cb522` (when the first
+  patch landed) every build died at `pnpm install` with `ENOENT … open
+  '/app/patches/@hanzo__ui@8.0.70.patch'`, exit 254 — and the `test` job runs
+  separately and stayed GREEN, so each run showed a passing gate beside a red
+  build while main kept moving and no image was cut for a day.
+- **The version write-back cannot push.** The last step commits the shipped
+  number onto `package.json`, and the forge answers `Not allowed to push to
+  protected branch main` for the CI actor. So a release ends red having already
+  built, pushed, tagged AND pinned the image. Read the error before believing
+  the run: `image vX shipped and is pinned, but package.json on main still does
+  not declare X` means the deploy is fine and only the number lags. Commit it by
+  hand with `[skip ci]` — without that marker the commit starts another release,
+  which ships the next patch and leaves the number stale again.
 
 ### Work items live in the cloud tracker, and "task" is the wrong word
 
