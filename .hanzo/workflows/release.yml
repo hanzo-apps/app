@@ -296,32 +296,15 @@ jobs:
           done
           echo "::error::could not push the pin after 5 attempts — image ${VERSION} is pushed but NOT deployed"; exit 1
 
-      # AFTER the pin, deliberately: the release commit is bookkeeping, the pin is
-      # the deploy. A push conflict here must never be able to hold up shipping.
+      # There is no release commit onto main, deliberately. The version is DERIVED
+      # — `scripts/version.sh next` scans the tags union the registry — so main
+      # never held the floor, only a copy of it. Keeping that copy honest needed a
+      # push to a protected branch, which the forge refuses for the Actions token,
+      # so every release ended RED having already built, pushed, tagged and pinned
+      # its image. A red run that means "shipped fine" is worse than no signal.
       #
-      # Loud, though, not fail-soft — an unnoticed miss here IS the drift. The
-      # gate in hanzo.yml (`scripts/version.sh check`) catches it on the next push
-      # either way, so the two mechanisms are independent: this one writes, that
-      # one refuses to go green while it is wrong.
-      #
-      # The TAG is already pushed and immutable, and it names the built tree. Main
-      # is a separate question: another release can land between our checkout and
-      # this push, and a shallow retry must not re-tag. So on a conflict we
-      # RE-APPLY the number onto the new tip rather than rebase — the value is
-      # derived, the write is idempotent, and the tag keeps naming what was built.
-      - name: Commit the version onto main (the declared number must not lag)
-        run: |
-          set -euo pipefail
-          v="${{ steps.ver.outputs.version_v }}"; n="${v#v}"
-          for attempt in 1 2 3 4 5; do
-            if git push origin HEAD:main; then
-              echo "main declares ${n} — package.json and ${v} agree"; exit 0
-            fi
-            echo "main moved under us (attempt ${attempt}/5) — re-applying ${n} on the new tip"
-            git fetch --quiet origin main
-            git reset --quiet --hard origin/main
-            sed -i.bak -E "s/(\"version\"[[:space:]]*:[[:space:]]*\")[^\"]+(\")/\1${n}\2/" package.json && rm -f package.json.bak
-            git diff --quiet -- package.json && { echo "main already declares ${n}"; exit 0; }
-            git commit --quiet -am "release ${v} [skip ci]"
-          done
-          echo "::error::image ${v} shipped and is pinned, but package.json on main still does not declare ${n} — commit it by hand or the next scan reads a stale floor"; exit 1
+      # What still writes the number is the stamp above, into the BUILD CONTEXT:
+      # lib/version.ts reads pkg.version for the sidebar and the about modal, so
+      # the image says what it is. That is the number's only job. The tag names
+      # the built tree and the pin names the digest; nothing has to be kept in
+      # step with anything, because there is one source and it is the registry.

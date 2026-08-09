@@ -3,25 +3,23 @@
 #
 #   scripts/version.sh published   # the highest version already shipped
 #   scripts/version.sh next        # the number the next release publishes
-#   scripts/version.sh check       # package.json must not lag `published` (default)
 #
-# WHY THIS IS A FILE AND NOT INLINE SHELL. Two callers need the identical scan:
-# .hanzo/workflows/release.yml computes the release number with `next`, and
-# hanzo.yml's gate asserts the committed file with `check`. Written twice it
-# would be right twice and then wrong once — which is the whole mechanism of the
-# defect this script exists to close.
+# THE SOURCE OF TRUTH IS THE STREAM, not a file: the scan below is git tags union
+# the already-pushed container tags, and it reads package.json as NOTHING.
 #
-# THE DEFECT, MEASURED 2026-08-06: package.json said 1.42.211 while
-# ghcr.io/hanzoai/app was on v1.42.353. 141 patches. Not a typo and not neglect —
-# the scan below reads package.json as NOTHING, so `declared` was an input no
-# writer ever wrote. `published` advances once per release, `declared` never
-# moved, and the gap grew by exactly one per release forever. Release.yml now
-# commits the number in the same commit it tags, and `check` proves it stuck.
+# There used to be a third verb, `check`, asserting that package.json's version
+# had not fallen behind `published` — plus a release step that pushed that number
+# onto main to keep it true. Both are gone. Once the number is derived, a copy of
+# it in the tree is not a second opinion, it is a thing to keep in sync: the copy
+# drifted to 141 patches behind (1.42.211 against a published v1.42.353), and the
+# write-back that fixed that needed a push to a protected branch, which the forge
+# refuses for the Actions token — so every release ended RED after shipping
+# correctly. Deleting the copy's authority deletes both failures at once.
 #
-# THE INVARIANT, one sentence: the declared version must never be BEHIND the
-# highest published version of its release stream. Equal is the steady state
-# (CI writes it); ahead is a human raising the series on purpose, which is the
-# affordance hanzoai/ci's `imgver` documents and this keeps.
+# package.json's version still gets STAMPED by release.yml into the build
+# context, because lib/version.ts reads it for the sidebar and the about modal.
+# That is a display string written from the derived number, downstream of it,
+# never an input to it.
 #
 # ENV: GH_PAT (or GITHUB_TOKEN) to read the registry floor. Without one the scan
 #      degrades to git tags alone and SAYS so on stderr — never silently.
@@ -78,12 +76,7 @@ published() {
     | grep -E "$ONLINE" | sort -V | tail -1
 }
 
-declared() { jq -r '.version // ""' package.json; }
-
-# `a` is at least `b` — string-equal, or the larger of the two under sort -V.
-at_least() { [ "$(printf '%s\n%s\n' "$2" "$1" | sort -V | tail -1)" = "$1" ]; }
-
-case "${1:-check}" in
+case "${1:-}" in
   published) published ;;
 
   next)
@@ -97,22 +90,5 @@ case "${1:-check}" in
     echo "$version"
     ;;
 
-  check)
-    pub="$(published)"; dec="$(declared)"
-    if ! echo "$dec" | grep -qE "$ONLINE"; then
-      echo "::error::package.json declares '${dec}', which is not on the ${LINE}x deploy line." >&2
-      echo "  The operator CR (universe: hanzo-app.yaml) follows ${LINE}x and nothing else;" >&2
-      echo "  a number off that line cuts an image the CR cannot follow (see v2.2.1)." >&2
-      exit 1
-    fi
-    if ! at_least "$dec" "$pub"; then
-      echo "::error::package.json says ${dec} but ${pub} is already published — the declared version is BEHIND what ships." >&2
-      echo "  A release commits the number it tags; this means that write-back did not land." >&2
-      echo "  Fix: set package.json version to ${pub} (never lower, never off the ${LINE}x line)." >&2
-      exit 1
-    fi
-    echo "version.sh: declared=${dec} published=${pub} — declared is not behind. OK"
-    ;;
-
-  *) echo "usage: scripts/version.sh [published|next|check]" >&2; exit 2 ;;
+  *) echo "usage: scripts/version.sh [published|next]" >&2; exit 2 ;;
 esac

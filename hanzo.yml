@@ -35,23 +35,12 @@
 # one. release.yml's `test` job runs the same suites, so a red suite cannot cut
 # an image either way.
 test:
-  # The declared version must never be BEHIND what ships. release.yml commits the
-  # number in the same commit it tags, so the steady state is equality; this gate
-  # is what proves the write-back landed, and it runs on every push AND every PR.
-  #
-  # Without it the drift is invisible by construction: the scan reads package.json
-  # as nothing, so a stale number breaks no build, fails no test and changes no
-  # image — it just sits there. It sat at 1.42.211 against a published v1.42.353.
-  #
-  # Same scan release.yml uses (scripts/version.sh), so the gate and the writer
-  # cannot disagree about what "published" means. Test gates get no GH_PAT, so the
-  # registry half degrades to git tags alone — which release.yml now keeps
-  # complete, and which the script announces rather than silently skipping.
-  - name: version-drift
-    run: |
-      set -e
-      git fetch --tags --force --quiet || true
-      scripts/version.sh check
+  # There is NO version-drift gate, and there is nothing for one to catch:
+  # package.json's version is not an input to anything. `scripts/version.sh`
+  # derives the next number from the tags union the registry — it "reads
+  # package.json as nothing" — and release.yml stamps the derived number into the
+  # build context so the running image says what it is. One source, no copy, so
+  # no gate keeping a copy honest.
   - name: typecheck
     run: |
       set -e

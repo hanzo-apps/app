@@ -410,14 +410,20 @@ compose's), then moves the universe pin through `charts/app/pin.sh`.
   '/app/patches/@hanzo__ui@8.0.70.patch'`, exit 254 — and the `test` job runs
   separately and stayed GREEN, so each run showed a passing gate beside a red
   build while main kept moving and no image was cut for a day.
-- **The version write-back cannot push.** The last step commits the shipped
-  number onto `package.json`, and the forge answers `Not allowed to push to
-  protected branch main` for the CI actor. So a release ends red having already
-  built, pushed, tagged AND pinned the image. Read the error before believing
-  the run: `image vX shipped and is pinned, but package.json on main still does
-  not declare X` means the deploy is fine and only the number lags. Commit it by
-  hand with `[skip ci]` — without that marker the commit starts another release,
-  which ships the next patch and leaves the number stale again.
+- **There is no version write-back, and no version-drift gate.** Both are
+  deleted. The number is DERIVED — `scripts/version.sh next` scans git tags union
+  the container tags and reads `package.json` as nothing — so main never held the
+  floor, only a copy of it. Keeping that copy honest needed a push to a protected
+  branch, which the forge refuses for the Actions token, so a release that had
+  already built, pushed, tagged and pinned its image still ended RED. One source
+  (the stream), no copy, nothing to keep in sync.
+  `release.yml` still STAMPS the derived number into the build context, because
+  `lib/version.ts` reads `pkg.version` for the sidebar and about modal. That is a
+  display string written downstream of the derivation, never an input to it.
+- **`[skip ci]` does not work here, and neither does `paths-ignore` reliably.**
+  Measured: three commits carrying `[skip ci]` each cut a release, and one that
+  touched only `LLM.md` did too despite `paths-ignore: ['**.md']`. Do not reach
+  for either to suppress a build — assume every push to main ships an image.
 
 ### Work items live in the cloud tracker, and "task" is the wrong word
 
