@@ -63,9 +63,11 @@ export function ChatThread({
 
   return (
     <YStack ref={scrollRef} minHeight={0} flex={1} paddingHorizontal="$3" paddingTop="$2" overflow="scroll" className={`${className}`}>
-      <YStack
-        gap="$2" paddingBottom="$2" {...{ minHeight: messages.length <= 1 ? "100%" : undefined, justifyContent: messages.length <= 1 ? "center" : undefined }}
-      >
+      {/* Top-anchored ALWAYS. A lone message (the boot line) used to be
+          vertically centered, which floated it over ~200px of dead air and
+          read as a hero, not a transcript — the reference starts the
+          conversation under the header from the first message on. */}
+      <YStack gap="$2" paddingBottom="$2">
         {messages.map((m) =>
           m.role === "user" ? (
             <UserBubble key={m.id} text={m.text ?? ""} images={m.images} />
