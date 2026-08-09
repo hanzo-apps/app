@@ -9,10 +9,11 @@ import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
 // the two-copies problem the rest of this migration exists to prevent.
 import type { GuiElement } from '@hanzo/gui';
 import { useState, useMemo, useRef, useEffect } from "react";
-import { toast, Button, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
+import { useRouter } from "next/navigation";
+import { toast, Button, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
 import { useLocalStorage } from "react-use";
-import { ArrowUp, CircleStop, ImagePlus, MoreHorizontal, X } from "lucide-react";
+import { ArrowUp, Bell, ChevronDown, CircleStop, History as HistoryGlyph, ImagePlus, Images, MousePointerClick, Paintbrush, Plug, Plus, Settings as SettingsGlyph, Sparkles, Wrench, X } from "lucide-react";
 
 import ProModal from "@/components/pro-modal";
 import { useUsageLimit } from "@/components/usage/usage-limit";
@@ -20,6 +21,7 @@ import { useModels } from "@/lib/hooks/use-models";
 import { useRoutingDefaults } from "@/lib/hooks/use-routing-defaults";
 import { AUTO_MODEL, isDeadModelId, isSmartRouting, resolveSmartRouting } from "@/lib/providers";
 import { accent, selected } from "@/lib/chrome";
+import { canAsk, dismiss, enable, notifySettled } from "@/lib/notify";
 import { HtmlHistory, Page, Project } from "@/types";
 // import { InviteFriends } from "@/components/invite-friends";
 import { Settings } from "@/components/editor/ask-ai/settings";
@@ -39,13 +41,12 @@ import { useCallAi } from "@/hooks/useCallAi";
 import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signal";
 import { SelectedFiles } from "./selected-files";
 import { Uploader } from "./uploader";
-import { offer } from "./mic";
 import { sentence } from "./sentence";
 import { ChatThread, type ThreadMessage } from "./chat-thread";
 import { codeTurn } from "./code-turn";
 import type { Runtime } from "@/lib/agent/sandbox";
 import { isConversational } from "./intent";
-import { useVoice, speech } from "@hanzo/voice";
+import { Voice, useVoice, speech } from "@hanzo/voice";
 
 // The builder's ear and voice, lent the caller's IAM session by the app's own
 // `/v1/audio/*` proxy — so the browser never carries a gateway token.
@@ -110,6 +111,7 @@ export function AskAI({
   onSuccess,
   setPages,
   setCurrentPage,
+  onToggleHistory,
 }: {
   project?: Project | null;
   currentPage: Page;
@@ -131,6 +133,8 @@ export function AskAI({
   setSelectedFiles: React.Dispatch<React.SetStateAction<string[]>>;
   setPages: React.Dispatch<React.SetStateAction<Page[]>>;
   setCurrentPage: React.Dispatch<React.SetStateAction<string>>;
+  /** Toggle the version-history panel — the [+] menu's History entry. */
+  onToggleHistory?: () => void;
 }) {
   const { models, defaultModel, loading: modelsLoading } = useModels();
   const routingDefaults = useRoutingDefaults();
@@ -157,6 +161,16 @@ export function AskAI({
   const model = safeStoredModel ?? (smartOn ? AUTO_MODEL : defaultModel);
   const [routedModel, setRoutedModel] = useState<string | null>(null);
   const [openProvider, setOpenProvider] = useState(false);
+  // The [+] menu's open state — the trigger draws an X while it is up.
+  const [plusOpen, setPlusOpen] = useState(false);
+  const router = useRouter();
+  // The per-project settings page, when this project has an identity.
+  // space_id is the `${org}/${slug}` pivot the editor keys everything off.
+  const projectSettingsHref = (() => {
+    const id = project?.space_id ?? "";
+    const cut = id.indexOf("/");
+    return cut > 0 ? `/dev/${id.slice(0, cut)}/${id.slice(cut + 1)}/settings` : null;
+  })();
   const [providerError, setProviderError] = useState("");
   const [openProModal, setOpenProModal] = useState(false);
   // The ONE "Need more usage?" modal — raised on an out-of-credit (402) signal
@@ -166,6 +180,12 @@ export function AskAI({
   // + explainer popover were removed (no one toggled it). Always on.
   const [isFollowUp] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  // Whether to offer build notifications. False on the server and until the
+  // effect runs, so SSR and the first client paint agree; then the real answer.
+  const [askNotify, setAskNotify] = useState(false);
+  useEffect(() => {
+    setAskNotify(canAsk());
+  }, []);
   const [files, setFiles] = useState<string[]>(images ?? []);
   // Fix mode: ONE flag. While on, the generate call is prefixed with a
   // fix-intent preamble and the send guard accepts a references-only submit.
@@ -396,7 +416,7 @@ export function AskAI({
     activeTurnKind.current = streaming ? "stream" : "edit";
     setMessages((prev) => [
       ...prev,
-      { id: genId(), role: "user", text: userText },
+      { id: genId(), role: "user", text: userText, images: selectedFiles.length ? [...selectedFiles] : undefined },
       {
         id: aid,
         role: "assistant",
@@ -413,6 +433,10 @@ export function AskAI({
 
   const finishTurn = (id: string, phase: "done" | "error", text: string) => {
     updateAssistant(id, { phase, text });
+    // The thread shows the result to whoever is LOOKING; this reaches the tab
+    // nobody is. notifySettled itself refuses when the tab is visible or the
+    // permission is anything but granted.
+    notifySettled(phase === "done", text);
     if (activeAssistantId.current === id) {
       activeAssistantId.current = null;
       activeTurnKind.current = null;
@@ -427,7 +451,7 @@ export function AskAI({
     activeTurnKind.current = "edit"; // not a streaming-pages turn
     setMessages((prev) => [
       ...prev,
-      { id: genId(), role: "user", text: userText },
+      { id: genId(), role: "user", text: userText, images: selectedFiles.length ? [...selectedFiles] : undefined },
       { id: aid, role: "assistant", kind: "chat", phase: "building", text: "" },
     ]);
     return aid;
@@ -590,9 +614,18 @@ export function AskAI({
             updateAssistant(codeId, { text: answer, phase: "building" });
           },
         });
-        // A durable run's files live in the sandbox; take up what it changed so
-        // the preview and the editor show the same thing the disk holds.
-        if (result.files.length) {
+        // ONLY A RUN THAT HAD NOWHERE ELSE TO PUT ITS WORK.
+        //
+        // A durable run edits a real checkout and commits it to git.hanzo.ai from
+        // inside the pod, so there is nothing here to take up — and taking it up
+        // was actively wrong: `pages` is the HTML the preview renders and the
+        // autosave commits, so a run that touched `App.tsx` and `tsconfig.json`
+        // put both into the page set, which committed them a second time as pages
+        // and left the preview trying to render TypeScript.
+        //
+        // A run with no sandbox is the opposite case: the browser is the only
+        // copy of what it wrote, and dropping it would lose the turn outright.
+        if (!result.durable && result.files.length) {
           onSuccess(
             result.files.map((f) => ({ path: f.path, html: f.content })),
             promptToUse.trim(),
@@ -767,8 +800,8 @@ export function AskAI({
   //
   // The composer owns the voice because it owns all three things a conversation
   // needs: the prompt the transcript lands in, the submit path a finished turn
-  // goes through, and the reply to read back. The mic itself lives on the
-  // console bar and is handed this machine by `mic.ts`.
+  // goes through, and the reply to read back. The mic renders right here in
+  // the action row (Build ⌄ · mic · send), beside the turn it feeds.
   //
   // Anything already typed is kept: the transcript is appended to it, and the
   // turn that gets sent is the whole line, exactly as if it had been typed.
@@ -792,8 +825,11 @@ export function AskAI({
     },
   });
 
-  // The console bar draws it.
-  useEffect(() => offer(voice), [voice]);
+  // The composer draws its own mic now — Build ⌄ · mic · send, the reference
+  // row. It used to OFFER the machine to the console bar through a seam
+  // (ask-ai/mic.ts, deleted with this); once the console's rest state became an
+  // invisible edge, a mic that lived there was a voice feature nobody could
+  // see. The machine and the control are in one component again.
 
   // Read the settled reply back. `say` is a no-op outside a conversation, so a
   // typed turn stays silent without asking anyone here whether it was spoken.
@@ -1070,7 +1106,7 @@ export function AskAI({
     // null) the composer's `mt-auto` keeps it docked exactly as before.
     <YStack ref={rootRef} alignSelf="center" height="100%" minHeight={0} width="100%" maxWidth={672}>
       <ChatThread messages={messages} />
-      <YStack marginTop="auto" paddingHorizontal="$3" paddingBottom="calc(0.75rem+env(safe-area-inset-bottom))">
+      <YStack marginTop="auto" paddingHorizontal="$2" paddingBottom="calc(0.75rem+env(safe-area-inset-bottom))">
       {/* Stacked Message Queue Cards */}
       {messageQueue.length > 0 && (
         <YStack marginBottom="$4" rowGap="$2">
@@ -1207,17 +1243,24 @@ export function AskAI({
         <XStack marginBottom="$2" alignItems="center" gap="$1.5">
           <XStack ref={pillsRef} flex={1} alignItems="center" gap="$1.5" overflow="scroll" className="no-scrollbar scroll-fade-r">
             {SUGGESTIONS.map((s) => (
-              <Button
+              // An XStack wearing role="button", NOT a Button: a Button's size
+              // variant floors its height (default 36) and a floor cannot be
+              // argued down by a style prop — which is exactly why these chips
+              // towered over the composer they decorate. A chip is a hint, and
+              // a hint is small. Glass, like the composer it belongs to.
+              <XStack
                 key={s}
-                type="button"
-                onClick={() => runSuggestion(s)}
-                flexShrink={0} borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1" hoverStyle={{ borderColor: "$color8", backgroundColor: "$color4" }}
+                role="button"
+                tabIndex={0}
+                onPress={() => runSuggestion(s)}
+                className="glass"
+                flexShrink={0} alignItems="center" height={26} borderRadius={999} borderWidth={1} borderColor="$color04" backgroundColor="$color2" paddingHorizontal="$2.5" cursor="pointer" hoverStyle={{ backgroundColor: "$color3" }}
               >
-                <SizableText whiteSpace="nowrap" fontSize="$1" color="$color11">{s}</SizableText>
-              </Button>
+                <SizableText whiteSpace="nowrap" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>{s}</SizableText>
+              </XStack>
             ))}
           </XStack>
-          <Button
+          <Button size="icon"
             type="button"
             aria-label="Dismiss suggestions"
             variant="ghost"
@@ -1250,6 +1293,44 @@ export function AskAI({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
+        {/* Ask ONCE for build notifications, and only while the answer is
+            genuinely undecided — lib/notify owns the whole contract (denied is
+            a decision; a visible tab never gets one; ✕ is remembered). */}
+        {askNotify && (
+          <XStack alignItems="center" gap="$2" paddingHorizontal="$4" paddingTop="$2.5" paddingBottom="$1">
+            <SizableText color="$color11"><Bell size={14} /></SizableText>
+            <SizableText flex={1} minWidth={0} fontSize="$2" color="$color">
+              Get notified when a build finishes
+            </SizableText>
+            <Button
+              type="button"
+              size="sm"
+              {...accent}
+              borderRadius={999}
+              paddingHorizontal="$3"
+              onClick={async () => {
+                await enable();
+                // Granted or denied, the question is answered either way.
+                setAskNotify(false);
+              }}
+            >
+              <SizableText color="$color12">Enable</SizableText>
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              borderRadius={999}
+              aria-label="Dismiss"
+              onClick={() => {
+                dismiss();
+                setAskNotify(false);
+              }}
+            >
+              <X size={14} />
+            </Button>
+          </XStack>
+        )}
         {/* Resize grip — drag the input's top edge to grow/shrink it; keyboard
             accessible (↑ taller, ↓ shorter). The hit-area is the whole top
             edge, and the handle is INVISIBLE until that edge itself is hovered
@@ -1277,9 +1358,14 @@ export function AskAI({
           // anything taller is an invisible click-eater over the input's first
           // line (measured: a 30px strip swallowed clicks meant for the text).
           style={{ height: 14 }}
-          position="absolute" top={-7} left="$4" right="$4" zIndex={20} minHeight={14} paddingVertical={0} cursor="ns-resize" alignItems="center" justifyContent="center" borderRadius="$10" opacity={0} hoverStyle={{ opacity: 1 }} focusVisibleStyle={{ opacity: 1 }}
+          // `backgroundColor` pinned transparent in BOTH states: the ghost
+          // variant paints a hover fill, and on a full-width 14px strip that
+          // fill read as a dark bar across the composer's top edge. The grip's
+          // whole visible body is the small pill below — the strip is only a
+          // hit target, and a hit target has no colour.
+          position="absolute" top={-7} left="$4" right="$4" zIndex={20} minHeight={14} paddingVertical={0} cursor="ns-resize" alignItems="center" justifyContent="center" borderRadius="$10" opacity={0} backgroundColor="transparent" hoverStyle={{ opacity: 1, backgroundColor: "transparent" }} focusVisibleStyle={{ opacity: 1, backgroundColor: "transparent" }}
         >
-          <SizableText height="$0.5" width="$5" borderRadius="$10" backgroundColor="$color8" />
+          <SizableText height={2} width="$2.5" borderRadius="$10" backgroundColor="$color6" />
         </Button>
         {isDragging && (
           <XStack position="absolute" top={0} right={0} bottom={0} left={0} zIndex={30} borderRadius="$8" borderWidth={2} borderStyle="dashed" borderColor="$color11" backgroundColor="$background" alignItems="center" justifyContent="center" pointerEvents="none">
@@ -1378,112 +1464,156 @@ export function AskAI({
               project={project}
   />
             {isNew && <ReImagine onRedesign={(md) => callAi(md)} />}
-            {/* The two working modes, behind ONE control.
-                They were two icon-only buttons on the bar — a wrench and a
-                crosshair — which is two mysteries the bar had to carry at all
-                times to say something each is one word long. In the menu they
-                get their names, their state gets a checkmark, and the bar keeps
-                one trigger. It accents when either mode is on, so nothing is
-                hidden that is currently doing something. */}
-            {!isSameHtml && (
-              <DropdownMenu placement="top-start">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        size="icon-sm"
-                        variant="ghost"
-                        aria-label={
-                          modes.length
-                            ? `More — ${modes.join(", ")} on`
-                            : "More composer modes"
-                        }
-                        borderRadius="$5"
-                        {...{ color: modes.length ? selected(true).color : "$color11" }}
-                      >
-                        <MoreHorizontal size={16} />
-                      </Button>
-                    </DropdownMenuTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {modes.length ? `${modes.join(", ")} on` : "More"}
-                  </TooltipContent>
-                </Tooltip>
-                <DropdownMenuContent width={256}>
-                  <DropdownMenuCheckboxItem
-                    checked={isEditableModeEnabled}
-                    onCheckedChange={(v: boolean) => setIsEditableModeEnabled?.(!!v)}
-                  >
-                    <YStack>
-                      <SizableText>Select an element</SizableText>
-                      <SizableText fontSize="$1" color="$color11">
-                        Click something on the page to edit it directly
-                      </SizableText>
-                    </YStack>
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={isFixMode}
-                    onCheckedChange={(v: boolean) => setIsFixMode(!!v)}
-                  >
-                    <YStack>
-                      <SizableText>Match a reference</SizableText>
-                      <SizableText fontSize="$1" color="$color11">
-                        Attach an image; Hanzo changes only what differs
-                      </SizableText>
-                    </YStack>
-                  </DropdownMenuCheckboxItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+            {/* THE ONE [+] — everything the composer can bring in, one menu.
+                Attach, reference, the two working modes, Settings (collapsed
+                here from the action row, per the owner), History, and the
+                project surfaces. The trigger flips to an X while open. Items
+                that act on OTHER popovers click their hidden 1px anchors
+                (uploader/settings) so those keep their own placement and
+                logic. EVERY item is real — nothing lists a surface that does
+                not exist. */}
+            <DropdownMenu open={plusOpen} onOpenChange={setPlusOpen} placement="top-start">
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
+                  aria-label={plusOpen ? "Close menu" : "Add to this build"}
+                  aria-expanded={plusOpen}
+                  borderRadius={999}
+                  {...{ color: modes.length ? selected(true).color : "$color11" }}
+                  hoverStyle={{ backgroundColor: "$color3" }}
+                >
+                  {plusOpen ? <X size={16} /> : <Plus size={16} />}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent width={288}>
+                <DropdownMenuItem onSelect={() => document.getElementById("composer-attach")?.click()}>
+                  <XStack alignItems="center" gap="$2">
+                    <ImagePlus size={15} />
+                    <SizableText>Attach images</SizableText>
+                  </XStack>
+                </DropdownMenuItem>
+                {isNew && (
+                  <DropdownMenuItem onSelect={() => document.getElementById("composer-reimagine")?.click()}>
+                    <XStack alignItems="center" gap="$2">
+                      <Paintbrush size={15} />
+                      <SizableText>Add reference</SizableText>
+                    </XStack>
+                  </DropdownMenuItem>
+                )}
+                {!isSameHtml && (
+                  <>
+                    <DropdownMenuCheckboxItem
+                      checked={isEditableModeEnabled}
+                      onCheckedChange={(v: boolean) => setIsEditableModeEnabled?.(!!v)}
+                    >
+                      {/* Same glyph column as every sibling row; the hint
+                          indents to the TITLE, not the icon, so the two lines
+                          read as one item. */}
+                      <YStack gap="$0.5">
+                        <XStack alignItems="center" gap="$2">
+                          <MousePointerClick size={15} />
+                          <SizableText>Select an element</SizableText>
+                        </XStack>
+                        <SizableText fontSize="$1" color="$color11" paddingLeft={23}>
+                          Click something on the page to edit it directly
+                        </SizableText>
+                      </YStack>
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={isFixMode}
+                      onCheckedChange={(v: boolean) => setIsFixMode(!!v)}
+                    >
+                      <YStack gap="$0.5">
+                        <XStack alignItems="center" gap="$2">
+                          <Images size={15} />
+                          <SizableText>Match a reference</SizableText>
+                        </XStack>
+                        <SizableText fontSize="$1" color="$color11" paddingLeft={23}>
+                          Attach an image; Hanzo changes only what differs
+                        </SizableText>
+                      </YStack>
+                    </DropdownMenuCheckboxItem>
+                  </>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => document.getElementById("composer-settings")?.click()}>
+                  <XStack alignItems="center" gap="$2">
+                    <SettingsGlyph size={15} />
+                    <SizableText>Settings</SizableText>
+                  </XStack>
+                </DropdownMenuItem>
+                {onToggleHistory && (
+                  <DropdownMenuItem onSelect={() => onToggleHistory()}>
+                    <XStack alignItems="center" gap="$2">
+                      <HistoryGlyph size={15} />
+                      <SizableText>History</SizableText>
+                    </XStack>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => router.push("/connectors")}>
+                  <XStack alignItems="center" gap="$2">
+                    <Plug size={15} />
+                    <SizableText>Project connectors</SizableText>
+                  </XStack>
+                </DropdownMenuItem>
+                {projectSettingsHref && (
+                  <DropdownMenuItem onSelect={() => router.push(projectSettingsHref)}>
+                    <XStack alignItems="center" gap="$2">
+                      <Wrench size={15} />
+                      <SizableText>Project settings</SizableText>
+                    </XStack>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onSelect={() => router.push("/skills")}>
+                  <XStack alignItems="center" gap="$2">
+                    <Sparkles size={15} />
+                    <SizableText>Add skill</SizableText>
+                  </XStack>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             {/* <InviteFriends /> */}
           </XStack>
           <XStack flexShrink={0} alignItems="center" justifyContent="flex-end" gap="$2">
-            {/* Build vs Plan mode. Build (default) generates/patches the app;
-                Plan is a conversational turn that never modifies it. Persisted. */}
-            <XStack
-              role="group"
-              aria-label="Composer mode"
-              // A compact macOS segmented control — a rounded RECT, not a fat
-              // full-round pill. `$10` rounded it into a lozenge that read as the
-              // loudest thing in the toolbar; `$3` + tighter padding makes it a
-              // quiet inset switch that sits with the icon buttons beside it.
-              flexShrink={0} alignItems="center" borderRadius="$5" backgroundColor="$color3" padding="$0.5"
-            >
-              {/* "Code" was the SECOND thing called Code on this screen — the
-                  header's Preview/Code toggle chooses what you LOOK at, this
-                  chooses what the agent DOES, and one word for two ideas is
-                  what made the row unreadable. The mode is the agent working in
-                  a sandbox where it can run commands, so it is named for that.
-                  The stored value stays `code`; only the word you read changes. */}
-              {(["build", "plan"] as const).map((m) => {
-                const label = m;
-                // The app's ONE selected look, so the composer's mode agrees
-                // with the header's tabs and the sidebar's rows. It read
-                // `var(--brand-accent)`, which resolves to #ffffff here — a pure
-                // white pill, paired with a near-black label. Both segments were
-                // white, in fact: the inactive one passed `undefined`, and an
-                // unset background is not "no background" but the Button's
-                // `default` variant, which is also white.
-                const sel = selected(mode === m);
-                return (
+            {/* Build vs Plan mode — ONE pill naming the current mode, menu on
+                press. It was a two-segment switch, which spends bar width
+                saying both answers at all times; the reference (and the point)
+                is to say the CURRENT one and offer the other on demand. The
+                stored value and the two-mode domain are unchanged. */}
+            <DropdownMenu placement="top-end">
+              <DropdownMenuTrigger asChild>
                 <Button
-                  key={m}
                   type="button"
                   variant="ghost"
-                  aria-pressed={mode === m}
-                  title={
-                    m === "plan"
-                      ? "Plan: chat about your app without changing it"
-                      : "Build: generate and modify your app"
-                  }
-                  onClick={() => setMode(m)}
-                  height={28} borderRadius="$3" paddingHorizontal="$2.5" {...sel} hoverStyle={mode === m ? undefined : { backgroundColor: "$color4" }}
+                  aria-label={`Mode: ${mode}`}
+                  title={mode === "plan" ? "Plan: chat about your app without changing it" : "Build: generate and modify your app"}
+                  height={26} minHeight={26} alignItems="center" gap="$1" borderRadius={999} backgroundColor="$color3" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color4" }}
                 >
-                  <SizableText fontWeight="500" textTransform="capitalize" color={sel.color}>{label}</SizableText>
+                  <SizableText fontWeight="500" textTransform="capitalize" color="$color">{mode}</SizableText>
+                  <SizableText color="$color11"><ChevronDown size={12} /></SizableText>
                 </Button>
-                );
-              })}
-            </XStack>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent width={240}>
+                {(["build", "plan"] as const).map((m) => (
+                  <DropdownMenuCheckboxItem
+                    key={m}
+                    checked={mode === m}
+                    onCheckedChange={() => setMode(m)}
+                  >
+                    <YStack>
+                      <SizableText textTransform="capitalize">{m}</SizableText>
+                      <SizableText fontSize="$1" color="$color11">
+                        {m === "plan"
+                          ? "Chat about your app without changing it"
+                          : "Generate and modify your app"}
+                      </SizableText>
+                    </YStack>
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
             {isSmartRouting(model) && routedModel && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -1510,12 +1640,13 @@ export function AskAI({
               error={providerError}
               onClose={setOpenProvider}
   />
+            <Voice voice={voice} disabled={isAiWorking} className="voice-control" />
             {isAiWorking ? (
               <Button
                 size="icon-sm"
                 variant="destructive"
                 onClick={stopController}
-                gap="$1" borderRadius="$5"
+                gap="$1" height={28} minHeight={28} width={28} minWidth={28} borderRadius={999}
               >
                 <CircleStop size={16} />
               </Button>
@@ -1523,7 +1654,7 @@ export function AskAI({
               <Button
                 size="icon-sm"
                 {...accent}
-                borderRadius="$5"
+                height={28} minHeight={28} width={28} minWidth={28} borderWidth={0} borderRadius={999}
                 disabled={
                   isUploading ||
                   (!prompt.trim() &&

@@ -367,7 +367,7 @@ export default function Comparison() {
                 Slide across all {COLS.length} criteria →
               </Paragraph>
               <XStack gap="$2">
-                <Button
+                <Button size="icon"
                   type="button"
                   variant="ghost"
                   onClick={() => slide(-1)}
@@ -381,7 +381,7 @@ export default function Comparison() {
                     </svg>
                   </SizableText>
                 </Button>
-                <Button
+                <Button size="icon"
                   type="button"
                   variant="ghost"
                   onClick={() => slide(1)}

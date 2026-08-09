@@ -306,6 +306,7 @@ export default function LandingPage() {
                     <YStack marginTop="$3" alignItems="center">
                       <Link
                         href="/templates"
+                        className="hz-tap"
                       ><SizableText fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>
                         Browse all templates →
                       </SizableText></Link>
@@ -320,6 +321,7 @@ export default function LandingPage() {
                   </SizableText>
                   <Link
                     href="/new"
+                    className="hz-tap"
                   ><XStack alignItems="center" gap="$1.5">
                     <Github size={14} />
                     <SizableText fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>or import an existing GitHub repo</SizableText>

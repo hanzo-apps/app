@@ -12,6 +12,7 @@
  *   build → POST /v1/git/native  → repo created + one commit, linked to project
  *   history → GET /v1/git/commits?provider=hanzo → the commit LISTS (D4)
  *   fork    → GET …&sha&pages=1   → the commit's pages come back (fork/preview)
+ *   publish → POST /v1/git/sync (provider hanzo) → lands in the SAME repo
  *
  * If any wiring drifts — the read hitting the wrong backend, the owner being
  * dropped, the link not recorded — this fails. The unit tests pin each piece;
@@ -108,6 +109,10 @@ function mockForge() {
     // cloud: record the repo link (the route's PATCH is proven by the unit tests;
     // here it just needs to succeed so the chain continues)
     http.patch(`${CLOUD}/v1/projects/:slug`, () => HttpResponse.json({ ok: true })),
+    // cloud: the project record /v1/git/sync reads before it pushes
+    http.get(`${CLOUD}/v1/projects/:slug`, ({ params }) =>
+      HttpResponse.json({ slug: params.slug, repo: {} }),
+    ),
     // cloud: no plan (so attribution stays)
     http.get(`${CLOUD}/v1/entitlements`, () => HttpResponse.json({ tier: '' })),
   ];
@@ -133,6 +138,7 @@ process.env.CLOUD_API_URL = CLOUD;
 
 const nativeRoute = () => import('@/app/v1/git/native/route');
 const commitsRoute = () => import('@/app/v1/git/commits/route');
+const syncRoute = () => import('@/app/v1/git/sync/route');
 
 beforeEach(() => {
   repos.clear();
@@ -194,6 +200,53 @@ describe('native git chain (build → history → fork), local cloud', () => {
     const paths = pagesRes.pages.map((x: { path: string }) => x.path).sort();
     expect(paths).toEqual(['index.html', 'prizes.html', 'quests.html']);
     expect(pagesRes.pages.find((x: { path: string }) => x.path === 'index.html').html).toContain('edited');
+  });
+
+  /**
+   * ONE HOME. Publish used to push to `api.hanzo.ai/v1/git/<org>/<slug>` while
+   * every turn committed to `git.hanzo.ai/<user>/<slug>` — same project, two
+   * repos, two owners, two histories, and whichever one a person opened was
+   * missing half their work. This fails the moment a second backend grows back:
+   * the published commit has to land in the SAME repo, on top of the turn's.
+   */
+  it('publishes into the SAME repo the turns commit to', async () => {
+    server.use(...(await iamHandlers()), ...mockForge());
+    const token = await mint({ owner: 'antje', name: 'antje' });
+
+    await (await nativeRoute()).POST(
+      withAuth('/v1/git/native', 'POST', token, {
+        name: 'luxquest',
+        message: 'first build',
+        pages: [{ path: 'index.html', html: '<html><body>built</body></html>' }],
+      }),
+    );
+
+    const pub = await (await syncRoute()).POST(
+      withAuth('/v1/git/sync', 'POST', token, {
+        provider: 'hanzo',
+        name: 'luxquest',
+        slug: 'luxquest',
+        message: 'Publish',
+        pages: [{ path: 'index.html', html: '<html><body>published</body></html>' }],
+      }),
+    );
+    const out = await pub.json();
+    expect(pub.status).toBe(200);
+    // The owner is the SESSION's IAM username, and the URL is the forge's — not
+    // an org-scoped path on a different service.
+    expect(out.htmlUrl).toBe(`${FORGE}/antje/luxquest`);
+    expect(out.created).toBe(false); // the turn already made it
+    expect(repos.get('antje/luxquest')!.commits).toHaveLength(2);
+
+    // And the timeline shows both, in one history.
+    const h = await (await commitsRoute()).GET(
+      withAuth('/v1/git/commits?provider=hanzo&repo=antje/luxquest&branch=main', 'GET', token),
+    );
+    const hist = await h.json();
+    expect(hist.commits.map((c: { message: string }) => c.message.split('\n')[0])).toEqual([
+      'Publish',
+      'first build',
+    ]);
   });
 
   it('refuses to read another account\'s repo', async () => {

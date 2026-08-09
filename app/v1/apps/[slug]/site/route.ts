@@ -118,12 +118,23 @@ export async function GET(req: NextRequest, ctx: Ctx) {
   // object path from org+bucket, then the vanity subdomain. The vanity host
   // depends on the edge/DNS being wired; the S3 bases do not, so a project
   // reloads into the editor even mid-rollout of the sites edge.
+  //
+  // THE VANITY BASE IS GATED ON THE RECORD CLAIMING IT, and that gate is a
+  // tenancy boundary, not a nicety. `<slug>.hanzo.app` is a GLOBAL namespace
+  // while the two S3 bases are org-scoped — so for a project that was never
+  // published (record not live), the vanity host is whatever ELSE answers
+  // there: another tenant's site of the same name, or the wildcard shell. The
+  // owner's own sighting was exactly this: a project restored with a different
+  // site's content loaded, one autosave away from committing someone else's
+  // pages into this project's repo as its own. `status === 'live'` is the
+  // record saying "the artifact at that host is MINE" — publish enforces the
+  // slug's global uniqueness, so live ⇒ the host serves this project.
   const org = (record?.org || '').replace(/[^a-z0-9_-]/gi, '');
   const bucket = (record?.bucket || 'hanzo-sites').replace(/[^a-z0-9_.-]/gi, '');
   const bases = [
     record?.liveUrl ? siteBase(record.liveUrl) : null,
     org ? siteBase(`https://s3.hanzo.ai/${bucket}/${org}/${clean}/index.html`) : null,
-    siteBase(`https://${clean}.hanzo.app/index.html`),
+    record?.status === 'live' ? siteBase(`https://${clean}.hanzo.app/index.html`) : null,
   ].filter((b): b is string => !!b);
 
   // The friendly URL shown in the editor ("your live site"): the vanity host when

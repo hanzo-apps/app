@@ -22,11 +22,13 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { session } from "@/lib/iam";
+import { session, type Session } from "@/lib/iam";
 import { requireSameOrigin } from "@/lib/org/csrf";
+import { slugifyProject } from "@/lib/org/policy";
 import { resolveModelId } from "@/lib/providers";
 import { runAgent, type AgentEvent, type AgentFile, type ProjectFs } from "@/lib/agent";
 import { AgentSession } from "@/lib/agent/session";
+import type { Repo } from "@/lib/agent/checkout";
 import { Sandbox, openSandbox, releaseSandbox, type Runtime } from "@/lib/agent/sandbox";
 import { runHarness } from "@/lib/agent/harness";
 
@@ -110,6 +112,15 @@ interface Where {
   opened?: boolean;
   durable: boolean;
   reason?: string;
+  /**
+   * The repo the pod is a working copy of — present only when it IS one, because
+   * that is exactly the condition under which the turn can be committed and
+   * pushed. The harness gets it or it gets nothing; there is no third state where
+   * it tries and hopes.
+   */
+  repo?: Repo;
+  /** Why it is not one, when it is not. */
+  stranded?: string;
 }
 
 /**
@@ -147,15 +158,39 @@ async function writable(fs: Sandbox): Promise<string> {
   }
 }
 
-async function resolveFs(token: string, body: AgentRequestBody): Promise<Where> {
-  const id = typeof body.id === "string" ? body.id.trim() : "";
+/**
+ * WHICH REPO this run's project is, on git.hanzo.ai.
+ *
+ * The owner is the caller's IAM username — `session.name` IS that username, and
+ * the forge auto-registered an account under it — and the name is the project
+ * slug. Both come from the verified session and the named project, never from
+ * anything the browser can choose, which is what makes it safe for the server to
+ * clone and push with an admin-scoped forge credential.
+ *
+ * It is derived HERE, once, and the same object is handed to `openSandbox` (which
+ * clones it) and to `runHarness` (which pushes to it). `/v1/git/native` derives
+ * the identical pair the identical way; a second spelling of it would be a
+ * sandbox editing one repo while the rest of the app committed to another.
+ */
+function repoOf(id: Session, project: string): Repo | undefined {
+  const name = slugifyProject(project);
+  return id.name && name ? { owner: id.name, name } : undefined;
+}
+
+async function resolveFs(id: Session, body: AgentRequestBody): Promise<Where> {
+  const token = id.token;
+  const held = typeof body.id === "string" ? body.id.trim() : "";
   const project = typeof body.project === "string" ? body.project.trim() : "";
   const runtime = runtimeAsked(body.runtime);
+  const repo = project ? repoOf(id, project) : undefined;
 
-  if (id) {
-    const fs = new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id, token });
+  if (held) {
+    const fs = new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id: held, token });
     const why = await writable(fs);
-    if (!why) return { fs, id, project, durable: true };
+    // A warm pod this caller already holds was made a working copy when it was
+    // opened, and it is the same pod — so it is still one, and `land` says so
+    // plainly if it is not.
+    if (!why) return { fs, id: held, project, durable: true, ...(repo ? { repo } : {}) };
     // THE ID IS A HINT AND THE PROJECT IS THE FACT, and getting that backwards
     // broke the second message of every conversation. This route RELEASES the
     // sandbox it opened when the run ends — the pod goes, the disk stays — so the
@@ -166,11 +201,19 @@ async function resolveFs(token: string, body: AgentRequestBody): Promise<Where> 
     //
     // So a dead id falls through to the project rather than to memory. Falling
     // back to MEMORY is reserved for having nowhere to work at all.
-    if (!project) return { id, durable: false, reason: why };
+    if (!project) return { id: held, durable: false, reason: why };
   }
 
   if (project) {
-    const opened = await openSandbox({ baseUrl: HANZO_AI_BASE_URL, token, project, runtime });
+    const opened = await openSandbox({
+      baseUrl: HANZO_AI_BASE_URL,
+      token,
+      project,
+      runtime,
+      // The pod comes back holding the project's checkout — or holding a sentence
+      // saying why it does not.
+      ...(repo ? { repo } : {}),
+    });
     if ("sandbox" in opened) {
       const fs = new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id: opened.sandbox.id, token });
       const why = await writable(fs);
@@ -182,7 +225,17 @@ async function resolveFs(token: string, body: AgentRequestBody): Promise<Where> 
       // knows about it, so it still has to be given back.
       return why
         ? { id: opened.sandbox.id, project, runtime: got, opened: true, durable: false, reason: why }
-        : { fs, id: opened.sandbox.id, project, runtime: got, opened: true, durable: true };
+        : {
+            fs,
+            id: opened.sandbox.id,
+            project,
+            runtime: got,
+            opened: true,
+            durable: true,
+            // One or the other, never both: a pod that is a working copy gets the
+            // repo to push to, and a pod that is not gets the sentence saying so.
+            ...(opened.stranded ? { stranded: opened.stranded } : repo ? { repo } : {}),
+          };
     }
     // A project WAS named and it did not get one. This is the case that used to
     // disappear: the run continued against a map and reported success. It now
@@ -227,8 +280,12 @@ export async function POST(request: NextRequest) {
   const csrf = requireSameOrigin(request);
   if (csrf) return csrf;
 
-  const token = (await session(request))?.token;
-  if (!token) return unauthorized();
+  // The whole session, not just its bearer: the forge account this run commits
+  // to is `session.name`, and taking it from anywhere else would let a caller
+  // name somebody else's repo.
+  const id = await session(request);
+  if (!id?.token) return unauthorized();
+  const token = id.token;
 
   let body: AgentRequestBody;
   try {
@@ -307,7 +364,7 @@ export async function POST(request: NextRequest) {
       // observably alive while the pod comes up.
       await writer.write(encoder.encode(": open\n\n"));
 
-      const where = await resolveFs(token, body);
+      const where = await resolveFs(id, body);
       if (where.opened) give = where.id;
 
       // Register the run on the canonical registry. This is what makes it a
@@ -363,9 +420,21 @@ export async function POST(request: NextRequest) {
       // above carries durable:false and the reason, emitted before either engine
       // starts.
       if (where.fs instanceof Sandbox) {
+        // A pod that is not a working copy of the project's repo can still be
+        // coded in, and the work still lands on its volume — but it will not
+        // become a revision, and that is the exact silence this endpoint keeps
+        // being caught in. Said before the work, not after it.
+        if (where.stranded) await emit({ type: "error", message: where.stranded });
+
         const result = await runHarness(
           where.fs,
-          { task: prompt, token, model, timeoutSec: HARNESS_TIMEOUT_SEC },
+          {
+            task: prompt,
+            token,
+            model,
+            timeoutSec: HARNESS_TIMEOUT_SEC,
+            ...(where.repo ? { repo: where.repo } : {}),
+          },
           emit
         );
         // The harness failing is not the task failing, and the two must not read
@@ -377,31 +446,26 @@ export async function POST(request: NextRequest) {
             message: `the coding harness exited ${result.exitCode}`,
           });
         }
-        // `done` CLOSES THE TURN, and its file list is what the browser commits.
+        // A turn that ran but did not reach the forge. The work is on the volume
+        // and the next turn resumes from it; what is missing is the revision.
+        if (result.unpushed) await emit({ type: "error", message: result.unpushed });
+        // `done` CLOSES THE TURN, and for a harness run it carries NO CONTENTS.
         //
-        // loop.ts emits this from fs.changedFiles(); the harness cannot, because
-        // it edits inside the pod and the Sandbox client never saw those writes
-        // — its change set would be empty after a run that rewrote the project.
-        // So the list comes from the checkout's own git (changedInSandbox), and
-        // the contents are read back through the same filesystem the loop uses.
+        // The pod committed and pushed this turn itself, to the repo it was
+        // cloned from, so the browser has nothing left to reconstruct — and
+        // reconstruction is what used to corrupt it: every changed file was read
+        // back and handed over as a `page`, which put `.tsx` and `.json` into the
+        // HTML page set and committed them a second time as pages.
         //
-        // Without this the turn ends with no `done` at all: the UI never learns
-        // what changed and commitTurn writes NO REVISION to git.hanzo.ai, so the
-        // history panel stays empty while the work sits real on the disk.
-        const changed = result.changed;
-        const harnessFiles: AgentFile[] = [];
-        for (const path of changed) {
-          const content = await where.fs.read(path);
-          if (content !== undefined && content !== null) {
-            harnessFiles.push({ path, content });
-          }
-        }
+        // The path list stays, because a person watching wants to see what the
+        // turn touched. loop.ts still sends contents on its own path, and must:
+        // an in-memory run has no other copy anywhere.
         await emit({
           type: "done",
           finishReason: result.exitCode === 0 ? "stop" : "error",
           turns: 1,
-          files: harnessFiles,
-          changed,
+          files: [],
+          changed: result.changed,
         });
       } else {
         await runAgent(

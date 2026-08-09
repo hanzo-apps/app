@@ -57,12 +57,16 @@ export function ReImagine({
     <Popover open={open} onOpenChange={setOpen} placement="top-start">
       <form>
         <PopoverTrigger asChild>
+          {/* Anchor only — the composer's [+] menu owns the visible entry
+              ("Add reference") and clicks this. Same shape as the uploader and
+              settings anchors. */}
           <Button
+            id="composer-reimagine"
             size="icon-sm"
             variant="ghost"
-            aria-label="Redesign from a URL"
-            title="Redesign: recreate an existing site's look from its URL"
-            borderRadius="$5"
+            aria-hidden
+            tabIndex={-1}
+            style={{ position: "absolute", width: 1, height: 1, minWidth: 1, minHeight: 1, opacity: 0, pointerEvents: "none" }}
           >
             <Paintbrush size={16} />
           </Button>

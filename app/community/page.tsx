@@ -14,7 +14,7 @@ import CommunityPageView from './view';
 // by living somewhere different. That is why they can share a lane honestly.
 
 export const metadata = {
-  title: "Community — Built on Hanzo",
+  title: "Community",
   description:
     "Every app people have built on Hanzo, with the template each one was forked from. Fork any of them and ship yours.",
 };

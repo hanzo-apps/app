@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
   const repo = slugifyProject(body?.name?.trim() || 'untitled-site') || 'untitled-site';
 
   try {
-    const created = await ensureRepo(owner, repo);
+    const { repo: created } = await ensureRepo(owner, repo);
     const branch = created.default_branch || 'main';
     const { commit } = await commitFiles(
       owner,

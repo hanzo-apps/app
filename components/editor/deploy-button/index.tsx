@@ -49,13 +49,13 @@ export function DeployButton({
                 <Button
                   {...accent}
                   size="sm"
-                  height={28} gap="$1.5" paddingHorizontal="$2.5"
+                  height={32} gap="$1.5" paddingHorizontal="$3" borderRadius={999} borderWidth={0}
                   disabled={disabled}
                 >
                   <View $lg={{ display: "none" }}>
                     <Save size={14} />
                   </View>
-                  <SizableText fontSize="$1" color="$color12">{disabled ? "Building…" : "Publish"}</SizableText>
+                  <SizableText color="$color12">{disabled ? "Building…" : "Publish"}</SizableText>
                 </Button>
               </div>
             </PopoverTrigger>
@@ -71,14 +71,14 @@ export function DeployButton({
           <Button
             {...accent}
             size="sm"
-            height={28} gap="$1.5" paddingHorizontal="$2.5"
+            height={32} gap="$1.5" paddingHorizontal="$3" borderRadius={999} borderWidth={0}
             onClick={() => setOpen(true)}
             disabled={disabled}
           >
             <View $lg={{ display: "none" }}>
               <Save size={14} />
             </View>
-            <SizableText fontSize="$1" color="$color12">{disabled ? "Building…" : "Publish"}</SizableText>
+            <SizableText color="$color12">{disabled ? "Building…" : "Publish"}</SizableText>
           </Button>
         )}
         <LoginModal

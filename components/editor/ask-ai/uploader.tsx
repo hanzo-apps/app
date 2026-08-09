@@ -106,15 +106,19 @@ export const Uploader = ({
     <Popover open={open} onOpenChange={setOpen} placement="top-start">
       <form>
         <PopoverTrigger asChild>
+          {/* An ANCHOR, not a control. The composer's one [+] menu is the way
+              in ("Attach images" clicks this); the popover still needs a
+              positioned trigger to anchor to, so it stays — 1px, invisible,
+              programmatically clickable. */}
           <Button
+            id="composer-attach"
             size="icon-sm"
             variant="ghost"
-            aria-label="Add images"
-            group borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
+            aria-hidden
+            tabIndex={-1}
+            style={{ position: "absolute", width: 1, height: 1, minWidth: 1, minHeight: 1, opacity: 0, pointerEvents: "none" }}
           >
-            <SizableText color="$color11" $group-hover={{ color: "$color" }}>
-              <Plus size={16} />
-            </SizableText>
+            <Plus size={16} />
           </Button>
         </PopoverTrigger>
         <PopoverContent
@@ -254,15 +258,15 @@ export const Uploader = ({
   ) : (
     <>
       <Button
+        id="composer-attach"
         size="icon-sm"
         variant="ghost"
-        aria-label="Add images"
-        group borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
+        aria-hidden
+        tabIndex={-1}
+        style={{ position: "absolute", width: 1, height: 1, minWidth: 1, minHeight: 1, opacity: 0, pointerEvents: "none" }}
         onClick={() => setOpen(true)}
       >
-        <SizableText color="$color11" $group-hover={{ color: "$color" }}>
-          <Plus size={16} />
-        </SizableText>
+        <Plus size={16} />
       </Button>
       <LoginModal
         open={open}

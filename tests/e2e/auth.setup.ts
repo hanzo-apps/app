@@ -28,9 +28,47 @@ setup('authenticate via Hanzo IAM (hanzo.id OIDC)', async ({ page }) => {
   await page.goto('/dashboard');
   await page.waitForURL(/hanzo\.id\/login\/oauth\/authorize/, { timeout: 30_000 });
 
-  // The custom hanzo/id UI renders bare inputs (no name/id): one text, one password.
-  await page.locator('input[type="text"]').first().fill(email);
-  await page.locator('input[type="password"]').first().fill(password);
+  // WAIT FOR THE FORM'S OWN CONFIG. The login SPA fetches `get-app-login`,
+  // which supplies the ORGANIZATION the credential belongs to; submit before it
+  // lands and IAM answers 400 "organization, username and password are
+  // required" while the form silently stays put — measured on the wire, twice.
+  // A person types slower than the fetch; a harness must wait for it.
+  await page
+    .waitForResponse((r) => r.url().includes('get-app-login') && r.ok(), { timeout: 15_000 })
+    .catch(() => {
+      /* already loaded before we attached — fine */
+    });
+  await page.waitForLoadState('networkidle').catch(() => {});
+
+  // The identity field is found by what it SAYS, not by what it is typed as.
+  //
+  // This read `input[type="text"]`, and hanzo.id's form now labels that field
+  // "Email or username" — whose input is `type="email"`. The locator matched
+  // nothing, `fill` resolved against nothing, and the run pressed Sign in on an
+  // EMPTY form: the failure looked exactly like wrong credentials (bounced back
+  // to the login page), which is the most expensive way for a harness to lie.
+  //
+  // Three strategies, first hit wins, so a form that changes its markup again
+  // does not take the whole authenticated suite down with it. A label is the
+  // most stable of the three because it is the thing a person reads.
+  const identity = page
+    .getByLabel(/email|username/i)
+    .or(page.locator('input[type="email"]'))
+    .or(page.locator('input[type="text"]'))
+    .first();
+  await identity.waitFor({ state: 'visible', timeout: 15_000 });
+  await identity.fill(email);
+
+  const secret = page.getByLabel(/password/i).or(page.locator('input[type="password"]')).first();
+  await secret.fill(password);
+
+  // Assert the form CARRIES what was typed before submitting. An empty submit
+  // and a rejected submit land in the same place, and only this tells them
+  // apart — so a selector that stops matching fails here, naming itself, rather
+  // than 30 seconds later as "the credentials are wrong".
+  await expect(identity).toHaveValue(email);
+  await expect(secret).not.toHaveValue('');
+
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
 
   // Success → callback exchanges the PKCE code → back on hanzo.app. IAM may

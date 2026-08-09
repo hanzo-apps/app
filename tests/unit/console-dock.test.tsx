@@ -14,7 +14,6 @@ import "@testing-library/jest-dom";
 
 import { TooltipProvider } from '@hanzo/ui';
 import { Console } from "@/components/editor/console";
-import { offer } from "@/components/editor/ask-ai/mic";
 import { BAR, COLLAPSE_AT, MIN_OPEN, resolveHeight, maxOpen } from "@/components/editor/console/dock";
 
 import { WithGui } from "../gui-wrapper";
@@ -44,44 +43,21 @@ beforeAll(() => {
 
 beforeEach(() => window.localStorage.clear());
 
-/**
- * The composer, reduced to the one thing the bar wants from it: a voice. The
- * bar draws a machine it does not own, so the seam is what gets tested.
- */
-const machine = (toggle = jest.fn()) => ({
-  state: "idle" as const,
-  open: false,
-  blocked: null,
-  reason: null,
-  refusal: null,
-  toggle,
-  say: async () => {},
-  hush: () => {},
-});
-
-function Composer({ voice }: { voice: ReturnType<typeof machine> }) {
-  useEffect(() => offer(voice), [voice]);
-  return null;
-}
-
 /** The save state the bar is given. It is a PROP now — the bar used to print
  *  "Auto-saved" unconditionally, checked against nothing — so the readout this
  *  suite locates is whatever was passed in, named once here. */
 const SAVE_TEXT = "Saved 9:15 PM";
 
-const setup = (onToggleSidebar = jest.fn(), voice: ReturnType<typeof machine> | null = machine(), branch?: string) => {
+const setup = (branch?: string) => {
   const view = render(
     // The app mounts one TooltipProvider in `app/providers.tsx`; the dock lives
     // under it, and the mic's tooltip needs it.
     <TooltipProvider delay={0}>
-      {voice && <Composer voice={voice} />}
       <Console
         isAiWorking={false}
         saveText={SAVE_TEXT}
         branch={branch}
         pageCount={1}
-        sidebarCollapsed={false}
-        onToggleSidebar={onToggleSidebar}
       />
     </TooltipProvider>,
     // The Console renders @hanzo/gui primitives, which read a createGui config
@@ -91,7 +67,13 @@ const setup = (onToggleSidebar = jest.fn(), voice: ReturnType<typeof machine> | 
   );
   const handle = screen.getByRole("separator", { name: /console/i });
   const dock = view.container.querySelector("[data-console]") as HTMLElement;
-  return { ...view, handle, dock, onToggleSidebar, voice };
+  return { ...view, handle, dock };
+};
+
+/** Open the dock — at rest it is an invisible edge and shows NOTHING, so any
+ *  test that reads the bar's chrome opens it first, the way a person does. */
+const openDock = (handle: HTMLElement) => {
+  fireEvent.keyDown(handle, { key: "Enter" });
 };
 
 /** Height the dock is actually painting, in px. */
@@ -106,7 +88,6 @@ const heightOf = (dock: HTMLElement) => parseInt(dock.style.height, 10);
  * a CSS variable — the emitted class is the only honest evidence available here
  * that an offset is set at all.
  */
-const LEFT_OFFSET = "._l-c-space-2";
 const RIGHT_OFFSET = "._r-c-space-2";
 
 /**
@@ -131,12 +112,13 @@ describe("the bar is a resize handle", () => {
     // Most builder projects have none — only publish or an explicit git sync
     // creates one. The bar used to print a hardcoded "main" regardless, drawing
     // a version-control state that did not exist.
-    const { container } = setup(jest.fn(), machine(), undefined);
+    const { container } = setup(undefined);
     expect(container.textContent).not.toMatch(/\bmain\b/);
   });
 
   it("shows the REAL branch when the project is linked to a repo", () => {
-    const { container } = setup(jest.fn(), machine(), "release/v2");
+    const { container, handle } = setup("release/v2");
+    openDock(handle);
     expect(container.textContent).toContain("release/v2");
   });
 
@@ -271,79 +253,53 @@ describe("the bar is not labelled with a verb", () => {
 });
 
 describe("the workspace controls ride far right on the bar", () => {
-  it("carries the chat/AI panel toggle, wired and stateful", () => {
-    const onToggleSidebar = jest.fn();
-    const { dock } = setup(onToggleSidebar);
-    const ai = screen.getByRole("button", { name: /chat panel/i });
-    expect(dock).toContainElement(ai);
-    expect(ai).toHaveAttribute("aria-expanded", "true");
-    fireEvent.click(ai);
-    expect(onToggleSidebar).toHaveBeenCalledTimes(1);
+  it("does NOT carry the chat toggle — that moved to the header", () => {
+    // One control, one seat. It sat here and people looked for it at the top,
+    // where the column it governs is; the reference bar keeps it beside the
+    // project name, and so does ours now. A second copy here would be two
+    // controls answering one question.
+    setup();
+    expect(screen.queryByRole("button", { name: /chat panel/i })).toBeNull();
   });
 
-  it("carries the composer's mic, and clicking it opens the conversation", () => {
-    const { dock, voice } = setup();
-    const mic = screen.getByRole("button", { name: /talk to hanzo/i });
-    expect(dock).toContainElement(mic);
-    fireEvent.click(mic);
-    expect(voice!.toggle).toHaveBeenCalledTimes(1);
-  });
 
-  it("shows no mic at all until a composer offers its voice", () => {
-    setup(jest.fn(), null);
+
+
+  it("draws no mic — the mic lives in the composer now", () => {
+    // It sat here, fed through a seam, until the console's rest state became
+    // an invisible edge and the mic became a voice feature nobody could see.
+    // The composer owns the machine and draws the control beside the turn it
+    // feeds (Build ⌄ · mic · send); this bar keeps Stop and Enso only.
+    const { handle } = setup();
+    openDock(handle);
     expect(screen.queryByRole("button", { name: /talk to hanzo/i })).toBeNull();
   });
 
-  it("sits the panel toggle on the LEFT, by the pane it controls", () => {
-    // The toggle shows and hides the LEFT chat pane, so it lives on the left: a
-    // right-side control that collapsed the left pane read as belonging to the
-    // preview and people could not find it.
+  it("at rest the dock shows NOTHING — an edge, not a bar", () => {
+    // The owner's call: the workspace runs to the window edge, and the console
+    // is a pull. The named separator (with its cursor and hover grip) is the
+    // whole affordance; the status readout and the AI controls live behind it.
     setup();
-    const ai = screen.getByRole("button", { name: /chat panel/i });
-    const cluster = clusterFor(ai, LEFT_OFFSET);
-    expect(cluster).not.toBeNull();
-    expect(getComputedStyle(cluster).position).toBe("absolute");
-    // Its own cluster, at the other end of the bar from the AI controls.
-    expect(cluster).not.toContainElement(
-      screen.getByRole("button", { name: /talk to hanzo/i }),
-    );
-  });
-
-  it("sits the mic and Enso on the RIGHT, mic first", () => {
-    setup();
-    const mic = screen.getByRole("button", { name: /talk to hanzo/i });
-    const status = screen.getByText(SAVE_TEXT);
-
-    const cluster = clusterFor(mic, RIGHT_OFFSET);
-    expect(cluster).not.toBeNull();
-    // It rides to the RIGHT of the status readout: after it in the bar, floated
-    // over the bar rather than in flow, pinned to the bar's right edge.
-    expect(cluster).not.toContainElement(status);
-    expect(status.compareDocumentPosition(cluster)).toBe(
-      Node.DOCUMENT_POSITION_FOLLOWING,
-    );
-    expect(getComputedStyle(cluster).position).toBe("absolute");
-    // Enso anchors into #enso-dock, ordered AFTER the mic (to its right).
-    const dock = cluster.querySelector("#enso-dock");
-    expect(dock).not.toBeNull();
-    expect(mic.compareDocumentPosition(dock as Node) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-  });
-
-  it("clicking a control does not resize or toggle the dock", () => {
-    const { dock } = setup();
-    const before = heightOf(dock);
-    fireEvent.click(screen.getByRole("button", { name: /chat panel/i }));
-    expect(heightOf(dock)).toBe(before);
+    expect(screen.queryByText(/^Live$/)).toBeNull();
+    expect(screen.queryByText(SAVE_TEXT)).toBeNull();
+    expect(screen.queryByRole("button", { name: /talk to hanzo/i })).toBeNull();
   });
 });
 
-describe("the header no longer holds the panel toggle", () => {
-  it("moved it — the console owns it now, so the header cannot also", () => {
+describe("the panel toggle lives in the header, once", () => {
+  it("the header owns it, so the console cannot also", () => {
     const header = readFileSync(
       join(__dirname, "..", "..", "components/editor/header/index.tsx"),
       "utf8",
     );
-    expect(header).not.toMatch(/onToggleSidebar/);
-    expect(header).not.toMatch(/PanelLeftClose/);
+    const console_ = readFileSync(
+      join(__dirname, "..", "..", "components/editor/console/index.tsx"),
+      "utf8",
+    );
+    expect(header).toMatch(/<PanelLeft\b/);
+    expect(header).toMatch(/aria-expanded=\{Boolean\(chatOpen\)\}/);
+    // The glyph rule holds in its new seat too.
+    expect(header).not.toMatch(/PanelLeft(Close|Open)/);
+    expect(console_).not.toMatch(/<PanelLeft\b/);
   });
 });

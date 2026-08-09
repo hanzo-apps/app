@@ -5,31 +5,24 @@ import { Children, ReactNode, useState } from "react";
 import Link from "next/link";
 import {
   ChevronDown,
-  Code2,
-  Eye,
   ExternalLink,
   History,
-  MessageCircleCode,
   Monitor,
+  PanelLeft,
   RefreshCcw,
   Smartphone,
 } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger, Button } from '@hanzo/ui';
-import { selected } from "@/lib/chrome";
+import { accent, selected } from "@/lib/chrome";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { PagePanel } from "@/components/editor/page-navigator";
 import { WorkspaceMenu } from "@/components/editor/workspace-menu";
 import type { Page, Project } from "@/types";
-// The ONE view switcher (a grouped segmented control). "Chat" only means anything
-// on mobile, where a single pane shows at a time — on desktop the chat pane is
-// always docked on the left, so Preview/Code drive the RIGHT pane and the Chat
-// segment is hidden.
-const TABS = [
-  { value: "chat", label: "Chat", icon: MessageCircleCode, mobileOnly: true },
-  { value: "preview", label: "Preview", icon: Eye },
-  { value: "code", label: "Code", icon: Code2 },
-] as const;
+// The panes come from `lib/panes` — the switcher and the body read one list, so
+// a pane cannot appear in the bar and render nothing.
+import { PANES, paneLabel } from "@/lib/panes";
+import { pageName } from "@/lib/pages/name";
 
 const DEVICES = [
   { name: "desktop", icon: Monitor },
@@ -80,6 +73,10 @@ export function Header({
   onOpenExternal,
   historyOpen,
   onToggleHistory,
+  booted = true,
+  leftWidth = 0,
+  chatOpen,
+  onToggleChat,
   project,
   onRenamed,
 }: {
@@ -97,6 +94,23 @@ export function Header({
   historyOpen?: boolean;
   /** Toggle the history/rollback panel over the chat pane. */
   onToggleHistory?: () => void;
+  /**
+   * Whether there is a workspace to switch around. A fresh project boots as
+   * conversation alone, and the pane pills + preview tooling describe an app
+   * that does not exist yet — chrome for a missing thing reads as broken.
+   */
+  booted?: boolean;
+  /**
+   * The chat pane's current width in px (0 = none docked). The bar mirrors the
+   * split below it: identity sits over the chat, the pane switcher and the
+   * preview tooling sit over the pane they control. Without this the switcher
+   * floated beside the project name while its subject was half a screen away.
+   */
+  leftWidth?: number;
+  /** Whether the chat column is showing. */
+  chatOpen?: boolean;
+  /** Show/hide the chat column — the PanelLeft toggle, in the reference's seat. */
+  onToggleChat?: () => void;
   project?: Project | null;
   onRenamed?: (name: string) => void;
 }) {
@@ -127,7 +141,7 @@ export function Header({
     <XStack zIndex={20} alignItems="center" gap="$2" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" $sm={{ gap: "$3" }} $lg={{ paddingHorizontal: "$4" }}>
       {/* LEFT — the workspace menu (identity/home anchor) + version history.
           Everything about who/where you are lives in the menu. */}
-      <XStack flexShrink={1} minWidth={0} alignItems="center" gap="$1.5">
+      <XStack flexShrink={1} minWidth={0} alignItems="center" gap="$1.5" overflow="scroll" className="no-scrollbar" {...(leftWidth > 0 ? { $lg: { width: leftWidth, flexShrink: 0 } } : null)}>
         {/* The ONE Hanzo block-H (mark from @hanzo/logo MARK_PATHS, via the
             shared HanzoLogo). Home anchor, top-left — the IDE's brand corner. */}
         <Link
@@ -136,7 +150,11 @@ export function Header({
         >{/* No marginRight: it sat INSIDE the anchor, so the <a> measured 34x32
              — the one control in the bar that was not square — while the parent
              row's `gap="$1.5"` was already doing that spacing. */}
-        <XStack width={CONTROL} height={CONTROL} alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}>
+        {/* Desktop-only, like its neighbours: at phone width the pane trough
+            takes the whole band and this anchor sat INVISIBLY beneath the Chat
+            tab — measured 24x32 of overlap, so a tap on Chat could land Home.
+            A control you cannot see must not be pressable. */}
+        <XStack display="none" $lg={{ display: "flex" }} width={CONTROL} height={CONTROL} alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}>
           <HanzoLogo size={20} />
         </XStack></Link>
         <YStack minWidth={0}>
@@ -152,12 +170,102 @@ export function Header({
             aria-label={historyOpen ? "Back to chat" : "Version history"}
             aria-pressed={Boolean(historyOpen)}
             variant="ghost"
-            display="none" $lg={{ display: "flex" }} size="icon-sm" borderRadius="$5" {...{ ...selected(Boolean(historyOpen)), hoverStyle: historyOpen ? undefined : { backgroundColor: "$color3" } }}
+            display="none" $lg={{ display: "flex" }} size="icon-sm" borderRadius={999} {...{ ...selected(Boolean(historyOpen)), hoverStyle: historyOpen ? undefined : { backgroundColor: "$color3" } }}
           >
             <History size={16} />
           </Button>
         )}
+        {/* The chat-column toggle, beside history — the reference's seat for it,
+            and now its ONLY seat: it lived on the console bar, which is where
+            you look for the SHELL, not for the chat. One glyph (PanelLeft, the
+            fleet rule), state on aria-expanded. */}
+        {onToggleChat && (
+          <Button
+            type="button"
+            onClick={onToggleChat}
+            title={chatOpen ? "Hide chat" : "Show chat"}
+            aria-label="Chat panel"
+            aria-expanded={Boolean(chatOpen)}
+            variant="ghost"
+            display="none" $lg={{ display: "flex" }} size="icon-sm" borderRadius={999} hoverStyle={{ backgroundColor: "$color3" }}
+          >
+            <PanelLeft size={16} />
+          </Button>
+        )}
       </XStack>
+
+        {/* NO group fill and NO group radius.
+
+            The segments used to sit in a `$color3` trough, which is the shape a
+            SEGMENTED control has — every option equally present, one of them
+            marked. This bar is not that: it is a set of places to go, and the
+            one you are in is the loud thing. So the inactive panes are bare
+            glyphs on the bar itself, and the active one is the raised
+            pushbutton (`accent` — $color5 on $color6) wearing its own name.
+            A trough behind that pill would draw a box around the only element
+            that is already a box. */}
+        {booted && (
+        <XStack
+          role="tablist"
+          aria-label="Editor view"
+          // $3 (8px) — the SAME radius the segments carry, because they sit
+          // flush against this box with no padding between. A 12px corner
+          // cannot contain an 8px corner at zero inset: the squarer child arc
+          // falls outside the rounder parent one, and the overhang is 1.17px at
+          // 45deg (measured, not derived — r*(1-cos45) for each radius).
+          // Invisible while every segment matched the group, obvious the moment
+          // one of them became the accent pushbutton, because a lighter corner
+          // then pokes out past the darker group and reads as the active tab
+          // climbing over its neighbours.
+          //
+          // Two ways to close it and only one suits this bar: pad the group so
+          // the children are inset, or match the radii. Padding reintroduces the
+          // trough the note above says was deliberately removed, and adds 4px to
+          // a bar whose clusters align on height. Matching costs nothing.
+          flexShrink={0} alignItems="center" gap="$0.5" borderRadius="$3" backgroundColor="$color4"
+        >
+          {PANES.map((item) => {
+            const active = tab === item.value;
+            const sel = selected(active);
+            return (
+              <Button
+                key={item.value}
+                type="button"
+                role="tab"
+                variant="ghost"
+                aria-selected={active}
+                title={item.label}
+                onClick={() => onNewTab(item.value)}
+                // ONE size for both states (`sm` = 32), so switching panes never
+                // changes the bar's height. A size variant sets a `minHeight`
+                // FLOOR, not a height, and a style prop cannot argue a floor
+                // down — asking for 28 here once drew 36 and left a 2px halo of
+                // group showing round the hover. Ask the ladder for a size.
+                //
+                // The active pane is the pushbutton and carries its LABEL; the
+                // rest are glyphs. That is why only this one is `accent` and why
+                // only this one gets horizontal padding worth the name: a label
+                // needs room, an icon needs a square.
+                size="sm" alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal={active ? "$3" : "$2"} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, ...(active ? { ...accent, borderWidth: 0 } : sel), hoverStyle: active ? undefined : { backgroundColor: "$color5" } }}
+              >
+                <SizableText color={active ? accent.color : sel.color}>
+                  <item.icon size={16} />
+                </SizableText>
+                {/* The label belongs to the ACTIVE pane only. Every pane wearing
+                    its name turns a row of destinations into a menu bar, and the
+                    bar has three other clusters to fit; every pane wearing NONE
+                    leaves the open pane unnamed. One label, on the one that
+                    matters, is also what the reference does. */}
+                {active && (
+                  <SizableText display="none" $sm={{ display: "inline" }} color={accent.color}>
+                    {item.label}
+                  </SizableText>
+                )}
+              </Button>
+            );
+          })}
+        </XStack>
+        )}
 
       {/* CENTER — view switcher + device switcher + refresh + page selector +
           open-in-new-tab, one control cluster.
@@ -189,44 +297,59 @@ export function Header({
           Preview/Code tabs would sit permanently out of reach. CSS
           `justify-content: safe center` centres while it fits and falls back to
           start the moment it does not; there is no gui prop that says that. */}
+      {!booted ? (
+        /* Boot: nothing to point tooling at — the flexible middle still grows
+           so the right cluster stays pinned to the edge. */
+        <XStack flexGrow={1} flexShrink={1} flexBasis="auto" minWidth={0} />
+      ) : (
       <XStack alignItems="center" gap="$2" flexGrow={1} flexShrink={1} flexBasis="auto" minWidth={0} overflow="scroll" className="no-scrollbar center-safe">
-        <XStack
-          role="tablist"
-          aria-label="Editor view"
-          flexShrink={0} alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color3"
-        >
-          {TABS.map((item) => {
-            const active = tab === item.value;
-            const sel = selected(active);
-            return (
-              <Button
-                key={item.value}
-                type="button"
-                role="tab"
-                variant="ghost"
-                aria-selected={active}
-                title={item.label}
-                onClick={() => onNewTab(item.value)}
-                // `size="sm"` (32), and the group carries NO padding, so the tab fills
-                // its container edge to edge — hovering paints the WHOLE segment, the
-                // way the device group beside it already did.
-                //
-                // This asked for `height={28}` and got 36. A size variant sets
-                // `minHeight`, not `height` (HEIGHT.default = 36), and a floor cannot be
-                // argued below by a style prop — so the tab rendered 36 inside 2px of
-                // group padding, the pill measured 40, and hover lit a chip with a 2px
-                // halo of the group showing all round. Its 32px sibling lit flush. Two
-                // segmented controls, side by side, disagreeing about what a hover is.
-                // Same lesson as `iconBox`: ask the ladder for a size, never a raw box.
-                size="sm" alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2.5" {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, ...sel, hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
-              >
-                <SizableText color={sel.color}>
-                  <item.icon size={16} />
-                </SizableText>
-                <SizableText display="none" $sm={{ display: "inline" }}>{item.label}</SizableText>
-              </Button>
-            );
-          })}
+
+        {/* Preview-frame TOOLING — device, refresh, open-in-new. Desktop only:
+            below `md` there is no room, and none of the three answers a
+            question a phone user is asking. The page browser is NOT here; it is
+            navigation and lives above, at every width. */}
+        <XStack display="none" $md={{ display: "flex" }} alignItems="center" gap="$2">
+          {/* No padding on the group: its items are `size="icon-sm"` (32), the
+              same as every other icon control in this bar, so the group is
+              exactly one control tall and the row does not gain a step. A
+              bespoke 28 here was the last squashed glyph — 28 minus a Button's
+              24px of label padding left 4, and it painted at 2px. */}
+          <XStack
+            role="tablist"
+            aria-label="Preview device"
+            alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color4"
+          >
+            {DEVICES.map((d) => {
+              const active = device === d.name;
+              const sel = selected(active);
+              return (
+                <Button
+                  key={d.name}
+                  type="button"
+                  role="tab"
+                  variant="ghost"
+                  aria-selected={active}
+                  title={`${d.name[0].toUpperCase()}${d.name.slice(1)} preview`}
+                  onClick={() => setDevice(d.name as "desktop" | "mobile")}
+                  size="icon-sm" borderRadius="$3" {...{ ...sel, hoverStyle: active ? undefined : { backgroundColor: "$color5" } }}
+                >
+                  <SizableText color={sel.color}>
+                    <d.icon size={16} />
+                  </SizableText>
+                </Button>
+              );
+            })}
+          </XStack>
+          <Button
+            type="button"
+            onClick={handleRefreshIframe}
+            title="Refresh preview"
+            variant="ghost"
+            size="icon-sm" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
+          >
+            <RefreshCcw size={14} />
+          </Button>
+
         </XStack>
 
         {/* THE PAGE BROWSER IS NAVIGATION, NOT PREVIEW TOOLING, so it is not
@@ -254,10 +377,13 @@ export function Header({
                 type="button"
                 title="Browse pages"
                 aria-label="Browse pages"
-                maxWidth="12rem" size="sm" alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color3" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color4" }}
+                minWidth={0} $md={{ minWidth: 180 }} maxWidth="14rem" size="sm" alignItems="center" justifyContent="center" gap="$1.5" borderRadius="$4" backgroundColor="$color4" paddingHorizontal="$3" hoverStyle={{ backgroundColor: "$color5" }}
               >
-                <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1">
-                  {currentPage}
+                {/* The NAME, not the filename: a person calls index.html the
+                    Homepage, and the picker inside still shows real paths for
+                    anyone who needs them. */}
+                <SizableText numberOfLines={1} fontSize="$2">
+                  {pageName(currentPage)}
                 </SizableText>
                 <ChevronDown size={14} />
               </Button>
@@ -279,52 +405,8 @@ export function Header({
         )}
 
 
-        {/* Preview-frame TOOLING — device, refresh, open-in-new. Desktop only:
-            below `md` there is no room, and none of the three answers a
-            question a phone user is asking. The page browser is NOT here; it is
-            navigation and lives above, at every width. */}
-        <XStack display="none" $md={{ display: "flex" }} alignItems="center" gap="$2">
-          {/* No padding on the group: its items are `size="icon-sm"` (32), the
-              same as every other icon control in this bar, so the group is
-              exactly one control tall and the row does not gain a step. A
-              bespoke 28 here was the last squashed glyph — 28 minus a Button's
-              24px of label padding left 4, and it painted at 2px. */}
-          <XStack
-            role="tablist"
-            aria-label="Preview device"
-            alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color3"
-          >
-            {DEVICES.map((d) => {
-              const active = device === d.name;
-              const sel = selected(active);
-              return (
-                <Button
-                  key={d.name}
-                  type="button"
-                  role="tab"
-                  variant="ghost"
-                  aria-selected={active}
-                  title={`${d.name[0].toUpperCase()}${d.name.slice(1)} preview`}
-                  onClick={() => setDevice(d.name as "desktop" | "mobile")}
-                  size="icon-sm" borderRadius="$3" {...{ ...sel, hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
-                >
-                  <SizableText color={sel.color}>
-                    <d.icon size={16} />
-                  </SizableText>
-                </Button>
-              );
-            })}
-          </XStack>
-          <Button
-            type="button"
-            onClick={handleRefreshIframe}
-            title="Refresh preview"
-            variant="ghost"
-            size="icon-sm" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
-          >
-            <RefreshCcw size={14} />
-          </Button>
 
+        <XStack display="none" $md={{ display: "flex" }} alignItems="center">
           <Button
             type="button"
             onClick={onOpenExternal}
@@ -337,6 +419,7 @@ export function Header({
           </Button>
         </XStack>
       </XStack>
+      )}
 
       {/* RIGHT — the actions. NEVER shrinks: it holds the primary, and a
           primary you cannot press is not a primary.

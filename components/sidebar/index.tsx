@@ -18,7 +18,6 @@ import {
   Folder,
   FolderPlus,
   Settings,
-  Info,
   BookOpen,
   Bot,
   Cloud,
@@ -99,8 +98,10 @@ const SECONDARY_ITEMS: SidebarItem[] = [
   { id: 'usage', label: 'Usage', icon: Activity, route: '/usage' },
   { id: 'docs', label: 'Docs', icon: BookOpen, route: '/docs' },
   { id: 'settings', label: 'Settings', icon: Settings, action: 'open-settings' },
-  { id: 'tour', label: 'Guided Tour', icon: Info, action: 'start-tour' },
-  { id: 'about', label: 'About', icon: Info, action: 'open-about' },
+  // Guided Tour + About are OUT of the nav: the tour does not work and About
+  // was a stub. A menu entry is a promise the click has to keep — a dead one
+  // is worse than an absent one. The handlers (onOpenAbout/start-tour) stay so
+  // nothing else that references them breaks; only the two nav rows are gone.
 ];
 
 const SYSTEM_ACTIONS: SidebarItem[] = [
@@ -357,7 +358,7 @@ function SidebarContent({
                 </YStack>
               </Button>
 
-              <Button
+              <Button size="icon"
                 onClick={toggleCollapsed}
                 title="Collapse sidebar"
                 aria-label="Collapse sidebar"
@@ -368,7 +369,7 @@ function SidebarContent({
                 <PanelLeft size={16} />
               </Button>
 
-              <Button
+              <Button size="icon"
                 onClick={() => onMobileOpenChange?.(false)}
                 title="Close menu"
                 aria-label="Close menu"
@@ -404,7 +405,7 @@ function SidebarContent({
                 </SizableText>
                 <DropdownMenu placement="bottom-end">
                   <DropdownMenuTrigger asChild>
-                    <Button
+                    <Button size="icon"
                       aria-label="Project actions"
                       variant="ghost"
                       borderRadius="$2" padding="$0.5" {...{ color: "$color11" }}
@@ -626,7 +627,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
         {...glass(3)} position="relative" width="100%" maxWidth={448} borderRadius="$8" borderWidth={1} padding="$5"
         onClick={(e) => e.stopPropagation()}
       >
-        <Button
+        <Button size="icon"
           onClick={onClose}
           aria-label="Close"
           position="absolute" right="$4" top="$4" borderRadius="$3" padding="$1" {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }}

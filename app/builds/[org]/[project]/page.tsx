@@ -16,7 +16,7 @@ type Params = { params: Promise<{ org: string; project: string }> };
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { org, project } = await params;
   const build = await getBuild(org, project);
-  if (!build) return { title: "Build not found | Hanzo" };
+  if (!build) return { title: "Build not found" };
 
   const title = build.title || `How ${build.project} was built`;
   const description =
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     `each bound to the commit it produced. Forkable from any point.`;
   const url = `${SITE}/builds/${org}/${project}`;
   return {
-    title: `${title} | Hanzo`,
+    title,
     description,
     alternates: { canonical: url },
     openGraph: { title, description, url, siteName: "Hanzo", type: "article" },

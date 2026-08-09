@@ -26,7 +26,7 @@ const stripComments = (src: string) => src.replace(/\/\*[\s\S]*?\*\//g, "");
 // Every surface that shows or hides a column on the reader's left.
 const TOGGLES = [
   "components/sidebar/index.tsx",
-  "components/editor/console/index.tsx",
+  "components/editor/header/index.tsx",
   "app/chat/page.tsx",
 ];
 

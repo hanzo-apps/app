@@ -53,14 +53,14 @@ export function SaveButton({ save }: { save: () => Promise<boolean> }) {
     <Button
       {...accent}
       size="sm"
-      height={28} gap="$1.5" paddingHorizontal="$2.5" position="relative"
+      height={32} gap="$1.5" paddingHorizontal="$3" borderRadius={999} borderWidth={0} position="relative"
       onClick={publish}
       disabled={loading}
     >
       <View $lg={{ display: "none" }}>
         <Save size={14} />
       </View>
-      <SizableText fontSize="$1" color="$color12">{loading ? "Saving…" : "Publish"}</SizableText>
+      <SizableText color="$color12">{loading ? "Saving…" : "Publish"}</SizableText>
       {loading && <Loading overlay={false} size={14} />}
     </Button>
   );

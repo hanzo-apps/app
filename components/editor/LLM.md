@@ -305,13 +305,14 @@ pins its own viewport (the bar is breakpoint-gated) and asserts a coverage floor
 BEFORE any geometry: written without one, its assertions pass against the
 hanzo.id login page — measured, not hypothesised.
 
-**KNOWN, unfixed:** below ~1440px the centre cluster and the pinned
-Share/Publish actions OVERLAP (mobile 390px: 4 pairs, `Code ∩ Publish` by
-42x44px; tablet 834px: 2 pairs). A press lands on whichever paints last. Two
-candidate fixes — `flexShrink: 1` + `minWidth: 0` on the centre cluster, and the
-same on the left cluster — were MEASURED to change nothing, so neither is in the
-tree. Reproduce by comparing the bounding rects of every control in the top band
-at 390 / 834 / 1440; the rects overlap, which a desktop screenshot cannot show.
+**The sub-1440px overlap is FIXED** (re-measured 2026-08-09 at 390×844 against
+production: 5 controls in the top band, zero overlapping pairs). The fix was
+never the flexShrink attempts this note used to recommend against — the mobile
+header now COLLAPSES to a single icon row (pane trough + share + Publish) and
+the desktop-only clusters (device trough, Homepage pill, refresh, external)
+simply do not render at small widths. If an overlap ever reappears, measure the
+same way: bounding rects of every control in the top band at 390 / 834 / 1440 —
+a desktop screenshot cannot show it.
 
 ### The visual-edit round trip: a click has to say WHERE, not just what
 

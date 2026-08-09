@@ -55,6 +55,9 @@ import { RevisionDetails, type DetailsRev } from "./history/details";
 import { ShareModal } from "./share-modal";
 import { Console } from "./console";
 import { VisualEditor } from "./visual-editor";
+import { FilesPane } from "./files";
+import { MorePane } from "./more";
+import { rightPane } from "@/lib/panes";
 import { OrgProvider } from "@/lib/org/client";
 
 export const AppEditor = ({
@@ -111,6 +114,17 @@ export const AppEditor = ({
   // docked on the left; this drives what the RIGHT pane shows — preview or the
   // code editor — and, on mobile, which single pane is visible.
   const [currentTab, setCurrentTab] = useState("chat");
+  // DESKTOP BOOTS ON PREVIEW. "chat" is the right initial tab only where chat
+  // is a TAB — on a phone, one pane at a time. On desktop the chat column is
+  // permanently docked and the right side shows the preview, so a currentTab
+  // of "chat" left the pane trough with NO active pill: the segment it named
+  // is hidden above lg, and the bar read as dead chrome over a live preview.
+  // State says what the screen shows.
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+      setCurrentTab((t) => (t === "chat" ? "preview" : t));
+    }
+  }, []);
   /**
    * What the RIGHT pane shows. Per the comment above, `currentTab` carries two
    * meanings, and `chat` belongs to only one of them: the right pane shows
@@ -123,7 +137,21 @@ export const AppEditor = ({
    * an element in the preview sets the tab back to `chat` (it opens the chat to
    * ask about that element), which disarmed editing again on every use.
    */
-  const rightView = currentTab === "code" ? "code" : "preview";
+  const rightView = rightPane(currentTab);
+  /**
+   * BOOT: a project with nothing in it yet — one page still wearing the
+   * scaffold. The window is the CONVERSATION alone: no preview card, no pane
+   * pills, no page tooling, because every one of those operates on an app that
+   * does not exist, and chrome for a missing thing reads as a broken thing.
+   * Ask questions, plan, talk — full width, like the reference.
+   *
+   * The unfurl is not an event, it is this predicate flipping: the first real
+   * bytes stream into `pages` mid-generation, `isTheSameHtml` goes false, and
+   * the workspace appears exactly when there is something to show. Plan-mode
+   * turns never touch pages, so a purely conversational start stays a
+   * conversation.
+   */
+  const fresh = pages.length <= 1 && isTheSameHtml(pages[0]?.html ?? "");
   // The left pane is ALWAYS the chat composer; a history/rollback ICON in the
   // header toggles the version-history panel as an OVERLAY over it (item 10).
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -133,6 +161,10 @@ export const AppEditor = ({
   // The chat pane can be collapsed on desktop to give preview/code the full
   // width; on mobile the tab switcher already shows one pane at a time.
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // The chat pane's width in px — the ONE number the pane, the resizer and the
+  // header all read, so the chrome above the split can sit exactly over the
+  // pane it controls. 0 = no docked chat (mobile, collapsed, boot).
+  const [chatW, setChatW] = useState(0);
   // Live mirror so the once-registered window-resize listener always sees the
   // current collapsed state in the split math (no stale closure, no re-register).
   const sidebarCollapsedRef = useRef(false);
@@ -173,10 +205,17 @@ export const AppEditor = ({
       const r = resizer.current;
       const resizerWidth = r && 'scrollTo' in r ? r.offsetWidth : 8; // w-2 = 8px
       const availableWidth = window.innerWidth - resizerWidth;
-      // Chat ~27% (v2: 24–28%); the preview gets the room.
-      el.style.width = `${Math.round(availableWidth * 0.27)}px`;
+      // Chat 27% BUT CAPPED IN PIXELS. A percentage scales with the monitor
+      // and a conversation does not: on an ultrawide, 27% is a thousand pixels
+      // of mostly-empty column and the owner's exact words were "too wide".
+      // The reference sits ~500; drag past the cap any time — this is only
+      // where a fresh layout starts.
+      const w = Math.min(520, Math.max(360, Math.round(availableWidth * 0.27)));
+      el.style.width = `${w}px`;
+      setChatW(w);
     } else {
       el.style.width = "";
+      setChatW(0);
     }
   };
 
@@ -195,6 +234,7 @@ export const AppEditor = ({
     );
     // Set ONLY the chat pane; the preview region (flex-1) absorbs the rest.
     el.style.width = `${clampedEditorWidth}px`;
+    setChatW(clampedEditorWidth);
   };
 
   const handleMouseDown = () => {
@@ -328,6 +368,23 @@ export const AppEditor = ({
     setTimeout(() => URL.revokeObjectURL(url), 60_000);
   };
 
+  // The split is re-stamped when the states that suspend it change: boot
+  // ending (the unfurl), the sidebar toggling. resetLayout reads refs, so it is
+  // stable to call from here.
+  useEffect(() => {
+    resetLayout();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fresh, sidebarCollapsed]);
+
+  // ONE history toggle — the header's icon and the composer's [+] menu share
+  // it, so the two ways in cannot drift.
+  const toggleHistory = () => {
+    const next = !historyOpen;
+    setHistoryOpen(next);
+    // Opening history must reveal the left pane if it was collapsed.
+    if (next) setSidebarCollapsed(false);
+  };
+
   return (
     <OrgProvider>
     {/* overflow="hidden" as well as the exact height: the height alone only says
@@ -345,13 +402,12 @@ export const AppEditor = ({
         currentPage={currentPage}
         onSelectPage={setCurrentPage}
         onOpenExternal={openInNewTab}
+        booted={!fresh}
+        leftWidth={!fresh && !sidebarCollapsed ? chatW : 0}
+        chatOpen={!sidebarCollapsed}
+        onToggleChat={() => setSidebarCollapsed((v) => !v)}
         historyOpen={historyOpen}
-        onToggleHistory={() => {
-          const next = !historyOpen;
-          setHistoryOpen(next);
-          // Opening history must reveal the left pane if it was collapsed.
-          if (next) setSidebarCollapsed(false);
-        }}
+        onToggleHistory={toggleHistory}
         project={project}
       >
         {/* Two lean actions, Codex-minimal: Share (a preview link) and Publish
@@ -363,10 +419,14 @@ export const AppEditor = ({
             on its own. Load is gone too — you are already inside a project
             editing it, so "load a project" here was a door to nowhere. */}
         <Button
-          variant="outline"
+          variant="ghost"
           size="sm"
           onClick={() => setIsShareModalOpen(true)}
-          height={28} gap="$1.5" paddingHorizontal="$2.5" borderRadius="$4" borderColor="$color06" backgroundColor="$color04" hoverStyle={{ backgroundColor: "$color08", borderColor: "$color8" }}
+          // The same pill as Publish beside it — one family, differing only in
+          // emphasis. It was an outline rect on a translucent fill next to a
+          // raised rounded primary: two shapes for two siblings, which is what
+          // read as "weirdly different".
+          height={32} gap="$1.5" paddingHorizontal="$3" borderRadius={999} backgroundColor="$color4" hoverStyle={{ backgroundColor: "$color5" }}
         >
           <Share2 size={14} />
           <SizableText display="none" $md={{ display: "inline" }}>Share</SizableText>
@@ -413,13 +473,21 @@ export const AppEditor = ({
           //
           // Mobile: one pane at a time, chosen by the tab. Desktop: chat docked
           // left unless collapsed, preview beside it.
-          display={currentTab === "chat" ? "flex" : "none"}
-          $lg={{ flex: 1, flexShrink: 0, display: sidebarCollapsed ? "none" : "flex" }}
+          display={currentTab === "chat" || fresh ? "flex" : "none"}
+          // flexGrow 0 on desktop, and that zero is the whole resizer. The pane
+          // carried `flex: 1`, and grow re-expands past any width the drag
+          // writes — resetLayout stamped 27%, grow pulled it straight back to
+          // half, so the split sat pinned at 50/50 and the drag was a no-op
+          // that read as "I can't even resize it". One authoritative width
+          // (style.width, owned by resetLayout + the drag), one flex fill (the
+          // preview). Boot is the exception: the conversation IS the window.
+          $lg={{ flexGrow: fresh ? 1 : 0, flexShrink: 0, display: !fresh && sidebarCollapsed ? "none" : "flex" }}
         >
           {/* Chat — ALWAYS the left pane (composer/thread live here permanently);
               the history panel OVERLAYS it when toggled from the header icon. */}
-          <YStack minHeight={0} flex={1}>
+          <YStack minHeight={0} flex={1} {...(fresh ? { width: "100%", maxWidth: 860, alignSelf: "center" } : null)}>
             <AskAI
+              onToggleHistory={toggleHistory}
               isNew={isNew}
               project={project}
               images={images}
@@ -495,10 +563,14 @@ export const AppEditor = ({
           role="separator"
           aria-orientation="vertical"
           aria-label="Resize chat and preview panes"
-          position="relative" width="$3" height="100%" flexShrink={0} cursor="col-resize" alignItems="center" justifyContent="center"
+          // 10 in PX. `width="$3"` resolved through gui's SIZE scale to 36px —
+          // the $6=64 trap, on the one element between the panes — so a third
+          // of the owner's "too much gap" was the resizer track itself.
+          // Measured live: 36px. Ten is still a comfortable grab.
+          position="relative" width={10} height="100%" flexShrink={0} cursor="col-resize" alignItems="center" justifyContent="center"
           // Only where there are two panes to divide: hidden on mobile, shown on
           // desktop. It was exactly inverted.
-          display="none" $lg={{ display: "flex" }} className="group/resizer"
+          display="none" $lg={{ display: fresh ? "none" : "flex" }} className="group/resizer"
         >
           {/* macOS split view: NO visible divider at rest — the panes simply
               meet. The wide (w-3) hit target still grabs from either edge, and a
@@ -515,10 +587,19 @@ export const AppEditor = ({
             stays mounted (iframe warm, iframeRef valid); Code overlays it. */}
         <YStack
           position="relative" flex={1} minWidth={0} height="100%" padding="$2"
-          display={currentTab === "chat" ? "none" : "flex"}
-          $lg={{ padding: "$3", display: "flex" }}
+          display={currentTab === "chat" || fresh ? "none" : "flex"}
+          $lg={{ padding: "$2", display: fresh ? "none" : "flex" }}
         >
-          <YStack position="relative" height="100%" width="100%" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={5} className="preview-stage">
+          {/* FULL-BLEED, the owner's call: the preview IS the workspace's right
+              region, not a card floating in it. The gutter, the hairline and
+              the elevation are gone — the resizer's hover seam is the only
+              boundary, and the canvas runs to the window edges (the console at
+              rest is an invisible pull-up edge, so the bottom is the window's). */}
+          {/* A PANEL you can see: one step off true black, hairline edge,
+              rounded — an 8px gutter, not the old padded float. Full-bleed on a
+              black field made the pane's own surface invisible; this keeps the
+              space and restores the shape. */}
+          <YStack position="relative" height="100%" width="100%" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$color02" backgroundColor="$color1" className="preview-stage">
             {/* Faint top highlight — a crisp edge that reads as raised glass. */}
             <YStack pointerEvents="none" position="absolute" left="$0" right="$0" top="$0" zIndex={20} height={1} />
             <Preview
@@ -536,7 +617,14 @@ export const AppEditor = ({
               onClickElement={(element) => {
                 setIsEditableModeEnabled(false);
                 setSelectedElement(element);
-                setCurrentTab("chat");
+                // "chat" is a destination only where chat is a TAB (mobile —
+                // one pane at a time, and the composer is what you need next).
+                // On desktop the composer is already docked beside the preview,
+                // and flipping the tab would only strip the trough's active
+                // pill — the same dead-bar state the boot fix removed.
+                if (typeof window === "undefined" || window.innerWidth < 1024) {
+                  setCurrentTab("chat");
+                }
               }}
   />
             {rightView === "preview" && (
@@ -559,6 +647,19 @@ export const AppEditor = ({
                 }}
   />
             )}
+            {/* FILES view — a browser over the project's real file list, with a
+                preview of whatever is selected. Distinct from Code, which is an
+                editor: this answers "what is in here", that answers "change it". */}
+            {rightView === "files" && (
+              <FilesPane
+                pages={pages}
+                currentPage={currentPage}
+                onSelectPage={setCurrentPage}
+  />
+            )}
+            {/* MORE view — everything about the project that is not its source:
+                the Hanzo services behind it, analytics, connectors, payments. */}
+            {rightView === "more" && <MorePane projectId={project?.space_id ?? null} />}
             {/* CODE view — the CodeMirror editor overlaid inside the card when the
                 header switches to Code. The left panel stays chat; code lives here. */}
             {rightView === "code" && (
@@ -660,8 +761,6 @@ export const AppEditor = ({
         saveText={saveLabel(autosave.state, autosave.at)}
         branch={project?.repo?.branch}
         pageCount={pages.length}
-        sidebarCollapsed={sidebarCollapsed}
-        onToggleSidebar={() => setSidebarCollapsed((v) => !v)}
   />
 
       <ShareModal

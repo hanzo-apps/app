@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { AppShell } from '@/components/app-shell';
 
 export const metadata: Metadata = {
-  title: 'Work — Hanzo',
+  title: 'Work',
   description: 'Work mode is coming to hanzo.app.',
 };
 

@@ -31,9 +31,16 @@ export function GamePlay() {
   }
 
   return (
-    <YStack minHeight="100%" backgroundColor="$background">
+    // A DEFINITE HEIGHT, not a minimum. The player is a flex:1 chain ending in an
+    // iframe at height:100%, and a percentage resolves against nothing when its
+    // ancestor only declares minHeight — so the whole column collapsed and the
+    // engine's canvas came up `height="0"` while its width was right. Nothing
+    // errored: a zero-height canvas is a valid canvas that draws to no pixels.
+    // 100dvh rather than 100vh so a mobile URL bar shrinking the viewport does not
+    // leave the player scrolled under it.
+    <YStack height="100dvh" overflow="hidden" backgroundColor="$background">
       <Header />
-      <YStack flex={1} backgroundColor="$background">
+      <YStack flex={1} minHeight={0} backgroundColor="$background">
         <XStack alignItems="center" gap="$4" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$5" paddingVertical="$3">
           <Link
             href={`/games/${game.id}`}

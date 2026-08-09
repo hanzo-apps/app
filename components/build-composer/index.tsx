@@ -85,6 +85,25 @@ export function BuildComposer({
     if (autoFocus) textareaRef.current?.focus();
   }, [autoFocus]);
 
+  /**
+   * Grow to fit what has been typed.
+   *
+   * `rows={2}` sets the floor and the CSS `max-height` sets the ceiling; between
+   * them the box tracks its own content, so a three-line idea is not read
+   * through a two-line slot. The height is cleared before it is measured
+   * because `scrollHeight` never shrinks below the height already set — without
+   * that reset the field only ever grows, and deleting a line leaves a gap.
+   *
+   * It runs on `idea` rather than on a keystroke handler so that the suggestion
+   * chips, which set the value directly, size the box too.
+   */
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
+  }, [idea]);
+
   // Idle typewriter placeholder — pauses on focus/typing; static first phrase
   // under prefers-reduced-motion (mirrors the Reveal contract).
   const [typed, setTyped] = useState('');
@@ -302,7 +321,7 @@ export function BuildComposer({
                   <Mic size={16} fill={state === "idle" ? "none" : "currentColor"} />
                 )}
               </Voice>
-              <Button
+              <Button size="icon"
                 type="button"
                 onClick={() => submit()}
                 disabled={!idea.trim()}
@@ -338,6 +357,7 @@ export function BuildComposer({
                   submit(s);
                 }
               }}
+              className="hz-tap"
               cursor="pointer" flexShrink={0} whiteSpace="nowrap" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$color5", backgroundColor: "$color4", color: "$color" }}
             >
               {s}

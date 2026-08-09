@@ -4,16 +4,15 @@ import { Button, Input } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
 import { SizableText, YStack, XStack, Paragraph } from '@hanzo/ui';
 import { useEffect, useRef, useState } from "react";
-import { Check, GitBranch, PanelLeft, Square } from "lucide-react";
+import { Check, GitBranch, Square, SquareTerminal } from "lucide-react";
 
-import { Voice } from "@hanzo/voice";
 
-import { useMic } from "@/components/editor/ask-ai/mic";
 import { currentProject } from "@/lib/dev/workspace";
 import { HOME, TIMEOUT } from "@/lib/shell";
 
 import { BAR, DEFAULT_OPEN, MIN_OPEN, STEP, maxOpen, useDock } from "./dock";
-import { push, useConsoleLog, useRun } from "./log";
+import { currentSandbox, holdSandbox, push, useConsoleLog, useRun } from "./log";
+import { Terminal } from "./terminal";
 
 /**
  * The prompt — the half of this dock you can type into.
@@ -33,7 +32,6 @@ function Prompt() {
   const [command, setCommand] = useState("");
   const [cwd, setCwd] = useState(HOME);
   const [busy, setBusy] = useState(false);
-  const held = useRef("");
   // What was typed, newest last. ArrowUp walks back through it; `at` is where
   // the walk has got to, and length means "not walking" — the draft is at the
   // end of the list, which is exactly where a fresh line belongs.
@@ -59,7 +57,7 @@ function Prompt() {
           cwd,
           project: currentProject(),
           // The live run's pod wins: one sandbox, one checkout.
-          sandbox: run?.sandbox || held.current || undefined,
+          sandbox: currentSandbox() || undefined,
         }),
       });
       const body = (await res.json().catch(() => null)) as {
@@ -71,7 +69,7 @@ function Prompt() {
         push("sandbox", "error", body?.error || `The shell could not run that (${res.status}).`);
         return;
       }
-      held.current = body.sandbox || held.current;
+      holdSandbox(body.sandbox ?? "");
       setCwd(body.cwd || cwd);
       if (body.stdout?.trim()) push("sandbox", "log", body.stdout.replace(/\n+$/, ""));
       if (body.stderr?.trim()) push("sandbox", "error", body.stderr.replace(/\n+$/, ""));
@@ -222,8 +220,6 @@ export function Console({
   saveText,
   branch,
   pageCount,
-  sidebarCollapsed,
-  onToggleSidebar,
 }: {
   isAiWorking: boolean;
   /** Honest persistence state — see lib/pages/save-label. */
@@ -231,15 +227,17 @@ export function Console({
   /** The linked repo's branch, or undefined when the project has no repo. */
   branch?: string;
   pageCount: number;
-  sidebarCollapsed: boolean;
-  onToggleSidebar: () => void;
 }) {
   const { height, open, setHeight, toggle, nudge } = useDock();
   const { entries } = useConsoleLog();
+  // The dock's second face: the REAL terminal (cloud's framed emulator) in
+  // place of the log + line-prompt. Same pod either way — the frame and the
+  // prompt share the held sandbox — so this is a view choice, not a session
+  // choice, and flipping back loses nothing.
+  const [term, setTerm] = useState(false);
   // The live run, or null. Its sandbox is the handle Stop acts on.
   const run = useRun();
   // The composer's voice, drawn here. Null until a composer is mounted.
-  const voice = useMic();
 
   // OLD: `const branch = "main"` — stated unconditionally. Builder projects are
   // single-branch when they have a repo, but MOST HAVE NONE: the only paths that
@@ -339,7 +337,7 @@ export function Console({
             else return;
             e.preventDefault();
           }}
-          position="absolute" top={0} right={0} bottom={0} left={0} cursor="row-resize" userSelect="none" borderTopWidth={1} borderColor="$borderColor" group
+          position="absolute" top={0} right={0} bottom={0} left={0} cursor="row-resize" userSelect="none" borderTopWidth={open ? 1 : 0} borderColor="$borderColor" group
         >
           {/* The affordance: a hairline that lifts and a grip that fades in on
               hover, focus or drag. Nothing is drawn while the bar is at rest. */}
@@ -347,34 +345,13 @@ export function Console({
           <SizableText pointerEvents="none" position="absolute" left="50%" top={3} height="$1" width="$6" x="-50%" borderRadius="$10" backgroundColor="transparent" $group-hover={{ backgroundColor: "$color06" }} $group-focus={{ backgroundColor: "$color06" }} $group-press={{ backgroundColor: "$color" }} />
         </YStack>
 
-        {/* Far LEFT — the chat/AI panel toggle. It shows and hides the LEFT pane,
-            so it belongs on the left: a right-side control that collapsed the left
-            pane read as belonging to the preview, and people could not find it.
-            Floated over the bar like the right cluster so the separator underneath
-            stays one clean, uninterrupted drag target. */}
-        <XStack position="absolute" left="$2" top="$0" height="100%" alignItems="center">
-          <Button
-            type="button"
-            onClick={onToggleSidebar}
-            aria-label="Chat panel"
-            aria-expanded={!sidebarCollapsed}
-            variant="ghost"
-            group
-            width="$4.5" height="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}
-          >
-            {/* ONE glyph for the left panel — `PanelLeft`, open or shut (the
-                fleet rule; see components/sidebar). `aria-expanded` above already
-                says which it is. `size={16}` is the rest of that rule: one glyph
-                means one SIZE too, and this was the app's only 14. */}
-            <SizableText color="$color11" $group-hover={{ color: "$color" }}>
-              <PanelLeft size={16} />
-            </SizableText>
-          </Button>
-        </XStack>
 
         {/* State, inert: it rides on the bar but never eats the drag. Padded to
             clear the panel toggle on the left and the mic + Enso on the right —
-            measured clearances, so they stay the measurements they are. */}
+            measured clearances, so they stay the measurements they are.
+            OPEN ONLY: at rest the dock is an invisible edge, and everything
+            this row says lives behind the pull. */}
+        {open && (
         <XStack
           pointerEvents="none"
           position="relative"
@@ -431,24 +408,39 @@ export function Console({
             )}
           </XStack>
         </XStack>
+        )}
 
         {/* Far right — the workspace AI controls, floated over the bar so the
             separator underneath stays one clean, uninterrupted drag target.
             Order is mic then Enso: the mic is the conversation, Enso the editor,
             and the user asked for the mark to sit to the RIGHT of the mic. */}
-        <XStack position="absolute" right="$2" top="$0" height="100%" alignItems="center" gap="$0.5">
+        {/* display, not unmount: #enso-dock inside is the anchor an external
+            script (public/edit.js) injects into, and unmounting it on collapse
+            would strand Enso. Hidden at rest with everything else — the edge
+            shows nothing. */}
+        <XStack position="absolute" right="$2" top="$0" height="100%" alignItems="center" gap="$0.5" display={open ? "flex" : "none"}>
           {/* Only while there is a command to interrupt, and only when it runs
               somewhere interruptible: a scratch run edits a map in this process
               and has no sandbox to stop. An always-visible Stop that sometimes
               does nothing is worse than one that appears when it can act. */}
+          {/* The cloud shell — the same real terminal console.hanzo.ai frames,
+              in this project's pod. A toggle, not a door: the dock's body flips
+              between the log and the frame, and the bar stays the bar. */}
+          <Button size="icon"
+            type="button"
+            onClick={() => setTerm((t) => !t)}
+            variant="ghost"
+            aria-label="Open a cloud shell — a real terminal in your sandbox"
+            aria-pressed={term}
+            title="Cloud shell — a real terminal in your sandbox"
+            height="$4.5" width="$4.5" minWidth="$4.5" alignItems="center" justifyContent="center"
+            paddingHorizontal={0} borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}
+          >
+            <SizableText color={term ? "$color" : "$color11"}>
+              <SquareTerminal size={14} />
+            </SizableText>
+          </Button>
           {run?.sandbox && <Stop sandbox={run.sandbox} />}
-          {voice && (
-            <Voice
-              voice={voice}
-              disabled={isAiWorking}
-              className="voice-control"
-  />
-          )}
           {/* Enso mounts HERE (public/edit.js, `hanzo:anchor` in app/dev/layout),
               to the RIGHT of the mic. It used to float at the viewport corner, on
               top of the customer's preview — so /dev turned it off entirely. In
@@ -461,7 +453,16 @@ export function Console({
         </XStack>
       </YStack>
 
-      {open && (
+      {/* The second face: the framed terminal replaces the log AND the prompt —
+          a real shell brings its own prompt. Mount/unmount is the session
+          boundary (a fresh ticket each mount); the tmux session named per
+          project is what makes that cheap, reattaching to the shell it left. */}
+      {open && term && (
+        <YStack minHeight={0} flex={1} borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background">
+          <Terminal project={currentProject()} />
+        </YStack>
+      )}
+      {open && !term && (
         <YStack minHeight={0} flex={1} borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" overflow="scroll">
           {entries.length === 0 ? (
             <Paragraph fontFamily="$mono" fontSize="$1" lineHeight="1.625" color="$color11">
@@ -506,7 +507,7 @@ export function Console({
       )}
       {/* The prompt sits OUTSIDE the scroller so it stays put while output runs
           past it — the one row of this dock that is always reachable once open. */}
-      {open && (
+      {open && !term && (
         <YStack borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingBottom="$2">
           <Prompt />
         </YStack>
