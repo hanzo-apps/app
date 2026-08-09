@@ -1675,30 +1675,29 @@ html:root .hz-providers {
   display: none !important;
 }
 
-/* Anchored popovers are a MATERIAL, not a tint.
-   @hanzo/ui frosts its own `[data-slot="dropdown-menu-content"]` with
-   `blur(20px) saturate(1.8)` and carries the -webkit- prefix for it. gui's
-   popper renders as `.is_PopperContent` instead, which that selector never
-   matches — so it got the translucent background (alpha .72) and NO blur.
-   Translucent without blur is not frosted, it is see-through: measured in
-   WebKit, the page's own chips read straight through the open menu, one line
-   of text crossing another. Chromium hid it because its compositor happened to
-   land the panel over darker pixels.
-   Same values as the design system's, both spellings, so the menu is opaque
-   enough to read in every engine. */
-html:root .is_PopperContent {
-  /* OPAQUE, and that is the load-bearing half. Both filter spellings are set
-     and WebKit accepts both — measured, `backdropFilter` and
-     `webkitBackdropFilter` both compute to `blur(20px) saturate(1.8)` — and the
-     text STILL read through, because accepting the property is not compositing
-     it. Legibility cannot rest on a filter an engine may decline; the blur is a
-     bonus where it lands. `--popover` is the token @hanzo/design already
-     publishes for exactly this surface, so this borrows the ground rather than
-     inventing a second one. */
-  /* `!important` for the same reason `.t_group_true` needs it: gui writes this
-     background INLINE, and an inline declaration beats any selector at any
-     specificity. Without it the rule is silently a no-op — measured, the
-     computed value stayed `oklab(… / .72)`. */
+/* AN OVERLAY THAT CARRIES TEXT IS OPAQUE. One law, every floating surface.
+   @hanzo/ui frosts its own `[data-slot="dropdown-menu-content"]` and even
+   carries the -webkit- prefix for it, but gui renders poppers and dialogs as
+   `.is_PopperContent` / `.is_DialogContent`, and @hanzogui/shell's mega-menu is
+   `#hanzo-meet-menu` — none of which that selector matches. All three got the
+   translucent ground (alpha .72) and no blur of their own.
+   Translucent without an applied blur is not frosted, it is see-through.
+   Measured in WEBKIT, which no one had ever run this app in: with a menu open
+   the page's own text reads straight through it — "Internal admin dashboard"
+   crossing "Generate and edit the app directly" on one line, and the ⌘K dialog
+   showing the hero behind its rows. Chromium hid all of it by happening to
+   composite over darker pixels.
+   Declaring the filter is NOT enough: WebKit accepts both spellings — computed
+   `backdropFilter` and `webkitBackdropFilter` both read the blur — and still
+   declines to composite it. Legibility cannot rest on a filter an engine may
+   ignore, so the ground is opaque and the blur is a bonus where it lands.
+   `--popover` is the token @hanzo/design already publishes for this surface.
+   `!important` because these backgrounds are written INLINE, which beats any
+   selector at any specificity — the same collision `.t_group_true` needs it
+   for. Without it the rule is a silent no-op; measured, the value stayed .72. */
+html:root .is_PopperContent,
+html:root .is_DialogContent,
+html:root #hanzo-meet-menu {
   background-color: var(--popover) !important;
   -webkit-backdrop-filter: blur(20px) saturate(1.8);
   backdrop-filter: blur(20px) saturate(1.8);
