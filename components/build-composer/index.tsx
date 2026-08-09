@@ -332,7 +332,7 @@ export function BuildComposer({
                 disabled={!idea.trim()}
                 aria-label="Start building"
                 variant="outline"
-                alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3", borderColor: "$borderColor" }}
+                alignItems="center" justifyContent="center" borderRadius={999} backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3", borderColor: "$borderColor" }}
               >
                 <ArrowUp size={16} strokeWidth={2.5} />
               </Button>

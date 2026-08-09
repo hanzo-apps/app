@@ -1666,18 +1666,18 @@ export function AskAI({
             <Voice voice={voice} disabled={isAiWorking} className="voice-control" />
             {isAiWorking ? (
               <Button
-                size="icon-sm"
+                size="icon"
                 variant="destructive"
                 onClick={stopController}
-                gap="$1" height={28} minHeight={28} width={28} minWidth={28} borderRadius={999}
+                gap="$1" height={36} minHeight={36} width={36} minWidth={36} borderRadius={999}
               >
                 <CircleStop size={16} />
               </Button>
             ) : (
               <Button
-                size="icon-sm"
+                size="icon"
                 {...accent}
-                height={28} minHeight={28} width={28} minWidth={28} borderWidth={0} borderRadius={999}
+                height={36} minHeight={36} width={36} minWidth={36} borderWidth={0} borderRadius={999}
                 disabled={
                   isUploading ||
                   (!prompt.trim() &&

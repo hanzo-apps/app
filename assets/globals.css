@@ -1481,6 +1481,16 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   color: var(--muted-foreground);
   transition: color 150ms, background-color 150ms;
 }
+/* The mic is a CIRCLE, and this rule is why it actually is one. @hanzo/voice
+   emits the button's radius as a gui atomic class that carries `!important`
+   (measured: an html:root anchor alone did NOT win, `!important` did), so the
+   bare `.voice-control { border-radius: 999px }` above rendered a 10px rounded-
+   rect that mismatched the round send beside it. `!important` here is load-
+   bearing, the same as the coarse-pointer tap-target rule — without it the mic
+   is a square. */
+html:root .voice-control {
+  border-radius: 999px !important;
+}
 .voice-control:hover:not(:disabled) {
   background-color: color-mix(in oklab, var(--foreground) 12%, transparent);
   color: var(--foreground);
