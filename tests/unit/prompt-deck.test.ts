@@ -13,11 +13,20 @@
  * named, printing is named as the export, and no slide framework is loaded —
  * the same self-contained rule every other recommendation follows.
  */
-import { INITIAL_SYSTEM_PROMPT } from '@/lib/prompts';
+import { FOLLOW_UP_SYSTEM_PROMPT, INITIAL_SYSTEM_PROMPT, SLIDES_LAW } from '@/lib/prompts';
 
 describe('the deck law', () => {
   it('exists, and says slides are not a webpage', () => {
     expect(INITIAL_SYSTEM_PROMPT).toMatch(/PRESENTATIONS ARE SLIDES, NOT A WEBPAGE/);
+  });
+
+  it('is ONE constant shared by the initial build AND the follow-up modify', () => {
+    // The bug this pins: "create a presentation" built a deck on a fresh
+    // project but "turn this into a presentation" as a follow-up did not,
+    // because only INITIAL carried the law. Same words must mean the same
+    // thing on both paths.
+    expect(INITIAL_SYSTEM_PROMPT).toContain(SLIDES_LAW);
+    expect(FOLLOW_UP_SYSTEM_PROMPT).toContain(SLIDES_LAW);
   });
 
   it('names keyboard navigation — a deck you cannot advance is a poster', () => {
