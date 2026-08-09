@@ -29,13 +29,16 @@ import type { GuiElement } from '@hanzo/gui';
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import {
+  ArrowUp,
   Check,
+  ChevronDown,
   Clock,
   Code2,
-  CornerDownLeft,
   Eye,
   MessageSquare,
+  Mic,
   Monitor,
+  Plus,
   RotateCcw,
   Smartphone,
   Sparkles,
@@ -384,17 +387,34 @@ export default function HeroPreview() {
               )}
             </YStack>
 
-            {/* The rounded chat input — mirrors the real composer. */}
+            {/* The rounded chat input — the REAL composer's two rows at demo
+                scale: prompt above, then [+] · Build ⌄ · mic · send. The mic
+                and send are the same circle pair the builder draws (send
+                filled, mic outlined), because the demo's whole claim is "this
+                is the product". */}
             <YStack paddingHorizontal="$2.5" paddingBottom="$2.5">
-              <XStack alignItems="center" gap="$2" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingVertical="$1.5">
-                <SizableText minWidth={0} flex={1} numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
+              <YStack gap="$1.5" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingTop="$1.5" paddingBottom="$1.5">
+                <SizableText minWidth={0} numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
                   {typed || (busy ? "…" : "Ask Hanzo to change anything…")}
                   {phase === "typing" && (
                     <SizableText marginLeft="$0.25" height="$3" width={1} y={1} backgroundColor="$color" verticalAlign="middle" className="caret" />
                   )}
                 </SizableText>
-                <CornerDownLeft size={12} />
-              </XStack>
+                <XStack alignItems="center" gap="$1.5">
+                  <Plus size={11} opacity={0.6} />
+                  <XStack alignItems="center" gap="$0.5" height={16} borderRadius={999} backgroundColor="$color3" paddingHorizontal="$1.5">
+                    <SizableText fontSize={9} color="$color11">Build</SizableText>
+                    <ChevronDown size={8} opacity={0.7} />
+                  </XStack>
+                  <XStack flex={1} />
+                  <XStack height={16} width={16} alignItems="center" justifyContent="center" borderRadius={999} borderWidth={1} borderColor="$color06">
+                    <Mic size={9} opacity={0.7} />
+                  </XStack>
+                  <XStack height={16} width={16} alignItems="center" justifyContent="center" borderRadius={999} backgroundColor="$color5">
+                    <ArrowUp size={9} />
+                  </XStack>
+                </XStack>
+              </YStack>
             </YStack>
           </YStack>
 
