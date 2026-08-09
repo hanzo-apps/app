@@ -51,6 +51,22 @@ that IS typed may not behave the way the DOM one does:
   on each other). Always the string form for multipliers: `lineHeight="1.5"`.
 - **`$color` is the foreground** (white in dark). Never a container background —
   surfaces are `$color2/3/4`, alphas `$color005…$color06` for outline chrome.
+- **`H2`, `H3` and `Paragraph` are TEXT primitives and render INLINE.** A plain
+  `<div>` around them does not stack them — it is a block box holding inline
+  content, so they run together on one line. Measured on the landing's
+  "Continue building" header: the heading occupied x 442-698 and its subtitle
+  began at x 698 on the heading's own baseline, with the "View all" link running
+  on after that. Wrap them in a `YStack`; only a flex column stacks them.
+- **A centred column must claim its width.** `alignSelf="center"` +
+  `maxWidth={1152}` with no `width="100%"` is shrink-to-fit, and `maxWidth` then
+  caps a width the column never takes — so it sizes to whatever its content
+  happens to be. Three sections were silently narrow this way (555px, 808px and
+  a composer at 448px on a 1152px row), each producing a different visible
+  symptom: one grid track instead of three, six cards two-across, a collapsed
+  card. Measure the column before blaming the grid, and measure the OTHERS
+  before sweeping — four more landing columns look identical in source and
+  already fill their width from content, so a blanket fix would have been four
+  changes nobody needed.
 
 - The field emits text as well as an event. Prefer `onChangeText={(t) => …}` —
   it hands you the string instead of an event to dig through — but **`onChange`

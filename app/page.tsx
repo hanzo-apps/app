@@ -352,16 +352,25 @@ export default function LandingPage() {
         {/* ── Continue building (logged-in) ── */}
         {user && projects.length > 0 && (
           <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
-            <YStack alignSelf="center" maxWidth={1152}>
-              <XStack marginBottom="$7" alignItems="flex-end" justifyContent="space-between">
-                <div>
+            {/* `width="100%"`, or a centred column is shrink-to-fit and
+                `maxWidth` caps a width it never takes. Measured at 555px on a
+                1440 row, which is why the grid had one track. */}
+            <YStack alignSelf="center" width="100%" maxWidth={1152}>
+              {/* A gui YStack, NOT a `<div>`. H2 and Paragraph are @hanzo/ui
+                  TEXT primitives and render INLINE, so a block wrapper does not
+                  stack them: measured, the subtitle sat at the heading's right
+                  edge on the heading's own baseline, and "View all" ran on after
+                  it. Only a flex column stacks them. `flexWrap` + `gap` so the
+                  link drops below instead of colliding when the row is tight. */}
+              <XStack marginBottom="$7" flexWrap="wrap" alignItems="flex-end" justifyContent="space-between" gap="$4">
+                <YStack>
                   <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$10" }} lineHeight="1.1">
                     Continue building
                   </H2>
                   <Paragraph marginTop="$1.5" fontSize="$3" color="$color11">
                     Jump back into your recent projects.
                   </Paragraph>
-                </div>
+                </YStack>
                 <Link
                   href="/projects"
                 ><SizableText fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
@@ -369,8 +378,11 @@ export default function LandingPage() {
                 </SizableText></Link>
               </XStack>
 
-              {/* The ONE card grid (auto-fill/minmax — four across at desktop,
-                  fewer as the width shrinks). These were full-width Buttons in a
+              {/* The ONE card grid (auto-fit/minmax — THREE across at 1152,
+                  fewer as the width shrinks; the comment used to say four, but
+                  minmax(280) + an 18px gutter yields three, so a fourth card
+                  orphaned onto a row of its own). Three, and `View all` carries
+                  anyone who wants the rest. These were full-width Buttons in a
                   column: the size variant's pinned height cropped every preview
                   to a ~30px band (the same landmine the template strip names),
                   so the section read as four broken bars. A clickable stack
@@ -378,7 +390,7 @@ export default function LandingPage() {
                   ProjectThumb renders the deployed site scaled into the box, and
                   a draft gets the honest monogram tile, never fake content. */}
               <div className="card-grid">
-                {projects.slice(0, 4).map((project) => (
+                {projects.slice(0, 3).map((project) => (
                   <YStack
                     key={project.slug}
                     role="button"
@@ -392,7 +404,12 @@ export default function LandingPage() {
                     }}
                     cursor="pointer" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color3" }}
                   >
-                    <YStack position="relative" overflow="hidden" height={175} backgroundColor="$color002">
+                    {/* No fixed height: ProjectThumb carries `aspectRatio 16/9`
+                        and `height: 100%`, so a pinned 175px box made the preview
+                        175x16/9 = 311px wide inside a 553px card and left the
+                        right third empty. Give it the width and let the ratio
+                        set the height. */}
+                    <YStack position="relative" overflow="hidden" width="100%" backgroundColor="$color002">
                       <ProjectThumb name={project.name} liveUrl={project.liveUrl} />
                     </YStack>
                     <YStack paddingHorizontal="$3" paddingVertical="$2.5">

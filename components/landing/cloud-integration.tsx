@@ -80,7 +80,12 @@ const capabilities: Capability[] = [
 export default function CloudIntegration() {
   return (
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
-      <YStack alignSelf="center" maxWidth={1152}>
+      {/* `width="100%"`: centred in its parent, this column was shrink-to-fit
+          and `maxWidth` capped a width it never claimed — measured 808px on a
+          1152px row, which put the six cards two across instead of three.
+          Checked the other four landing columns the same way; they already fill
+          theirs from content, so this is the only one that needed it. */}
+      <YStack alignSelf="center" width="100%" maxWidth={1152}>
         <Reveal alignSelf="center" width="100%" maxWidth={672}>
           <Paragraph textAlign="center" fontFamily="$mono" fontSize="$1" color="$color11">
             The difference

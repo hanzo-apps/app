@@ -774,6 +774,18 @@ html:root :is(a, button, summary, [role="button"], [tabindex]):focus-visible {
   outline-offset: 2px;
 }
 
+/* A menu/listbox popup is a CONTAINER, not a control. A dropdown opens by moving
+   focus onto its content, which carries `tabindex="-1"`, so the rule above catches
+   it and paints the 2px `--focus-ring` (72% white) 2px OUTSIDE the panel — the
+   garish white outline that rings a whole opened dropdown. The keyboard indicator
+   belongs on the ITEMS the arrow keys move between (they are buttons / [tabindex]
+   and ring by the rule above), never on the transient shell that holds them, so
+   the container itself draws nothing — the same "not a control" carve-out the
+   fields below take. */
+html:root :is([role="menu"], [role="listbox"], [data-hanzogui-menu-content]):focus-visible {
+  outline: none;
+}
+
 /* Text-entry controls take the SAME rule's intent in the form they already have.
    A link or a button has no resting shape, so it needs a ring drawn around it. A
    field does — its own edge — so focus brightens THAT EDGE, and draws nothing
