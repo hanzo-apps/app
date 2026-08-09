@@ -549,13 +549,10 @@ class ConfigManager {
     const reasoningEnabled = { ...(settings.reasoningEnabled || {}) };
     reasoningEnabled[modelId] = enabled;
     this.setSetting('reasoningEnabled', reasoningEnabled);
-
-    // Broadcast the change
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('hanzo-app-reasoning-changed', {
-        detail: { modelId, enabled }
-      }));
-    }
+    // No broadcast: the only reader (the orchestrator) reads getReasoningEnabled
+    // at request time, and the settings toggle owns its own state. A
+    // `hanzo-app-reasoning-changed` event was dispatched here with no listener
+    // anywhere — a signal into the void. Reinstate one WITH a reactive consumer.
   }
 }
 
