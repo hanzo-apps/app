@@ -73,6 +73,13 @@ function transpiled() {
     '@hanzo/usage',
     '@hanzo/brand',
     '@hanzo/base',
+    // The house marks (ENSO_MARK / ZEN_MARK) live here, and the package is ESM
+    // only: jest hands `dist/logos.js` to a CJS runtime and dies on its first
+    // `import` — "Cannot use import statement outside a module" — which reads as
+    // the SUITE being broken rather than the transform missing. tsc and Next both
+    // cope, so a change that adopts this package can be green everywhere a human
+    // looks and still take two jest suites down.
+    '@hanzo/logo',
     // `@hanzo/ui/product` re-exports the design tokens and tag tones from
     // @hanzo/data, whose exports map points at `src/index.ts` — TypeScript
     // SOURCE, not a build. So the first app file to import from `product` takes

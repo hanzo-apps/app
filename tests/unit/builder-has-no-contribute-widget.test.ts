@@ -20,6 +20,7 @@
  * launcher may never be free to draw over the customer's app. Easy to undo by
  * accident, so it is pinned from both ends.
  */
+import { ENSO_MARK } from "@hanzo/logo/logos";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
@@ -68,13 +69,16 @@ describe("the builder Enso launcher never floats over the preview", () => {
     // edit.js is satisfied by changing edit.js alone, which is exactly the
     // drift being prevented. The circle is byte-identical in both files, so
     // compare it.
+    // Read the mark from @hanzo/logo, which is where it lives now — asserting a
+    // literal, or comparing against components/model-icon.tsx, both stop meaning
+    // anything the moment the canonical source moves (it just did: model-icon
+    // stopped inlining the circle and now re-exports ENSO_MARK).
+    //
+    // edit.js cannot import it: it is a standalone widget served to third-party
+    // pages, so it MUST carry the path data inline. That is exactly why this
+    // check exists — an inline copy is the one thing that can silently drift.
     const widget = read("public/edit.js");
-    const canonical = read("components/model-icon.tsx");
-    const CIRCLE =
-      '<circle cx="12" cy="12" r="8.88" fill="none" stroke="currentColor" stroke-width="2.64" stroke-linecap="round"/>';
-
-    expect(canonical).toContain(CIRCLE);
-    expect(widget).toContain(CIRCLE);
+    expect(widget).toContain(ENSO_MARK);
     // The hairline is gone on purpose; `vector-effect` would re-split the weight.
     // Match the ATTRIBUTE, not the word: edit.js names it in a comment saying it
     // deliberately has none, and a bare /vector-effect/ fails on that sentence.
