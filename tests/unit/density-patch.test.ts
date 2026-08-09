@@ -37,4 +37,18 @@ describe("appearance: density stays wired through the @hanzo/ui space patch", ()
     expect(patch).toContain("space[`-${k}`] = `calc(${-v}px * var(--density, 1))`");
     expect(patch).toContain("space.$true = `calc(${STEP['4']}px * var(--density, 1))`");
   });
+
+  // The patch only matters once it reaches the APPLIED sheet. gui renders spacing
+  // as atomic classes (`_pl-c-space-3`) that read `var(--c-space-N)`, and those
+  // vars live in app/gui.css — regenerated from the config by scripts/gen-gui-css.mjs.
+  // The config patch is INERT until gui.css is regenerated (the bug that made
+  // density look dead the first time). This asserts the real artifact: the
+  // `--c-space-N` ramp multiplies by --density. Verified live — density 1.5
+  // moves a gui gap 8→12px. Regenerate gui.css after ANY gui/config change.
+  it("app/gui.css space vars are density-aware — the knob actually moves the chrome", () => {
+    const css = readFileSync(join(ROOT, "app/gui.css"), "utf8");
+    expect(css).toContain("--c-space-1:calc(4px * var(--density, 1))");
+    const rungs = css.match(/--c-space-\d+:calc\([0-9.]+px \* var\(--density/g) || [];
+    expect(rungs.length).toBeGreaterThanOrEqual(10);
+  });
 });
