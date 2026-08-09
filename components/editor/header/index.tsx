@@ -150,7 +150,11 @@ export function Header({
         >{/* No marginRight: it sat INSIDE the anchor, so the <a> measured 34x32
              — the one control in the bar that was not square — while the parent
              row's `gap="$1.5"` was already doing that spacing. */}
-        <XStack width={CONTROL} height={CONTROL} alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}>
+        {/* Desktop-only, like its neighbours: at phone width the pane trough
+            takes the whole band and this anchor sat INVISIBLY beneath the Chat
+            tab — measured 24x32 of overlap, so a tap on Chat could land Home.
+            A control you cannot see must not be pressable. */}
+        <XStack display="none" $lg={{ display: "flex" }} width={CONTROL} height={CONTROL} alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}>
           <HanzoLogo size={20} />
         </XStack></Link>
         <YStack minWidth={0}>
