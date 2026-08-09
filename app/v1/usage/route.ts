@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { session } from "@/lib/iam";
-import { listProjects } from "@/lib/db/projects";
+import { cloudBase } from "@/lib/org/server";
 import { buildUsage } from "@/lib/usage";
 
 /**
@@ -9,9 +9,13 @@ import { buildUsage } from "@/lib/usage";
  *
  * There is no user-facing consumption-metering endpoint yet (the platform
  * collects per-app CPU/memory/storage/egress into `appUsageMetrics`, but it is
- * billing-internal). So the only figure we report is the user's REAL project
- * count from the Hanzo Base data plane; everything else is flagged
- * not-yet-metered. No random numbers, no invented caps.
+ * billing-internal). So the only figure reported is the REAL project count —
+ * and it counts the plane the product shows: the ORG's projects on cloud
+ * `/v1/projects`, the same rows the dashboard lists. It used to count the
+ * per-user Base `projects` collection (prompt rows written lazily by
+ * per-project features), which answered 0 against a dashboard showing 44 —
+ * a number nobody could reconcile. Everything else stays flagged
+ * not-yet-metered. No invented caps.
  */
 export async function GET(request: NextRequest) {
   const user = await session(request);
@@ -21,10 +25,19 @@ export async function GET(request: NextRequest) {
 
   let projectCount = 0;
   try {
-    const projects = await listProjects(user.token, user.sub);
-    projectCount = projects.length;
+    const res = await fetch(`${cloudBase()}/v1/projects`, {
+      headers: { Authorization: `Bearer ${user.token}` },
+      cache: "no-store",
+    });
+    if (res.ok) {
+      const rows = (await res.json()) as unknown;
+      if (Array.isArray(rows)) projectCount = rows.length;
+      else if (Array.isArray((rows as { projects?: unknown[] })?.projects)) {
+        projectCount = (rows as { projects: unknown[] }).projects.length;
+      }
+    }
   } catch {
-    // Base unreachable — report zero rather than fabricate.
+    // Cloud unreachable — report zero rather than fabricate.
     projectCount = 0;
   }
 
