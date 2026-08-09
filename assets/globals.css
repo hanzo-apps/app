@@ -636,9 +636,18 @@ html.dark {
      still resolved #8b5cf6 with the override sitting in :root). Outranking the
      selector makes the result independent of bundling order. */
   --hanzo-accent: #ffffff;
-  --hanzo-accent-hover: #d4d4d4;                 /* neutral-300 */
-  --hanzo-accent-muted: #a3a3a3;                 /* neutral-400 */
-  --hanzo-accent-soft: rgba(255, 255, 255, 0.12);
+  /* The three states DERIVE from the one base, so a chosen accent — AccentSync
+     mirrors @hanzo/appearance's pick onto --hanzo-accent inline on <html> —
+     tints the WHOLE family (the switch track, every hover, ::selection), not
+     just --brand-accent. Each is a step DOWN in lightness (mix toward black),
+     which is the monochrome law: "every state under the accent is a step down
+     in lightness, never a change in hue." srgb mixing is proportional, so the
+     hue is preserved AND the default (base #fff) reproduces the old literals
+     exactly — 83% → #d4d4d4, 64% → #a3a3a3, 12% → rgba(255,255,255,.12). One
+     input, one place; nothing to keep in sync by hand. */
+  --hanzo-accent-hover: color-mix(in srgb, var(--hanzo-accent, #fff) 83%, #000);
+  --hanzo-accent-muted: color-mix(in srgb, var(--hanzo-accent, #fff) 64%, #000);
+  --hanzo-accent-soft:  color-mix(in srgb, var(--hanzo-accent, #fff) 12%, transparent);
   --hanzo-accent-rgb: 255, 255, 255;
 
   /* The gui sheet ships `.is_Input::selection, .is_TextArea::selection {
