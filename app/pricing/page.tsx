@@ -232,6 +232,7 @@ export default function PricingPage() {
               </div>
               <Link
                 href="/dev"
+                className="hz-tap"
               ><XStack flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color4" }}>
                 <SizableText fontSize="$3" fontWeight="500" color="$color">Open the builder</SizableText>
                 <ArrowRight size={16} />
@@ -255,6 +256,7 @@ export default function PricingPage() {
               </div>
               <Link
                 href="/enterprise"
+                className="hz-tap"
               ><XStack flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color4" }}>
                 <SizableText fontSize="$3" fontWeight="500" color="$color">Talk to us</SizableText>
                 <ArrowRight size={16} />
