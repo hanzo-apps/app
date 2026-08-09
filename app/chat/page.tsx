@@ -329,9 +329,8 @@ export default function ChatPage() {
                 from the shell sidebar's own toggle, so while it swapped in
                 `PanelLeftClose` the two controls that mean "show/hide the column
                 on your left" were two different shapes on screen at once. */}
-            <Button
+            <Button size="icon"
               variant="ghost"
-              size="sm"
               group
               onClick={() => setRailOpen((o) => !o)}
               aria-label={railOpen ? 'Hide conversations' : 'Show conversations'}
@@ -456,10 +455,9 @@ export default function ChatPage() {
                   data-testid="composer"
   />
                 {streaming ? (
-                  <Button
+                  <Button size="icon"
                     {...accent}
                     onClick={stop}
-                    size="sm"
                     aria-label="Stop generating"
                     position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0"
                     data-testid="stop"
@@ -467,11 +465,10 @@ export default function ChatPage() {
                     <Square size={14} />
                   </Button>
                 ) : (
-                  <Button
+                  <Button size="icon"
                     {...accent}
                     onClick={() => void send()}
                     disabled={!input.trim()}
-                    size="sm"
                     aria-label="Send"
                     position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0" disabledStyle={{ opacity: 0.5 }}
                     data-testid="send"

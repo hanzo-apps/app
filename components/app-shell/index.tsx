@@ -118,7 +118,7 @@ export function AppShell({
             an off-canvas drawer there). Hidden at md+, where the sidebar is
             always visible in-flow. */}
         <XStack height="$8" alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" $md={{ display: "none" }}>
-          <Button
+          <Button size="icon"
             onClick={() => setMobileOpen(true)}
             aria-label="Open menu"
             variant="ghost"
@@ -127,7 +127,7 @@ export function AppShell({
             <Menu size={20} />
           </Button>
           <HanzoLogo size={20} color="var(--foreground)" />
-          <Button
+          <Button size="icon"
             onClick={() => setPaletteOpen(true)}
             aria-label="Search"
             variant="ghost"

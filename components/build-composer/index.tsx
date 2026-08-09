@@ -321,7 +321,7 @@ export function BuildComposer({
                   <Mic size={16} fill={state === "idle" ? "none" : "currentColor"} />
                 )}
               </Voice>
-              <Button
+              <Button size="icon"
                 type="button"
                 onClick={() => submit()}
                 disabled={!idea.trim()}

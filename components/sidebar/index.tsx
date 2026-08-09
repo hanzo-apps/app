@@ -357,7 +357,7 @@ function SidebarContent({
                 </YStack>
               </Button>
 
-              <Button
+              <Button size="icon"
                 onClick={toggleCollapsed}
                 title="Collapse sidebar"
                 aria-label="Collapse sidebar"
@@ -368,7 +368,7 @@ function SidebarContent({
                 <PanelLeft size={16} />
               </Button>
 
-              <Button
+              <Button size="icon"
                 onClick={() => onMobileOpenChange?.(false)}
                 title="Close menu"
                 aria-label="Close menu"
@@ -404,7 +404,7 @@ function SidebarContent({
                 </SizableText>
                 <DropdownMenu placement="bottom-end">
                   <DropdownMenuTrigger asChild>
-                    <Button
+                    <Button size="icon"
                       aria-label="Project actions"
                       variant="ghost"
                       borderRadius="$2" padding="$0.5" {...{ color: "$color11" }}
@@ -626,7 +626,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
         {...glass(3)} position="relative" width="100%" maxWidth={448} borderRadius="$8" borderWidth={1} padding="$5"
         onClick={(e) => e.stopPropagation()}
       >
-        <Button
+        <Button size="icon"
           onClick={onClose}
           aria-label="Close"
           position="absolute" right="$4" top="$4" borderRadius="$3" padding="$1" {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }}

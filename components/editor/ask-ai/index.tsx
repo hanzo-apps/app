@@ -1260,7 +1260,7 @@ export function AskAI({
               </XStack>
             ))}
           </XStack>
-          <Button
+          <Button size="icon"
             type="button"
             aria-label="Dismiss suggestions"
             variant="ghost"

@@ -50,7 +50,7 @@ function WalletInner() {
             {shortAddress(address)}
           </SizableText>
         </YStack>
-        <Button
+        <Button size="icon"
           type="button"
           onClick={() => disconnect()}
           title="Disconnect wallet"

@@ -426,7 +426,7 @@ export function Console({
           {/* The cloud shell — the same real terminal console.hanzo.ai frames,
               in this project's pod. A toggle, not a door: the dock's body flips
               between the log and the frame, and the bar stays the bar. */}
-          <Button
+          <Button size="icon"
             type="button"
             onClick={() => setTerm((t) => !t)}
             variant="ghost"

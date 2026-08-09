@@ -297,7 +297,7 @@ export default function HeroPreview() {
           </XStack>
 
           <XStack marginLeft="auto" alignItems="center" gap="$1.5" $sm={{ marginLeft: "$0" }}>
-            <Button
+            <Button size="icon"
               type="button"
               variant="ghost"
               aria-label="Replay the demo build"
@@ -310,7 +310,7 @@ export default function HeroPreview() {
               <SizableText color="$color11"><Clock size={11} /></SizableText>
             </XStack>
             <XStack alignItems="center" gap="$0.5" borderRadius={999} backgroundColor="$color3" padding={2} $lg={{ display: "none" }}>
-              <Button
+              <Button size="icon"
                 type="button"
                 variant="ghost"
                 aria-label="Desktop preview"
@@ -320,7 +320,7 @@ export default function HeroPreview() {
               >
                 <SizableText color={device === "desktop" ? "$color12" : "$color11"}><Monitor size={11} /></SizableText>
               </Button>
-              <Button
+              <Button size="icon"
                 type="button"
                 variant="ghost"
                 aria-label="Mobile preview"

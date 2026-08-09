@@ -519,7 +519,7 @@ export function VisualEditor({
           card. Monochrome pill, hairline dividers between tool groups. */}
       {isHidden ? (
         // Always-present affordance so the toolbar is never unrecoverable.
-        <Button
+        <Button size="icon"
           type="button"
           onClick={() => setIsHidden(false)}
           title="Show visual editor"
@@ -532,7 +532,7 @@ export function VisualEditor({
       ) : isMinimized ? (
         // Collapsed to a single grip; click to restore the full dock.
         <YStack position="absolute" zIndex={50} {...anchorProps[position]} style={anchorStyle}>
-          <Button
+          <Button size="icon"
             type="button"
             onClick={() => setIsMinimized(false)}
             title="Expand visual editor"
