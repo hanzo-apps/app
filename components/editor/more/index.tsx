@@ -156,6 +156,7 @@ function SectionBody({ section, projectId }: { section: Section; projectId?: str
   if (section.id === 'cloud-database') return <DatabaseBody />;
   if (section.id === 'cloud-usage') return <UsageBody />;
   if (section.id === 'cloud-logs') return <LogsBody />;
+  if (section.id === 'analytics') return <AnalyticsBody />;
   return (
     <YStack {...panel} padding="$4" gap="$2">
       {section.where ? (
@@ -428,6 +429,92 @@ function PaymentsBody({ projectId }: { projectId?: string | null }) {
  * names the session; anything else is could-not-read. Collections appear as
  * the app creates them; records ride /v1/base/<collection>.
  */
+/**
+ * Web analytics, from cloud's org-scoped read surface. The WRITE half is the
+ * hosted tag publish injects onto every page; this is the read: pageview
+ * breakdowns over the events lens (`/v1/analytics/top` → topPages), org-wide
+ * because the lens does not filter by project yet — the lede says so rather
+ * than passing org totals off as this project's. Three-valued as ever: null
+ * is couldn't-read, unreachable is named, and only a well-formed answer may
+ * claim there is no traffic.
+ */
+function AnalyticsBody() {
+  type Bucket = { k: string; pageviews: number; visitors: number };
+  const [read, setRead] = useState<null | 'unreachable' | { pages: Bucket[]; total: number }>(null);
+
+  useEffect(() => {
+    let alive = true;
+    fetch('/v1/analytics/top', { credentials: 'include', cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((b: unknown) => {
+        if (!alive) return;
+        const lens = (b as { topPages?: { buckets?: unknown[]; total?: number } })?.topPages;
+        const raw = Array.isArray(lens?.buckets) ? lens.buckets : null;
+        if (!raw) {
+          setRead('unreachable');
+          return;
+        }
+        const pages = raw
+          .map((x) => {
+            const r = (x ?? {}) as Record<string, unknown>;
+            return {
+              k: typeof r.k === 'string' ? r.k : typeof r.key === 'string' ? (r.key as string) : '',
+              pageviews: typeof r.pageviews === 'number' ? r.pageviews : 0,
+              visitors: typeof r.visitors === 'number' ? r.visitors : 0,
+            };
+          })
+          .filter((x) => x.k);
+        setRead({ pages, total: typeof lens?.total === 'number' ? lens.total : pages.reduce((n, p) => n + p.pageviews, 0) });
+      })
+      .catch(() => alive && setRead('unreachable'));
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  return (
+    <YStack {...panel} padding="$4" gap="$2.5">
+      {read === null ? (
+        <SizableText fontSize="$2" color="$color11">Reading traffic…</SizableText>
+      ) : read === 'unreachable' ? (
+        <>
+          <SizableText fontSize="$3" color="$color">Analytics did not answer</SizableText>
+          <Paragraph fontSize="$2" color="$color11">
+            Not a claim about your traffic — the read surface is unreachable right now.
+          </Paragraph>
+        </>
+      ) : read.pages.length === 0 ? (
+        <>
+          <SizableText fontSize="$3" color="$color">No pageviews yet</SizableText>
+          <Paragraph fontSize="$2" color="$color11">
+            The lens answered and it is empty. Every page you publish carries the
+            tag; views appear here as visitors arrive. Workspace-wide for now —
+            per-project filtering follows the lens.
+          </Paragraph>
+        </>
+      ) : (
+        <>
+          <XStack alignItems="baseline" justifyContent="space-between">
+            <SizableText fontSize="$2" color="$color11">Pageviews — this workspace</SizableText>
+            <SizableText fontSize="$4" color="$color" fontFamily="$mono">{read.total}</SizableText>
+          </XStack>
+          <YStack gap="$1">
+            {read.pages.slice(0, 8).map((p) => (
+              <XStack key={p.k} alignItems="baseline" gap="$2">
+                <SizableText flex={1} numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">{p.k}</SizableText>
+                <SizableText fontFamily="$mono" fontSize="$1" color="$color11" flexShrink={0}>{p.pageviews}</SizableText>
+              </XStack>
+            ))}
+          </YStack>
+          <Paragraph fontSize="$1" color="$color11">
+            Workspace-wide — per-project filtering follows the events lens.
+          </Paragraph>
+        </>
+      )}
+    </YStack>
+  );
+}
+
 /**
  * Account usage, from `/v1/usage` — which is honest by construction: the only
  * metered figure today is the real project count, and the endpoint SAYS the
