@@ -420,10 +420,22 @@ compose's), then moves the universe pin through `charts/app/pin.sh`.
   `release.yml` still STAMPS the derived number into the build context, because
   `lib/version.ts` reads `pkg.version` for the sidebar and about modal. That is a
   display string written downstream of the derivation, never an input to it.
-- **`[skip ci]` does not work here, and neither does `paths-ignore` reliably.**
-  Measured: three commits carrying `[skip ci]` each cut a release, and one that
-  touched only `LLM.md` did too despite `paths-ignore: ['**.md']`. Do not reach
-  for either to suppress a build — assume every push to main ships an image.
+- **`[skip ci]` works, and a run on your sha is not proof it did not.** The
+  forge honours `[skip ci]` / `[ci skip]` / `[no ci]` / `[skip actions]` on
+  **push and pull_request only** — that is upstream's rule, and correctly so: a
+  `workflow_dispatch` or a `schedule` is someone asking on purpose, not your
+  commit. Both also fire against the branch tip, so they carry YOUR sha and read
+  exactly like a push you thought you had skipped.
+  Check the event, not the sha:
+
+      kubectl -n hanzo exec sql-0 -- psql -U hanzo -d git -tAc \
+        "SELECT substring(r.commit_sha,1,8), r.event, r.trigger_event
+           FROM action_run r JOIN repository p ON p.id=r.repo_id
+          WHERE p.owner_name='hanzo-apps' AND p.name='app'
+          ORDER BY r.id DESC LIMIT 10;"
+
+  Measured this way: two `[skip ci]` commits produced ZERO runs of any kind and
+  a third produced zero PUSH runs. `paths-ignore: ['**.md']` holds too.
 
 ### Work items live in the cloud tracker, and "task" is the wrong word
 
