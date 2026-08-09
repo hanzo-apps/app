@@ -267,9 +267,22 @@ a {
  * already prove in production) and DROPS an unrecognised `data-` prop. The dev
  * server kept it and the production build did not, so the first version of this
  * rule matched four elements locally and zero on hanzo.app — green everywhere a
- * human would have looked. */
+ * human would have looked.
+ *
+ * `.hz-tap` and not `.hz-starter`: the rule was named for the composer chips
+ * that first needed it, but it is not about chips. It says "this is a standalone
+ * tap target" — which is equally true of the landing's three centred CTA links
+ * (`Browse all templates`, `or import an existing GitHub repo`, `Explore the
+ * gateway`), each measured at 20-21px on a phone, each its own block with its
+ * own `marginTop`, none of them a word inside a sentence.
+ *
+ * Verified rather than assumed: Playwright's `hasTouch: true` DOES drive this
+ * media feature in Chromium — `(pointer: coarse)` true, `(hover: hover)` false,
+ * `maxTouchPoints` 1 — while a bare 390px viewport does not. So the rule can be
+ * measured, and a phone run without `hasTouch` silently tests the desktop
+ * branch. */
 @media (pointer: coarse) {
-  .hz-starter {
+  .hz-tap {
     min-height: 44px;
     display: inline-flex;
     align-items: center;

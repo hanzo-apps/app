@@ -46,6 +46,7 @@ export default function ModelsStrip() {
           </Paragraph>
 
           <Anchor display="inline-flex"
+            className="hz-tap"
             href="https://hanzo.ai/llm"
             target="_blank"
             rel="noopener noreferrer"
