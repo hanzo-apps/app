@@ -93,6 +93,27 @@ const nextConfig: NextConfig = {
     ];
   },
 
+  // The Enso/edit widget is a MUTABLE script dropped into every Hanzo app, but
+  // the origin set no Cache-Control, so Cloudflare stamped its default 4h browser
+  // TTL — and a fix to edit.js sat stale in every open tab for up to four hours
+  // (an owner "checked" the enso fix and still saw the pre-fix hairline floating
+  // over the preview). A widget we reship must revalidate, not linger: 5-minute
+  // freshness with a background stale-while-revalidate window, so an update
+  // reaches a loaded page on its next navigation, not next quarter-day. Sibling
+  // public assets (hashed chunks, template thumbnails, fonts) are content-
+  // addressed and keep their long immutable cache — this rule is scoped to the
+  // one file that changes under a stable URL.
+  async headers() {
+    return [
+      {
+        source: '/edit.js',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=300, stale-while-revalidate=3600' },
+        ],
+      },
+    ];
+  },
+
   // generateStaticParams and dynamicParams used to sit here. They are route
   // SEGMENT exports, not config keys, so at this level they were read by
   // nothing and had never done anything. Set them in the route that needs them.
