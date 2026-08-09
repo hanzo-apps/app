@@ -55,7 +55,7 @@ export function DeployButton({
                   <View $lg={{ display: "none" }}>
                     <Save size={14} />
                   </View>
-                  <SizableText color="$color12">{disabled ? "Building…" : "Publish"}</SizableText>
+                  <SizableText fontSize="$2" fontWeight="500" color="$color12">{disabled ? "Building…" : "Publish"}</SizableText>
                 </Button>
               </div>
             </PopoverTrigger>
@@ -78,7 +78,7 @@ export function DeployButton({
             <View $lg={{ display: "none" }}>
               <Save size={14} />
             </View>
-            <SizableText color="$color12">{disabled ? "Building…" : "Publish"}</SizableText>
+            <SizableText fontSize="$2" fontWeight="500" color="$color12">{disabled ? "Building…" : "Publish"}</SizableText>
           </Button>
         )}
         <LoginModal

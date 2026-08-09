@@ -91,28 +91,53 @@ function normalizeConnection(v: unknown): Connection | null {
   };
 }
 
+/** Turn a provider snake into Title Case: "github" → "GitHub", "google_drive"
+ *  → "Google Drive". A raw id like "github:hanzo-app" reads as a bug in the UI. */
+function providerName(provider: string, label: string): string {
+  const known: Record<string, string> = { github: 'GitHub', gitlab: 'GitLab', google: 'Google', slack: 'Slack', notion: 'Notion', linear: 'Linear', figma: 'Figma' };
+  const base = known[provider] ?? provider.replace(/[_-]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  return label ? `${base} · ${label}` : base;
+}
+
 function normalizeProvider(v: unknown): Provider | null {
   const p = obj(v);
   if (!p) return null;
   const id = str(p.id ?? p.provider);
   if (!id) return null;
+  // The live surface returns flat CONNECTION rows (id/provider/label/account/
+  // connectedAt at the top level), not catalog entries with a nested
+  // `connection`. A row that carries a connectedAt or an account IS a live
+  // connection — read the row itself as the connection, and name it from the
+  // provider + label so the card says "GitHub · hanzo-app", never
+  // "github:hanzo-app". Catalog rows (nested `connection`, explicit `connected`)
+  // still work — this only ADDS the flat case.
+  const provider = str(p.provider) || id.split(':')[0];
+  const label = str(p.label);
+  const flatConn = normalizeConnection(p);
+  const isLive = bool(p.connected) || !!str(p.connectedAt ?? p.connected_at) || !!str(p.account);
   return {
     id,
-    name: str(p.name ?? p.title) || id,
+    name: str(p.name ?? p.title) || providerName(provider, label),
     description: str(p.description ?? p.desc),
     category: str(p.category),
-    available: bool(p.available ?? p.configured),
-    connected: bool(p.connected),
-    connection: normalizeConnection(p.connection ?? p.conn),
+    available: bool(p.available ?? p.configured) || isLive,
+    connected: isLive,
+    connection: normalizeConnection(p.connection ?? p.conn) ?? (isLive ? flatConn : null),
   };
 }
 
-/** Pull the provider array out of any of the envelope shapes cloud/console use. */
+/** Pull the provider array out of any of the envelope shapes cloud/console use.
+ *
+ * `connectors` is FIRST and it is load-bearing: the live cloud surface answers
+ * `{ connectors: [...] }`, and every key here missing that name meant a
+ * workspace with real connected orgs (github:hanzo-app, …) rendered "No
+ * connectors available yet" — the connections were fetched and then dropped on
+ * the floor by an envelope reader that did not know the envelope. */
 function providerRows(body: unknown): unknown[] {
   if (Array.isArray(body)) return body;
   const b = obj(body);
   if (!b) return [];
-  for (const key of ['providers', 'data', 'items', 'rows'] as const) {
+  for (const key of ['connectors', 'providers', 'data', 'items', 'rows'] as const) {
     if (Array.isArray(b[key])) return b[key] as unknown[];
   }
   return [];

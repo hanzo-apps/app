@@ -44,7 +44,7 @@ describe("boot: conversation first", () => {
   it("the chat column narrows to the composer's own reading measure in boot", () => {
     // 672, not 860: it must match the composer's maxWidth (ask-ai root) or the
     // thread runs wider than the box beneath it and messages read as blobs.
-    expect(editor).toMatch(/maxWidth: 672, alignSelf: "center"/);
+    expect(editor).toMatch(/maxWidth: 600, alignSelf: "center"/);
   });
 
   it("the header receives the same fact, spelled once", () => {

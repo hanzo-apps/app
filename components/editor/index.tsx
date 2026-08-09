@@ -429,7 +429,7 @@ export const AppEditor = ({
           height={32} gap="$1.5" paddingHorizontal="$3" borderRadius={999} backgroundColor="$color4" hoverStyle={{ backgroundColor: "$color5" }}
         >
           <Share2 size={14} />
-          <SizableText display="none" $md={{ display: "inline" }}>Share</SizableText>
+          <SizableText display="none" $md={{ display: "inline" }} fontSize="$2" fontWeight="500" color="$color">Share</SizableText>
         </Button>
         {project?._id ? (
           <SaveButton save={autosave.saveNow} />
@@ -490,7 +490,7 @@ export const AppEditor = ({
               messages spread into giant blobs. 672 matches the composer's own
               maxWidth (ask-ai root) — the two used to disagree (860 vs 672), so
               the thread ran wider than the box beneath it. One column now. */}
-          <YStack minHeight={0} flex={1} {...(fresh ? { width: "100%", maxWidth: 672, alignSelf: "center" } : null)}>
+          <YStack minHeight={0} flex={1} {...(fresh ? { width: "100%", maxWidth: 600, alignSelf: "center" } : null)}>
             <AskAI
               onToggleHistory={toggleHistory}
               isNew={isNew}

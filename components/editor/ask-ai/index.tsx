@@ -1104,7 +1104,7 @@ export function AskAI({
     // The chat pane is a flex column: the thread scrolls at the top and the
     // composer is pinned at the bottom. With an empty thread (ChatThread returns
     // null) the composer's `mt-auto` keeps it docked exactly as before.
-    <YStack ref={rootRef} alignSelf="center" height="100%" minHeight={0} width="100%" maxWidth={672}>
+    <YStack ref={rootRef} alignSelf="center" height="100%" minHeight={0} width="100%" maxWidth={600}>
       <ChatThread messages={messages} />
       <YStack marginTop="auto" paddingHorizontal="$2" paddingBottom="calc(0.75rem+env(safe-area-inset-bottom))">
       {/* Stacked Message Queue Cards */}
@@ -1297,7 +1297,11 @@ export function AskAI({
             genuinely undecided — lib/notify owns the whole contract (denied is
             a decision; a visible tab never gets one; ✕ is remembered). */}
         {askNotify && (
-          <XStack alignItems="center" gap="$2" paddingHorizontal="$4" paddingTop="$2.5" paddingBottom="$1">
+          // A distinct rounded grey CARD, not a bare row — it used to blend
+          // into the composer with no ground of its own, so it read as chrome
+          // rather than a prompt. A $color3 fill, a hairline, its own radius and
+          // margin set it apart the way the reference does.
+          <XStack alignItems="center" gap="$2" margin="$2" marginBottom="$1" paddingVertical="$2" paddingLeft="$3" paddingRight="$2" borderRadius="$4" backgroundColor="$color3" borderWidth={1} borderColor="$color04">
             <SizableText color="$color11"><Bell size={14} /></SizableText>
             <SizableText flex={1} minWidth={0} fontSize="$2" color="$color">
               Get notified when a build finishes
@@ -1314,7 +1318,7 @@ export function AskAI({
                 setAskNotify(false);
               }}
             >
-              <SizableText color="$color12">Enable</SizableText>
+              <SizableText fontSize="$2" fontWeight="500" color="$color12">Enable</SizableText>
             </Button>
             <Button
               type="button"
@@ -1591,7 +1595,7 @@ export function AskAI({
                   title={mode === "plan" ? "Plan: chat about your app without changing it" : "Build: generate and modify your app"}
                   height={26} minHeight={26} alignItems="center" gap="$1" borderRadius={999} backgroundColor="$color3" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color4" }}
                 >
-                  <SizableText fontWeight="500" textTransform="capitalize" color="$color">{mode}</SizableText>
+                  <SizableText fontSize="$2" fontWeight="500" textTransform="capitalize" color="$color">{mode}</SizableText>
                   <SizableText color="$color11"><ChevronDown size={12} /></SizableText>
                 </Button>
               </DropdownMenuTrigger>
