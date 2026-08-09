@@ -204,7 +204,21 @@ export function Header({
         <XStack
           role="tablist"
           aria-label="Editor view"
-          flexShrink={0} alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color4"
+          // $3 (8px) — the SAME radius the segments carry, because they sit
+          // flush against this box with no padding between. A 12px corner
+          // cannot contain an 8px corner at zero inset: the squarer child arc
+          // falls outside the rounder parent one, and the overhang is 1.17px at
+          // 45deg (measured, not derived — r*(1-cos45) for each radius).
+          // Invisible while every segment matched the group, obvious the moment
+          // one of them became the accent pushbutton, because a lighter corner
+          // then pokes out past the darker group and reads as the active tab
+          // climbing over its neighbours.
+          //
+          // Two ways to close it and only one suits this bar: pad the group so
+          // the children are inset, or match the radii. Padding reintroduces the
+          // trough the note above says was deliberately removed, and adds 4px to
+          // a bar whose clusters align on height. Matching costs nothing.
+          flexShrink={0} alignItems="center" gap="$0.5" borderRadius="$3" backgroundColor="$color4"
         >
           {PANES.map((item) => {
             const active = tab === item.value;
