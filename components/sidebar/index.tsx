@@ -18,7 +18,6 @@ import {
   Folder,
   FolderPlus,
   Settings,
-  Info,
   BookOpen,
   Bot,
   Cloud,
