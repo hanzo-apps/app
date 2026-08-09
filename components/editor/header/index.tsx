@@ -170,7 +170,14 @@ export function Header({
             aria-label={historyOpen ? "Back to chat" : "Version history"}
             aria-pressed={Boolean(historyOpen)}
             variant="ghost"
-            display="none" $lg={{ display: "flex" }} size="icon-sm" borderRadius={999} {...{ ...selected(Boolean(historyOpen)), hoverStyle: historyOpen ? undefined : { backgroundColor: "$color3" } }}
+            // The SAME treatment as its neighbour, the chat toggle below: a plain
+            // bright-ghost toolbar icon, state on aria-pressed. It used to spread
+            // selected(historyOpen), which dimmed it to $color11 when inactive —
+            // so two adjacent toggle icons sat at two different brightnesses (204
+            // vs 250). `selected()` is the VIEW-TAB treatment (dim-when-off,
+            // accent-when-on); a toolbar toggle is not a tab. The open state is
+            // already loud — the whole chat pane becomes the git timeline.
+            display="none" $lg={{ display: "flex" }} size="icon-sm" borderRadius={999} hoverStyle={{ backgroundColor: "$color3" }}
           >
             <History size={16} />
           </Button>
