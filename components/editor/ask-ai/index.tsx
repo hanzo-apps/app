@@ -520,6 +520,25 @@ export function AskAI({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modelsLoading, models, model, defaultModel]);
 
+  // A file mentioned from the version-history panel lands HERE, in the composer.
+  // `history/details.tsx` dispatches `hanzo:mention-file` with the path and
+  // toasts "Mentioned @path in chat" — but nothing listened, so the click only
+  // copied to the clipboard and the toast was a claim nobody kept. Insert
+  // `@path` into the prompt (once) and focus, so the mention is really there to
+  // ask about. The path is plain text: the model reads "@path" as the file the
+  // user means; there is no macro expansion to wait on.
+  useEffect(() => {
+    const onMention = (e: Event) => {
+      const path = (e as CustomEvent<{ path?: string }>).detail?.path;
+      if (!path) return;
+      const mention = `@${path}`;
+      setPrompt((p) => (p.includes(mention) ? p : p ? `${p.trimEnd()} ${mention} ` : `${mention} `));
+      textareaRef.current?.focus();
+    };
+    window.addEventListener("hanzo:mention-file", onMention);
+    return () => window.removeEventListener("hanzo:mention-file", onMention);
+  }, []);
+
   const callAi = async (redesignMarkdown?: string, queuedPrompt?: string) => {
     // If AI is working, add to queue instead of blocking
     if (isAiWorking && prompt.trim() && !queuedPrompt) {
