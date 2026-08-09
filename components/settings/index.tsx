@@ -3,12 +3,13 @@
 import { YStack, H3, Paragraph, XStack, H4, SizableText } from '@hanzo/ui';
 import { useState, useEffect } from 'react';
 import { configManager, AppSettings, CostSettings } from '@/lib/config/storage';
-import { Button, Input, Label, Switch, toast, Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui';
-import { DollarSign, AlertTriangle, Info, Download, Upload, Database, ChevronDown, Palette } from 'lucide-react';
+import { Button, Label, Switch, toast, Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui';
+import { DollarSign, Info, Download, Upload, Database, ChevronDown, Palette } from 'lucide-react';
 import { CostCalculator } from '@/lib/llm/cost-calculator';
 import { AboutModal } from '@/components/about-modal';
 import { BackupService } from '@/lib/vfs/backup-service';
 import { getConsent, setConsent } from '@hanzogui/telemetry';
+import { broadcastCostSettingsChange } from '@/lib/hooks/use-cost-settings';
 import { Appearance } from '@hanzo/appearance';
 
 interface SettingsPanelProps {
@@ -211,7 +212,19 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
           </CollapsibleTrigger>
           <CollapsibleContent paddingHorizontal="$3" paddingTop="$2" paddingBottom="$3">
             <YStack rowGap="$4">
-              {/* Show Costs */}
+              {/* Display Costs — the ONE cost control that takes effect. The
+                  workspace reads it through useCostSettings and gates the cost
+                  readout on it, so the write has to REACH that hook: broadcasting
+                  is what makes the toggle land live instead of on the next mount
+                  (the panel renders inside the workspace's own popover, a
+                  sibling of the reader, not a remount of it).
+
+                  A "Daily Limit", "Project Limit" and "Warning Threshold" used to
+                  sit here. Nothing read them — no path metered spend against a
+                  limit or warned at the threshold — so they were controls that
+                  lied, worse than absent (a $5 cap that silently lets $50
+                  through). Removed until there is enforcement to reinstate them
+                  onto; the lifetime total below is the real, wired figure. */}
               <XStack alignItems="center" justifyContent="space-between">
                 <YStack flex={1} paddingRight="$3">
                   <Label htmlFor="show-costs">Display Costs</Label>
@@ -226,77 +239,10 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                     const newCostSettings = { ...costSettings, showCosts: checked };
                     configManager.setCostSettings(newCostSettings);
                     setCostSettings(newCostSettings);
+                    broadcastCostSettingsChange();
                   }}
   />
               </XStack>
-
-              {/* Daily + Project Limits — 2 column grid */}
-              <YStack gap="$3">
-                <YStack>
-                  <Label htmlFor="daily-limit" fontSize="$1">Daily Limit (USD)</Label>
-                  <Input
-                    id="daily-limit"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="No limit"
-                    marginTop="$1.5"
-                    value={costSettings.dailyLimit || ''}
-                    onChange={(e) => {
-                      const value = e.target.value ? parseFloat(e.target.value) : undefined;
-                      const newCostSettings = { ...costSettings, dailyLimit: value };
-                      configManager.setCostSettings(newCostSettings);
-                      setCostSettings(newCostSettings);
-                    }}
-  />
-                </YStack>
-                <YStack>
-                  <Label htmlFor="project-limit" fontSize="$1">Project Limit (USD)</Label>
-                  <Input
-                    id="project-limit"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="No limit"
-                    marginTop="$1.5"
-                    value={costSettings.projectLimit || ''}
-                    onChange={(e) => {
-                      const value = e.target.value ? parseFloat(e.target.value) : undefined;
-                      const newCostSettings = { ...costSettings, projectLimit: value };
-                      configManager.setCostSettings(newCostSettings);
-                      setCostSettings(newCostSettings);
-                    }}
-  />
-                </YStack>
-              </YStack>
-
-              {/* Warning Threshold */}
-              <YStack>
-                <Label htmlFor="warning-threshold" fontSize="$1">Warning Threshold</Label>
-                <XStack alignItems="center" gap="$3" marginTop="$1.5">
-                  <Input
-                    id="warning-threshold"
-                    type="number"
-                    min="50"
-                    max="100"
-                    step="5"
-                    flex={1}
-                    value={costSettings.warningThreshold || 80}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value);
-                      const newCostSettings = { ...costSettings, warningThreshold: value };
-                      configManager.setCostSettings(newCostSettings);
-                      setCostSettings(newCostSettings);
-                    }}
-  />
-                  <XStack alignItems="center" gap="$1">
-                    <AlertTriangle size={12} />
-                    <SizableText fontSize="$1" color="$color11" whiteSpace="nowrap" fontFamily="$mono">
-                      Warn at {costSettings.warningThreshold || 80}%
-                    </SizableText>
-                  </XStack>
-                </XStack>
-              </YStack>
 
               {/* Lifetime Costs */}
               <XStack alignItems="center" justifyContent="space-between" backgroundColor="$color3" borderWidth={1} borderRadius="$5" padding="$3">
