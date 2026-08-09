@@ -602,27 +602,66 @@
     }
     return true;
   }
-  function mount() {
-    if (place()) return;
-    // Show it at the corner meanwhile, and WATCH for the anchor to appear — the
-    // corner is the fallback, never the destination when a slot is named. Stop
-    // watching the moment it lands, or after a grace period on a page that simply
-    // has no such slot, so this never observes the DOM forever.
-    document.body.appendChild(host);
+  // WATCH for the anchor slot to appear, then dock. The slot is rendered by the
+  // host app's framework AFTER this script runs, and on a single-page app the
+  // route that OWNS a slot is often reached by client navigation long after this
+  // one evaluation — so a one-shot query, OR a short-lived observer that gives
+  // up, both miss it and strand the mark at the corner, full size. (Measured on
+  // hanzo.app/dev: the `#enso-dock` slot and its meta were both present, yet the
+  // fab still floated 56px at the corner — the 10s observer had expired before
+  // the builder mounted its dock.) Watch until it lands; disconnect the instant
+  // it does. The slot node is stable once created, so there is nothing to
+  // re-observe after a successful dock.
+  var watching = false;
+  function watchForSlot() {
+    if (watching || place()) return;
+    // Nothing to wait for unless a slot is actually named: a page with no
+    // `hanzo:anchor` keeps the corner fallback and arms no observer.
     if (!meta('hanzo:anchor')) return;
+    watching = true;
     try {
-      var obs = new MutationObserver(function () { if (place()) obs.disconnect(); });
+      var obs = new MutationObserver(function () {
+        if (place()) { obs.disconnect(); watching = false; }
+      });
       obs.observe(document.documentElement, { childList: true, subtree: true });
-      setTimeout(function () { obs.disconnect(); }, 10000);
+      // A floor, not a deadline: SPA navigation re-arms this (below), so the
+      // timer only stops the watch on a page that renders no slot at all — it
+      // never observes the DOM forever, and never gives up on a slow route.
+      setTimeout(function () { obs.disconnect(); watching = false; }, 30000);
     } catch (e) {
-      /* no MutationObserver: the corner fallback stands */
+      watching = false; /* no MutationObserver: the corner fallback stands */
     }
+  }
+  function mount() {
+    if (!host.parentNode) document.body.appendChild(host); // corner, meanwhile
+    watchForSlot();
   }
   if (document.body) {
     mount();
   } else {
     document.addEventListener('DOMContentLoaded', mount, { once: true });
   }
+
+  // Single-page apps swap the DOM under one script evaluation: the slot (and its
+  // `hanzo:anchor` meta) belong to a route reached by pushState, AFTER mount()
+  // already ran. Re-run placement on every route change so the launcher docks
+  // the moment you arrive at the route that owns a slot, and falls back to the
+  // corner on one that does not.
+  function onRoute() {
+    if (place()) return;
+    if (host.parentNode !== document.body) document.body.appendChild(host);
+    watchForSlot();
+  }
+  ['pushState', 'replaceState'].forEach(function (m) {
+    var orig = history[m];
+    if (typeof orig !== 'function') return;
+    history[m] = function () {
+      var r = orig.apply(this, arguments);
+      try { onRoute(); } catch (e) { /* placement is best-effort */ }
+      return r;
+    };
+  });
+  window.addEventListener('popstate', onRoute);
 
   // The widget's whole palette, declared ONCE, in terms of the host page's
   // design tokens. Everything below reads these — no literal colour, font or

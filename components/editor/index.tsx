@@ -586,9 +586,14 @@ export const AppEditor = ({
             card is the only element that lifts off the flat workspace. Preview
             stays mounted (iframe warm, iframeRef valid); Code overlays it. */}
         <YStack
-          position="relative" flex={1} minWidth={0} height="100%" padding="$2"
+          position="relative" flex={1} minWidth={0} height="100%"
+          // Gutter on top and sides, but NONE on the bottom: the card meets the
+          // console footer flush, the same bottom line the chat composer already
+          // sits on — so chat, preview and footer line up instead of the card
+          // floating 12px above the bar while the composer runs down to it.
+          paddingTop="$2" paddingHorizontal="$2" paddingBottom={0}
           display={currentTab === "chat" || fresh ? "none" : "flex"}
-          $lg={{ padding: "$2", display: fresh ? "none" : "flex" }}
+          $lg={{ paddingTop: "$2", paddingHorizontal: "$2", paddingBottom: 0, display: fresh ? "none" : "flex" }}
         >
           {/* FULL-BLEED, the owner's call: the preview IS the workspace's right
               region, not a card floating in it. The gutter, the hairline and
