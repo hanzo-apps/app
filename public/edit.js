@@ -722,12 +722,21 @@
     // halo. One ring, one weight, in both states — no hairline, no handover to a
     // second ring.
     //
-    // --mark is the drawn diameter and the only size to change; the halo sizes
+    // --mark is the DRAWN diameter and the only size to change; the halo sizes
     // itself from it.
+    //
+    // The drawn ring and the hit box are two different numbers, deliberately.
+    // The mark is 22px so the corner stays quiet on someone else's page — this
+    // script is embedded on pages it does not own, and a 34px ring in a 56px box
+    // read as a second product's button parked over theirs. The BOX stays 44,
+    // the touch floor: a thumb is about as wide as it is tall, and shrinking the
+    // target with the glyph is how an affordance becomes decorative. Nothing
+    // catches that regression either — the fab lives in a shadow root, so the
+    // deploy gate's querySelectorAll cannot see it.
     ':host([data-hanzo-anchored]) .fab{--mark:18px;position:relative;right:auto;bottom:auto;' +
     'width:20px;height:20px}' +
-    '.fab{--mark:34px;position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;' +
-    'align-items:center;justify-content:center;width:56px;height:56px;padding:0;' +
+    '.fab{--mark:22px;position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;' +
+    'align-items:center;justify-content:center;width:44px;height:44px;padding:0;' +
     'border-radius:999px;border:0;background:transparent;color:var(--hz-text);' +
     'cursor:pointer;line-height:0;-webkit-tap-highlight-color:transparent;' +
     'transition:transform .2s ease}' +
