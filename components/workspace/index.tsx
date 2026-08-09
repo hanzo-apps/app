@@ -22,7 +22,7 @@ import { SettingsPanel } from '@/components/settings';
 import { GuidedTourOverlay } from '@/components/guided-tour/overlay';
 import { useGuidedTour } from '@/components/guided-tour/context';
 import { GuidedTourTranscriptEvent } from '@/components/guided-tour/types';
-import { track } from '@/lib/telemetry';
+import { track } from '@hanzogui/telemetry';
 import { EVENTS } from '@hanzo/event';
 import { useAnalytics } from '@hanzo/event/react';
 import { FocusContextPayload } from '@/lib/preview/types';

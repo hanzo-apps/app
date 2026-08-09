@@ -8,7 +8,7 @@ import { DollarSign, AlertTriangle, Info, Download, Upload, Database, ChevronDow
 import { CostCalculator } from '@/lib/llm/cost-calculator';
 import { AboutModal } from '@/components/about-modal';
 import { BackupService } from '@/lib/vfs/backup-service';
-import { setTelemetryOptIn } from '@/lib/telemetry';
+import { getConsent, setConsent } from '@hanzogui/telemetry';
 import { Appearance } from '@hanzo/appearance';
 
 interface SettingsPanelProps {
@@ -23,8 +23,11 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
   const [isImporting, setIsImporting] = useState(false);
   const [importProgress, setImportProgress] = useState(0);
   const [importMessage, setImportMessage] = useState('');
+  // Reads the SAME stored consent the live telemetry provider honors
+  // (@hanzogui/telemetry, hz_consent). Enabled unless explicitly denied — an
+  // unset choice defers to the browser's DNT/GPC, exactly as the provider does.
   const [telemetryOptIn, setTelemetryOptInState] = useState(() =>
-    configManager.getSettings().telemetryOptIn !== false
+    getConsent() !== 'denied'
   );
   const [openSections, setOpenSections] = useState({
     application: true,
@@ -182,7 +185,9 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                   checked={telemetryOptIn}
                   onCheckedChange={(checked) => {
                     setTelemetryOptInState(checked);
-                    setTelemetryOptIn(checked);
+                    // Writes hz_consent, which the live provider reads — so the
+                    // toggle actually turns @hanzo/event on/off, not a dead tracker.
+                    setConsent(checked ? 'granted' : 'denied');
                   }}
   />
               </XStack>
