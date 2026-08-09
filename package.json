@@ -37,7 +37,7 @@
     "@hanzo/event": "^0.3.9",
     "@hanzo/gui": "^8.1.0",
     "@hanzo/iam": "^0.21.6",
-    "@hanzo/logo": "^1.0.14",
+    "@hanzo/logo": "^1.0.17",
     "@hanzo/observe": "^0.1.6",
     "@hanzo/ui": "^8.0.70",
     "@hanzo/usage": "^0.1.6",

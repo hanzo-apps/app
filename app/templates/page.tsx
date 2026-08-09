@@ -130,7 +130,16 @@ function ResourcesBrowser() {
         {/* Hero */}
         <YStack borderBottomWidth={1} borderColor="$borderColor">
           <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$7">
-            <XStack marginBottom="$2" alignItems="center" gap="$3">
+            {/* The badge carries shrink-0 and this row did not wrap, so at 375px
+                the count was pushed past the right edge and clipped mid-word —
+                the document overflowed by 14px, and by 69px at 320. Neither the
+                title nor the badge can give, so the row has to.
+
+                Via `style`, not the `flexWrap` prop: measured in a production
+                build, the prop does not reach the DOM here (the row still
+                computed `flex-wrap: nowrap` and the overflow was unchanged to
+                the pixel). A raw style is the one form that survives. */}
+            <XStack marginBottom="$2" alignItems="center" gap="$3" style={{ flexWrap: 'wrap' }}>
               <XStack height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color3">
                 <Sparkles size={24} />
               </XStack>
