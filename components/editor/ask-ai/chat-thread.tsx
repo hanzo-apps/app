@@ -323,8 +323,18 @@ function CollapsibleSection({
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  // A LIVE phase (Generating / Planning) is transient — it reads as an inline
+  // activity log, not a sealed capsule. The rounded box, and especially its
+  // rounded BOTTOM floating mid-thread, is for SETTLED disclosures (Plan ▼ once
+  // written, Generated files ▼) a reader may reopen. The header keeps its 12px
+  // inset either way, so a live title sits directly above where the settled
+  // box's title lands — the disclosure never jumps left when it settles.
+  const boxed = !live;
   return (
-    <YStack width="100%" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2">
+    <YStack
+      width="100%"
+      {...(boxed ? { overflow: "hidden", borderRadius: "$6", borderWidth: 1, borderColor: "$borderColor", backgroundColor: "$color2" } : {})}
+    >
       <Button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -342,7 +352,14 @@ function CollapsibleSection({
           size={14}
   />
       </Button>
-      {open && <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2">{children}</YStack>}
+      {open && (
+        <YStack
+          paddingHorizontal="$3" paddingVertical="$2"
+          {...(boxed ? { borderTopWidth: 1, borderColor: "$borderColor" } : {})}
+        >
+          {children}
+        </YStack>
+      )}
     </YStack>
   );
 }
