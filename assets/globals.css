@@ -1500,3 +1500,24 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   background-color: var(--primary);
   color: var(--primary-foreground);
 }
+
+/* ── Turn feedback reveals on attention ──────────────────────────────────────
+   Copy/thumbs under every settled assistant turn read as permanent chrome —
+   three always-lit controls per turn, noise the reference only shows when the
+   pointer is over the turn. Opacity, never display: the buttons keep their
+   box (no reflow) and stay focusable, and :focus-within is what reveals them
+   for a keyboard. A device with no hover shows them always — a control you
+   cannot summon is a control you do not have. */
+.turn .turn-feedback {
+  opacity: 0;
+  transition: opacity 120ms;
+}
+.turn:hover .turn-feedback,
+.turn:focus-within .turn-feedback {
+  opacity: 1;
+}
+@media (hover: none) {
+  .turn .turn-feedback {
+    opacity: 1;
+  }
+}

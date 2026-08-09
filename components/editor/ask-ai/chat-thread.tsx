@@ -155,7 +155,7 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
       );
     }
     return (
-      <XStack width="100%" justifyContent="flex-start">
+      <XStack width="100%" justifyContent="flex-start" className="turn">
         <YStack maxWidth="95%" borderRadius="$5" paddingHorizontal="$3" paddingVertical="$1.5">
           {text ? (
             <XStack flexWrap="wrap" alignItems="flex-end">
@@ -184,7 +184,7 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
   const files = activity ?? [];
 
   return (
-    <YStack width="100%" alignItems="flex-start" gap="$2">
+    <YStack width="100%" alignItems="flex-start" gap="$2" className="turn">
       {showPlanCard && (
         <CollapsibleSection
           title={planning ? "Designing…" : "Plan"}
@@ -287,7 +287,7 @@ function Feedback({ text }: { text?: string }) {
   const dim = { color: "$color11", hoverStyle: { backgroundColor: "$color3", color: "$color" } } as const;
 
   return (
-    <XStack alignItems="center" gap="$0.5">
+    <XStack alignItems="center" gap="$0.5" className="turn-feedback">
       <Button type="button" variant="ghost" size="icon-sm" borderRadius="$4" title={copied ? "Copied" : "Copy"} aria-label="Copy reply" onClick={copy} {...dim}>
         {copied ? <Check size={13} /> : <Copy size={13} />}
       </Button>
