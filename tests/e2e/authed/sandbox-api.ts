@@ -347,6 +347,27 @@ export async function exec(
 }
 
 /** Hang the sandbox up and drop its disk. Test litter costs a pod and a PVC. */
+/** Delete the git project a run created, so a test does not leave one behind.
+ *
+ * Every run names its project `e2e-<kind>-<uniq()>` so concurrent runs cannot
+ * collide — and nothing removed them, so each run leaked one permanently into the
+ * real system. 45 had accumulated, one per run, indistinguishable from a person's
+ * work in any repository listing.
+ *
+ * Best-effort on purpose: a project that will not delete is not a failed test, and
+ * raising here would turn a leaked 2 MB repository into a red suite. It is the same
+ * shape as destroy() above, for the same reason.
+ */
+export async function deleteProject(request: APIRequestContext, token: string, project: string): Promise<void> {
+  await request
+    .delete(`${API}/git/repos/${encodeURIComponent(project)}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      failOnStatusCode: false,
+      timeout: CALL_TIMEOUT_MS,
+    })
+    .catch(() => {});
+}
+
 export async function destroy(request: APIRequestContext, token: string, id: string): Promise<void> {
   await request
     .delete(`${API}/sandboxes/${encodeURIComponent(id)}`, {
