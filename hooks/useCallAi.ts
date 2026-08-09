@@ -303,13 +303,16 @@ export const useCallAi = ({
               // Reported in one message rather than two toasts: a build with a
               // dead nav usually also has the layout problem that came with it,
               // and stacking notifications buries the first.
+              //
+              // It is an ADVISORY, not a failure — the build succeeded. So a
+              // neutral toast, never `toast.error` (the Toaster runs richColors,
+              // which would paint it red and read as a crash). And there is no
+              // "success" toast at all: the completion chime and the live preview
+              // ARE the done-signal, so a pill on every turn is only noise over
+              // the canvas. The chime fires either way.
               const problem = qualityReport(newPages);
-              if (problem) {
-                toast.error(problem);
-              } else {
-                toast.success("AI responded successfully");
-                if (audio.current) audio.current.play();
-              }
+              if (problem) toast(problem);
+              if (audio.current) audio.current.play();
             }
 
             onSuccess(newPages, prompt);
@@ -438,9 +441,10 @@ export const useCallAi = ({
               };
             }
 
-            toast.success("AI responded successfully");
             setisAiWorking(false);
 
+            // The completion chime is the done-signal, not a toast. A "success"
+            // pill on every turn is noise over the canvas.
             if (audio.current) audio.current.play();
 
             onSuccess([...pages, newPage], prompt);
@@ -547,7 +551,6 @@ export const useCallAi = ({
           };
         }
 
-        toast.success("AI responded successfully");
         setisAiWorking(false);
 
         // Capture the gateway response id before onSuccess (accept reads it).
@@ -556,10 +559,12 @@ export const useCallAi = ({
         onSuccess(res.pages, prompt, res.updatedLines);
         // The SAME checks the first build runs. A link is no less dead for
         // having arrived on the second prompt, and an edit is the likeliest way
-        // a nav gains an item pointing at a page nobody wrote.
+        // a nav gains an item pointing at a page nobody wrote. Advisory, not a
+        // failure — a neutral toast, never the red `error` pill.
         const editProblem = qualityReport(res.pages);
-        if (editProblem) toast.error(editProblem);
+        if (editProblem) toast(editProblem);
 
+        // The completion chime is the done-signal — no "success" toast.
         if (audio.current) audio.current.play();
 
         return { success: true, html: res.html, updatedLines: res.updatedLines, model: res.model };
