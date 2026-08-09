@@ -33,16 +33,22 @@ import {
   Check,
   ChevronDown,
   Clock,
-  Code2,
-  Eye,
-  MessageSquare,
   Mic,
   Monitor,
   Plus,
   RotateCcw,
+  Share2,
   Smartphone,
   Sparkles,
 } from "lucide-react";
+// The hero's view tabs ARE the builder's — read the ONE list so the mockup can
+// never drift from the real editor's tab set (which is exactly how it drifted:
+// a hand-copied Chat/Preview/Code went stale against Preview/Files/Code/More).
+import { PANES } from "@/lib/panes";
+
+// Desktop view tabs = every pane except the `mobileOnly` chat column (the real
+// header drops it above $lg; the hero frame is a desktop editor). Preview leads.
+const VIEW_TABS = PANES.filter((p) => !("mobileOnly" in p));
 
 // The demo storyline: one build + two edits + publish. `v` is the app version
 // each step reveals; the chat drives it.
@@ -265,34 +271,28 @@ export default function HeroPreview() {
       <YStack overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={6}>
         {/* ── Editor header — the real /dev chrome in miniature ── */}
         <XStack alignItems="center" gap="$3" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$2">
-          <XStack alignItems="center" gap="$1.5">
-            <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
-            <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
-            <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
-          </XStack>
+          {/* Left anchor = the real editor's: the Hanzo mark, then the project
+              name. NO browser window dots — the real /dev header has none (it is
+              the app, not a window), and the mockup's OWN rounded frame already
+              reads as a window. */}
           <HMark size={14} color="var(--foreground)" />
           <SizableText display="none" $sm={{ display: "inline" }} numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
             maxpower / vibe-check
           </SizableText>
 
-          {/* View tabs (chat | preview | code) — the builder's ONE view state,
-              in the SAME grammar the real header (editor/header) settled on: a
-              $color4 group at $3 radius, NOT a full-round trough. The inactive
-              panes are bare glyphs; the active pane is the raised accent
-              pushbutton ($color5, white label) wearing its NAME. The old
-              icon-only-pill-in-a-$color3-trough was the segmented look the real
-              header deliberately dropped — a set of destinations, not a segmented
-              control, so only where-you-are is loud. */}
+          {/* View tabs — the builder's ONE view state, mirroring the real
+              header's PANES (`lib/panes`) on DESKTOP, where `chat` is `mobileOnly`
+              and drops out: Preview · Files · Code · More, with the SAME glyphs
+              (Globe / FileText / Code2 / Layers) and Preview active. Same grammar
+              the real header settled on: a $color4 group at $3 radius, inactive
+              panes bare glyphs, the active pane the raised accent pushbutton
+              ($color5, white label) wearing its NAME. */}
           <XStack alignSelf="center" display="none" $sm={{ display: "flex" }} alignItems="center" gap="$0.5" borderRadius="$3" backgroundColor="$color4">
-            {[
-              { id: "chat", label: "Chat", icon: MessageSquare },
-              { id: "preview", label: "Preview", icon: Eye },
-              { id: "code", label: "Code", icon: Code2 },
-            ].map((tabItem, i) => {
-              const on = i === 1;
+            {VIEW_TABS.map((tabItem, i) => {
+              const on = i === 0;
               return (
                 <XStack
-                  key={tabItem.id}
+                  key={tabItem.value}
                   height={22} alignItems="center" justifyContent="center" gap="$1" borderRadius="$3" paddingHorizontal={on ? "$2" : "$1.5"} {...{ backgroundColor: on ? "$color5" : "transparent" }}
                 >
                   <SizableText color={on ? "$color12" : "$color11"}><tabItem.icon size={11} /></SizableText>
@@ -342,6 +342,13 @@ export default function HeroPreview() {
               >
                 <SizableText color={device === "mobile" ? "$color12" : "$color11"}><Smartphone size={11} /></SizableText>
               </Button>
+            </XStack>
+            {/* Share — the real header's quiet secondary beside Publish (editor/
+                index.tsx): the SAME 999 pill as Publish, differing only in fill
+                ($color4 quiet vs the accent), a Share2 glyph + label. */}
+            <XStack alignItems="center" gap="$1" height={22} borderRadius={999} paddingHorizontal="$2" backgroundColor="$color4">
+              <Share2 size={10} color="var(--foreground)" />
+              <SizableText display="none" fontSize="$1" fontWeight="600" color="$color" $sm={{ display: "inline" }}>Share</SizableText>
             </XStack>
             {/* A text host cannot row-lay mixed children (the check rendered as
                 a block ABOVE its label, and the unsized inner text ballooned the
