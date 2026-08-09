@@ -222,7 +222,7 @@ export default function LandingPage() {
             </Reveal>
 
             <Reveal delay={60}>
-              <H1 fontSize="1.9rem" fontWeight="500" textAlign="center" lineHeight="1.05" letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
+              <H1 fontSize="1.9rem" fontWeight="600" textAlign="center" lineHeight="1.05" letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: 48 }}>
                 {/* The space is explicit: JSX drops the whitespace around the <br>,
                     and the <br> is hidden below sm — without it the mobile heading
                     reads "Describe your app.Hanzo builds and ships it." */}

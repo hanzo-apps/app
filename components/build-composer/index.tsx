@@ -212,7 +212,7 @@ export function BuildComposer({
   const CurrentMode = MODES.find((m) => m.value === mode) ?? MODES[0];
 
   return (
-    <YStack alignSelf="center" width="100%" maxWidth={672} className={`${className}`}>
+    <YStack alignSelf="center" width="100%" maxWidth={608} className={`${className}`}>
       {greetingName && (
         <H1 marginBottom="$2" textAlign="center" fontSize="$10" fontWeight="500" letterSpacing={-0.4} color="$color" $sm={{ fontSize: "$11" }} lineHeight="1.1">
           Ready to build, {greetingName}?
@@ -238,9 +238,14 @@ export function BuildComposer({
         </XStack>
       )}
 
-      {/* The gradient bubble: padded gradient host + opaque inner panel. */}
-      <YStack borderRadius="$8" elevation={6} className="hz-composer">
-        <YStack data-field-box borderRadius={14} backgroundColor="$background">
+      {/* The gradient bubble: padded gradient host + opaque inner panel.
+          28 outside, 26.5 inside, because the host pads 1.5px and a nested
+          radius is only flush when it is the parent's MINUS the padding. It was
+          12 outside and 14 inside — the inner corner rounder than the corner
+          containing it, so the gradient showed a fatter sliver at the corners
+          than along the edges. Change the two together or the seam comes back. */}
+      <YStack borderRadius={28} elevation={6} className="hz-composer">
+        <YStack data-field-box borderRadius={26.5} backgroundColor="$background">
           <Textarea
             ref={textareaRef}
             value={idea}
@@ -256,7 +261,7 @@ export function BuildComposer({
             onBlur={() => setFocused(false)}
             placeholder={placeholder}
             aria-label="Ask Hanzo to build"
-            width="100%" backgroundColor="transparent" borderWidth={0} paddingHorizontal="$4" paddingBottom="$2" paddingTop="$4" fontSize="$4" lineHeight="1.625" color="$color" placeholderTextColor="$color11" focusStyle={{ borderWidth: 0 }}
+            width="100%" backgroundColor="transparent" borderWidth={0} paddingHorizontal="$4" paddingBottom="$2" paddingTop="$4" fontSize={16} lineHeight="1.375" color="$color" placeholderTextColor="$color11" focusStyle={{ borderWidth: 0 }}
   />
           <XStack alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$2.5" paddingBottom="$2.5">
             <XStack alignItems="center" gap="$1">
@@ -327,7 +332,7 @@ export function BuildComposer({
                 disabled={!idea.trim()}
                 aria-label="Start building"
                 variant="outline"
-                height="$6" width="$6" alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3", borderColor: "$borderColor" }}
+                alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3", borderColor: "$borderColor" }}
               >
                 <ArrowUp size={16} strokeWidth={2.5} />
               </Button>

@@ -62,6 +62,7 @@ models/
 test-results/
 playwright-report/
 screenshots/
+.shots/
 
 # Next.js build output
 .next/

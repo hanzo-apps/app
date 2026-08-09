@@ -282,8 +282,37 @@ a {
  * measured, and a phone run without `hasTouch` silently tests the desktop
  * branch. */
 @media (pointer: coarse) {
+  /* A target is a BOX, so both sides carry the floor — a thumb is about as wide
+     as it is tall. This said `min-height` alone, which passes a 28x44 icon
+     button: tall enough to measure, too narrow to hit. The deploy gate read
+     height alone for the same reason and so reported six clean routes over four
+     controls that were 22, 28, 36 and 39 wide. Rule and check now state the same
+     thing, on the same predicate, and neither can drift without the other.
+
+     `min-width` needs a box to act on — it does nothing to a non-replaced inline
+     element — so a link that is a word inside a sentence is untouched by
+     construction, and prose is excluded again below for the ones that are not.
+
+     `!important` because `size="icon"` sets the floor INLINE, and an inline
+     declaration beats any stylesheet rule on the same property whatever its
+     specificity — the same reason `.t_group_true` needs it. Without it this rule
+     is silently a no-op on exactly the controls it exists for. */
+  button,
+  [role='button'],
+  a[href],
   .hz-tap {
-    min-height: 44px;
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+
+  p button,
+  p [role='button'],
+  p a[href] {
+    min-height: 0 !important;
+    min-width: 0 !important;
+  }
+
+  .hz-tap {
     display: inline-flex;
     align-items: center;
   }
@@ -1559,4 +1588,16 @@ html:root [data-slot="switch"][data-state="checked"],
 html:root [role="switch"][data-state="checked"] {
   background-color: var(--brand-accent-muted, #a3a3a3);
   border-color: transparent;
+}
+
+/* The composer's two action controls are ONE box. The mic arrives from
+   @hanzo/voice at 28 and the send button from @hanzo/ui's `size="icon"` floor
+   at 36, so two controls in the same row sat 8px apart with no rule saying
+   which gets which — the same defect, in the same shape, that hanzo.chat's top
+   row had. 36 is this app's icon box (`size="icon"` is what every icon button
+   here declares, and `tests/unit/icon-button.test.ts` requires it), so the mic
+   joins that number rather than a third one being invented for both. */
+.hz-composer .voice-control {
+  width: 36px;
+  height: 36px;
 }
