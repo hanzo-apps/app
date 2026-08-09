@@ -131,6 +131,11 @@ export default function Header() {
   // mounts OrgGate, so a first-time visitor with no organization is onboarded
   // instead of meeting that requirement later at deploy.
   const primaryCTA = { id: "newproject", label: "+ New project", href: "/new" };
+  // …and then HIDDEN in assets/globals.css (`[data-hanzo-shell] a[href="/new"]`):
+  // the owner removed the "+ New project" button from the menu header. This object
+  // stays only because HanzoHeader REQUIRES a primaryCTA and its CTA reads
+  // `link.href` unguarded, so it cannot be dropped from here; /new keeps it a
+  // valid, harmless target while the CSS takes it off the page.
 
   return (
     <HanzoHeader
