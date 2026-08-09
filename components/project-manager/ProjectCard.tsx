@@ -40,7 +40,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost" height={28} width={28} flexShrink={0}>
+              <Button size="icon-sm" variant="ghost" flexShrink={0}>
                 <MoreVertical size={16} />
               </Button>
             </DropdownMenuTrigger>
@@ -86,7 +86,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
           <Button
             size="sm"
             variant="ghost"
-            height={28} paddingHorizontal="$2"
+            paddingHorizontal="$2"
             onClick={() => router.push(builderLink(project.slug, project.org))}
           >
             <Pencil size={12} />
@@ -97,11 +97,13 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
             // Button wraps its children in an array for the loading slot, which
             // trips Radix Slot's React.Children.only when it renders as a Slot.
             // See components/editor/cross-surface-links.tsx for the same footgun.
+            // An <a> also escapes the [data-slot=button] control-height rule, so it
+            // states --control-h (30) itself to stand level with the Edit button.
             <Anchor
               href={visitUrl}
               target="_blank"
               rel="noopener noreferrer"
-              height={28} paddingHorizontal="$2" fontSize="$1" className={`${buttonVariants({ size: 'sm', variant: 'ghost' })}`}
+              height={30} paddingHorizontal="$2" fontSize="$1" className={`${buttonVariants({ size: 'sm', variant: 'ghost' })}`}
             >
               <ExternalLink size={12} />
               Visit
