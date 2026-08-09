@@ -57,15 +57,28 @@ describe("the builder Enso launcher never floats over the preview", () => {
     expect(src).toMatch(/document\.body\.appendChild\(host\)/);
   });
 
-  it("the mark stays a hairline at both of its sizes", () => {
-    const src = read("public/edit.js");
-    // The ensō draws at 34px in the corner and 18px in the dock from ONE svg, so
-    // a viewBox-relative stroke is two different weights — it was 14/100, which
-    // came out 4.8px and 2.5px, a donut at either size. `vector-effect` measures
-    // the stroke in screen pixels instead, which is the whole reason the mark
-    // can be small and still look drawn rather than blobbed.
-    expect(src).toMatch(/vector-effect="non-scaling-stroke"/);
-    expect(src).toMatch(/stroke-width="1\.25"/);
+  it("the launcher draws the app's OWN ensō, not a second one", () => {
+    // One thick weight everywhere. The launcher used to draw a 1.25px
+    // `vector-effect` hairline while `components/model-icon.tsx` — the mark
+    // @hanzo/logo and the hanzo.ai models page carry — drew r 8.88 / stroke
+    // 2.64 with round caps, so the same glyph had two weights depending on
+    // where you met it.
+    //
+    // Assert AGREEMENT rather than either literal: a test that pins only
+    // edit.js is satisfied by changing edit.js alone, which is exactly the
+    // drift being prevented. The circle is byte-identical in both files, so
+    // compare it.
+    const widget = read("public/edit.js");
+    const canonical = read("components/model-icon.tsx");
+    const CIRCLE =
+      '<circle cx="12" cy="12" r="8.88" fill="none" stroke="currentColor" stroke-width="2.64" stroke-linecap="round"/>';
+
+    expect(canonical).toContain(CIRCLE);
+    expect(widget).toContain(CIRCLE);
+    // The hairline is gone on purpose; `vector-effect` would re-split the weight.
+    // Match the ATTRIBUTE, not the word: edit.js names it in a comment saying it
+    // deliberately has none, and a bare /vector-effect/ fails on that sentence.
+    expect(widget).not.toMatch(/vector-effect\s*=/);
   });
 
   it("/dev anchors the launcher by NAMING the key", () => {

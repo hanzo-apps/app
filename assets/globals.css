@@ -1601,3 +1601,46 @@ html:root [role="switch"][data-state="checked"] {
   width: 36px;
   height: 36px;
 }
+
+/* The gateway's provider marks.
+   Most carry their own brand colour and render as-is. OpenAI, xAI and Groq are
+   monochrome brands authored as `currentColor` — and an <img> cannot inherit
+   that, so it resolves to the SVG's own default, black, which on this canvas is
+   nothing at all. Twelve marks rendered as twelve invisible holes for exactly
+   this reason. Force those to white, the way the partner wall already does. */
+.hz-mark-mono {
+  filter: brightness(0) invert(1);
+}
+
+/* Even columns at every width, which flex-wrap could not give: the marks have
+   wildly different aspect ratios, so a wrapped row left ragged gaps and a short
+   final row.
+
+   Anchored on `html:root` for the reason stated at the top of this file: gui
+   writes `display` as an atomic class of its own, `gui.css` is imported LAST,
+   and equal specificity is decided by load order — so a bare `.hz-providers`
+   ties and loses. Measured before anchoring: the container stayed a flex
+   column, three tracks of 448px at 1440 and one 387px "column" at 390. Every
+   other rule here escapes this only by setting a property gui never writes. */
+html:root .hz-providers {
+  display: grid;
+  /* Explicit counts, not `auto-fill`: there are fifteen providers, and 5 and 3
+     both divide it exactly while auto-fill picked 7 and left one tile alone on
+     a row. Two on a phone still orphans one — fifteen is odd — but at that width
+     the grid reads as a list and the last row is just its end. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  width: 100%;
+}
+
+@media (min-width: 48em) {
+  html:root .hz-providers {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64em) {
+  html:root .hz-providers {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
