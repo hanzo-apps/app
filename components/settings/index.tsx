@@ -171,12 +171,12 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
 
               {/* Telemetry */}
               <XStack alignItems="center" justifyContent="space-between">
-                <div>
+                <YStack flex={1} paddingRight="$3">
                   <Label htmlFor="telemetry">Anonymous Usage Analytics</Label>
                   <Paragraph fontSize="$1" color="$color11" marginTop="$0.5">
                     Help improve Hanzo App by sharing anonymous usage data
                   </Paragraph>
-                </div>
+                </YStack>
                 <Switch
                   id="telemetry"
                   checked={telemetryOptIn}
@@ -208,12 +208,12 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
             <YStack rowGap="$4">
               {/* Show Costs */}
               <XStack alignItems="center" justifyContent="space-between">
-                <div>
+                <YStack flex={1} paddingRight="$3">
                   <Label htmlFor="show-costs">Display Costs</Label>
                   <Paragraph fontSize="$1" color="$color11" marginTop="$0.5">
                     Show cost information in messages
                   </Paragraph>
-                </div>
+                </YStack>
                 <Switch
                   id="show-costs"
                   checked={costSettings.showCosts !== false}
@@ -227,7 +227,7 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
 
               {/* Daily + Project Limits — 2 column grid */}
               <YStack gap="$3">
-                <div>
+                <YStack>
                   <Label htmlFor="daily-limit" fontSize="$1">Daily Limit (USD)</Label>
                   <Input
                     id="daily-limit"
@@ -244,8 +244,8 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                       setCostSettings(newCostSettings);
                     }}
   />
-                </div>
-                <div>
+                </YStack>
+                <YStack>
                   <Label htmlFor="project-limit" fontSize="$1">Project Limit (USD)</Label>
                   <Input
                     id="project-limit"
@@ -262,11 +262,11 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                       setCostSettings(newCostSettings);
                     }}
   />
-                </div>
+                </YStack>
               </YStack>
 
               {/* Warning Threshold */}
-              <div>
+              <YStack>
                 <Label htmlFor="warning-threshold" fontSize="$1">Warning Threshold</Label>
                 <XStack alignItems="center" gap="$3" marginTop="$1.5">
                   <Input
@@ -291,18 +291,16 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                     </SizableText>
                   </XStack>
                 </XStack>
-              </div>
+              </YStack>
 
               {/* Lifetime Costs */}
               <XStack alignItems="center" justifyContent="space-between" backgroundColor="$color3" borderWidth={1} borderRadius="$5" padding="$3">
-                <div>
-                  <YStack><SizableText fontSize="$1" color="$color11" fontWeight="500">Lifetime Total</SizableText></YStack>
-                  <YStack marginTop="$0.5">
-                    <SizableText fontSize="$6" fontWeight="700" fontFamily="$mono" letterSpacing={-0.4}>
-                      {CostCalculator.formatCost(configManager.getLifetimeCosts().total)}
-                    </SizableText>
-                  </YStack>
-                </div>
+                <YStack>
+                  <SizableText fontSize="$1" color="$color11" fontWeight="500">Lifetime Total</SizableText>
+                  <SizableText marginTop="$0.5" fontSize="$6" fontWeight="700" fontFamily="$mono" letterSpacing={-0.4}>
+                    {CostCalculator.formatCost(configManager.getLifetimeCosts().total)}
+                  </SizableText>
+                </YStack>
                 <Button
                   variant="outline"
                   size="sm"
