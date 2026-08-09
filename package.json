@@ -146,7 +146,7 @@
       "@hanzo/ui@8.0.70": "patches/@hanzo__ui@8.0.70.patch"
     }
   },
-  "description": "Hanzo App \u2014 AI web & app builder on Hanzo Cloud",
+  "description": "Hanzo App — AI web & app builder on Hanzo Cloud",
   "author": "Hanzo AI, Inc.",
   "repository": {
     "type": "git",
