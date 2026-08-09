@@ -186,9 +186,22 @@ function ResourcesBrowser() {
                 <Button
                   key={cat}
                   onClick={() => setCategory(cat)}
-                  borderRadius="$10" paddingHorizontal="$3" paddingVertical="$2" flexShrink={0} $sm={{ paddingVertical: "$1.5" }} {...{ backgroundColor: category === cat ? "$color12" : "$background", hoverStyle: category === cat ? undefined : { backgroundColor: "$color3" } }}
+                  /* Selected is a RAISED surface, not an inversion. `$color12`
+                     is the lightest step in the ramp, so the active chip painted
+                     a white slab with black text on a true-black page — the one
+                     bright rectangle in a monochrome column, and louder than the
+                     header's own primary. Selection reads from a lifted ground
+                     plus full-strength text instead.
+
+                     `$color5` and not `$color4`: the ramp mixes solid steps with
+                     ALPHA ones, and `$color4` is `rgb(255 255 255 / .10)` — over
+                     black that composites to ~rgb(26,26,26), DARKER than these
+                     chips' own rgb(36,36,36) rest state, so the selected one
+                     receded. `$color5` is hsl 20% = rgb(51,51,51), which is the
+                     exact ground the header's primary already uses. */
+                  borderRadius="$10" paddingHorizontal="$3" paddingVertical="$2" flexShrink={0} $sm={{ paddingVertical: "$1.5" }} {...{ backgroundColor: category === cat ? "$color5" : "$background", borderWidth: 1, borderColor: category === cat ? "$color7" : "$borderColor", hoverStyle: category === cat ? undefined : { backgroundColor: "$color3" } }}
                 >
-                  <SizableText fontSize="$1" fontWeight="500" whiteSpace="nowrap" color={category === cat ? "$background" : "$color11"}>{cat}</SizableText>
+                  <SizableText fontSize="$1" fontWeight="500" whiteSpace="nowrap" color={category === cat ? "$color" : "$color11"}>{cat}</SizableText>
                 </Button>
               ))}
             </XStack>
