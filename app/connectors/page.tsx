@@ -263,11 +263,16 @@ function ConnectorsInner() {
             ))}
           </YStack>
         ) : providers.length === 0 ? (
-          /* Empty — honest about the org-scoped surface being unpopulated. */
-          <YStack borderRadius="$6" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" paddingHorizontal="$5" paddingVertical="$10">
-            <Plug size={32} />
+          /* Empty — honest about the org-scoped surface being unpopulated. The
+             icon was pinned to the container's left edge while the text was
+             centered, so the state read as broken. One centered column now: a
+             muted glyph in a soft chip, title, one line. */
+          <YStack alignItems="center" gap="$3" borderRadius="$6" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" paddingHorizontal="$5" paddingVertical="$10">
+            <XStack width={44} height={44} alignItems="center" justifyContent="center" borderRadius={999} backgroundColor="$color3">
+              <SizableText color="$color11"><Plug size={20} /></SizableText>
+            </XStack>
             <H2 textAlign="center" fontSize="$3" fontWeight="500">No connectors available yet</H2>
-            <Paragraph textAlign="center" alignSelf="center" marginTop="$1" maxWidth={384} fontSize="$3" color="$color11">
+            <Paragraph textAlign="center" maxWidth={384} fontSize="$3" color="$color11">
               Connectors for this workspace will appear here once they're enabled. Nothing to set
               up in the meantime.
             </Paragraph>

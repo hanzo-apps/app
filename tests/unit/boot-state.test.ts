@@ -41,8 +41,10 @@ describe("boot: conversation first", () => {
     expect(editor).toMatch(/\$lg=\{\{ display: fresh \? "none" : "flex" \}\} className="group\/resizer"/);
   });
 
-  it("the chat column narrows to a reading measure in boot", () => {
-    expect(editor).toMatch(/maxWidth: 860, alignSelf: "center"/);
+  it("the chat column narrows to the composer's own reading measure in boot", () => {
+    // 672, not 860: it must match the composer's maxWidth (ask-ai root) or the
+    // thread runs wider than the box beneath it and messages read as blobs.
+    expect(editor).toMatch(/maxWidth: 672, alignSelf: "center"/);
   });
 
   it("the header receives the same fact, spelled once", () => {

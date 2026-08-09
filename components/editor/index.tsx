@@ -485,7 +485,12 @@ export const AppEditor = ({
         >
           {/* Chat — ALWAYS the left pane (composer/thread live here permanently);
               the history panel OVERLAYS it when toggled from the header icon. */}
-          <YStack minHeight={0} flex={1} {...(fresh ? { width: "100%", maxWidth: 860, alignSelf: "center" } : null)}>
+          {/* When fresh (no preview yet — first build, a remix mid-build), the
+              chat is the whole window, so it must cap at a READING width or the
+              messages spread into giant blobs. 672 matches the composer's own
+              maxWidth (ask-ai root) — the two used to disagree (860 vs 672), so
+              the thread ran wider than the box beneath it. One column now. */}
+          <YStack minHeight={0} flex={1} {...(fresh ? { width: "100%", maxWidth: 672, alignSelf: "center" } : null)}>
             <AskAI
               onToggleHistory={toggleHistory}
               isNew={isNew}

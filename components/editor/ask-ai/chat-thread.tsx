@@ -187,22 +187,22 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
 
   return (
     <YStack width="100%" alignItems="flex-start" gap="$2" className="turn">
+      {/* While planning with NOTHING to show yet, this is a compact shimmer
+          line — not a full collapsible box for one word. A bulky "Designing…"
+          card wrapping "Analyzing your request…" was dead space at the top of
+          every build; the box appears only once there is a plan to collapse. */}
       {showPlanCard && (
-        <CollapsibleSection
-          title={planning ? "Designing…" : "Plan"}
-          defaultOpen={planning}
-          live={planning}
-        >
-          {hasPlanBody ? (
+        hasPlanBody ? (
+          <CollapsibleSection title="Plan" defaultOpen={planning} live={planning}>
             <YStack maxHeight={220} overflow="scroll">
               <SizableText whiteSpace="pre-line" fontSize="$2" lineHeight="1.625" color="$color11">
                 {plan}
               </SizableText>
             </YStack>
-          ) : (
-            <YStack><SizableText fontSize="$2" color="$color11">Analyzing your request…</SizableText></YStack>
-          )}
-        </CollapsibleSection>
+          </CollapsibleSection>
+        ) : (
+          <SizableText className="thread-shimmer-text" fontSize="$2">Designing…</SizableText>
+        )
       )}
 
       {building && (
