@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { toast, Button, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
 import { useLocalStorage } from "react-use";
-import { ArrowUp, Bell, ChevronDown, CircleStop, History as HistoryGlyph, ImagePlus, Paintbrush, Plug, Plus, Settings as SettingsGlyph, Sparkles, Wrench, X } from "lucide-react";
+import { ArrowUp, Bell, ChevronDown, CircleStop, History as HistoryGlyph, ImagePlus, Images, MousePointerClick, Paintbrush, Plug, Plus, Settings as SettingsGlyph, Sparkles, Wrench, X } from "lucide-react";
 
 import ProModal from "@/components/pro-modal";
 import { useUsageLimit } from "@/components/usage/usage-limit";
@@ -1507,9 +1507,15 @@ export function AskAI({
                       checked={isEditableModeEnabled}
                       onCheckedChange={(v: boolean) => setIsEditableModeEnabled?.(!!v)}
                     >
-                      <YStack>
-                        <SizableText>Select an element</SizableText>
-                        <SizableText fontSize="$1" color="$color11">
+                      {/* Same glyph column as every sibling row; the hint
+                          indents to the TITLE, not the icon, so the two lines
+                          read as one item. */}
+                      <YStack gap="$0.5">
+                        <XStack alignItems="center" gap="$2">
+                          <MousePointerClick size={15} />
+                          <SizableText>Select an element</SizableText>
+                        </XStack>
+                        <SizableText fontSize="$1" color="$color11" paddingLeft={23}>
                           Click something on the page to edit it directly
                         </SizableText>
                       </YStack>
@@ -1518,9 +1524,12 @@ export function AskAI({
                       checked={isFixMode}
                       onCheckedChange={(v: boolean) => setIsFixMode(!!v)}
                     >
-                      <YStack>
-                        <SizableText>Match a reference</SizableText>
-                        <SizableText fontSize="$1" color="$color11">
+                      <YStack gap="$0.5">
+                        <XStack alignItems="center" gap="$2">
+                          <Images size={15} />
+                          <SizableText>Match a reference</SizableText>
+                        </XStack>
+                        <SizableText fontSize="$1" color="$color11" paddingLeft={23}>
                           Attach an image; Hanzo changes only what differs
                         </SizableText>
                       </YStack>
