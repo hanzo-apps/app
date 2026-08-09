@@ -296,3 +296,68 @@ export async function forgeCommitPages(
   }
   return pages;
 }
+
+/* --------------------------------------------------------------------------- *
+ * LISTING — the signed-in user's own repos and orgs, for the import surface.
+ *
+ * git.hanzo.ai is the DEFAULT home, so the import panel offers it FIRST — with no
+ * OAuth link, because the user's forge account already exists (auto-registered
+ * against IAM under their username). The admin token reads it; the account name
+ * is the verified session's username, bound by the CALLER exactly as the write
+ * path binds its owner, so an admin-scoped read can never be turned against
+ * another account. Standard Gitea shapes; only the fields the import row uses.
+ * --------------------------------------------------------------------------- */
+
+export interface ForgeAccount {
+  login: string;
+  avatarUrl: string;
+}
+
+export interface ForgeRepoRow {
+  name: string;
+  full_name: string;
+  private: boolean;
+  description: string | null;
+  language?: string | null;
+  updated_at: string | null;
+  default_branch: string | null;
+  clone_url: string;
+  html_url: string;
+}
+
+/** The user's own forge account (its avatar seeds the account picker). */
+export async function forgeUser(username: string): Promise<ForgeAccount | null> {
+  try {
+    const u = await forge<{ login: string; avatar_url?: string }>(
+      `/users/${encodeURIComponent(username)}`,
+    );
+    return u ? { login: u.login, avatarUrl: u.avatar_url || '' } : null;
+  } catch (e) {
+    if (e instanceof ForgeError && e.status === 404) return null;
+    throw e;
+  }
+}
+
+/** Orgs the user belongs to — best-effort, since none is a legitimate answer. */
+export async function forgeUserOrgs(username: string): Promise<ForgeAccount[]> {
+  const raw = await forge<{ username: string; avatar_url?: string }[]>(
+    `/users/${encodeURIComponent(username)}/orgs?limit=100&page=1`,
+  );
+  return (raw ?? []).map((o) => ({ login: o.username, avatarUrl: o.avatar_url || '' }));
+}
+
+/** The user's own repos (the admin token sees private ones too). */
+export async function forgeUserRepos(username: string, limit = 100): Promise<ForgeRepoRow[]> {
+  const raw = await forge<ForgeRepoRow[]>(
+    `/users/${encodeURIComponent(username)}/repos?limit=${limit}&page=1`,
+  );
+  return raw ?? [];
+}
+
+/** One org's repos. */
+export async function forgeOrgRepos(org: string, limit = 100): Promise<ForgeRepoRow[]> {
+  const raw = await forge<ForgeRepoRow[]>(
+    `/orgs/${encodeURIComponent(org)}/repos?limit=${limit}&page=1`,
+  );
+  return raw ?? [];
+}

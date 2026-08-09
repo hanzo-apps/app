@@ -8,6 +8,7 @@ import { useIam } from "@hanzo/iam/react";
 import {
   ArrowRight,
   ChevronDown,
+  GitBranch,
   Github,
   GitlabIcon,
   Globe,
@@ -46,11 +47,12 @@ import { Spinner } from "@/components/ui/spinner";
 
 /**
  * Provider display metadata — the ONE place icon/label per provider lives.
- * Partial: this panel only ever surfaces OAuth-linked accounts (github/gitlab);
- * `hanzo` is our own git and never appears as an importable account, so lookups
- * fall back to the GitHub mark (see call sites) rather than carrying dead rows.
+ * `hanzo` (git.hanzo.ai) is our own git and leads the list: a signed-in user's
+ * forge account is populated automatically, with no OAuth link. Its accounts
+ * carry the forge avatar, so the branch mark shows only as a fallback.
  */
-const PROVIDER_META: Partial<Record<GitProvider, { label: string; Icon: typeof Github }>> = {
+const PROVIDER_META: Record<GitProvider, { label: string; Icon: typeof Github }> = {
+  hanzo: { label: "Hanzo", Icon: GitBranch },
   github: { label: "GitHub", Icon: Github },
   gitlab: { label: "GitLab", Icon: GitlabIcon },
 };
@@ -244,7 +246,7 @@ export function ImportGitPanel() {
   return (
     <YStack borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4.5" $sm={{ padding: "$5" }}>
       <XStack marginBottom="$1" alignItems="center" gap="$2">
-        <Github size={18} />
+        <GitBranch size={18} />
         <H2 fontSize="$4" fontWeight="500">Import Git Repository</H2>
       </XStack>
       <Paragraph marginBottom="$4.5" fontSize="$3" color="$color11">
@@ -316,11 +318,13 @@ export function ImportGitPanel() {
                         )}
                         <SizableText numberOfLines={1}>{a.login}</SizableText>
                         <SizableText marginLeft="auto" fontSize="$1" color="$color11">
-                          {a.provider === "gitlab"
-                            ? "GitLab"
-                            : a.type === "org"
-                              ? "Org"
-                              : "Personal"}
+                          {a.provider === "hanzo"
+                            ? "Hanzo"
+                            : a.provider === "gitlab"
+                              ? "GitLab"
+                              : a.type === "org"
+                                ? "Org"
+                                : "Personal"}
                         </SizableText>
                       </DropdownMenuItem>
                     );

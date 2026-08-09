@@ -19,7 +19,9 @@ export const runtime = 'nodejs';
 const NO_STORE = { 'Cache-Control': 'no-store' } as const;
 
 function parseProvider(v: string | null): GitProvider {
-  return v === 'gitlab' ? 'gitlab' : 'github';
+  if (v === 'gitlab') return 'gitlab';
+  if (v === 'hanzo') return 'hanzo';
+  return 'github';
 }
 
 export async function GET(req: NextRequest) {

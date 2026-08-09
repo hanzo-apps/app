@@ -20,6 +20,14 @@ import type { NextRequest } from 'next/server';
 
 import { session } from '@/lib/iam';
 import type { GitProvider } from '@/lib/api/git';
+import {
+  forgeConfigured,
+  forgeUser,
+  forgeUserOrgs,
+  forgeUserRepos,
+  forgeOrgRepos,
+  type ForgeRepoRow,
+} from '@/lib/git/forge';
 
 const trim = (s: string) => s.replace(/\/+$/, '');
 
@@ -138,15 +146,19 @@ export async function resolveConnection(
   bearerOverride?: string,
 ): Promise<GitConnection | null> {
   // `bearerOverride` lets a route that already resolved its session hand the
-  // verified bearer straight in, rather than verifying the same token twice.
-  const bearer = bearerOverride || (await session(req))?.token;
-  if (!bearer) return null;
+  // verified bearer straight in. Verifying it here (a local JWKS check) is what
+  // yields the username the native forge listing is keyed on.
+  const s = await session(req, bearerOverride);
+  if (!s?.token) return null;
   if (provider === 'hanzo') {
-    // The push client sends this bearer as Authorization; the gateway derives
-    // the org. No IAM get-account round-trip needed.
-    return { provider: 'hanzo', token: bearer, login: '' };
+    // Our own git: the account IS the verified IAM username (`session.name`, the
+    // name the forge auto-registered), and the admin token does the reading. With
+    // no forge credential there is nothing to list, so fail to the honest
+    // not-connected state rather than a guaranteed error.
+    if (!forgeConfigured() || !s.name) return null;
+    return { provider: 'hanzo', token: s.token, login: s.name };
   }
-  const account = await fetchIamAccount(bearer);
+  const account = await fetchIamAccount(s.token);
   if (!account) return null;
   return connectionFromAccount(account, provider);
 }
@@ -156,14 +168,21 @@ export async function resolveConnection(
  * Empty array ⇒ unauthenticated or nothing linked.
  */
 export async function resolveAllConnections(req: NextRequest): Promise<GitConnection[]> {
-  const bearer = (await session(req))?.token;
-  if (!bearer) return [];
-  const account = await fetchIamAccount(bearer);
-  if (!account) return [];
+  const s = await session(req);
+  if (!s?.token) return [];
   const out: GitConnection[] = [];
-  for (const provider of OAUTH_PROVIDERS) {
-    const conn = connectionFromAccount(account, provider);
-    if (conn) out.push(conn);
+  // git.hanzo.ai is the DEFAULT home, so it leads — always present for a signed-in
+  // user, no OAuth link. Only when the forge credential is wired (else there is
+  // nothing to read) and the session names a username to key the account on.
+  if (forgeConfigured() && s.name) {
+    out.push({ provider: 'hanzo', token: s.token, login: s.name });
+  }
+  const account = await fetchIamAccount(s.token);
+  if (account) {
+    for (const provider of OAUTH_PROVIDERS) {
+      const conn = connectionFromAccount(account, provider);
+      if (conn) out.push(conn);
+    }
   }
   return out;
 }
@@ -346,10 +365,66 @@ async function gitlabRepos(
   return raw.map(normalizeGitlab).slice(0, cap);
 }
 
+// ── Hanzo (git.hanzo.ai — the default home) ───────────────────────────────────
+
+function normalizeForge(r: ForgeRepoRow): GitRepo {
+  return {
+    name: r.name,
+    fullName: r.full_name,
+    private: Boolean(r.private),
+    description: r.description || '',
+    language: r.language || '',
+    pushedAt: r.updated_at || '',
+    defaultBranch: r.default_branch || 'main',
+    cloneUrl: r.clone_url,
+    htmlUrl: r.html_url,
+    provider: 'hanzo',
+  };
+}
+
+async function hanzoAccounts(conn: GitConnection): Promise<GitAccount[] | null> {
+  const username = conn.login;
+  if (!username) return null;
+  const me = await forgeUser(username);
+  const accounts: GitAccount[] = [
+    { login: username, avatarUrl: me?.avatarUrl || '', provider: 'hanzo', type: 'user' },
+  ];
+  // Orgs are best-effort: a user in none simply yields their personal account.
+  try {
+    for (const o of await forgeUserOrgs(username)) {
+      accounts.push({ login: o.login, avatarUrl: o.avatarUrl, provider: 'hanzo', type: 'org' });
+    }
+  } catch {
+    /* orgs are optional */
+  }
+  return accounts;
+}
+
+async function hanzoRepos(
+  conn: GitConnection,
+  account: string,
+  q: string,
+  cap: number,
+): Promise<GitRepo[] | null> {
+  const username = conn.login;
+  if (!username) return null;
+  const isSelf = !account || account === username;
+  const raw = isSelf ? await forgeUserRepos(username) : await forgeOrgRepos(account);
+  const needle = q.trim().toLowerCase();
+  return raw
+    .map(normalizeForge)
+    .filter((r) => (needle ? (r.fullName + ' ' + r.description).toLowerCase().includes(needle) : true))
+    // Gitea does not promise activity order on this endpoint; sort ourselves so
+    // the "newest first" contract holds the same as GitHub/GitLab.
+    .sort((a, b) => (b.pushedAt || '').localeCompare(a.pushedAt || ''))
+    .slice(0, cap);
+}
+
 // ── Provider dispatch ─────────────────────────────────────────────────────────
 
-/** List the connected accounts for a provider (user + orgs on GitHub). */
+/** List the connected accounts for a provider (user + orgs on GitHub/Hanzo). */
 export function listAccounts(conn: GitConnection): Promise<GitAccount[] | null> {
+  if (conn.provider === 'hanzo') return hanzoAccounts(conn);
   return conn.provider === 'gitlab' ? gitlabAccounts(conn) : githubAccounts(conn);
 }
 
@@ -363,6 +438,7 @@ export function listRepos(
   q: string,
   cap = 60,
 ): Promise<GitRepo[] | null> {
+  if (conn.provider === 'hanzo') return hanzoRepos(conn, account, q, cap);
   return conn.provider === 'gitlab'
     ? gitlabRepos(conn, q, cap)
     : githubRepos(conn, account, q, cap);

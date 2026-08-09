@@ -25,6 +25,8 @@ const NO_STORE = { 'Cache-Control': 'no-store' } as const;
 
 function providerStatuses(): GitProviderStatus[] {
   return [
+    // Our own git leads — always connectable for a signed-in user, no OAuth link.
+    { provider: 'hanzo', connectable: true },
     { provider: 'github', connectable: true },
     gitlabConnectable()
       ? { provider: 'gitlab', connectable: true }
