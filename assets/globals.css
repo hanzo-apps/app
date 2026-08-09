@@ -946,7 +946,13 @@ kbd {
    markup takes the component. */
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  /* `auto-fit`, not `auto-fill`: the two differ ONLY when a grid holds fewer
+     items than it has room for, and there auto-fill leaves the empty tracks
+     standing — the models section's two cards sat 372px wide against the left
+     edge with a third empty column beside them. auto-fit collapses the empty
+     track so the items share the row. With enough items to fill every column
+     (cloud-integration's six, /templates') the two are identical. */
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
   gap: 18px;
   align-items: start;
 }

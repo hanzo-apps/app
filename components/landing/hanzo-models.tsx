@@ -11,7 +11,7 @@ import { Anchor } from '@hanzo/gui';
 // hanzo.ai/enso (Enso overview) and hanzo.ai/zen (OSS family). There is no
 // published Enso technical report yet, so the CTA says "Learn more", not "report".
 
-import { Orbit, Boxes } from "lucide-react";
+import ModelIcon from "../model-icon";
 import Reveal from "./reveal";
 
 export default function HanzoModels() {
@@ -32,7 +32,15 @@ export default function HanzoModels() {
           </Paragraph>
         </Reveal>
 
-        <YStack marginTop="$9" gap="$4">
+        {/* Side by side, not stacked. Two cards in a column left the section
+            2,000px tall for two paragraphs, and the pair reads as a comparison —
+            which a reader can only make when both are on screen at once.
+            `.card-grid` is the app's ONE card grid (cloud-integration and
+            /templates use it): auto-fill/minmax, so two columns above ~580px and
+            one on a phone, with no breakpoints to keep in sync. `align-items:
+            stretch` overrides its `start` for this pair only — with two cards of
+            unequal prose, `start` leaves one visibly shorter than the other. */}
+        <div className="card-grid" style={{ marginTop: 36, alignItems: "stretch" }}>
           {/* Enso — proprietary flagship */}
           <Reveal height="100%">
             <Anchor
@@ -43,7 +51,7 @@ export default function HanzoModels() {
              display="flex" textDecorationLine="none">
               <XStack alignItems="center" justifyContent="space-between">
                 <XStack height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
-                  <Orbit size={20} strokeWidth={1.5} />
+                  <ModelIcon family="enso" size={20} />
                 </XStack>
                 <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$0.5" fontFamily="$mono" fontSize="$1" color="$color11">
                   Proprietary
@@ -74,7 +82,7 @@ export default function HanzoModels() {
              display="flex" textDecorationLine="none">
               <XStack alignItems="center" justifyContent="space-between">
                 <XStack height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
-                  <Boxes size={20} strokeWidth={1.5} />
+                  <ModelIcon family="zen" size={20} />
                 </XStack>
                 <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$0.5" fontFamily="$mono" fontSize="$1" color="$color11">
                   Open source
@@ -93,7 +101,7 @@ export default function HanzoModels() {
               </SizableText>
             </Anchor>
           </Reveal>
-        </YStack>
+        </div>
       </YStack>
     </YStack>
   );
