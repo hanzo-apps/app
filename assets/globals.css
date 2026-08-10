@@ -1514,6 +1514,20 @@ html:root .voice-control {
 #enso-dock [data-hanzo-edit] {
   display: flex;
 }
+
+/* The Enso contribute-launcher docks into #enso-dock (above) on desktop. On a
+   phone the console is collapsed, so #enso-dock is not laid out and edit.js
+   keeps the launcher in its fallback corner — `position: fixed; right/bottom
+   16px` — which lands squarely on the composer's send button. The launcher
+   opens a change against THIS page's own source (a desktop contributor tool),
+   so its floating corner has no place on the mobile builder. The DOCKED host
+   carries `data-hanzo-anchored`; the floating one does not, so this hides only
+   the corner fallback and never the anchored form. */
+@media (max-width: 640px) {
+  [data-hanzo-edit]:not([data-hanzo-anchored]) {
+    display: none !important;
+  }
+}
 @media (prefers-reduced-motion: no-preference) {
   .voice-control[data-state="speaking"] {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;

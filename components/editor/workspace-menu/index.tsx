@@ -186,9 +186,11 @@ export function WorkspaceMenu({
             <OrgMark org={display({ name: orgId, logo: activeOrg?.logo })} size={20} />
             {/* On a phone the bar has ~220px to split between this name and
                 the editor's tools, and the name was taking all of it. It is a
-                LABEL; they are the controls you came for. So it gives up room
-                first below $sm and keeps its full width above. */}
-            <SizableText maxWidth="4.5rem" $sm={{ maxWidth: "9rem" }} numberOfLines={1} fontWeight="500" color="$color">
+                LABEL; they are the controls you came for. Below $sm it steps
+                out entirely — the org mark and chevron still open the menu where
+                the full name lives — rather than truncating to a cut-off word
+                ("MEGA" out of "MEGA Shop"). Above $sm it shows in full. */}
+            <SizableText display="none" $sm={{ display: "inline", maxWidth: "9rem" }} numberOfLines={1} fontWeight="500" color="$color">
               {projectName}
             </SizableText>
             <ChevronsUpDown size={14} />

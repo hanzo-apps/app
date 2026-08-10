@@ -359,17 +359,16 @@ export function Header({
 
         </XStack>
 
-        {/* THE PAGE BROWSER IS NAVIGATION, NOT PREVIEW TOOLING, so it is not
-            behind the `$md` gate below. It was, and that meant a phone could
-            not switch pages AT ALL: the whole cluster is `display: none` under
-            md, and the only page list — and the only SEARCH over it, which is
-            the one way to find a page in a project with more than a handful —
-            went with it. The device toggle and refresh legitimately stay
-            desktop-only; a device switcher on a phone is answering a question
-            nobody asked.
-
-            It sits in the centre cluster's scroll track, so on a narrow screen
-            it is reachable by scrolling rather than by being dropped. */}
+        {/* The page browser is the ≥$sm page-switcher, and below $sm it steps
+            out. On a phone it was the second label in the bar and truncated to a
+            cut-off word ("Homepa" out of "Homepage") right beside the project
+            name doing the same. Page-switching is not lost: the Files pane is
+            one of the five switcher tabs (`mobileOnly` chat aside), it is
+            visible at EVERY width, and it opens any page in the project
+            (`onSelectPage`) with the same search this pill's popover carried. So
+            the pill is redundant on a phone, not load-bearing — one page-switch
+            surface below $sm, the full pill above it. The device toggle and
+            refresh stay desktop-only for their own reasons. */}
         {/* Page browser — search + folder-grouped list of every page in the
             project (not just index.html). The working page is highlighted. */}
         {pages.length > 0 && (
@@ -384,7 +383,7 @@ export function Header({
                 type="button"
                 title="Browse pages"
                 aria-label="Browse pages"
-                minWidth={0} $md={{ minWidth: 180 }} maxWidth="14rem" size="sm" alignItems="center" justifyContent="center" gap="$1.5" borderRadius="$4" backgroundColor="$color4" paddingHorizontal="$3" hoverStyle={{ backgroundColor: "$color5" }}
+                display="none" $sm={{ display: "flex" }} minWidth={0} $md={{ minWidth: 180 }} maxWidth="14rem" size="sm" alignItems="center" justifyContent="center" gap="$1.5" borderRadius="$4" backgroundColor="$color4" paddingHorizontal="$3" hoverStyle={{ backgroundColor: "$color5" }}
               >
                 {/* The NAME, not the filename: a person calls index.html the
                     Homepage, and the picker inside still shows real paths for
