@@ -1,7 +1,7 @@
 "use client";
 
 import { sends } from '@hanzo/ui/chat';
-import { View, YStack, XStack, H2, Paragraph, Image, SizableText, H3 } from '@hanzo/ui';
+import { YStack, XStack, H2, Paragraph, Image, SizableText, H3 } from '@hanzo/ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useIam } from "@hanzo/iam/react";
@@ -377,15 +377,12 @@ export function ImportGitPanel() {
               </DropdownMenu>
             </YStack>
 
-            <YStack position="relative" flex={1}>
-              <View position="absolute" left={12} top={0} bottom={0} zIndex={10} justifyContent="center" pointerEvents="none">
-                <Search size={16} />
-              </View>
+            <YStack flex={1}>
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search repositories…"
-                height="$7" paddingLeft={36}
+                height="$7" startAdornment={<Search size={16} />}
               />
             </YStack>
           </YStack>

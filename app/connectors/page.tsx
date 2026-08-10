@@ -212,11 +212,10 @@ function ConnectorsInner() {
           carries the title now; these two belong beside the list they describe
           and refresh. */}
         <XStack marginBottom="$4" alignItems="center" gap="$2">
-          <YStack position="relative" flex={1}>
-            <Search size={16} />
+          <YStack flex={1}>
             <Input
               placeholder="Search connectors…"
-              paddingLeft={36}
+              startAdornment={<Search size={16} />}
               value={query}
               onChangeText={(v: string) => setQuery(v)}
   />

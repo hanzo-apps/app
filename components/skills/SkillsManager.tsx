@@ -282,15 +282,12 @@ export function SkillsManager() {
           <YStack alignSelf="center" width="100%" maxWidth={896} gap="$3">
             <YStack gap="$3" $sm={{ flexDirection: "row" }}>
               {/* Search */}
-              <YStack position="relative" flex={1}>
-                <YStack position="absolute" left={12} top={0} bottom={0} justifyContent="center" pointerEvents="none">
-                  <Search size={16} />
-                </YStack>
+              <YStack flex={1}>
                 <Input
                   placeholder="Search skills..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  paddingLeft={36}
+                  startAdornment={<Search size={16} />}
   />
               </YStack>
 

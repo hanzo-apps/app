@@ -287,15 +287,12 @@ export default function ChatPage() {
           </YStack>
 
           <YStack padding="$3">
-            <YStack position="relative">
-              <Search size={16} />
-              <Input
-                placeholder="Search chats"
-                value={search}
-                onChangeText={(v: string) => setSearch(v)}
-                paddingLeft={36} backgroundColor="$background" borderColor="$borderColor" color="$color" placeholderTextColor="$color11"
+            <Input
+              placeholder="Search chats"
+              value={search}
+              onChangeText={(v: string) => setSearch(v)}
+              startAdornment={<Search size={16} />} backgroundColor="$background" borderColor="$borderColor" color="$color" placeholderTextColor="$color11"
   />
-            </YStack>
           </YStack>
 
           <ScrollArea flex={1}>

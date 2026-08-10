@@ -525,13 +525,12 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
             <YStack paddingTop="$4" paddingHorizontal="$4" paddingBottom="$3" flexShrink={0} $sm={{ paddingTop: "$5", paddingHorizontal: "$5", paddingBottom: "$3" }}>
               <YStack alignSelf="center" maxWidth={1280} gap="$3" $sm={{ flexDirection: "row" }} data-tour-id="projects-actions">
                 {/* Search */}
-                <YStack position="relative" flex={1}>
-                  <Search size={16} />
+                <YStack flex={1}>
                   <Input
                     placeholder="Search projects..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    paddingLeft={36}
+                    startAdornment={<Search size={16} />}
   />
                 </YStack>
 
