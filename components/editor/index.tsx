@@ -114,16 +114,32 @@ export const AppEditor = ({
   // docked on the left; this drives what the RIGHT pane shows — preview or the
   // code editor — and, on mobile, which single pane is visible.
   const [currentTab, setCurrentTab] = useState("chat");
-  // DESKTOP BOOTS ON PREVIEW. "chat" is the right initial tab only where chat
-  // is a TAB — on a phone, one pane at a time. On desktop the chat column is
-  // permanently docked and the right side shows the preview, so a currentTab
-  // of "chat" left the pane trough with NO active pill: the segment it named
-  // is hidden above lg, and the bar read as dead chrome over a live preview.
-  // State says what the screen shows.
+  // BOOT ON THE PREVIEW WHEN THERE IS AN APP TO SHOW — the site you opened is
+  // the thing you came to see.
+  //
+  // Desktop docks the chat column permanently and shows the preview on the
+  // right, so a `chat` tab there only stranded the pane pill on a segment hidden
+  // above lg — the bar read as dead chrome over a live preview. That flip stays,
+  // unconditional on desktop.
+  //
+  // On a phone ONE pane shows at a time, and this was the bug the owner hit: a
+  // LOADED project opened on the chat tab, so the site sat invisible behind the
+  // chat pane while the assistant's "your site is in the preview" message
+  // pointed at a pane the phone was not showing. A project that loads with a
+  // real app now lands on that preview at every width. A FRESH project — a
+  // conversation with nothing built yet — has nothing to preview, so it stays on
+  // the full-width chat boot; the preview unfurls into view when the first
+  // build streams in and `fresh` goes false.
+  //
+  // Runs once on mount: `fresh` is correct from the first render (pages seed
+  // from `initialPages`), and scoping to mount keeps a mid-conversation build
+  // from yanking the phone off chat.
   useEffect(() => {
-    if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+    const desktop = typeof window !== "undefined" && window.innerWidth >= 1024;
+    if (desktop || !fresh) {
       setCurrentTab((t) => (t === "chat" ? "preview" : t));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   /**
    * What the RIGHT pane shows. Per the comment above, `currentTab` carries two
