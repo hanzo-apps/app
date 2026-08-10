@@ -618,11 +618,11 @@ export default function PlaygroundPage() {
                         ))}
                       </YStack>
                       {activeResult.models[0].cost < activeResult.models[1].cost ? (
-                        <Badge variant="outline" className="mt-2 border-green-600 text-green-500">
+                        <Badge variant="outline" style={{ marginTop: 8, borderColor: 'var(--green8)', color: 'var(--green11)' }}>
                           {leftConfig.model} is {((1 - activeResult.models[0].cost / activeResult.models[1].cost) * 100).toFixed(0)}% cheaper
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="mt-2 border-green-600 text-green-500">
+                        <Badge variant="outline" style={{ marginTop: 8, borderColor: 'var(--green8)', color: 'var(--green11)' }}>
                           {rightConfig.model} is {((1 - activeResult.models[1].cost / activeResult.models[0].cost) * 100).toFixed(0)}% cheaper
                         </Badge>
                       )}
