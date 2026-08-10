@@ -1,11 +1,11 @@
 'use client';
 
 import { SizableText, YStack, Paragraph } from '@hanzo/ui';
-import { Check, Settings as SettingsIcon } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger, Button } from '@hanzo/ui';
 import { ModelSelector } from '@/components/model-selector';
-import { AUTO_MODEL, FALLBACK_MODELS } from "@/lib/providers";
+import { AUTO_MODEL, FALLBACK_MODELS, labelOf } from "@/lib/providers";
 import { useModels } from "@/lib/hooks/use-models";
 import type { Runtime } from "@/lib/agent/sandbox";
 
@@ -170,17 +170,26 @@ export function Settings({
   return (
     <Popover open={open} onOpenChange={onClose} placement="top-end">
       <PopoverTrigger asChild>
-        {/* Anchor only — the composer's [+] menu owns the visible Settings
-            entry and clicks this. See uploader.tsx for the same shape. */}
+        {/* The VISIBLE model chip — the composer's first-class "which model" the
+            way the Mode pill beside it is the first-class "which mode". It names
+            the current model (or Auto) so you can SEE what will answer, and opens
+            this same model+runtime popover on press. It used to be a 1x1
+            opacity:0 anchor that only the [+] menu's Settings item could reach,
+            so the model was invisible unless you went looking for it — a picker
+            you cannot see is one that is not working. It keeps its id so that
+            [+] → Settings still opens it too. */}
         <Button
           id="composer-settings"
+          type="button"
           variant="ghost"
-          size="icon"
-          aria-hidden
-          tabIndex={-1}
-          style={{ position: "absolute", width: 1, height: 1, minWidth: 1, minHeight: 1, opacity: 0, pointerEvents: "none" }}
+          aria-label={`Model: ${isAuto ? "Auto" : labelOf(model)}`}
+          title="Model"
+          height={26} minHeight={26} alignItems="center" gap="$1" borderRadius={999} backgroundColor="$color3" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color4" }}
         >
-          <SettingsIcon size={16} />
+          <SizableText fontSize="$2" fontWeight="500" color="$color" numberOfLines={1} maxWidth="9rem">
+            {isAuto ? "Auto" : labelOf(model)}
+          </SizableText>
+          <SizableText color="$color11"><ChevronDown size={12} /></SizableText>
         </Button>
       </PopoverTrigger>
       {/* ONE popover surface: solid bg-card, a single hairline border, high

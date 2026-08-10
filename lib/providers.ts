@@ -34,24 +34,24 @@ export type ModelOption = {
 // This is the ONE place the default lives; no page, component or env var
 // restates it.
 //
-// WHY NOT `enso`, THE HOUSE FAMILY. It cannot build. zen's identity injection
-// appended Hanzo's identity prompt to the END of the conversation, after the
-// user's turn, and a model reads the final turn as the thing to continue — so
-// every enso rung answered a "build me a page" request by reciting its own
-// identity prompt instead. Measured against this exact builder system prompt:
-// enso and enso-flash returned prose and no HTML, enso-ultra 502'd, while
-// claude-opus-4.8 and gpt-5.2 returned correct multi-page HTML from the
-// identical request. A default that cannot produce a page is not a default.
+// `enso`, THE HOUSE FAMILY, is the default — the intended one, and it costs less
+// than a resold frontier tier.
 //
-// The root cause is FIXED in hanzoai/zen (withIdentity now places the identity
-// as the last SYSTEM turn, ahead of the user's). THIS LINE GOES BACK TO `enso`
-// once the enso image carries that fix and a build verifies — the house family
-// is the intended default, and it costs less than a resold frontier tier.
+// It was held on `anthropic-claude-opus-5` for a while because it could not
+// build: zen's identity injection appended Hanzo's identity prompt to the END of
+// the conversation, after the user's turn, and a model reads the final turn as
+// the thing to continue — so every enso rung answered a "build me a page"
+// request by reciting its own identity prompt instead of returning HTML. That
+// root cause was FIXED in hanzoai/zen (withIdentity now places the identity as
+// the last SYSTEM turn, ahead of the user's), and the owner has confirmed Enso
+// builds, so the default is back where it belongs.
 //
-// The rule this applies is the one already written for FALLBACK_MODELS: a model
-// that cannot serve is worse than one that is absent. That goes double for the
-// default, which is what everyone who never opens the picker gets.
-export const DEFAULT_MODEL = "anthropic-claude-opus-5";
+// The rule that governed the hold still stands (it is the FALLBACK_MODELS rule):
+// a model that cannot serve is worse than one that is absent, and that goes
+// double for the default. So if a future enso regression makes it recite its
+// identity again, this line — not a page, component or env var — is the ONE
+// place to move it back to a model that builds.
+export const DEFAULT_MODEL = "enso";
 
 // The Hanzo gateway (api.hanzo.ai) serves the Zen/Enso ladder + connected
 // providers AND — since DO GenAI funded the proprietary catalog — a CURATED set
