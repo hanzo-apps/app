@@ -6,7 +6,7 @@ import { YStack, XStack, SizableText, H3, Paragraph } from '@hanzo/ui';
 // file comes from @hanzo/ui.
 import { Anchor } from '@hanzo/gui';
 import { useRouter } from 'next/navigation';
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, buttonVariants } from '@hanzo/ui';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@hanzo/ui';
 import { Pencil, Trash2, MoreVertical, ExternalLink, Globe, Settings } from 'lucide-react';
 import { builderLink, configLink, liveUrlOf, type Project } from '@/lib/api/projects';
 import { statusOf } from '@/lib/project-status';
@@ -97,16 +97,18 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
             // Button wraps its children in an array for the loading slot, which
             // trips Radix Slot's React.Children.only when it renders as a Slot.
             // See components/editor/cross-surface-links.tsx for the same footgun.
-            // An <a> also escapes the [data-slot=button] control-height rule, so it
-            // states --control-h (30) itself to stand level with the Edit button.
+            // So it wears the ghost look as gui props directly — this app doesn't
+            // load Tailwind, so a `buttonVariants` className was inert, which left
+            // the icon stacked ABOVE the label with nothing centered. It states
+            // `--control-h` (30) itself to stand level with the Edit button.
             <Anchor
               href={visitUrl}
               target="_blank"
               rel="noopener noreferrer"
-              height={30} paddingHorizontal="$2" fontSize="$1" className={`${buttonVariants({ size: 'sm', variant: 'ghost' })}`}
+              display="flex" flexDirection="row" alignItems="center" justifyContent="center" gap="$1.5" height={30} paddingHorizontal="$2" borderRadius="$3" fontSize="$1" color="$color11" cursor="pointer" textDecorationLine="none" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
             >
               <ExternalLink size={12} />
-              Visit
+              <SizableText fontSize="$1">Visit</SizableText>
             </Anchor>
           )}
         </XStack>
