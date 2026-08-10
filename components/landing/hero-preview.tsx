@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from '@hanzo/ui';
 import { YStack, XStack, SizableText, H3, Paragraph } from '@hanzo/ui';
 // `GuiElement` is a TYPE, and @hanzo/ui's dts build drops a two-hop
 // type-only re-export, so it is not on the barrel yet. A type is erased at
@@ -305,15 +304,22 @@ export default function HeroPreview() {
           </XStack>
 
           <XStack marginLeft="auto" alignItems="center" gap="$1.5" $sm={{ marginLeft: "$0" }}>
-            <Button size="icon"
-              type="button"
-              variant="ghost"
+            {/* An XStack, NOT a Button: `Button size="icon"` floors at 30px and
+                the [data-slot=button] rule pins radius to 10px — both beat the
+                inline height/999 here, so a Button rendered a 30px rounded-rect
+                that stuck out 8px above every 22px header neighbour. A gui stack
+                honours the inline box (same pattern as the tabs + dashboard cards). */}
+            <XStack
+              role="button"
+              tabIndex={0}
               aria-label="Replay the demo build"
               onClick={() => run()}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); run(); } }}
+              cursor="pointer"
               height={22} width={22} minHeight={22} minWidth={22} alignItems="center" justifyContent="center" borderRadius={999} hoverStyle={{ backgroundColor: "$color3" }}
             >
               <SizableText color="$color11"><RotateCcw size={11} /></SizableText>
-            </Button>
+            </XStack>
             <XStack display="none" height={22} width={22} alignItems="center" justifyContent="center" borderRadius={999} $sm={{ display: "flex" }}>
               <SizableText color="$color11"><Clock size={11} /></SizableText>
             </XStack>
@@ -322,26 +328,30 @@ export default function HeroPreview() {
                 quiet `selected` fill ($color3 + white glyph), not the loud accent
                 the view tabs use. Two grouped controls, one material. */}
             <XStack alignItems="center" gap="$0.5" borderRadius="$4" backgroundColor="$color4" $lg={{ display: "none" }}>
-              <Button size="icon"
-                type="button"
-                variant="ghost"
+              <XStack
+                role="button"
+                tabIndex={0}
                 aria-label="Desktop preview"
                 aria-pressed={device === "desktop"}
                 onClick={() => setDevice("desktop")}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDevice("desktop"); } }}
+                cursor="pointer"
                 height={22} width={22} minHeight={22} minWidth={22} alignItems="center" justifyContent="center" borderRadius="$3" {...{ backgroundColor: device === "desktop" ? "$color3" : "transparent" }}
               >
                 <SizableText color={device === "desktop" ? "$color12" : "$color11"}><Monitor size={11} /></SizableText>
-              </Button>
-              <Button size="icon"
-                type="button"
-                variant="ghost"
+              </XStack>
+              <XStack
+                role="button"
+                tabIndex={0}
                 aria-label="Mobile preview"
                 aria-pressed={device === "mobile"}
                 onClick={() => setDevice("mobile")}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDevice("mobile"); } }}
+                cursor="pointer"
                 height={22} width={22} minHeight={22} minWidth={22} alignItems="center" justifyContent="center" borderRadius="$3" {...{ backgroundColor: device === "mobile" ? "$color3" : "transparent" }}
               >
                 <SizableText color={device === "mobile" ? "$color12" : "$color11"}><Smartphone size={11} /></SizableText>
-              </Button>
+              </XStack>
             </XStack>
             {/* Share — the real header's quiet secondary beside Publish (editor/
                 index.tsx): the SAME 999 pill as Publish, differing only in fill
