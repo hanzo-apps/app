@@ -216,6 +216,46 @@ true even on a page with zero `@font-face` rules, so it proves nothing.
 
 
 
+### Painted is not reachable — three mobile laws, all measured
+
+Nothing in this class shows up as anything wrong: no error, no blank render, no
+red gate. The page simply ends before its content does, and only a measurement
+finds it. All three live in `assets/globals.css` and are pinned by
+`tests/unit/reachable.test.ts`.
+
+- **A tab panel claims the height of its content.** `@hanzo/ui`'s `TabsContent`
+  sets `flex: 1`, which in the react-native flex model means `flex-basis: 0` —
+  right in a fixed-height pane, wrong in a page that sizes to its content, where
+  a base size of 0 IS the size. Measured on /settings: `clientHeight: 0` around
+  716px of content, and the Tabs around it 88 around 804. Restoring the BASIS
+  (not `flex: none` — it must still grow to fill a tall pane) took the pane's
+  scroll range from 140px to 176px.
+- **A tab strip wraps.** `TabsList` is `flex-wrap: nowrap` + `overflow: visible`,
+  so tabs past the edge are painted outside it and cannot be reached — the
+  cropped "Bi…" where Billing should be. **Wrapping alone does nothing**: a flex
+  item defaults to `min-width: auto` and refuses to shrink below its content, so
+  it never reaches a width it would wrap at. Measured at 300px: `flex-wrap`
+  alone left it 456px on one row with two tabs still clipped; with `min-width: 0`
+  it became 300px over two rows with nothing clipped, and unchanged at full
+  width. It bites sooner at a larger Text size — five labels at 140% need ~640px.
+- **A long picker is a sheet on a phone.** The model panel is ~440px and hangs
+  off its trigger; on a phone the trigger sits near the bottom, so it opens into
+  ~100px and runs off screen. It is positioned, not in flow, so scrolling cannot
+  retrieve it: measured with the pane at its maximum, the list occupied y
+  965–1392 in a 903px viewport — **76 rows, zero visible**. `stayInFrame` is
+  upstream's default and did not rescue it, and there is no `size` middleware, so
+  it never shrinks to the room available. Every declaration needs `!important`
+  (gui writes the popper's position and width INLINE) and the height is `dvh`,
+  because a phone's URL bar moves the usable height.
+
+**Two method notes that cost a wrong answer each.** "The first scrollable div in
+the document" is not the scroller — it found the SIDEBAR, and three probes'
+numbers were meaningless until re-run against the trigger's own scrolling
+ancestor. And squeezing one container (`.is_Tabs`) while the shell around it
+stays wide is NOT a viewport change: inner cards keep sizing against the wider
+ancestor, which manufactured an 8px "overflow" that no fix moved. Resize the
+viewport or believe nothing.
+
 ### "No credits" is a claim about MONEY, and only a read balance may make it
 
 The same shape as the section below, one layer out. `lib/billing/server.ts`
