@@ -635,6 +635,37 @@ a {
   --tint: 255 255 255;
 }
 
+/* LIQUID GLASS — the full-perimeter specular rim design does not ship.
+   ────────────────────────────────────────────────────────────────────────────
+   @hanzo/design's --edge-highlight is a TOP LIP alone (inset 0 1px 0 white/.10):
+   enough to say "lifted" on a dark canvas, not the lensed edge an iOS/macOS glass
+   panel wears. Liquid glass catches light the whole way round — brightest along
+   the top, a faint hairline down the sides, and a dark inner lip at the bottom
+   that reads as curvature. Every glass rung already composes this one token
+   (`box-shadow: var(--edge-highlight), var(--glass-shadow-N)` in @hanzo/ui/glass.css),
+   so upgrading the value lenses every card, panel, composer and dialog at once —
+   no per-surface change and no fork of the material: the ground, the blur and the
+   drop stay design's, only the lit edge grows. It stays a comma-list of `inset`
+   layers, never `none`, so it composes into the shadow list design built it for.
+
+   html:root.<theme> because design sets --edge-highlight at :root and its sheet
+   loads after this one; the id-of-html lifts these over it on both themes. A
+   box-shadow rim is free where the backdrop blur is not, so it is one material
+   on mobile and desktop with no coarse-pointer branch. */
+html:root.dark {
+  --edge-highlight:
+    inset 0 1px 0 0 rgb(255 255 255 / .20),
+    inset 0 0 0 1px rgb(255 255 255 / .07),
+    inset 0 -1px 0 0 rgb(0 0 0 / .20);
+}
+html:root.light,
+html:root.t_light {
+  --edge-highlight:
+    inset 0 1px 0 0 rgb(255 255 255 / .55),
+    inset 0 0 0 1px rgb(0 0 0 / .05),
+    inset 0 -1px 0 0 rgb(0 0 0 / .05);
+}
+
 /* The app is dark-only — `dark` is a literal class the server renders onto <html>
    (app/layout.tsx), so the block above is simply "what this app adds", and there
    is no light counterpart because there is no light theme to serve one.
