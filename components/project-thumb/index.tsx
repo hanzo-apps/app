@@ -55,6 +55,7 @@ export function ProjectThumb({
   className?: string;
 }) {
   const [failed, setFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const hostRef = useRef<GuiElement>(null);
   const [box, setBox] = useState({ scale: 0.25, h: 720 });
 
@@ -73,12 +74,24 @@ export function ProjectThumb({
 
   const showLive = !!liveUrl && !failed;
 
+  // The monogram tile: the honest no-preview state, AND the cover that hides the
+  // iframe's white background until it paints — a dark product must never flash a
+  // white card on load. One element, both jobs (a caller's `fallback` wins if given).
+  const placeholder = fallback ?? (
+    <XStack height="100%" width="100%" alignItems="center" justifyContent="center" backgroundColor="$color2">
+      <SizableText fontSize="$11" fontWeight="500" color="$color11">
+        {(name || '?').charAt(0).toUpperCase()}
+      </SizableText>
+    </XStack>
+  );
+
   return (
     <YStack
       ref={hostRef}
-      position="relative" height="100%" width="100%" aspectRatio={aspect} overflow="hidden" className={className}
+      position="relative" height="100%" width="100%" aspectRatio={aspect} overflow="hidden" backgroundColor="$color2" className={className}
     >
       {showLive ? (
+        <>
         <iframe
           src={liveUrl!}
           title={`${name} preview`}
@@ -96,6 +109,7 @@ export function ProjectThumb({
           // forms, popups and modals all stay denied.
           sandbox="allow-scripts allow-same-origin"
           scrolling="no"
+          onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}
           // Absolute + fixed logical size + transform scale → never affects the
           // grid track width; visually fills the box via the ResizeObserver scale.
@@ -110,16 +124,18 @@ export function ProjectThumb({
             height: box.h,
             transform: `scale(${box.scale})`,
             transformOrigin: 'top left',
+            opacity: loaded ? 1 : 0,
+            transition: 'opacity 240ms ease',
           }}
   />
+        {!loaded && (
+          <YStack position="absolute" top={0} right={0} bottom={0} left={0}>
+            {placeholder}
+          </YStack>
+        )}
+        </>
       ) : (
-        fallback ?? (
-          <XStack height="100%" alignItems="center" justifyContent="center">
-            <SizableText fontSize="$11" fontWeight="500" color="$color11">
-              {(name || '?').charAt(0).toUpperCase()}
-            </SizableText>
-          </XStack>
-        )
+        placeholder
       )}
       {/* Click shield — the card owns every interaction. */}
       <YStack position="absolute" top={0} right={0} bottom={0} left={0} />
