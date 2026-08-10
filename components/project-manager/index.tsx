@@ -523,7 +523,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
         <YStack height="100%">
             {/* Toolbar */}
             <YStack paddingTop="$4" paddingHorizontal="$4" paddingBottom="$3" flexShrink={0} $sm={{ paddingTop: "$5", paddingHorizontal: "$5", paddingBottom: "$3" }}>
-              <YStack alignSelf="center" maxWidth={1280} gap="$3" $sm={{ flexDirection: "row" }} data-tour-id="projects-actions">
+              <YStack alignSelf="center" width="100%" maxWidth={1280} gap="$3" $sm={{ flexDirection: "row" }} data-tour-id="projects-actions">
                 {/* Search */}
                 <YStack flex={1}>
                   <Input
@@ -598,7 +598,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
 
             {/* Projects Grid/List */}
             <YStack flex={1} paddingHorizontal="$4" paddingTop="$3" paddingBottom="$4" $sm={{ paddingHorizontal: "$5", paddingTop: "$3", paddingBottom: "$5" }}>
-              <YStack alignSelf="center" maxWidth={1280}>
+              <YStack alignSelf="center" width="100%" maxWidth={1280}>
                 {filteredProjects.length === 0 ? (
                   <YStack paddingVertical="$8">
                     <FolderOpen size={48} />

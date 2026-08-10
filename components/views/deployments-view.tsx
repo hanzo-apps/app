@@ -537,7 +537,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
       <YStack height="100%">
         {/* Toolbar */}
         <YStack paddingTop="$4" paddingHorizontal="$4" paddingBottom="$3" flexShrink={0} $sm={{ paddingTop: "$5", paddingHorizontal: "$5", paddingBottom: "$3" }}>
-          <YStack alignSelf="center" maxWidth={1280} gap="$3" $sm={{ flexDirection: "row" }}>
+          <YStack alignSelf="center" width="100%" maxWidth={1280} gap="$3" $sm={{ flexDirection: "row" }}>
             {/* Search */}
             <YStack flex={1}>
               <Input
@@ -587,7 +587,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
 
         {/* Deployments Grid/List */}
         <YStack flex={1} paddingHorizontal="$4" paddingTop="$3" paddingBottom="$4" overflow="scroll" $sm={{ paddingHorizontal: "$5", paddingTop: "$3", paddingBottom: "$5" }}>
-          <YStack alignSelf="center" maxWidth={1280}>
+          <YStack alignSelf="center" width="100%" maxWidth={1280}>
             {filteredAndSortedDeployments.length === 0 ? (
               <YStack alignItems="center" justifyContent="center" paddingVertical="$10">
                 <Globe size={64} />
