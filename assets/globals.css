@@ -1735,6 +1735,64 @@ html:root [role="switch"][data-state="checked"] {
   filter: brightness(0) invert(1);
 }
 
+/* A tab panel claims the height of its content.
+
+   `@hanzo/ui`'s `TabsContent` sets `flex: 1`, which in the react-native flex
+   model means `flex-basis: 0`. That is right inside a FIXED-height column (a
+   full-height app pane, where there is free space to grow into) and wrong in a
+   page that sizes to its content: with no free space the panel's base size of 0
+   IS its size, so it computes `height: 0` while its children overflow visibly.
+
+   Measured on production /settings: the panel reported `clientHeight: 0` around
+   716px of content and the Tabs around it 88px around 804px. Everything still
+   PAINTS — nothing looks broken — but every ancestor lays out as though the tab
+   were empty, so the scroll container is short by the difference. Restoring the
+   basis grew the settings pane's scroll range from 140px to 176px (scrollHeight
+   959 → 995): the last stretch of the tab simply could not be reached.
+
+   `flex-basis`, not `flex: none` — the panel must still GROW to fill a tall
+   pane, which is what the library's `flex: 1` is there for. Only the base size
+   was wrong. */
+html:root [data-slot="tabs-content"],
+html:root .is_TabsContent,
+html:root .is_Tabs {
+  flex-basis: auto;
+}
+
+/* On a phone, a long list stops hanging off its trigger.
+
+   The picker's panel is ~440px (a 380px list plus the search field) and it is
+   anchored under the control. On a phone the control is often near the bottom
+   of the pane — measured on production /settings, the trigger ended at y=961
+   with the pane scrolled as far as it goes — so the panel opens into ~100px of
+   room and runs off the screen. It is positioned, not in flow, so scrolling
+   cannot bring it back: measured with the pane at its maximum, the list
+   occupied y 965–1392 in a 903px viewport, 76 model rows, ZERO of them visible.
+   That is exactly "won't scroll further and can't pick Enso".
+
+   `stayInFrame` is on by default upstream and did not rescue it, and there is
+   no `size` middleware, so the panel never shrinks to the space that exists.
+   Rather than fight the popper, the panel stops being anchored at this width
+   and becomes what a phone wants anyway: a sheet at the bottom of the viewport,
+   full width, with the list scrolling inside it.
+
+   Scoped to `.hz-picker-panel` — a class the picker sets — NOT to every
+   popover, because most of them are short and correct where they are. */
+@media (max-width: 40em) {
+  html:root .hz-picker-panel {
+    position: fixed !important;
+    inset: auto 8px 8px 8px !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: 72dvh !important;
+    transform: none !important;
+  }
+  html:root .hz-picker-panel [cmdk-list],
+  html:root .hz-picker-panel [data-slot="command-list"] {
+    max-height: calc(72dvh - 56px) !important;
+  }
+}
+
 /* Even columns at every width, which flex-wrap could not give: the marks have
    wildly different aspect ratios, so a wrapped row left ragged gaps and a short
    final row.
