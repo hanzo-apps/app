@@ -124,8 +124,19 @@ export default function ProjectDevPage() {
       // fact has a full conversation. The clock-icon clause only when a git repo
       // actually backs the history.
       const hasHistory = !!record?.repo?.url;
+      // WHERE history lives depends on the width, so the greeting must not name a
+      // control the reader cannot see. The clock icon is the header toggle, and
+      // that toggle is desktop-only (`$lg`) — on a phone it is not rendered, so
+      // "the clock icon up top" pointed at nothing. History is still one tap away
+      // on a phone: the composer's [+] menu carries it at every width. So the
+      // greeting names the clock on desktop and the [+] menu on a phone. This
+      // runs in a client effect, so `window.innerWidth` is the real viewport.
+      const historyAt =
+        typeof window !== "undefined" && window.innerWidth >= 1024
+          ? "the clock icon up top"
+          : "the + menu below";
       (window as any).__assistantGreeting = hasHistory
-        ? `${name} is loaded — your site is in the preview, and its history is in the clock icon up top. ` +
+        ? `${name} is loaded — your site is in the preview, and its history is in ${historyAt}. ` +
           `Tell me what to change and I'll build it.`
         : `${name} is loaded — your site is in the preview. ` +
           `Tell me what to change and I'll build it.`;
