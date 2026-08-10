@@ -872,7 +872,15 @@
   panel.className = 'panel';
   root.appendChild(panel);
 
-  var ME = { authenticated: false, isAdmin: false, hasCredits: false, balance: null };
+  var ME = {
+    authenticated: false,
+    isAdmin: false,
+    hasCredits: false,
+    balance: null,
+    // WHY the balance is what it is. `hasCredits:false` alone cannot tell a real
+    // zero from a balance we failed to read, and those need opposite remedies.
+    balanceState: 'anonymous',
+  };
 
   // Resolved-once-per-open view context.
   var CTX = { candidates: [], version: undefined, chosen: '' };
@@ -896,6 +904,16 @@
         note: 'Commits directly to ' + BRANCH + ' — goes live.',
       };
     if (ME.authenticated && ME.hasCredits) return { label: 'Submit fix', action: 'edit', note: 'Uses your credits.' };
+    // Not funded — but WHY decides the remedy, and only 'ok' is a real zero.
+    // `/v1/me` and `/v1/edit` both already keep these apart (a refused balance is
+    // a 401 there, an unreadable one a 503, and 402 is reserved for a balance we
+    // READ and found empty). Reading `hasCredits` alone put them back together
+    // and billed the customer for our failure: a funded account whose token had
+    // gone stale was told to top up.
+    if (ME.authenticated && ME.balanceState === 'noauth')
+      return { label: 'Suggest a fix', action: 'suggest', stale: true };
+    if (ME.authenticated && ME.balanceState === 'unavailable')
+      return { label: 'Suggest a fix', action: 'suggest', down: true };
     if (ME.authenticated) return { label: 'Suggest a fix', action: 'suggest', top: true };
     return { label: 'Suggest a fix', action: 'suggest', login: true };
   }
@@ -956,6 +974,14 @@
       (c.note ? '<div class="note">' + esc(c.note) + '</div>' : '') +
       (c.top
         ? '<div class="note"><a class="link" href="' + BASE + '/billing" target="_blank" rel="noopener">Top up</a> to open a PR directly.</div>'
+        : '') +
+      (c.stale
+        ? '<div class="note">We couldn’t read your balance — your session expired. <a class="link" href="' +
+          BASE +
+          '/login" target="_blank" rel="noopener">Sign in again</a> to open a PR.</div>'
+        : '') +
+      (c.down
+        ? '<div class="note">Billing is unreachable, which is on us — your credits are untouched. Try again shortly.</div>'
         : '') +
       (c.login
         ? '<div class="note"><a class="link" href="' + BASE + '/login" target="_blank" rel="noopener">Log in</a> to open a PR directly.</div>'
@@ -1429,6 +1455,9 @@
         ME.isAdmin = !!d.isAdmin;
         ME.hasCredits = !!d.hasCredits;
         ME.balance = typeof d.balance === 'number' ? d.balance : null;
+        // Absent state is NOT "you have no money" — an old server that does not
+        // send it is our unknown, so it reads as 'unavailable', never as a zero.
+        ME.balanceState = typeof d.balanceState === 'string' ? d.balanceState : 'unavailable';
       }
       if (ME.authenticated) registerProperty();
     })
