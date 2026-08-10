@@ -750,7 +750,7 @@ function RevCard({
   return (
     <YStack
       borderRadius="$6" borderWidth={1} paddingHorizontal="$3" paddingVertical="$2.5" {...(isPreviewing
-        ? { borderColor: "rgba(251,191,36,0.3)", backgroundColor: "rgba(251,191,36,0.04)" }
+        ? { borderColor: "$yellow6", backgroundColor: "$yellow2" }
         : isActive
           ? { borderColor: "$color02", backgroundColor: "$color005" }
           : { borderColor: "$borderColor", backgroundColor: "$color002", hoverStyle: { borderColor: "$color02", backgroundColor: "$color005" } })}

@@ -399,9 +399,9 @@ function Timeline({ rev, commit }: { rev: DetailsRev; commit: GitCommit | null }
 function StatusBadge({ status }: { status: GitCommitFile["status"] }) {
   const tone =
     status === "added"
-      ? { borderColor: "rgba(52,211,153,0.2)", color: "rgba(110,231,183,0.9)" }
+      ? { borderColor: "$green6", color: "$green11" }
       : status === "removed"
-        ? { borderColor: "rgba(248,113,113,0.2)", color: "rgba(252,165,165,0.9)" }
+        ? { borderColor: "$red6", color: "$red11" }
         : { borderColor: "$borderColor", color: "$color11" };
   return (
     <SizableText
