@@ -90,10 +90,10 @@ export default function CloudIntegration() {
           <Paragraph textAlign="center" fontFamily="$mono" fontSize="$1" color="$color11">
             The difference
           </Paragraph>
-          <H2 textAlign="center" marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "2.75rem", lineHeight: "1.1" }}>
+          <H2 textAlign="center" marginTop="$8" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "2.75rem", lineHeight: "1.1" }}>
             More than a UI. A full app on Hanzo Cloud.
           </H2>
-          <Paragraph textAlign="center" marginTop="$4" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
+          <Paragraph textAlign="center" marginTop="$8" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
             Other builders hand you a screenshot. Hanzo ships a running app —
             database, auth, AI, secrets, and storage already connected.
           </Paragraph>

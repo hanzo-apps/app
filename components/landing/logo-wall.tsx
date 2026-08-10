@@ -24,36 +24,46 @@ const partners = [
   { src: "/logos/partners/zoo-labs-foundation.svg", alt: "Zoo Labs Foundation" },
 ];
 
+// One copy of the set. Rendered twice inside the track: the marquee scrolls by
+// exactly one copy's width, so the second lands where the first was and the seam
+// is invisible. The second copy is decorative — `aria-hidden`, empty alts — so a
+// screen reader hears each partner once, and desktop drops it entirely.
+function LogoRow({ dup = false }: { dup?: boolean }) {
+  return (
+    <XStack className="hz-logo-group" {...(dup ? { "aria-hidden": true } : {})}>
+      {partners.map((p) => (
+        // eslint-disable-next-line @next/next/no-img-element
+        <Image
+          key={(dup ? "b-" : "a-") + p.alt}
+          src={p.src}
+          alt={dup ? "" : p.alt}
+          filter="brightness(0) invert(1)" height="$5" width="auto" objectFit="contain" opacity={0.45} hoverStyle={{ opacity: 0.9 }} flexShrink={0} $md={{ height: 22 }}
+  />
+      ))}
+    </XStack>
+  );
+}
+
 export default function LogoWall() {
   return (
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
-      <YStack alignSelf="center" maxWidth={1152}>
+      <YStack alignSelf="center" width="100%" maxWidth={1152}>
         <Reveal>
           <Paragraph fontFamily="$mono" fontSize="$1" color="$color11" textAlign="center">
             Backed by Techstars · Built on world-class infrastructure
           </Paragraph>
         </Reveal>
 
-        {/* ONE row, always. The wall used to wrap — seven marks on the first
-            line, two orphans on the second. The `.hz-strip` lane owns overflow
-            (snap-scroll + edge fade) so narrow viewports scroll instead of
-            wrapping, and the AUTO horizontal margins center the row when it
-            fits: auto absorbs positive free space only, so an overflowing row
-            still starts at x=0 and every mark stays reachable. */}
-        <YStack marginTop="$7" className="hz-strip">
-          {/* Horizontal padding clears the lane's 32px edge fade, so the first
-              and last mark render at full strength when the row fits. */}
-          <XStack flexWrap="nowrap" alignItems="center" columnGap="$6" marginHorizontal="auto" paddingHorizontal={36} $md={{ columnGap: "$7" }}>
-            {partners.map((p, i) => (
-              <Reveal key={p.alt} delay={i * 40} alignItems="center" flexShrink={0}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <Image
-                  src={p.src}
-                  alt={p.alt}
-                  filter="brightness(0) invert(1)" height="$5" width="auto" maxWidth="100%" objectFit="contain" opacity={0.45} hoverStyle={{ opacity: 0.9 }} $md={{ height: 22 }}
-  />
-              </Reveal>
-            ))}
+        {/* ONE row. On desktop the nine marks fit under 1152 and center, static.
+            On a phone the row overflows — and a static overflow just clips (the
+            marks past the edge are a swipe nobody takes). So there it AUTO-scrolls
+            to the right: a seamless marquee of the duplicated set. Motion and
+            overflow are CSS's to own (`.hz-logo-*` in assets/globals.css); reduced
+            motion stops it and the row falls back to a static, swipeable strip. */}
+        <YStack marginTop="$7" width="100%" className="hz-logo-marquee">
+          <XStack className="hz-logo-track">
+            <LogoRow />
+            <LogoRow dup />
           </XStack>
         </YStack>
       </YStack>

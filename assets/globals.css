@@ -1339,6 +1339,54 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   scroll-snap-align: start;
 }
 
+/* Partner logo wall. ONE row: on desktop the nine marks fit under 1152 and
+   center, static; on a phone the row overflows, so it AUTO-scrolls a seamless
+   marquee — the set is rendered twice, and translating the track by exactly one
+   copy's width lands the second where the first was, so the seam never shows.
+   Rightward per the ask. Motion lives here because it is motion. */
+.hz-logo-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent);
+  mask-image: linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent);
+}
+.hz-logo-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+.hz-logo-group {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 40px;
+  /* Trailing gap == internal gap, so the last mark of one copy sits the same
+     distance from the first mark of the next as any two neighbours: no seam. */
+  padding-right: 40px;
+}
+@media (max-width: 767px) {
+  .hz-logo-track { animation: hz-logo-scroll 32s linear infinite; }
+}
+@media (min-width: 768px) {
+  /* Fits centred; the duplicate and its trailing gap are marquee-only. */
+  .hz-logo-marquee { display: flex; justify-content: center; -webkit-mask-image: none; mask-image: none; }
+  .hz-logo-track { width: auto; max-width: 100%; }
+  .hz-logo-group { padding-right: 0; }
+  .hz-logo-group[aria-hidden="true"] { display: none; }
+}
+@keyframes hz-logo-scroll {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+/* Motion off → no animation, drop the duplicate, and let the single row be
+   swiped by hand instead (the pre-marquee behaviour). */
+@media (prefers-reduced-motion: reduce) {
+  .hz-logo-track { animation: none; transform: none; }
+  .hz-logo-marquee { overflow-x: auto; scrollbar-width: none; }
+  .hz-logo-marquee::-webkit-scrollbar { display: none; }
+  .hz-logo-group[aria-hidden="true"] { display: none; }
+  .hz-logo-group { padding-right: 0; }
+}
+
 /* The `group` prop exists in this app for STATE only ($group-hover/press/
    focus), which compiles to descendant selectors. Tamagui's group ALSO emits
    `container-type: inline-size` to power $group-<size> container queries —
