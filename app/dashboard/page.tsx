@@ -260,18 +260,18 @@ function ProjectGrid({
   onOpen: (p: DashProject) => void;
 }) {
   return (
-    <YStack gap="$4">
+    <div className="project-grid">
       {projects.map((p) => {
         // ONE four-state status map (live/building/error/draft) — a failed deploy
         // never looks like an untouched draft. See lib/project-status.
         const st = statusOf(p.status);
         return (
-          /* A CARD, not a control — the same reason the templates grid stopped
-             being a Button. @hanzo/ui pins a Button to its size variant's
-             height whatever the caller asks for, and `overflow="hidden"` then
-             crops the row to that band: measured on prod at 36px holding 62px,
-             which took the "Live · N ago" line off every project. A clickable
-             stack sizes from its content. */
+          /* A CARD, not a control — @hanzo/ui pins a Button to its size
+             variant's height whatever the caller asks for, and `overflow="hidden"`
+             then crops the card to that band. A clickable stack sizes from its
+             content. Vertical: the thumbnail owns the full card width at its own
+             aspect and the meta sits below, so the container is the size of the
+             image — no full-bleed row with the shot stranded on the left. */
           <YStack
             role="button"
             tabIndex={0}
@@ -284,18 +284,21 @@ function ProjectGrid({
                 onOpen(p);
               }
             }}
-            cursor="pointer" flexDirection="row" alignItems="center" group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "$-0.5", borderColor: "$color", backgroundColor: "$color3" }}
+            cursor="pointer" group overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "$-0.5", borderColor: "$color", backgroundColor: "$color3" }}
           >
-            {/* Real thumbnail: the live site itself (inert); monogram otherwise. */}
+            {/* Real thumbnail: the live site itself (inert); monogram otherwise.
+                The open affordance rides the top-right corner, revealed on hover. */}
             <YStack position="relative">
               <ProjectThumb name={p.name} liveUrl={p.liveUrl} />
-              <ArrowUpRight size={16} />
+              <XStack position="absolute" top="$2" right="$2" width={22} height={22} borderRadius={999} alignItems="center" justifyContent="center" backgroundColor="$background" borderWidth={1} borderColor="$borderColor" opacity={0} $group-hover={{ opacity: 1 }}>
+                <ArrowUpRight size={13} />
+              </XStack>
             </YStack>
-            <YStack padding="$4">
+            <YStack padding="$3" gap="$1.5">
               <H3 numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{p.name}</H3>
-              <XStack marginTop="$1.5" alignItems="center" gap="$3">
+              <XStack alignItems="center" gap="$2.5" flexWrap="wrap">
                 <XStack alignItems="center" gap="$1">
-                  <Circle size={6} />
+                  <Circle size={6} color={st.dot} fill={st.dot} />
                   <SizableText fontSize="$1" letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
                 </XStack>
                 <XStack alignItems="center" gap="$1">
@@ -307,23 +310,24 @@ function ProjectGrid({
           </YStack>
         );
       })}
-    </YStack>
+    </div>
   );
 }
 
 function ProjectsSkeleton() {
   return (
-    <YStack gap="$4" aria-hidden>
-      {[0, 1, 2].map((i) => (
-        <YStack key={i} overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
-          <YStack backgroundColor="$color3" />
-          <YStack rowGap="$2" padding="$4">
-            <YStack height="$3.5" width="$14" borderRadius="$2" backgroundColor="$color3" />
-            <YStack height="$3" width="$12" borderRadius="$2" backgroundColor="$color3" />
+    <div className="project-grid" aria-hidden>
+      {[0, 1, 2, 3].map((i) => (
+        <YStack key={i} overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
+          {/* A definite thumb block — the old one set no height and collapsed. */}
+          <YStack aspectRatio={16 / 9} backgroundColor="$color3" />
+          <YStack rowGap="$2" padding="$3">
+            <YStack height="$2.5" width="65%" borderRadius="$2" backgroundColor="$color3" />
+            <YStack height="$2" width="40%" borderRadius="$2" backgroundColor="$color3" />
           </YStack>
         </YStack>
       ))}
-    </YStack>
+    </div>
   );
 }
 

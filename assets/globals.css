@@ -1000,6 +1000,23 @@ kbd {
   align-items: start;
 }
 
+/* The recent-projects grid — vertical cards, the thumbnail on top at its own
+   aspect and the meta below, so the card is the SIZE of the image with nothing
+   stranded beside it. Deliberately NOT `.card-grid`: auto-fit/minmax(280px)
+   collapses to one column on a phone, and a one-up recent list is a stack of
+   full-bleed cards with the shot on the left and half the row empty black. A
+   fixed track count is what "two on a row" asks for — two on a phone, three
+   from md up. `minmax(0,1fr)` lets the framed iframe scale down to the track
+   instead of forcing it to the iframe's logical width. */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+@media (min-width: 768px) {
+  .project-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+}
+
 /* Mobile-only chrome — hidden from md up. !important so the gate beats
    runtime-injected atomic display classes regardless of sheet order. */
 @media (min-width: 768px) { .md-hidden { display: none !important; } }
