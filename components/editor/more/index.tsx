@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Paragraph, SizableText, XStack, YStack } from '@hanzo/ui';
-import { Boxes, ChevronDown, ChevronRight, Plug } from 'lucide-react';
+import { Boxes, ChevronDown, ChevronLeft, ChevronRight, Plug } from 'lucide-react';
 
 import { panel } from '@/lib/chrome';
 import { fetchConnectors, type Provider } from '@/lib/connectors';
@@ -28,17 +28,30 @@ import { SECTIONS, findSection, type Section } from './sections';
 export function MorePane({ projectId }: { projectId?: string | null }) {
   const [openGroups, setOpenGroups] = useState<string[]>(['cloud']);
   const [current, setCurrent] = useState('analytics');
+  // On a phone the nav and the detail cannot share a row — 248px of nav left the
+  // detail ~140px, unreadable. So below $md this becomes a drill-down: the nav
+  // is the whole pane, picking a section swaps to the detail full-width, and a
+  // back row returns. Desktop is unchanged — both columns side by side, and
+  // `showDetail` never gates anything there ($md forces both visible).
+  const [showDetail, setShowDetail] = useState(false);
   const section = findSection(current) ?? SECTIONS[0];
 
   const toggle = (id: string) =>
     setOpenGroups((g) => (g.includes(id) ? g.filter((x) => x !== id) : [...g, id]));
 
+  // Picking a section is the drill-in on a phone; expanding a group (onToggle)
+  // stays in the nav. Desktop ignores showDetail.
+  const select = (id: string) => {
+    setCurrent(id);
+    setShowDetail(true);
+  };
+
   return (
     <XStack position="absolute" top={0} right={0} bottom={0} left={0} zIndex={10} backgroundColor="$background">
-      {/* THE NAV. A fixed width, for the same reason the Files browser has one:
-          it holds labels, and a label does not get longer because the window
-          did. The content beside it takes the remainder. */}
-      <YStack width={248} flexShrink={0} minHeight={0} overflow="scroll" paddingHorizontal="$2" paddingVertical="$3" gap="$0.5">
+      {/* THE NAV. Full width on a phone (the whole pane until you pick a
+          section), a fixed 248 beside the detail on a desktop — a label does
+          not get longer because the window did. */}
+      <YStack display={showDetail ? 'none' : 'flex'} $md={{ display: 'flex', width: 248 }} width="100%" flexShrink={0} minHeight={0} overflow="scroll" paddingHorizontal="$2" paddingVertical="$3" gap="$0.5">
         {SECTIONS.map((s) => (
           <NavRow
             key={s.id}
@@ -46,12 +59,17 @@ export function MorePane({ projectId }: { projectId?: string | null }) {
             current={current}
             open={openGroups.includes(s.id)}
             onToggle={() => toggle(s.id)}
-            onSelect={setCurrent}
+            onSelect={select}
   />
         ))}
       </YStack>
 
-      <YStack flex={1} minWidth={0} minHeight={0} overflow="scroll" padding="$4" gap="$3">
+      <YStack display={showDetail ? 'flex' : 'none'} $md={{ display: 'flex' }} flex={1} minWidth={0} minHeight={0} overflow="scroll" padding="$4" gap="$3">
+        {/* Back to the nav — phone only; on a desktop the nav never left. */}
+        <XStack display="flex" $md={{ display: 'none' }} role="button" tabIndex={0} onPress={() => setShowDetail(false)} alignItems="center" gap="$1.5" cursor="pointer" marginBottom="$1">
+          <SizableText color="$color11"><ChevronLeft size={16} /></SizableText>
+          <SizableText fontSize="$2" color="$color11">All settings</SizableText>
+        </XStack>
         <YStack gap="$1">
           <SizableText fontSize="$6" color="$color">{section.label}</SizableText>
           <Paragraph fontSize="$2" color="$color11">{section.blurb}</Paragraph>
