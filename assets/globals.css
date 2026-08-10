@@ -1776,6 +1776,30 @@ html:root .is_Tabs {
   flex-basis: auto;
 }
 
+/* A tab strip wraps rather than running off the edge.
+
+   `TabsList` is a flex ROW with `flex-wrap: nowrap` and `overflow: visible`, so
+   a strip wider than its holder is neither wrapped nor scrolled — the tabs past
+   the edge are simply painted outside it and cannot be reached. Measured on
+   /settings squeezed to 300px: the list stayed 456px wide and `Security` and
+   `Billing` ended at x 404 and 476 against a holder ending at 320.
+
+   It shows up on a phone, and sooner at a larger Text size — the same five
+   labels at 140% need ~640px, which no phone has.
+
+   BOTH declarations are load-bearing and wrapping alone does nothing: a flex
+   item defaults to `min-width: auto`, so the row refuses to shrink below its
+   content and never reaches a width it would wrap at. Measured — with
+   `flex-wrap` alone the list was still 456px on one row with the same two tabs
+   clipped. With both: 300px, two rows, nothing clipped, and unchanged at full
+   width (456px, one row). */
+html:root [role="tablist"] {
+  flex-wrap: wrap;
+  row-gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+}
+
 /* On a phone, a long list stops hanging off its trigger.
 
    The picker's panel is ~440px (a 380px list plus the search field) and it is

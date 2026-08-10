@@ -41,6 +41,31 @@ describe("everything on the page can be reached", () => {
     });
   });
 
+  describe("a tab strip wraps instead of running off the edge", () => {
+    const rule = (() => {
+      const at = css.indexOf('html:root [role="tablist"]');
+      expect(at).toBeGreaterThan(-1);
+      return css.slice(at, css.indexOf("}", at) + 1);
+    })();
+
+    it("wraps", () => {
+      expect(rule).toMatch(/flex-wrap:\s*wrap/);
+    });
+
+    it("lets the row shrink, or wrapping never fires", () => {
+      // A flex item defaults to `min-width: auto` and refuses to shrink below
+      // its content, so it never reaches a width it would wrap at. Measured:
+      // with `flex-wrap` alone the strip stayed 456px on ONE row with two tabs
+      // still clipped. This line is the half that does the work.
+      expect(rule).toMatch(/min-width:\s*0/);
+      expect(rule).toMatch(/max-width:\s*100%/);
+    });
+
+    it("gives the second row somewhere to sit", () => {
+      expect(rule).toMatch(/row-gap:/);
+    });
+  });
+
   describe("a long picker is a sheet on a phone, not a hanging panel", () => {
     const rule = (() => {
       const at = css.indexOf("html:root .hz-picker-panel");
