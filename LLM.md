@@ -216,6 +216,37 @@ true even on a page with zero `@font-face` rules, so it proves nothing.
 
 
 
+### "No credits" is a claim about MONEY, and only a read balance may make it
+
+The same shape as the section below, one layer out. `lib/billing/server.ts`
+answers a REASON — `ok` | `noauth` | `unavailable` — and `/v1/edit` keeps the
+three apart: **401** for a refused balance, **503** for an unreadable one, and
+**402 only for a balance it READ and found empty**. That module exists in that
+shape because collapsing them once told a funded customer to pay.
+
+`public/edit.js` then put them back together: it read `hasCredits` alone — ONE
+boolean that is false for all three — and rendered "Top up" for every one. The
+server's care was undone by the last consumer, which is where this class always
+dies. Measured in production while it was live: `/v1/billing/balance` answers
+`401 "sign in to view billing"` interleaved with 200s, **14 of 64 reads in 24h**,
+so a funded account was told it had no money whenever its token went stale.
+
+Two things worth carrying:
+
+- **An ABSENT reason is our unknown, never the customer's debt.** A server that
+  predates the field must degrade to `unavailable`, not to a zero.
+- **A poll that never once succeeds is not a blip.** Reading the balance log by
+  TIME rather than by count split one 22%-failure number into two pollers: a
+  healthy one at 30s (all 200) and a second at exactly 60s (all 401, never a
+  single success). 60s is `BACKOFF_CAP_MS` in `console/src/lib/billing/live-balance.ts`
+  — a breaker that opened and stayed open. A rate hides that; a timeline shows it.
+  Console renders `noauth` honestly ("Sign in to view your balance"), so the
+  symptom there is a signed-in person told to sign in — not a fabricated $0.
+
+`tests/unit/credits-wall.test.ts` pins the branch ORDER, because moving the bare
+`top: true` fallback back in front restores the bug in one line and nothing else
+notices. Mutation-checked: that edit fails, and only that test.
+
 ### A refusal is not an outage — `lib/gateway.ts`
 
 The gateway states a reason when it refuses, and every route used to read it
