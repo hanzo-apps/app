@@ -81,7 +81,12 @@ export function FilesPane({
           percentage made it luxuriously wide on a monitor and unusable on a
           laptop. The preview beside it takes the remainder, which IS the thing
           that wants every pixel available. */}
-      <YStack width={340} flexShrink={0} minWidth={0} borderRightWidth={1} borderColor="$borderColor">
+      {/* Full width on a phone, a fixed 340 beside the preview on a desktop.
+          The inline preview is a desktop luxury — 340px of it on a ~360px phone
+          left a ~20px sliver of preview, so below $md the list takes the whole
+          pane and the preview column steps out (the builder's own Preview tab
+          is the phone's way to see a page). */}
+      <YStack width="100%" flexShrink={0} minWidth={0} $md={{ width: 340 }} borderRightWidth={1} borderColor="$borderColor">
         <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$2.5">
           <XStack flex={1} minWidth={0} alignItems="center" gap="$2" borderRadius="$4" backgroundColor="$color2" paddingHorizontal="$2.5" data-field-box>
             <SizableText color="$color11"><Search size={14} /></SizableText>
@@ -116,6 +121,9 @@ export function FilesPane({
             variant="ghost"
             size="icon-sm"
             borderRadius="$4"
+            // Desktop only: the inline preview it toggles does not render below
+            // $md, so the toggle would flip a state with nothing to show.
+            display="none" $md={{ display: "flex" }}
             title={preview ? 'Hide preview' : 'Show preview'}
             aria-label={preview ? 'Hide preview' : 'Show preview'}
             aria-pressed={preview}
@@ -195,7 +203,7 @@ export function FilesPane({
       </YStack>
 
       {preview && (
-        <YStack flex={1} minWidth={0} alignItems="center" justifyContent="center" padding="$4">
+        <YStack display="none" $md={{ display: "flex" }} flex={1} minWidth={0} alignItems="center" justifyContent="center" padding="$4">
           {artifact && sandboxId ? (
             <ArtifactPreview sandbox={sandboxId} path={artifact} />
           ) : open ? (
