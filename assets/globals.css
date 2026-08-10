@@ -1219,7 +1219,9 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.25rem;
+  /* More room on the right than the left: the right cluster (the weak-area
+     count + its chevron) sat hard against the card edge. */
+  padding: 1rem 1.75rem 1rem 1.25rem;
   cursor: pointer;
   list-style: none;
 }
