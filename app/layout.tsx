@@ -40,6 +40,7 @@ import { SITE_URL } from "@/lib/site";
 import AppContext from "@/components/contexts/app-context";
 import IframeDetector from "@/components/iframe-detector";
 import { AccentSync } from "@/components/accent-sync";
+import { AppearanceSync } from "@/components/appearance-sync";
 import { ChunkReloader } from "@/components/chunk-reloader";
 import { Providers } from "./providers";
 import { ErrorBoundary } from "@/components/error-boundary/error-boundary";
@@ -218,6 +219,10 @@ export default async function RootLayout({
             responsive prop ($sm/$md/$lg) throws on `new Proxy(undefined)`. */}
         <Providers>
           <AccentSync />
+          {/* Makes appearance account-level: reads the signed-in user's stored
+              preference and applies it, and writes local changes back. A guest
+              stays on localStorage — this no-ops on a 401. */}
+          <AppearanceSync />
           <IframeDetector />
           <ChunkReloader />
           <ErrorBoundary level="app">
