@@ -256,6 +256,25 @@ stays wide is NOT a viewport change: inner cards keep sizing against the wider
 ancestor, which manufactured an 8px "overflow" that no fix moved. Resize the
 viewport or believe nothing.
 
+**The same `flex: 1` collapse recurred on `CardContent`, and the visible
+symptom was the wrong one.** `/agents` set `flex={1}` on a card that sizes to
+its contents, so every CardContent measured 0px tall while its children painted
+anyway, and `marginTop: auto` pushed the run row 68px BELOW the card, over the
+next card's title. What a reader notices is a misplaced Run button; what it
+actually cost was the "Message this agent…" INPUT, which painted behind the
+following card and could not be seen or typed into — the feature was unusable
+and nobody had reported it. Fixed the same way as the tab panel: `flexGrow` +
+`flexBasis: auto`, which keeps the growing and restores the basis.
+
+Swept for the class afterwards rather than guessing at its reach: a near-zero
+-height box whose children's bottoms clear it by >8px, run over `/`, `/agents`,
+`/settings`, `/connectors`, `/terminals`, `/resources`, `/projects`, `/usage`
+and `/skills`. It fired on `/agents` (7 boxes, 72px each) and NOWHERE else, so
+the class is contained to that one component — and firing on the known bug is
+what makes the silence elsewhere worth anything. Re-run that sweep rather than
+re-deriving it; the landing's "offscreen" controls are the template carousel
+and are not a defect.
+
 **A role is not a component, and the media are MIN-width.** Two laws the
 builder toolbar cost, neither visible without measuring at several widths.
 
