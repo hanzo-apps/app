@@ -35,7 +35,7 @@ IMPORTING NPM PACKAGES:
 CSS STYLING:
 - Import CSS files directly: import "./App.css"
 - CSS modules are NOT supported — use plain CSS with unique class names
-- For Tailwind CSS, add to index.html <head>: <script src="https://cdn.tailwindcss.com"></script>
+- For Tailwind CSS, add to index.html <head>: <script src="https://hanzo.app/vendor/tailwind.js"></script>
 - For other CSS frameworks, use CDN links in index.html
 
 ROUTING (Single Page App):

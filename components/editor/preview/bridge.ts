@@ -21,6 +21,9 @@
  * properties the panel actually shows.
  */
 
+import { rewrite } from '@/lib/vendor';
+
+
 /** A serialisable stand-in for the node the editor used to hold. */
 export interface ElementInfo {
   selector: string;
@@ -364,7 +367,13 @@ export function withBase(html: string, url: string | null | undefined): string {
  */
 export function withBridge(html: string, siteUrl?: string | null): string {
   if (!html) return html;
-  return `${withBase(html, siteUrl)}<style>${BRIDGE_STYLES}</style><script>${BRIDGE_SCRIPT}</script>`;
+  // Point any library URL at our own copy on the way in. Projects saved before
+  // we hosted these name `cdn.tailwindcss.com` and friends literally, and this
+  // frame inherits the page's CSP — which no longer allows them — so without
+  // this every site built before today would preview as unstyled markup, having
+  // rendered correctly the day before. `rewrite` is idempotent, so a document
+  // already pointing at us passes through untouched.
+  return `${withBase(rewrite(html), siteUrl)}<style>${BRIDGE_STYLES}</style><script>${BRIDGE_SCRIPT}</script>`;
 }
 
 /** True when a message is from our own frame and speaks this protocol. */

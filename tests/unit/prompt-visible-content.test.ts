@@ -17,6 +17,7 @@ import {
   INITIAL_SYSTEM_PROMPT,
   FOLLOW_UP_SYSTEM_PROMPT,
 } from '@/lib/prompts';
+import { url } from '@/lib/vendor';
 
 /**
  * Ways a prompt LOADS a hide-until-JS library. Naming one in prose is fine and
@@ -140,7 +141,13 @@ describe('the builder prompt gives a maps path that works', () => {
   const { INITIAL_SYSTEM_PROMPT } = jest.requireActual('@/lib/prompts');
   it('uses keyless Leaflet, not the key-gated Google Maps JS API', () => {
     expect(INITIAL_SYSTEM_PROMPT).toMatch(/Leaflet/);
-    expect(INITIAL_SYSTEM_PROMPT).toContain('leaflet@1.9.4');
+    // The version used to be asserted through the CDN url (`leaflet@1.9.4`),
+    // which stopped existing when the libraries moved to our own origin. The
+    // pin did not move — it is `package.json` now, checked by
+    // tests/unit/vendor.test.ts — so what belongs here is that the prompt hands
+    // the model a Leaflet that LOADS, which is this test's actual subject.
+    expect(INITIAL_SYSTEM_PROMPT).toContain(url('leaflet'));
+    expect(INITIAL_SYSTEM_PROMPT).toContain(url('leafletCss'));
     // Google Maps JS needs a billed key the platform does not inject.
     expect(INITIAL_SYSTEM_PROMPT).toMatch(/Do NOT use the Google Maps JavaScript API/i);
   });

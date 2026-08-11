@@ -13,7 +13,7 @@ export const baseHtmlTemplate = `<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Loading...</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://hanzo.app/vendor/tailwind.js"></script>
   <style>
     @keyframes pulse {
       0%, 100% { opacity: 0.3; }

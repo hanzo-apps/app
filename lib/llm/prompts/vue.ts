@@ -72,7 +72,7 @@ IMPORTING NPM PACKAGES:
 CSS STYLING:
 - Use <style scoped> for component-scoped styles (recommended)
 - Use <style> without scoped for global styles
-- For Tailwind CSS, add to index.html <head>: <script src="https://cdn.tailwindcss.com"></script>
+- For Tailwind CSS, add to index.html <head>: <script src="https://hanzo.app/vendor/tailwind.js"></script>
 
 ROUTING (Single Page App):
 - Use hash-based routing: window.location.hash

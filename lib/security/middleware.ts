@@ -1,17 +1,30 @@
 import type { NextResponse } from 'next/server';
 
 /**
- * The CDNs the generation system prompt (lib/prompts.ts) endorses. The /dev
- * builder previews generated apps in an `about:srcdoc` iframe, which INHERITS
- * this page's CSP — so a source missing here renders every generated page
- * unstyled in the preview while the published copy works fine.
+ * Where a generated site's libraries come from: OUR origin, and only ours.
+ *
+ * This was four hosts we do not own — `cdn.jsdelivr.net`,
+ * `cdn.tailwindcss.com`, `cdnjs.cloudflare.com`, `unpkg.com` — because the
+ * generation prompts told every site to fetch Tailwind, icons, animation and
+ * maps from them. That put three parties in front of every visitor to every
+ * site anyone builds here, each able to see the traffic and to change what
+ * executes on the page, and it needed this policy widened to permit them.
+ *
+ * The libraries are now pinned in `package.json`, copied out of node_modules by
+ * `scripts/vendor.mjs`, and served from `/vendor/` — so the same capability
+ * costs one origin instead of four, and the bytes are ours.
+ *
+ * `lib/vendor.ts` is where a URL is decided; this names the origin so the
+ * policy says out loud where a generated page may load code from, rather than
+ * leaving it to whatever `'self'` happens to be.
+ *
+ * The /dev preview is an `about:srcdoc` iframe and INHERITS this policy, so a
+ * source missing here renders every generated page unstyled in the preview.
+ * That is also why documents saved before this change are rewritten on the way
+ * to the browser (`vendor.rewrite`) rather than left naming hosts this policy
+ * no longer allows.
  */
-const CDN = [
-  'https://cdn.jsdelivr.net',
-  'https://cdn.tailwindcss.com',
-  'https://cdnjs.cloudflare.com',
-  'https://unpkg.com',
-];
+const CDN = ['https://hanzo.app'];
 
 /**
  * Our own surfaces. `*.hanzo.app` is where a published project lives, and the
@@ -59,8 +72,13 @@ const policy = (dev: boolean) => {
   return [
     "default-src 'self'",
     src("script-src 'self' 'unsafe-inline' 'unsafe-eval'", ...CDN, ...OURS, ...http),
-    src("style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", ...CDN, ...OURS, ...http),
-    src("font-src 'self' data: https://fonts.gstatic.com", ...CDN, ...OURS, ...http),
+    // Google Fonts is gone from both of these. It was here because the skill
+    // prompts offered it as the font choice, which put a request to Google on
+    // every view of every site built here — a third party learning who reads
+    // our customers' pages, for a typeface. Those prompts now specify the
+    // system stack, which costs no request at all.
+    src("style-src 'self' 'unsafe-inline'", ...CDN, ...OURS, ...http),
+    src("font-src 'self' data:", ...CDN, ...OURS, ...http),
     // `http:`/`https:` already cover localhost — naming it again would be noise.
     src("img-src 'self' data: blob: https: http:"),
     src("media-src 'self' blob: data:", ...OURS, ...http),

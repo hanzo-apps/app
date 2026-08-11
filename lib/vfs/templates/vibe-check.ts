@@ -19,7 +19,7 @@ const INDEX_HTML = `<!DOCTYPE html>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Team Vibe Check · Hanzo Base</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://hanzo.app/vendor/tailwind.js"></script>
   <script>
     // Guarded so a slow/blocked CDN never throws — the app logic is CDN-independent.
     if (window.tailwind) tailwind.config = {
