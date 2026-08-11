@@ -496,7 +496,24 @@ export default function AgentsPage() {
                         )}
                       </CardHeader>
 
-                      <CardContent flex={1} flexDirection="column" gap="$3" paddingTop="$0">
+                      {/* `flexGrow`, NOT `flex` — the same law the tab panel
+                          already cost us. `flex: 1` is `1 1 0%` in this flex
+                          model, and a base size of ZERO is the size when the
+                          thing has no height handed to it: these cards sit in a
+                          stack and size to their contents, so every CardContent
+                          measured 0px tall (cardTop 503, cardBot 503) while its
+                          children painted anyway. `marginTop: auto` below then
+                          pushed the run row to the bottom of a zero-height box,
+                          so the input and Run button hung 68px BELOW the card,
+                          over the next card's title — which is what made the
+                          list look like it was overlapping itself, and got
+                          worse at a larger Text size because the row it landed
+                          on was taller.
+
+                          Restoring the basis keeps the growing: in a card that
+                          IS given a height, this still fills it and `auto`
+                          still pins the run row to the bottom. */}
+                      <CardContent flexGrow={1} flexBasis="auto" flexDirection="column" gap="$3" paddingTop="$0">
                         <XStack flexWrap="wrap" alignItems="center" gap="$2">
                           <XStack alignItems="center" gap="$1">
                             <Cpu size={12} />
