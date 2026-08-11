@@ -305,6 +305,26 @@ a {
     min-width: 44px !important;
   }
 
+  /* A FIELD is a tap target too, and it was not covered. You tap an input to
+     focus it exactly as you tap a button to press it, but the rule above names
+     only things that look like buttons — so every text field in the product sat
+     under the floor unnoticed. Measured on a phone: the search field on
+     /agents and on /projects renders 36px.
+
+     HEIGHT only, deliberately. The box argument above is about an ICON button,
+     which can be narrow enough to miss; a field is sized by its container and
+     is never the 22-28px wide that argument was written for, so a `min-width`
+     here would constrain nothing real. Checkbox and radio are excluded because
+     for them min-width is NOT inert — it is the control's whole size, and
+     forcing 44 there inflates a checkbox into a box that breaks the row it sits
+     in. Their floor is a bigger hit area around the control, which is a
+     different fix and not this one. */
+  input:not([type='checkbox']):not([type='radio']):not([type='hidden']),
+  select,
+  textarea {
+    min-height: 44px !important;
+  }
+
   p button,
   p [role='button'],
   p a[href] {

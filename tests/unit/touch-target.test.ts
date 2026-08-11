@@ -61,4 +61,23 @@ describe("the coarse-pointer touch floor", () => {
   it("leaves a link inside a sentence alone", () => {
     expect(coarse).toMatch(/p a\[href\]/);
   });
+
+  it("floors a FIELD too — you tap an input to focus it", () => {
+    // The selector list above names only things shaped like buttons, so every
+    // text field in the product sat under the floor with nothing reporting it:
+    // measured on a phone, the search field on /agents and /projects is 36px.
+    expect(coarse).toMatch(/(^|,|\s)input[^,{]*[,{]/m);
+    expect(coarse).toMatch(/(^|,|\s)textarea\s*[,{]/m);
+  });
+
+  it("does NOT force a width on a checkbox or radio", () => {
+    // For a field `min-width` is inert — a field is sized by its container and
+    // is never the 22-28px wide the box argument was written for. For a
+    // checkbox it is the control's ENTIRE size, so flooring it there inflates
+    // the control and breaks the row it sits in. The exclusion is the load-
+    // bearing half of that rule, so it is pinned rather than left to a reader.
+    const fields = coarse.slice(coarse.indexOf("input"));
+    expect(fields).toMatch(/:not\(\[type='checkbox'\]\)/);
+    expect(fields).toMatch(/:not\(\[type='radio'\]\)/);
+  });
 });
