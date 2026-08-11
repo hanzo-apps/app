@@ -168,9 +168,14 @@ export function AppShell({
                 zIndex={10}
                 borderBottomWidth={1}
               >
-                <XStack width="100%" maxWidth={RAIL} alignSelf="center" paddingHorizontal="$5" paddingVertical="$4" alignItems="center" justifyContent="space-between" gap="$4">
+                {/* Tighter on a phone: the title steps $8 → $7 and the band's
+                    vertical padding $4 → $3 below md, so the header doesn't eat a
+                    third of a small screen. `paddingHorizontal` stays $5 — it is
+                    the shared rail measure the content below aligns to, so it must
+                    NOT move with the shrink. Desktop keeps the designed sizes. */}
+                <XStack width="100%" maxWidth={RAIL} alignSelf="center" paddingHorizontal="$5" paddingVertical="$3" $md={{ paddingVertical: "$4" }} alignItems="center" justifyContent="space-between" gap="$4">
                   <YStack minWidth={0}>
-                    <H1 numberOfLines={1} fontSize="$8" fontWeight="500" letterSpacing={-0.4} color="$color">
+                    <H1 numberOfLines={1} fontSize="$7" $md={{ fontSize: "$8" }} fontWeight="500" letterSpacing={-0.4} color="$color">
                       {title}
                     </H1>
                     {subtitle ? (

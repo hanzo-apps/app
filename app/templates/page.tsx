@@ -143,7 +143,7 @@ function ResourcesBrowser() {
               <XStack height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color3">
                 <Sparkles size={24} />
               </XStack>
-              <H1 fontSize="$10" fontWeight="500">Resources</H1>
+              <H1 fontSize="$8" $md={{ fontSize: "$10" }} fontWeight="500">Resources</H1>
               <Badge variant="secondary">
                 {items.length} resources
               </Badge>
