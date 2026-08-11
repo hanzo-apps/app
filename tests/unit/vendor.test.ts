@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 
 import { LIBS, ORIGIN, rewrite, thirdParty, url } from '@/lib/vendor';
 
@@ -88,6 +88,32 @@ describe('documents saved before we hosted these still render', () => {
       <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
       <script src="https://cdn.tailwindcss.com"></script>`;
     expect(thirdParty(rewrite(doc))).toEqual([]);
+  });
+});
+
+describe('a stylesheet we host brings its own assets', () => {
+  it('ships every image leaflet.css asks for', () => {
+    // `leaflet.css` references its marker and layers icons RELATIVELY
+    // (`url(images/marker-icon.png)`), so they resolve against wherever we
+    // serve the stylesheet from. Ship the CSS alone and every map renders with
+    // a broken marker — while the page loads, the script runs and the tiles
+    // appear, so nothing else here would notice.
+    //
+    // Read from node_modules, not from `public/vendor/`: that directory is a
+    // build product and this has to hold before it is written.
+    // Resolve the package ROOT and join the file. `require.resolve` on the
+    // stylesheet itself returns jest's style MOCK — moduleNameMapper sends
+    // every `.css` there — so this read silently returned an empty stub and the
+    // match count was zero. The `toBeGreaterThan(0)` below is what caught it;
+    // without that line this test would have passed against nothing.
+    const css = readFileSync(
+      join(dirname(require.resolve('leaflet/package.json')), 'dist/leaflet.css'),
+      'utf8',
+    );
+    const wanted = [...new Set([...css.matchAll(/url\((images\/[^)]+)\)/g)].map((m) => m[1]))];
+    expect(wanted.length).toBeGreaterThan(0); // or the assertion below is vacuous
+    const shipped = new Set<string>(Object.values(LIBS).map((l) => l.file));
+    expect(wanted.filter((w) => !shipped.has(w))).toEqual([]);
   });
 });
 

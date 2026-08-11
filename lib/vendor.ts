@@ -45,6 +45,19 @@ export const LIBS = {
   /** Maps, and its stylesheet — a map without it renders as stacked tiles. */
   leaflet: { from: 'leaflet/dist/leaflet.js', file: 'leaflet.js' },
   leafletCss: { from: 'leaflet/dist/leaflet.css', file: 'leaflet.css' },
+  /**
+   * Leaflet's own images, and they are NOT optional decoration.
+   * `leaflet.css` asks for them RELATIVELY — `url(images/marker-icon.png)` —
+   * so they resolve against wherever the stylesheet is served from, i.e.
+   * `/vendor/images/`. Ship the CSS without them and every map draws with a
+   * broken marker and a broken layers control, which no test of ours would
+   * catch because the page loads, the script runs and the tiles appear.
+   */
+  leafletMarker: { from: 'leaflet/dist/images/marker-icon.png', file: 'images/marker-icon.png' },
+  leafletMarker2x: { from: 'leaflet/dist/images/marker-icon-2x.png', file: 'images/marker-icon-2x.png' },
+  leafletShadow: { from: 'leaflet/dist/images/marker-shadow.png', file: 'images/marker-shadow.png' },
+  leafletLayers: { from: 'leaflet/dist/images/layers.png', file: 'images/layers.png' },
+  leafletLayers2x: { from: 'leaflet/dist/images/layers-2x.png', file: 'images/layers-2x.png' },
 } as const satisfies Record<string, Lib>;
 
 export type LibName = keyof typeof LIBS;

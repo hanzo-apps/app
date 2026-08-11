@@ -48,6 +48,7 @@ for (const { from, file } of entries) {
     throw new Error(`vendor: cannot resolve ${from} — is ${pkg} in package.json?`);
   }
   const dest = join(out, file);
+  mkdirSync(dirname(dest), { recursive: true }); // `images/marker-icon.png` is nested
   copyFileSync(src, dest);
   const bytes = statSync(dest).size;
   if (!bytes) throw new Error(`vendor: ${file} copied as 0 bytes`);
