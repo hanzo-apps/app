@@ -1793,7 +1793,26 @@ html:root .is_Tabs {
    `flex-wrap` alone the list was still 456px on one row with the same two tabs
    clipped. With both: 300px, two rows, nothing clipped, and unchanged at full
    width (456px, one row). */
-html:root [role="tablist"] {
+/* Scoped to the `@hanzo/ui` Tabs COMPONENT, not to `[role="tablist"]`.
+
+   `role="tablist"` is a role, and three elements in this app wear it: the
+   settings strip this law was written for, and the builder's two segmented
+   controls (`Editor view`, `Preview device`), which are hand-rolled XStacks.
+   Wrapping is right for a strip of labelled destinations and wrong for a
+   segmented control — it turned the builder's five panes into a 96px
+   three-row block that shoved the bar down the page.
+
+   It was invisible while that group was `flexShrink: 0`: it could never get
+   narrow enough to wrap, so a rule that already governed it appeared not to.
+   Making the group yield is what surfaced it, and a prop on the group could
+   not argue back — `html:root [role="tablist"]` is (0,2,1) and every style
+   Tamagui compiles is a single atomic class at (0,1,0), so the component
+   loses to the sheet whatever it declares. Scope beats specificity here.
+
+   `data-slot="tabs-list"` is what @hanzo/ui stamps on its own TabsList
+   (verified on the live settings strip), so this reaches exactly the
+   component the measurements below were taken against and nothing else. */
+html:root [data-slot="tabs-list"] {
   flex-wrap: wrap;
   row-gap: 8px;
   min-width: 0;

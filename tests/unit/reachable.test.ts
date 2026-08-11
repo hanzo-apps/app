@@ -43,7 +43,17 @@ describe("everything on the page can be reached", () => {
 
   describe("a tab strip wraps instead of running off the edge", () => {
     const rule = (() => {
-      const at = css.indexOf('html:root [role="tablist"]');
+      // Anchored on the DECLARATION, not on the words. This read
+      // `html:root [role="tablist"]`, and when the rule was scoped to the
+      // @hanzo/ui component the string survived in the prose ABOVE the rule
+      // explaining why it had moved — so `indexOf` found the comment, the
+      // slice ran forward into the real rule, and all three assertions passed
+      // against a selector that no longer existed. It would have passed with
+      // the rule deleted outright.
+      //
+      // `{` is what makes it a rule rather than a mention: a comment cannot
+      // open a block, so this cannot match prose again.
+      const at = css.indexOf('html:root [data-slot="tabs-list"] {');
       expect(at).toBeGreaterThan(-1);
       return css.slice(at, css.indexOf("}", at) + 1);
     })();
@@ -63,6 +73,23 @@ describe("everything on the page can be reached", () => {
 
     it("gives the second row somewhere to sit", () => {
       expect(rule).toMatch(/row-gap:/);
+    });
+
+    it("wraps the COMPONENT, never everything wearing the role", () => {
+      // Three elements here carry `role="tablist"`: this strip and the
+      // builder's two segmented controls (`Editor view`, `Preview device`),
+      // which are hand-rolled XStacks. Wrapping is right for a strip of
+      // labelled destinations and wrong for a segmented control — targeting
+      // the role turned the builder's five panes into a 96px three-row block
+      // that shoved the bar down the page, measured on a real iPhone 13.
+      //
+      // It hid because that group was `flexShrink: 0` and could never get
+      // narrow enough to wrap, and the group could not defend itself once it
+      // could: this selector is (0,2,1) and every style Tamagui compiles is
+      // one atomic class at (0,1,0), so a `flexWrap="nowrap"` prop loses.
+      // Scope is the only lever, which is why it is the thing pinned.
+      const selector = css.slice(css.indexOf('html:root [data-slot="tabs-list"] {')).split("{")[0];
+      expect(selector).not.toMatch(/\[role=["']?tablist/);
     });
   });
 

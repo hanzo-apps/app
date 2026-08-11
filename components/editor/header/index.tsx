@@ -229,7 +229,32 @@ export function Header({
           // the children are inset, or match the radii. Padding reintroduces the
           // trough the note above says was deliberately removed, and adds 4px to
           // a bar whose clusters align on height. Matching costs nothing.
-          flexShrink={0} alignItems="center" gap="$0.5" borderRadius="$3" backgroundColor="$color4"
+          // It YIELDS, and only the actions cluster does not. This was
+          // `flexShrink: 0`, which made TWO clusters in the row unshrinkable —
+          // this one at 215px and the actions at 149px — for a floor of ~405px
+          // once gaps and padding are counted. Every phone is under that, so
+          // Publish, the primary, was painted past the right edge: 5px off at
+          // 390, 35px at 360. Nothing scrolled and nothing errored, because an
+          // ancestor hides the overflow; the button was simply cut.
+          //
+          // The row already states the law one cluster down — the actions never
+          // shrink, because a primary you cannot press is not a primary. That
+          // law only works if everything ELSE yields, and a segmented control
+          // yields by scrolling: the segments keep their size and the group
+          // gives up the difference, which is exactly what the left cluster
+          // does. `minWidth: 0` is required and is the whole trick — a flex
+          // item defaults to `min-width: auto` and refuses to shrink below its
+          // content, so `flexShrink` alone would have moved nothing.
+          // `nowrap` because `globals.css` wraps EVERY `[role="tablist"]` — the
+          // law that keeps the settings tab strip reachable, where wrapping to a
+          // second row is the right answer. It is the wrong answer here: a
+          // segmented control is one row of peers, and wrapping turns it into a
+          // 96px three-row block that shoves the bar down. That rule was
+          // harmless while this group was `flexShrink: 0` and never narrow
+          // enough to wrap; making it yield is what exposed it. A group that
+          // scrolls has to say it does not wrap.
+          flexShrink={1} minWidth={0} flexWrap="nowrap" overflow="scroll" className="no-scrollbar"
+          alignItems="center" gap="$0.5" borderRadius="$3" backgroundColor="$color4"
         >
           {PANES.map((item) => {
             const active = tab === item.value;
@@ -253,7 +278,12 @@ export function Header({
                 // rest are glyphs. That is why only this one is `accent` and why
                 // only this one gets horizontal padding worth the name: a label
                 // needs room, an icon needs a square.
-                size="sm" alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal={active ? "$3" : "$2"} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, ...(active ? { ...accent, borderWidth: 0 } : sel), hoverStyle: active ? undefined : { backgroundColor: "$color5" } }}
+                // A segment keeps its size; the GROUP is what yields. Without
+                // this the group's new `flexShrink` is paid for by squeezing
+                // the segments instead of scrolling them, which trades a
+                // clipped Publish for five squashed panes — and the squeeze is
+                // silent, because a flex item shrinking is not an error.
+                size="sm" flexShrink={0} alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal={active ? "$3" : "$2"} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, ...(active ? { ...accent, borderWidth: 0 } : sel), hoverStyle: active ? undefined : { backgroundColor: "$color5" } }}
               >
                 <SizableText color={active ? accent.color : sel.color}>
                   <item.icon size={16} />
