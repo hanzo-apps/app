@@ -70,6 +70,23 @@ describe("the coarse-pointer touch floor", () => {
     expect(coarse).toMatch(/(^|,|\s)textarea\s*[,{]/m);
   });
 
+  it("says where the label sits in the box it just made taller", () => {
+    // The floor and the centering are half a rule each. A chip whose content is
+    // 32px is forced to 44, and in BLOCK layout the whole 12px lands under the
+    // text — measured on the composer starters: 10px above, 20px below, which
+    // is the lopsided pill a phone shows.
+    expect(coarse).toMatch(/\.hz-tap\s*\{[^}]*align-items:\s*center/);
+  });
+
+  it("outranks gui for the centering too, not just the floor", () => {
+    // A bare `.hz-tap` is (0,1,0) — a dead tie with every atomic class gui
+    // compiles — and a tie goes to load order, where gui.css is imported LAST.
+    // So the unanchored form is not a weaker rule, it is an INERT one: it was
+    // in the stylesheet the whole time and changed nothing on any phone.
+    const centering = coarse.slice(coarse.indexOf("align-items: center") - 400);
+    expect(centering).toMatch(/html:root\s+\.hz-tap/);
+  });
+
   it("does NOT force a width on a checkbox or radio", () => {
     // For a field `min-width` is inert — a field is sized by its container and
     // is never the 22-28px wide the box argument was written for. For a

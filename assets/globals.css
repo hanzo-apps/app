@@ -332,9 +332,21 @@ a {
     min-width: 0 !important;
   }
 
-  .hz-tap {
+  /* THE FLOOR ABOVE MAKES A BOX TALLER; THIS SAYS WHERE THE LABEL SITS IN IT.
+     Without it the two are half a rule: a chip whose content is 32px is forced
+     to 44 and, in block layout, the whole 12px lands UNDER the text — measured
+     on the composer starters, 10px above and 20px below, which is exactly the
+     lopsided pill a phone shows.
+
+     `html:root` is load-bearing and is why this sat inert. A bare `.hz-tap` is
+     (0,1,0) — a dead tie with every atomic class gui compiles — and ties go to
+     load order, where `gui.css` is imported last. So gui's `display` won, the
+     element stayed a block, and this rule changed nothing on any phone since
+     the day it was written. Same collision, same remedy, as the focus ring. */
+  html:root .hz-tap {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
   }
 }
 
