@@ -216,7 +216,7 @@ export const useCallAi = ({
                 error: "empty_response",
                 message: contentResponse.trim().length
                   ? `The model ${who}replied without a page — it answered in prose instead of building one. Try a different model, or rephrase as a page to build.`
-                  : `No response came back from the model ${who}. Check your credits at pay.hanzo.ai, then try a different model.`,
+                  : `No response came back from the model ${who}— that's on our side, not your credits. Resend, or pick another model.`,
               };
             }
 
@@ -437,7 +437,7 @@ export const useCallAi = ({
               return {
                 error: "empty_response",
                 message:
-                  "The model replied without a page. Try a different model, or check your credits at pay.hanzo.ai.",
+                  "The model replied without a page — it answered in prose instead of building one. Try a different model, or rephrase as a page to build.",
               };
             }
 
@@ -547,7 +547,7 @@ export const useCallAi = ({
           return {
             error: "empty_response",
             message:
-              "The model replied without a page. Try a different model, or check your credits at pay.hanzo.ai.",
+              "The model replied without a page — it answered in prose instead of building one. Try a different model, or rephrase as a page to build.",
           };
         }
 
