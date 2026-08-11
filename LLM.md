@@ -507,6 +507,21 @@ compose's), then moves the universe pin through `charts/app/pin.sh`.
   `release.yml` still STAMPS the derived number into the build context, because
   `lib/version.ts` reads `pkg.version` for the sidebar and about modal. That is a
   display string written downstream of the derivation, never an input to it.
+- **A red `build-amd64` beside a green `test` can be an INFRA break, not yours.**
+  The release fetches its ingest key from KMS and refuses to ship a bundle without
+  one (correct — a keyless bundle reports zero events and goes green, so a missing
+  image is the better failure). For hours that step died on
+  `KMS login failed at https://api.hanzo.ai/v1/kms/auth/login`, and nothing about
+  this repo was at fault: cloud's KMS brokers an IAM `client_credentials` exchange
+  and was still dialling `iam.hanzo.svc`, the Service of the RETIRED standalone IAM
+  — a ClusterIP kept at zero endpoints on purpose, so it answers `connection
+  refused` rather than a name error. Fixed in universe
+  (`CLOUD_KMS_IAM_TOKEN_URL` → loopback; KMS and IAM are one process now).
+  **The tell is 502 vs 401**: `cloud/clients/kms/login.go` reserves 401 for a
+  credential IAM rejected and 502 for IAM unreachable, so a 502 says the
+  credentials were never the problem — which is where the obvious investigation
+  goes first. Green again reads `ingest key resolved (40 chars)`.
+
 - **`[skip ci]` works, and a run on your sha is not proof it did not.** The
   forge honours `[skip ci]` / `[ci skip]` / `[no ci]` / `[skip actions]` on
   **push and pull_request only** — that is upstream's rule, and correctly so: a
