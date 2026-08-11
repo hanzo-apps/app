@@ -389,7 +389,18 @@ export default function LandingPage() {
                   sizes from content; the thumb box crops a REAL preview —
                   ProjectThumb renders the deployed site scaled into the box, and
                   a draft gets the honest monogram tile, never fake content. */}
-              <div className="card-grid">
+              {/* `.project-grid`, NOT `.card-grid`, and the difference is the
+                  whole section on a phone. card-grid is auto-fit/minmax(280px),
+                  which collapses to ONE column below ~580px — so each card went
+                  full-bleed while the framed iframe stayed at its own logical
+                  width, leaving the shot on the left and half the row empty
+                  black. project-grid fixes the track count (two on a phone,
+                  three from md) and its `minmax(0, 1fr)` lets the iframe scale
+                  DOWN to the track instead of forcing the track to the iframe.
+                  The rule and this comment already existed; the markup simply
+                  never pointed at them, so the dashboard got the layout and the
+                  home page did not. */}
+              <div className="project-grid">
                 {projects.slice(0, 3).map((project) => (
                   <YStack
                     key={project.slug}
