@@ -315,7 +315,11 @@ export default function LandingPage() {
                 )}
 
                 <YStack marginTop="$5" alignItems="center" gap="$2">
-                  <SizableText fontSize="$1" color="$color11">
+                  {/* lineHeight + center: at `$1` the paired token line-height is
+                      far too tall, which only shows once the sentence wraps — a
+                      gaping gap between the two lines. String form = a multiplier
+                      (a number would be pixels). */}
+                  <SizableText fontSize="$1" lineHeight="1.4" textAlign="center" color="$color11">
                     Every app ships on Hanzo Cloud with database, auth, and AI
                     built in.
                   </SizableText>
