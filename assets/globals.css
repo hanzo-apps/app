@@ -1624,32 +1624,38 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
    only the reachable area is. */
 .voice-control {
   display: flex;
-  /* A CIRCLE, sized to match the send button beside it (28px) — the mic and the
-     send now read as one pair of round controls in the action row, not a bare
-     glyph next to a filled circle. The send carries the accent fill (primary);
-     the mic carries a subtle neutral circle (secondary), so the two match in
-     shape while the hierarchy still reads. */
+  /* NO CONTAINER. The mic is a bare glyph; only the send carries a filled
+     shape, which is what makes it read as the primary action rather than one
+     of a matched pair. This used to paint a neutral 6% circle so the two
+     matched in shape — they now differ on purpose, because they differ in
+     rank.
+     The 28px BOX stays and is deliberate: it is the hit area, not decoration.
+     Sizing the button to the 16px glyph would leave a pointer a 16px target,
+     and the coarse-pointer floor only raises this on touch. An invisible box
+     you can hit beats a visible one you do not need. */
   width: 28px;
   height: 28px;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
-  background-color: color-mix(in oklab, var(--foreground) 6%, transparent);
+  background-color: transparent;
   color: var(--muted-foreground);
-  transition: color 150ms, background-color 150ms;
+  transition: color 150ms;
 }
-/* The mic is a CIRCLE, and this rule is why it actually is one. @hanzo/voice
-   emits the button's radius as a gui atomic class that carries `!important`
-   (measured: an html:root anchor alone did NOT win, `!important` did), so the
-   bare `.voice-control { border-radius: 999px }` above rendered a 10px rounded-
-   rect that mismatched the round send beside it. `!important` here is load-
-   bearing, the same as the coarse-pointer tap-target rule — without it the mic
-   is a square. */
-html:root .voice-control {
+/* The mic no longer needs a forced radius — with no fill, there is no shape to
+   round. The SEND does. It declares `borderRadius={999}` at its call site and
+   renders 10px: @hanzo/ui sets an icon Button's radius from an atomic class the
+   prop cannot outrank, exactly as it sets that size's padding (see the
+   `size="icon"` note in the app's CLAUDE.md). Measured beside the mic: 36x44 at
+   10px against the mic's 36x36 — mismatched in shape AND height, which is the
+   boxy container in the composer's action pair.
+   `!important` is load-bearing for the same reason it is on the tap floor: the
+   competing declaration carries it too, so specificity alone does not win. */
+html:root [aria-label="Start building"] {
   border-radius: 999px !important;
 }
 .voice-control:hover:not(:disabled) {
-  background-color: color-mix(in oklab, var(--foreground) 12%, transparent);
+  /* Colour only. Painting a background here would hand back the container the
+     rest of this rule exists to remove, one pointer-enter later. */
   color: var(--foreground);
 }
 .voice-control:disabled {
