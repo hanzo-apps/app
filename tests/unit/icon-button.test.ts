@@ -42,6 +42,9 @@ const SKIP = new Set([
   'components/editor/console/index.tsx',
   'components/editor/header/index.tsx',
   'components/editor/ask-ai/index.tsx',
+  // the composer's model chip: the current model name (a dynamic expression the
+  // scanner strips) sits beside a chevron — a labeled control, not an icon box.
+  'components/editor/ask-ai/settings.tsx',
   // a switch track
   'components/usage/smart-routing-card.tsx',
 ])
