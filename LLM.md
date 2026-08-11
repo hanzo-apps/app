@@ -629,6 +629,43 @@ Tenancy is never ours to assert: cloud `middleware_identity.go` STRIPS every
 client-supplied authority header and re-mints `X-Org-Id` from the validated
 bearer, so the BFF forwards the token and nothing else.
 
+### A generated site's libraries come from US — `lib/vendor.ts`, one origin
+
+Tailwind, icons, animation and maps used to be fetched by every generated site
+from `cdn.tailwindcss.com`, `cdn.jsdelivr.net`, `unpkg.com` and
+`cdnjs.cloudflare.com`, with Google Fonts beside them, and this app's CSP was
+widened to permit all four. That is four parties in front of every visitor to
+every customer's site, each able to watch that traffic and to change what runs
+on the page — and the skills told the model to prefer it in as many words
+("Use CDN links for all external assets", "Don't use npm/build tools").
+
+They are npm dependencies now. `package.json` pins them, `scripts/vendor.mjs`
+copies them out of node_modules into `public/vendor/` on install and before
+build (the mechanism `esbuild.wasm` already used), and **`lib/vendor.ts` is the
+one place a URL is decided** — prompts, templates, preview and publisher all
+read it. Add a library there and nowhere else.
+
+Four things that are load-bearing and non-obvious:
+
+- **`@tailwindcss/browser` is the play CDN's real replacement.** Same idea —
+  compile utility classes in the page — but a package, so it can be pinned.
+  Verified in a browser rather than assumed: `flex`, `bg-blue-600`,
+  `rounded-lg` (8px), `p-6` (24px), `text-3xl` (30px) all compile.
+- **anime is held at 3.x deliberately.** 4.x replaced `anime({targets})` with
+  named exports; the sites already published here and the code a model writes
+  unprompted are both 3.x, so a version bump breaks them with no error anyone
+  would attribute to a version.
+- **`rewrite` runs at the FRAME, not at save.** Projects stored before this
+  name the old hosts literally and the preview inherits the app's CSP, so
+  `withBridge` rewrites on the way in — which heals what is already saved.
+  Tighten the policy without it and every site built earlier previews blank.
+- **A missing vendor file is invisible.** `scripts/vendor.mjs` throws rather
+  than skipping, because a silent skip 404s Tailwind for every generated page
+  while the app itself stays perfectly healthy — a defect only customers see.
+
+`tests/unit/vendor.test.ts` fails if a third-party host returns to a prompt or
+to the policy; both mutations are checked, so this cannot quietly regress.
+
 ### The ten dependabot alerts: transitive, and none reachable
 
 Every push prints "10 vulnerabilities (7 high, 3 moderate)". Triaged
