@@ -106,3 +106,41 @@ describe("everything on the page can be reached", () => {
     expect(picker).toMatch(/className="[^"]*hz-picker-panel/);
   });
 });
+
+/**
+ * A label that runs out of room ellipsizes; it does not get cut mid-word.
+ *
+ * Two labels in the builder's toolbar were hard-clipped — "MEGA S" out of "MEGA
+ * Shop" and "Homepag" out of "Homepage" — and both failed for the same reason
+ * the settings tab strip did: **a flex item defaults to `min-width: auto` and
+ * will not shrink below its content.** With no room to shrink into, a clamp has
+ * no box to clamp inside, so the text renders at full intrinsic width and the
+ * parent cuts it. `numberOfLines` alone buys nothing.
+ *
+ * The project name had a second, independent break: its cap and its clamp sat on
+ * a `display: "inline"` element. `max-width` does not apply to a non-replaced
+ * inline box and a clamp needs a block, so BOTH props were inert — the 9rem cap
+ * was decoration. Its own comment said the arrangement existed so the name would
+ * never be "cut off mid-word", which is exactly what shipped.
+ */
+describe("a toolbar label truncates instead of clipping", () => {
+  const read = (p: string) => readFileSync(join(__dirname, "../..", p), "utf8");
+
+  it("the page name can shrink, or its clamp never runs", () => {
+    const src = read("components/editor/header/index.tsx");
+    const tag = src.slice(src.indexOf("<SizableText minWidth={0}"), src.indexOf("{pageName(currentPage)}"));
+    expect(tag).toMatch(/minWidth=\{0\}/);
+    expect(tag).toMatch(/numberOfLines=\{1\}/);
+  });
+
+  it("the project name is capped on a BOX, never on an inline element", () => {
+    const src = read("components/editor/workspace-menu/index.tsx");
+    const at = src.indexOf("{projectName}");
+    const block = src.slice(at - 400, at);
+    // The cap and the responsive display belong to a wrapper…
+    expect(block).toMatch(/<YStack[^>]*maxWidth="9rem"/);
+    expect(block).toMatch(/minWidth=\{0\}/);
+    // …and nothing in that block may re-introduce the inline box.
+    expect(block).not.toMatch(/display:\s*"inline"/);
+  });
+});

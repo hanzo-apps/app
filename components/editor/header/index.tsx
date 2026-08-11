@@ -388,7 +388,12 @@ export function Header({
                 {/* The NAME, not the filename: a person calls index.html the
                     Homepage, and the picker inside still shows real paths for
                     anyone who needs them. */}
-                <SizableText numberOfLines={1} fontSize="$2">
+                {/* `minWidth={0}` is what makes `numberOfLines` work at all. A
+                    flex item defaults to `min-width: auto` and refuses to shrink
+                    below its content, so the text kept its full intrinsic width,
+                    the clamp never got a box to clamp inside, and the button's
+                    `maxWidth` cut it mid-word — "Homepag" with no ellipsis. */}
+                <SizableText minWidth={0} flexShrink={1} numberOfLines={1} fontSize="$2">
                   {pageName(currentPage)}
                 </SizableText>
                 <ChevronDown size={14} />

@@ -190,9 +190,20 @@ export function WorkspaceMenu({
                 out entirely — the org mark and chevron still open the menu where
                 the full name lives — rather than truncating to a cut-off word
                 ("MEGA" out of "MEGA Shop"). Above $sm it shows in full. */}
-            <SizableText display="none" $sm={{ display: "inline", maxWidth: "9rem" }} numberOfLines={1} fontWeight="500" color="$color">
-              {projectName}
-            </SizableText>
+            {/* The cap and the show/hide live on a WRAPPER, and the text keeps
+                the display gui gives it. Both props used to sit on the text
+                beside `display: "inline"`, and an inline box takes neither:
+                `max-width` does not apply to a non-replaced inline element, and
+                a clamp needs a block to clamp inside. So the 9rem was inert, the
+                clamp never ran, and the name was cut mid-word by the button —
+                "MEGA S" — which is the exact outcome the note above says this
+                arrangement exists to avoid. `minWidth={0}` for the reason in
+                header/index.tsx: without it a flex item will not shrink at all. */}
+            <YStack display="none" $sm={{ display: "flex" }} minWidth={0} maxWidth="9rem">
+              <SizableText numberOfLines={1} fontWeight="500" color="$color">
+                {projectName}
+              </SizableText>
+            </YStack>
             <ChevronsUpDown size={14} />
           </Button>
         </DropdownMenuTrigger>
