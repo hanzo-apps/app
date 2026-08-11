@@ -193,7 +193,10 @@ export function AppShell({
               {/* `width="100%"` is load-bearing: `maxWidth` + `alignSelf` alone
                   shrink-wraps to the content and centers it, which is the bug
                   the screenshot caught on /profile. */}
-              <YStack width="100%" maxWidth={RAIL} alignSelf="center" paddingHorizontal="$5" paddingVertical="$6">
+              {/* Content breathes less on a phone: vertical padding $6 → $4
+                  below md, so pages don't open with a tall empty band. Only
+                  vertical — `paddingHorizontal` is the shared $5 rail measure. */}
+              <YStack width="100%" maxWidth={RAIL} alignSelf="center" paddingHorizontal="$5" paddingVertical="$4" $md={{ paddingVertical: "$6" }}>
                 {children}
               </YStack>
             </>
