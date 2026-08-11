@@ -437,7 +437,23 @@ export function Header({
                 type="button"
                 title="Browse pages"
                 aria-label="Browse pages"
-                display="none" $lg={{ display: "flex", minWidth: 180 }} minWidth={0} maxWidth="14rem" size="sm" alignItems="center" justifyContent="center" gap="$1.5" borderRadius="$4" backgroundColor="$color4" paddingHorizontal="$3" hoverStyle={{ backgroundColor: "$color5" }}
+                // 180 is what this pill WANTS, not a floor it must keep. As a
+                // `minWidth` it could not yield, so at 1024 — where the centre
+                // cluster carries 330px of content in a 244px box — the pill
+                // sat at exactly 180 (measured 684..864) and its parent cut it
+                // at 817, painting `Hom` against a hard edge with no ellipsis.
+                // A `flexBasis` asks for the same width and gives it back when
+                // the row is tight, which is the difference between a label
+                // that shortens and one that is sliced. The clamp below already
+                // knows how to shorten; it was never given a box that could.
+                // 70 is the largest floor that still FITS at the tightest width
+                // this pill is shown at. Measured at 1024, where the centre has
+                // 244px for 330px of content: a 96 floor still hung 26px past
+                // the cluster and was cut, and no floor at all collapsed the
+                // pill to 31px — a chevron with the page name gone. 70 keeps a
+                // shortened name, and the pill recovers on its own (107 at
+                // 1100, its full 180 from 1280).
+                display="none" $lg={{ display: "flex", flexBasis: 180, flexShrink: 1, minWidth: 70 }} minWidth={0} maxWidth="14rem" size="sm" alignItems="center" justifyContent="center" gap="$1.5" borderRadius="$4" backgroundColor="$color4" paddingHorizontal="$3" hoverStyle={{ backgroundColor: "$color5" }}
               >
                 {/* The NAME, not the filename: a person calls index.html the
                     Homepage, and the picker inside still shows real paths for
