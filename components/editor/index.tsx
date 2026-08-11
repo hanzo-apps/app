@@ -10,7 +10,7 @@ import { toast, Button } from '@hanzo/ui';
 import type { CodeEditorHandle } from "@/components/code-editor";
 import type { ElementInfo } from "./preview/bridge";
 import dynamic from "next/dynamic";
-import { CopyIcon, Share2 } from "lucide-react";
+import { CopyIcon, PanelLeft, Share2 } from "lucide-react";
 
 // CodeMirror bundles locally (no CDN, no web workers) so it is CSP-clean.
 // Still code-split out of the /dev first-load chunk and rendered client-only
@@ -177,6 +177,12 @@ export const AppEditor = ({
   // The chat pane can be collapsed on desktop to give preview/code the full
   // width; on mobile the tab switcher already shows one pane at a time.
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // The Code pane is a desktop master-detail — a fixed file rail beside the
+  // editor — that does not fit a phone (260 of rail left the editor ~130). Below
+  // $md it drills down: the editor is the whole pane, a Files button opens the
+  // rail full-width, and picking a file returns to the editor. Desktop ignores
+  // this ($md forces both columns visible).
+  const [codeTreeOpen, setCodeTreeOpen] = useState(false);
   // The chat pane's width in px — the ONE number the pane, the resizer and the
   // header all read, so the chrome above the split can sit exactly over the
   // pane it controls. 0 = no docked chat (mobile, collapsed, boot).
@@ -690,7 +696,10 @@ export const AppEditor = ({
                 header switches to Code. The left panel stays chat; code lives here. */}
             {rightView === "code" && (
               <XStack position="absolute" top={0} right={0} bottom={0} left={0} zIndex={10} backgroundColor="$background">
-                {/* File browser rail — see + navigate every project file. */}
+                {/* File browser rail — see + navigate every project file. Full
+                    width on a phone (shown only when the Files button opens it),
+                    a fixed 260 beside the editor on a desktop. */}
+                <YStack display={codeTreeOpen ? "flex" : "none"} width="100%" flexShrink={0} height="100%" $md={{ display: "flex", width: 260 }}>
                 <FileTree
                   pages={pages}
                   currentPage={currentPage}
@@ -705,6 +714,8 @@ export const AppEditor = ({
                     } else {
                       setCurrentPage(path);
                     }
+                    // On a phone, picking a file returns to the editor.
+                    setCodeTreeOpen(false);
                   }}
                   onDeletePage={(path) => {
                     const newPages = pages.filter((page) => page.path !== path);
@@ -724,7 +735,19 @@ export const AppEditor = ({
                     setCurrentPage(`page-${pages.length + 1}.html`);
                   }}
   />
-                <YStack position="relative" minWidth={0} flex={1} overflow="hidden">
+                </YStack>
+                <YStack display={codeTreeOpen ? "none" : "flex"} $md={{ display: "flex" }} position="relative" minWidth={0} flex={1} overflow="hidden">
+                  {/* Files — phone only: opens the rail; on a desktop the rail
+                      never leaves, so there is nothing to toggle. */}
+                  <Button
+                    type="button"
+                    onClick={() => setCodeTreeOpen(true)}
+                    aria-label="Browse files"
+                    title="Files"
+                    display="flex" $md={{ display: "none" }} position="absolute" top="$2" left="$2" zIndex={20} size="icon-sm" borderRadius="$4" backgroundColor="$color3" hoverStyle={{ backgroundColor: "$color4" }}
+                  >
+                    <PanelLeft size={16} />
+                  </Button>
                   <YStack
                     position="absolute"
                     top="$0"

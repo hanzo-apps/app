@@ -70,7 +70,7 @@ export function FileTree({
   const searching = query.trim().length > 0;
 
   return (
-    <YStack height="100%" width={260} flexShrink={0} borderRightWidth={1} borderColor="$borderColor" backgroundColor="$background">
+    <YStack height="100%" width="100%" flexShrink={0} borderRightWidth={1} borderColor="$borderColor" backgroundColor="$background">
       <XStack alignItems="center" gap="$2" paddingHorizontal="$2.5" paddingVertical="$2.5">
         <XStack flex={1} minWidth={0} alignItems="center" gap="$2" borderRadius="$4" backgroundColor="$color2" paddingHorizontal="$2.5" data-field-box>
           <SizableText color="$color11"><Search size={13} /></SizableText>
