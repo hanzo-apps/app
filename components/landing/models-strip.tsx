@@ -39,7 +39,7 @@ const providers = [
 
 export default function ModelsStrip() {
   return (
-    <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
+    <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
       {/* `width="100%"` or this column is shrink-to-fit inside its centered
           parent, and `maxWidth` alone caps a width it never claims. It measured
           448px on a 1440 row — the old logo strip, twelve marks at fixed pixel

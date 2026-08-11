@@ -351,7 +351,7 @@ export default function LandingPage() {
 
         {/* ── Continue building (logged-in) ── */}
         {user && projects.length > 0 && (
-          <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
+          <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
             {/* `width="100%"`, or a centred column is shrink-to-fit and
                 `maxWidth` caps a width it never takes. Measured at 555px on a
                 1440 row, which is why the grid had one track. */}
@@ -435,7 +435,7 @@ export default function LandingPage() {
         )}
 
         {/* ── Final CTA — the SAME composer as the hero, ready to type ── */}
-        <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
+        <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
           <Reveal alignSelf="center" width="100%" maxWidth={672}>
             <YStack>
               <H2 fontSize="$10" fontWeight="500" textAlign="center" letterSpacing={-0.4} $md={{ fontSize: "$12" }} lineHeight="1.1">
