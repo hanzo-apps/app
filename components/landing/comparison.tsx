@@ -499,10 +499,15 @@ export default function Comparison() {
                   <YStack columnGap="$5" rowGap="$3">
                     {r.cells.map((cell, ci) => (
                       <XStack key={ci} alignItems="flex-start" gap="$2.5">
-                        <SizableText marginTop="$1.5">
+                        <SizableText marginTop="$1.5" flexShrink={0}>
                           <Dot tone="good" />
                         </SizableText>
-                        <YStack minWidth={0}>
+                        {/* flex + minWidth:0 so the value line CLAIMS the row's
+                            width and wraps inside the card. Without flex it sizes
+                            to the unwrapped string and spills off the right edge —
+                            the desktop matrix escapes this only via its fixed
+                            208px cells. */}
+                        <YStack flex={1} minWidth={0}>
                           <XStack alignItems="center" gap="$1.5">
                             <ColIcon i={ci} size={12} />
                             <SizableText fontFamily="$mono" fontSize="$1" color="$color11">{COLS[ci].short}</SizableText>
@@ -533,7 +538,18 @@ export default function Comparison() {
                       </SizableText>
                     )}
                   </SizableText>
-                  <XStack flex={0} alignItems="center" gap="$3">
+                  {/* `flexShrink`, NEVER `flex={0}`. The shorthand `flex: 0`
+                      expands to `0 1 0%` — grow none, shrink FREELY, and a
+                      basis of ZERO — so this cluster measured 0px wide while
+                      its content needed 92, and the label and the chevron
+                      spilled out of it into the card's `overflow: hidden`.
+                      What a phone showed was "4 w" and no chevron: a word cut
+                      mid-letter and the one affordance saying the row opens.
+                      It is the `flex: 1` = `1 1 0%` trap at the other end of
+                      the scale — the basis is the part that bites, and naming
+                      the shrink alone leaves the basis `auto`, which is the
+                      content width this cluster wants. */}
+                  <XStack flexShrink={0} alignItems="center" gap="$3">
                     {weak > 0 && (
                       <XStack alignItems="center" gap="$1.5">
                         <Dot tone="bad" />
@@ -562,10 +578,10 @@ export default function Comparison() {
                 <YStack columnGap="$5" rowGap="$3" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4.5" paddingVertical="$4">
                   {r.cells.map((cell, ci) => (
                     <XStack key={ci} alignItems="flex-start" gap="$2.5">
-                      <SizableText marginTop="$1.5">
+                      <SizableText marginTop="$1.5" flexShrink={0}>
                         <Dot tone={cell.t} />
                       </SizableText>
-                      <YStack minWidth={0}>
+                      <YStack flex={1} minWidth={0}>
                         <XStack alignItems="center" gap="$1.5">
                           <ColIcon i={ci} size={12} />
                           <SizableText fontFamily="$mono" fontSize="$1" color="$color11">{COLS[ci].short}</SizableText>
