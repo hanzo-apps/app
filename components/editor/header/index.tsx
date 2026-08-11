@@ -359,16 +359,18 @@ export function Header({
 
         </XStack>
 
-        {/* The page browser is the ≥$sm page-switcher, and below $sm it steps
-            out. On a phone it was the second label in the bar and truncated to a
-            cut-off word ("Homepa" out of "Homepage") right beside the project
-            name doing the same. Page-switching is not lost: the Files pane is
-            one of the five switcher tabs (`mobileOnly` chat aside), it is
-            visible at EVERY width, and it opens any page in the project
-            (`onSelectPage`) with the same search this pill's popover carried. So
-            the pill is redundant on a phone, not load-bearing — one page-switch
-            surface below $sm, the full pill above it. The device toggle and
-            refresh stay desktop-only for their own reasons. */}
+        {/* The page browser is the ≥$lg page-switcher, and below $lg it steps
+            out. It was gated at $sm first, but the 640–768 band had no room for
+            it: measured at 680 the pill's right edge (548) overran the Share
+            button (521), and the project name beside it overran the pane tabs —
+            two overlaps the phone never sees because both had already stepped
+            out under 640. So it now matches the header's other secondary chrome
+            (the history clock, the home anchor, the chat toggle are all $lg):
+            a clean icon row of pane tabs + Share + Publish holds the whole
+            640–1024 band. Page-switching is not lost: the Files pane is one of
+            the five switcher tabs, visible at EVERY width, and it opens any page
+            (`onSelectPage`) with the same search this pill's popover carried, so
+            the pill is redundant below $lg, not load-bearing. */}
         {/* Page browser — search + folder-grouped list of every page in the
             project (not just index.html). The working page is highlighted. */}
         {pages.length > 0 && (
@@ -383,7 +385,7 @@ export function Header({
                 type="button"
                 title="Browse pages"
                 aria-label="Browse pages"
-                display="none" $sm={{ display: "flex" }} minWidth={0} $md={{ minWidth: 180 }} maxWidth="14rem" size="sm" alignItems="center" justifyContent="center" gap="$1.5" borderRadius="$4" backgroundColor="$color4" paddingHorizontal="$3" hoverStyle={{ backgroundColor: "$color5" }}
+                display="none" $lg={{ display: "flex", minWidth: 180 }} minWidth={0} maxWidth="14rem" size="sm" alignItems="center" justifyContent="center" gap="$1.5" borderRadius="$4" backgroundColor="$color4" paddingHorizontal="$3" hoverStyle={{ backgroundColor: "$color5" }}
               >
                 {/* The NAME, not the filename: a person calls index.html the
                     Homepage, and the picker inside still shows real paths for

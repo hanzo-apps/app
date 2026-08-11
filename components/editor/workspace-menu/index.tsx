@@ -199,7 +199,7 @@ export function WorkspaceMenu({
                 "MEGA S" — which is the exact outcome the note above says this
                 arrangement exists to avoid. `minWidth={0}` for the reason in
                 header/index.tsx: without it a flex item will not shrink at all. */}
-            <YStack display="none" $sm={{ display: "flex" }} minWidth={0} maxWidth="9rem">
+            <YStack display="none" $lg={{ display: "flex" }} minWidth={0} maxWidth="9rem">
               <SizableText numberOfLines={1} fontWeight="500" color="$color">
                 {projectName}
               </SizableText>
