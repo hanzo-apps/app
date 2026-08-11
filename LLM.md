@@ -256,6 +256,41 @@ stays wide is NOT a viewport change: inner cards keep sizing against the wider
 ancestor, which manufactured an 8px "overflow" that no fix moved. Resize the
 viewport or believe nothing.
 
+**A role is not a component, and the media are MIN-width.** Two laws the
+builder toolbar cost, neither visible without measuring at several widths.
+
+The wrap rule above was written for the settings strip and targeted
+`[role="tablist"]` — which also caught the builder's two hand-rolled segmented
+controls (`Editor view`, `Preview device`). Wrapping is right for a strip of
+labelled destinations and wrong for a segmented control: it turned five panes
+into a 96px three-row block. It stayed hidden because that group was
+`flexShrink: 0` and could never get narrow enough to wrap, so a rule that
+already governed it looked inert. A prop cannot argue back either —
+`html:root [role="tablist"]` is (0,2,1) and every style gui compiles is one
+atomic class at (0,1,0), so `flexWrap="nowrap"` loses to the sheet. **Scope the
+rule to the component (`[data-slot="tabs-list"]`), never to the role**;
+specificity is not the lever.
+
+And `$xs`/`$sm`/`$md` here mean **"and up"**, not "and below" — the same sense
+as this file's `$lg={{ display: "flex" }}` desktop-only clusters. A rule that
+should apply only to phones is therefore the BASE value with `$xs` switching it
+OFF, not `$xs` switching it on. Written the intuitive way round it measured as
+the exact inverse: shrink 0 at 390 and 1 at 1024, wrong at both ends. Read the
+COMPUTED value at several widths — the prop name reads correct in the broken
+case.
+
+Two things that made this expensive to see. **A DOM patch is not the change**:
+an inline `style.overflowX` on a gui element is not what `overflow="scroll"`
+compiles to, and patching it "proved" a fix that actually wrecked the group.
+Verify against a real build, and restart the dev server before believing a
+measurement — hot reload after many edits produced numbers no single build can
+produce (pre-fix at 390 beside post-fix at 1024). And `getBoundingClientRect`
+reports layout position **regardless of clipping**, so a control clipped inside
+an `overflow: scroll` parent reads as overlapping its neighbour. It cuts the
+other way too: the check that certified this bar counted pairwise overlap,
+found none, and the primary still hung 8.6px off a real iPhone 13. **Assert
+viewport containment, not overlap** — then confirm with a screenshot.
+
 ### "No credits" is a claim about MONEY, and only a read balance may make it
 
 The same shape as the section below, one layer out. `lib/billing/server.ts`
