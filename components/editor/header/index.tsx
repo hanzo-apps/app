@@ -253,7 +253,29 @@ export function Header({
           // harmless while this group was `flexShrink: 0` and never narrow
           // enough to wrap; making it yield is what exposed it. A group that
           // scrolls has to say it does not wrap.
-          flexShrink={1} minWidth={0} flexWrap="nowrap" overflow="scroll" className="no-scrollbar"
+          // It yields ON A PHONE ONLY (`$xs` = maxWidth 660), and holds above.
+          //
+          // Yielding at every width was wrong in the other direction: at 1024
+          // the row is already tight for a different reason — the centre
+          // cluster carries 330px of page pill, device trough and refresh in a
+          // 244px box — and a shrinkable group here absorbs part of THAT
+          // deficit too. Measured at 1024: the `code` segment sliced through
+          // the middle of its glyph and `more` gone entirely, i.e. two panes
+          // traded away at a laptop width to solve a phone problem.
+          //
+          // Below 660 there is no such trade to make: 215 of panes + 149 of
+          // actions + gaps and padding is a ~405px floor, so something must
+          // give and the primary is the one thing that must not. Above it the
+          // row fits and this group has nothing to give up — and `flexShrink`
+          // is inert without a deficit, so the narrow case is the only case
+          // this changes.
+          // The media here are MIN-width — `$xs` means "xs AND UP", the same
+          // sense as the `$lg={{ display: "flex" }}` desktop-only clusters
+          // above. So the yield is the BASE (narrowest) case and `$xs` turns it
+          // back off, not the other way round. Written the intuitive way round
+          // it read as "shrink on a phone" and measured as the exact opposite:
+          // shrink 0 at 390 and 1 at 1024, i.e. broken at both ends.
+          flexShrink={1} $xs={{ flexShrink: 0 }} minWidth={0} flexWrap="nowrap" overflow="scroll" className="no-scrollbar"
           alignItems="center" gap="$0.5" borderRadius="$3" backgroundColor="$color4"
         >
           {PANES.map((item) => {
