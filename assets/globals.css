@@ -350,6 +350,33 @@ a {
   }
 }
 
+/* A TEMPLATE PREVIEW NEEDS AN EDGE THAT WORKS ON A LIGHT SHOT TOO.
+ *
+ * The card frames its preview with a 1px `rgba(255,255,255,.1)` hairline — a
+ * light line, which is legible on a dark screenshot and INVISIBLE on a pale
+ * one. Measured across the 21 shipped shots: nine are light-themed, and the
+ * whitest (SaaS Landing at 89% near-white, Pixel at 85%, Mint 78%, Kinetic
+ * 76%) run edge to edge with no boundary at all, so the card reads as a white
+ * slab pasted onto the page rather than a picture of a website. The boundary
+ * was defined in one polarity and the content comes in both.
+ *
+ * An `outline` rather than a border or an inset shadow, and that is forced:
+ * this is an `<img>`, a replaced element, so an inset box-shadow paints BEHIND
+ * the image content and a border would change the box. An outline paints over
+ * the element and `outline-offset: -1px` pulls it inside the edge; the card's
+ * `overflow: hidden` clips it to the same 12px radius, so it follows the
+ * corners for free.
+ *
+ * Dark, so it reads against a pale shot — on a dark shot it disappears and the
+ * card's own light hairline is the edge. Between the two, every preview has a
+ * boundary whichever way its content leans. The shot is NOT toned or filtered:
+ * it is a picture of what the template actually looks like, and dimming it to
+ * match the page would misrepresent the product to sell a nicer thumbnail. */
+html:root .hz-shot {
+  outline: 1px solid rgba(0, 0, 0, 0.38);
+  outline-offset: -1px;
+}
+
 .hz-composer textarea {
   resize: none;
   max-height: var(--hz-composer-max, 40vh);

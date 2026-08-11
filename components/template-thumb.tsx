@@ -100,7 +100,7 @@ export function TemplateThumb({
         loading="lazy"
         decoding="async"
         onError={() => setBroken(true)}
-        height="100%" width="100%" objectFit="cover" objectPosition="top" className={`${className}`}
+        height="100%" width="100%" objectFit="cover" objectPosition="top" className={`hz-shot ${className}`}
   />
     );
   }
