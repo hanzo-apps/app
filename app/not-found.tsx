@@ -23,7 +23,7 @@ export default function NotFound() {
   />
         </XStack>
 
-        <H1 fontSize="$11" fontWeight="500" marginBottom="$4" letterSpacing={-0.4} textAlign="center">404 — page not found</H1>
+        <H1 fontSize="$9" $md={{ fontSize: "$11" }} fontWeight="500" marginBottom="$4" letterSpacing={-0.4} textAlign="center">404 — page not found</H1>
         <Paragraph color="$color11" fontSize="$6" marginBottom="$7" textAlign="center">This page does not exist or has moved.</Paragraph>
 
         <XStack alignItems="center" justifyContent="center" gap="$4">

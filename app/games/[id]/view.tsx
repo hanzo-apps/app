@@ -99,7 +99,7 @@ export function GameDetail() {
                 </SizableText>
                 <Badge variant="secondary">{game.genre}</Badge>
               </XStack>
-              <H1 fontSize="$10" fontWeight="500">{game.name}</H1>
+              <H1 fontSize="$8" $md={{ fontSize: "$10" }} fontWeight="500">{game.name}</H1>
               <Paragraph marginTop="$2" maxWidth={672} color="$color11">{game.description}</Paragraph>
             </div>
             {playable && (

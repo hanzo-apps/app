@@ -89,7 +89,7 @@ export default function LoginPage() {
   />
             </XStack>
 
-            <H1 fontSize="$11" fontWeight="500" marginBottom="$4" letterSpacing={-0.4} textAlign="center">Welcome back</H1>
+            <H1 fontSize="$9" $md={{ fontSize: "$11" }} fontWeight="500" marginBottom="$4" letterSpacing={-0.4} textAlign="center">Welcome back</H1>
             <Paragraph color="$color11" fontSize="$6" marginBottom="$7" textAlign="center">Taking you to Hanzo ID to sign in</Paragraph>
 
             <XStack alignItems="center" justifyContent="center" gap="$2" marginBottom="$8">
@@ -170,7 +170,7 @@ export default function LoginPage() {
                 <SizableText fontSize="$3" color="$color">AI-powered development</SizableText>
               </XStack>
 
-              <H2 fontSize="$10" fontWeight="500" marginBottom="$4">Start building in seconds</H2>
+              <H2 fontSize="$8" $md={{ fontSize: "$10" }} fontWeight="500" marginBottom="$4">Start building in seconds</H2>
 
               <Paragraph color="$color11" marginBottom="$6">
                 Describe your idea and watch AI bring it to life instantly

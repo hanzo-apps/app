@@ -129,7 +129,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
               <Sparkles size={32} />
             </XStack>
           )}
-          <H1 fontSize="$10" fontWeight="500" letterSpacing={-0.4}>{templateTitle}</H1>
+          <H1 fontSize="$8" $md={{ fontSize: "$10" }} fontWeight="500" letterSpacing={-0.4}>{templateTitle}</H1>
           <Paragraph marginTop="$2" fontSize="$4" lineHeight="1.625" color="$color11">{templateDescription}</Paragraph>
           <Paragraph marginTop="$3" fontSize="$3" lineHeight="1.625" color="$color11">
             A polished, production-quality starting point — edit it live in the
