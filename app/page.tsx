@@ -215,8 +215,8 @@ export default function LandingPage() {
           exactly the run of the page the composer stays on screen for: the hero
           through the closing CTA, where it comes to rest. */}
       <YStack position="relative" zIndex={10}>
-        {/* ── Hero — the first screen: the sentence, the film, the composer ──
-            `100svh` so the hero OWNS the fold: the copy and the film centre in
+        {/* ── Hero — the first screen: the film, the sentence, the composer ──
+            `100svh` so the hero OWNS the fold: the film and the copy centre in
             the space above the composer's slot (the padding below), and the
             composer sits at the bottom of this screen with nothing scrolling
             under it. It is the small viewport unit because a phone's URL bar
