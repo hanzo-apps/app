@@ -42,6 +42,27 @@ describe("the builder Enso launcher never floats over the preview", () => {
     expect(read("app/layout.tsx")).toContain('"hanzo:repo": "hanzoai/app"');
   });
 
+  it("a phone gets no corner launcher at all", () => {
+    // The dock only exists where the console is laid out. A phone collapses it,
+    // so `place()` finds no slot and edit.js keeps its fallback — 44px pinned at
+    // right/bottom 12px — which on the builder is the composer's send button and
+    // on the marketing pages is whatever CTA the corner happens to land on. The
+    // anchor fixes PLACEMENT where there is a dock; this is the other half, for
+    // where there cannot be one.
+    //
+    // Measured on a production build: at 375x667 the host computes
+    // `display: none`, the fab is 0x0, and a tap at the corner reaches the page
+    // beneath; at 1280x800 the same build draws it 44x44 at 1220,740 and the
+    // corner tap reaches the widget. Both, or this is either a tool nobody can
+    // use or a tool eating someone's tap.
+    const rule = read("assets/globals.css").match(
+      /@media \(max-width: *(\d+)px\) \{\s*\[data-hanzo-edit\]:not\(\[data-hanzo-anchored\]\) \{([^}]*)\}/,
+    );
+    expect(rule).not.toBeNull();
+    expect(Number(rule![1])).toBeGreaterThanOrEqual(640);
+    expect(rule![2]).toMatch(/display: *none/);
+  });
+
   it("edit.js honours an anchor and unpins itself when anchored", () => {
     const src = read("public/edit.js");
     expect(src).toMatch(/meta\('hanzo:anchor'\)/);
