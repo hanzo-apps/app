@@ -144,9 +144,12 @@ function ResourcesBrowser() {
                 <Sparkles size={24} />
               </XStack>
               <H1 fontSize="$8" $md={{ fontSize: "$10" }} fontWeight="500">Resources</H1>
-              <Badge variant="secondary">
-                {items.length} resources
-              </Badge>
+              {/* ONE child, not two. A Badge lays its children out as a COLUMN, so
+                  `{n} resources` — which JSX hands over as two children — stacks the
+                  count above the word and the pill, sized for one line, crops the
+                  second. Measured on /templates: clientHeight 24, scrollHeight 34,
+                  two block spans of 16px. One interpolated string is one child. */}
+              <Badge variant="secondary">{`${items.length} resources`}</Badge>
             </XStack>
             <Paragraph maxWidth={672} color="$color11">
               Start from a template to build your next project. Every template forks into the
@@ -211,7 +214,7 @@ function ResourcesBrowser() {
                 margin belongs to a stack around it. */}
             <YStack marginLeft="auto">
               <Badge variant="secondary">
-                {filtered.length} shown{loading ? ' · syncing…' : ''}
+                {`${filtered.length} shown${loading ? ' · syncing…' : ''}`}
               </Badge>
             </YStack>
           </XStack>
@@ -366,15 +369,16 @@ function ResourceCard({
             <SizableText fontSize="$1" color="$color11">{item.framework}</SizableText>
           </YStack>
         )}
-        {item.kind === 'game' ? (
-          <Badge variant="outline" className="absolute right-2 top-2">
-            Game
-          </Badge>
-        ) : (
-          <Badge variant="outline" className="absolute right-2 top-2">
-            {item.category}
-          </Badge>
-        )}
+        {/* POSITIONED WITH STYLE PROPS, because `absolute right-2 top-2` was
+            Tailwind and Tailwind is gone from this app — the same death the count
+            badge above already carries a note about. The class named nothing, so
+            the badge stayed in flow as the second child of a frame whose height
+            is pinned by aspectRatio 16/10: it landed exactly one image-height
+            down, past the bottom edge, and overflow:hidden cropped it. Measured
+            on /templates: frame 485→668, badge top 668. */}
+        <Badge variant="outline" style={{ position: 'absolute', right: 8, top: 8 }}>
+          {item.kind === 'game' ? 'Game' : item.category}
+        </Badge>
         {typeof item.rating === 'number' && (
           <XStack position="absolute" left="$2" top="$2" alignItems="center" gap="$1" borderRadius="$10" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$0.5">
             <Star size={12} />
