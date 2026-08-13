@@ -23,6 +23,8 @@ import 'server-only';
  * The second is why a turn is one commit rather than one commit per file.
  */
 
+import { subjectOf, type GitCommit, type GitCommitFile } from './log';
+
 const BASE = (process.env.GIT_FORGE_URL || 'https://git.hanzo.ai').replace(/\/+$/, '');
 const TOKEN = process.env.GIT_FORGE_TOKEN || '';
 
@@ -141,6 +143,43 @@ export async function ensureRepo(
   return { repo, created: true };
 }
 
+/**
+ * Clone an external repository into `owner`'s account, WITH ITS HISTORY.
+ *
+ * The forge's migration clones the source as a mirror and keeps every commit
+ * (`services/repository/migrate.go` sets no depth), which is the difference
+ * between importing a repository and importing a snapshot of its tip. It also
+ * decides for itself which remotes are reachable, so a clone address pointing at
+ * a private network is refused there rather than trusted here.
+ *
+ * `mirror: false`: this becomes the project's OWN repo, the one the builder
+ * autosaves to and the sandbox pushes to. A mirror is read-only and would refuse
+ * the first turn.
+ *
+ * No `service`, so the forge takes its plain-git path — the code and its history,
+ * without reaching for the source's issues and pull requests. Credentials are
+ * sent only for a source that needs them (the user's own linked provider token,
+ * resolved server-side by the caller) and travel in the body, never in the URL.
+ */
+export async function migrateRepo(
+  owner: string,
+  name: string,
+  source: { url: string; username?: string; password?: string },
+): Promise<ForgeRepo> {
+  return forge<ForgeRepo>('/repos/migrate', {
+    method: 'POST',
+    body: JSON.stringify({
+      clone_addr: source.url,
+      repo_owner: owner,
+      repo_name: name,
+      auth_username: source.username || '',
+      auth_password: source.password || '',
+      mirror: false,
+      private: true,
+    }),
+  });
+}
+
 export interface ForgeFile {
   path: string;
   /** UTF-8 text; encoded here because the forge takes base64. */
@@ -202,12 +241,38 @@ export async function commitFiles(
  * so an admin-scoped token cannot be turned into a read of someone else's repo.
  * --------------------------------------------------------------------------- */
 
-export interface ForgeCommit {
+/** The forge's commit row — only the fields the timeline reads. */
+interface ForgeCommitRow {
   sha: string;
-  message: string;
-  author: string;
-  at: string;
-  url: string;
+  html_url?: string;
+  commit?: { message?: string; author?: { name?: string; date?: string } };
+  files?: { filename?: string; status?: string }[];
+}
+
+/**
+ * The forge's commit → the ONE normalized shape (`lib/git/log.ts`) the history
+ * panel and the client read.
+ *
+ * This used to answer `{sha, message, author, at, url}`, four fields short of
+ * that shape and one of them differently named. Nothing failed: the route hands
+ * the array to `NextResponse.json`, so no type ever compared the two. The panel
+ * read `authoredAt` (undefined ⇒ `new Date(undefined)` ⇒ NaN ⇒ every native
+ * commit sorted at epoch 0), `shortSha` (blank in the row and in the details
+ * pane) and `rawMessage` (undefined ⇒ the summarizer had nothing to clean),
+ * while `message` carried the whole message, trailer included, where a subject
+ * belongs. Native git is the DEFAULT home, so that was every project built here.
+ */
+function normalizeForgeCommit(c: ForgeCommitRow): GitCommit {
+  const rawMessage = c.commit?.message || '';
+  return {
+    sha: c.sha,
+    shortSha: (c.sha || '').slice(0, 7),
+    message: subjectOf(rawMessage) || '(no message)',
+    rawMessage,
+    author: c.commit?.author?.name || 'unknown',
+    authoredAt: c.commit?.author?.date || '',
+    url: c.html_url || '',
+  };
 }
 
 /** Newest-first commit history for a branch. */
@@ -216,19 +281,41 @@ export async function listForgeCommits(
   name: string,
   branch: string,
   limit = 50,
-): Promise<ForgeCommit[]> {
+): Promise<GitCommit[]> {
   const o = encodeURIComponent(owner);
   const n = encodeURIComponent(name);
-  const raw = await forge<
-    { sha: string; html_url?: string; commit?: { message?: string; author?: { name?: string; date?: string } } }[]
-  >(`/repos/${o}/${n}/commits?sha=${encodeURIComponent(branch)}&limit=${limit}&page=1`);
-  return (raw ?? []).map((c) => ({
-    sha: c.sha,
-    message: c.commit?.message ?? '',
-    author: c.commit?.author?.name ?? '',
-    at: c.commit?.author?.date ?? '',
-    url: c.html_url ?? '',
-  }));
+  const raw = await forge<ForgeCommitRow[]>(
+    `/repos/${o}/${n}/commits?sha=${encodeURIComponent(branch)}&limit=${limit}&page=1`,
+  );
+  return (raw ?? []).map(normalizeForgeCommit);
+}
+
+/**
+ * ONE commit, with the files it touched — what a History row expands into.
+ *
+ * The forge names each affected file and how it changed but ships no hunks, so
+ * `patch` is absent rather than empty: the details view already renders a file
+ * list without one, and inventing a diff to fill the field would be worse than
+ * the honest absence.
+ */
+export async function getForgeCommit(owner: string, name: string, sha: string): Promise<GitCommit> {
+  const o = encodeURIComponent(owner);
+  const n = encodeURIComponent(name);
+  const raw = await forge<ForgeCommitRow>(
+    `/repos/${o}/${n}/git/commits/${encodeURIComponent(sha)}?files=true&stat=false`,
+  );
+  return {
+    ...normalizeForgeCommit(raw ?? { sha }),
+    filesChanged: (raw?.files ?? []).map((f) => ({
+      path: f.filename || '',
+      status: forgeFileStatus(f.status),
+    })),
+  };
+}
+
+/** The forge's affected-file status → the normalized one. */
+function forgeFileStatus(s?: string): GitCommitFile['status'] {
+  return s === 'added' || s === 'removed' || s === 'renamed' ? s : 'modified';
 }
 
 /**

@@ -18,6 +18,13 @@ export interface StagedProject {
   name: string;
   files: StagedFile[];
   createdAt: number;
+  /**
+   * The project key its commits belong to, for an import that already has a repo.
+   * A dropped folder has none — it becomes a project on its first commit — but an
+   * imported repository does, and without carrying it the builder would mint a
+   * second repo beside the one just cloned and commit the work there.
+   */
+  repo?: string;
 }
 
 function open(): Promise<IDBDatabase> {
@@ -49,8 +56,12 @@ async function withStore<T>(
 }
 
 /** Persist the dropped project for the /dev seam to pick up. */
-export async function stageProject(name: string, files: StagedFile[]): Promise<void> {
-  const project: StagedProject = { name, files, createdAt: Date.now() };
+export async function stageProject(
+  name: string,
+  files: StagedFile[],
+  repo?: string,
+): Promise<void> {
+  const project: StagedProject = { name, files, createdAt: Date.now(), ...(repo ? { repo } : {}) };
   await withStore<IDBValidKey>('readwrite', (s) => s.put(project, KEY));
 }
 

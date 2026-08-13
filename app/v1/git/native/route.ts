@@ -23,12 +23,13 @@ import { slugifyProject } from '@/lib/org/policy';
 import { cloudBase } from '@/lib/org/server';
 import { commitMessage } from '@/lib/git/coauthor';
 import { ForgeError, commitFiles, ensureRepo, forgeConfigured } from '@/lib/git/forge';
+import { MAX_PROJECT_PAGES } from '@/lib/api/git';
 import type { Page } from '@/types';
 
 export const runtime = 'nodejs';
 
 /** Same ceiling as /v1/publish — a builder project is a static site, not a mono-repo. */
-const MAX_PAGES = 50;
+const MAX_PAGES = MAX_PROJECT_PAGES;
 const MAX_BYTES = 12 * 1024 * 1024;
 
 /** The caller's subscription slug, or '' — asked of the same /v1/entitlements the

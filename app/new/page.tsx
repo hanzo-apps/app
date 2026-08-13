@@ -4,7 +4,7 @@ import { SizableText, YStack, XStack, H1, Paragraph, H2 } from '@hanzo/ui';
 import { glass } from "@/lib/chrome";
 import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button, toast, Textarea, Input } from '@hanzo/ui';
+import { Button, Textarea, Input } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
 import {
   ArrowRight,
@@ -30,8 +30,9 @@ import { ImportGitPanel } from "@/components/import-git-panel";
 import { useUser } from "@/hooks/useUser";
 import { OrgProvider } from "@/lib/org/client";
 import { OrgGate } from "@/components/org-gate";
-import { isGitUrl, gitUrlGateMessage } from "@/lib/git/url";
+import { isGitUrl } from "@/lib/git/url";
 import { useProjectImport } from "@/lib/import/use-project-import";
+import { useRepoImport } from "@/lib/import/use-repo-import";
 import { Spinner } from "@/components/ui/spinner";
 
 function NewProject() {
@@ -99,6 +100,8 @@ function NewProjectInner() {
 
   // Drag & drop / pick a project folder or .zip → import into the builder.
   const { importing, importDrop, importFiles } = useProjectImport();
+  // A pasted repository URL → the same import the panel below performs.
+  const { importRepo } = useRepoImport();
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
@@ -148,32 +151,22 @@ function NewProjectInner() {
     };
   }, []);
 
-  // One composer, two destinations: a git URL deploys the repo as a service;
-  // anything else is a natural-language brief the AI builder turns into an app.
+  // One composer, two destinations: a git URL is imported as a project with its
+  // history; anything else is a brief the AI builder turns into an app.
   const submit = useCallback(
     (raw?: string) => {
       const text = (raw ?? value).trim();
       if (!text || loading) return;
+      setLoading(true);
       if (isGitUrl(text)) {
-        // Honest gate: an SSH/private remote can't be imported (no credentials).
-        const gate = gitUrlGateMessage(text);
-        if (gate) {
-          toast.error(gate);
-          return;
-        }
-        setLoading(true);
-        const url = new URL("/dev", window.location.origin);
-        url.searchParams.set("repo", text);
-        url.searchParams.set("action", "edit");
-        router.push(url.toString());
+        void importRepo(text).finally(() => setLoading(false));
       } else {
-        setLoading(true);
         const url = new URL("/dev", window.location.origin);
         url.searchParams.set("prompt", text);
         router.push(url.toString());
       }
     },
-    [value, loading, router],
+    [value, loading, router, importRepo],
   );
 
   // Seed the builder from a real gallery template via the existing

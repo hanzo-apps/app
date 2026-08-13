@@ -81,6 +81,16 @@ interface IamAccount {
 const OAUTH_PROVIDERS = ['github', 'gitlab'] as const;
 type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
 
+/**
+ * The username each provider's OAuth token authenticates a git clone under —
+ * what the forge sends when importing a source the user can reach but the public
+ * cannot. The token is the password; these names are the providers' own.
+ */
+export const CLONE_USERNAME: Record<OAuthProvider, string> = {
+  github: 'x-access-token',
+  gitlab: 'oauth2',
+};
+
 /** IAM account property keys per OAuth provider — the `oauth_<Type>_*` convention. */
 const IAM_KEYS: Record<OAuthProvider, { token: string; username: string; login?: string }> = {
   github: { token: 'oauth_GitHub_accessToken', username: 'oauth_GitHub_username', login: 'github' },

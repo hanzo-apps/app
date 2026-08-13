@@ -296,9 +296,26 @@ a {
      `!important` because `size="icon"` sets the floor INLINE, and an inline
      declaration beats any stylesheet rule on the same property whatever its
      specificity — the same reason `.t_group_true` needs it. Without it this rule
-     is silently a no-op on exactly the controls it exists for. */
-  button,
-  [role='button'],
+     is silently a no-op on exactly the controls it exists for.
+
+     `.hz-dense` IS THE EXEMPTION, and it exists because this floor sets the
+     PAINTED box, not the reachable one. @hanzo/ui already gives every Button a
+     44px hit area without touching layout (`touch()` emits data-touch-y and
+     theme.css expands the box with a transparent ::after), so inside a dense
+     cluster this rule inflates a second time what is already reachable: the
+     composer's five controls all measured 44x44 on a phone against 32 on a
+     desktop, and a toolbar of 44px slabs under a text field reads as the
+     product's biggest buttons. A dense cluster is a SECONDARY row inside one
+     large primary target — the composer's action row under a 62px field — so it
+     keeps the library's own sizes and the field takes the thumb. It is opt-in
+     per row, never a global relaxation, and it does not reach the starter chips
+     or any standalone control, which are targets in their own right and stay 44.
+     Written `:not(:where(…))` on purpose: `:where()` is forgiving, so a browser
+     that cannot parse the descendant selector drops the exemption rather than
+     the floor, and it carries no specificity, so these selectors weigh exactly
+     what they weighed before. */
+  button:not(:where(.hz-dense *)),
+  [role='button']:not(:where(.hz-dense *)),
   a[href],
   .hz-tap {
     min-height: 44px !important;
@@ -1198,6 +1215,23 @@ html:not(.dark) .preview-stage {
   height: var(--control-h);
   font-size: var(--control-fs);
 }
+/* …EXCEPT IN A DENSE ROW, WHERE A CONTROL IS ITS OWN SIZE.
+   `--control-h` is the touch register: 30 on a pointer, 44 below 767px. That is
+   right for a control a finger must find on its own, and wrong for the cluster
+   under a composer's field, where the FIELD is what a thumb aims at and these
+   five controls are its chrome — measured at 390, every one of them rendered a
+   44px slab under a 62px input. `height: auto` hands the box back to the size
+   variant the call site already asked for (`sm` / `icon-sm` = 32), so the row
+   states no size of its own and cannot drift from the library's.
+
+   Note this is the register that governs @hanzo/ui's Button — it renders a DIV,
+   so the `pointer: coarse` floor further up (which names `button`) never
+   reached it. Both need the same exemption for the same reason; neither is the
+   other's backstop. */
+html:root .hz-dense [data-variant][data-size] {
+  height: auto;
+}
+
 /* An icon button is SQUARE AT THE CONTROL SIZE — square was never the argument,
    36-vs-30 was. Width as well as height, because a size name CVA does not know
    leaves the box to size from its content (`iconXs` measured 40px wide, 18.8 tall
@@ -1483,8 +1517,19 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   will-change: transform;
   animation: hz-crawl-scroll var(--crawl-duration, 40s) linear infinite;
 }
+/* A CHIP YOU CANNOT CATCH IS A CHIP THAT DOES NOTHING.
+   Hover pauses the crawl for a pointer, and a touch has no hover — so on a
+   phone the chip a thumb aims at keeps sliding, the press lands on the track
+   between two chips, nothing fills the composer, and the send button stays
+   disabled: the whole starter row was unusable by tap. `:active` freezes the
+   track for the press itself (the element under the finger at pointerdown is
+   still under it at pointerup, which is what decides the click's target), and
+   `.hz-hold` — set on pointerdown by components/build-composer — keeps it
+   frozen a few seconds so a correction lands too. */
 .hz-crawl:hover .hz-crawl-track,
-.hz-crawl:focus-within .hz-crawl-track {
+.hz-crawl:focus-within .hz-crawl-track,
+.hz-crawl:active .hz-crawl-track,
+.hz-crawl.hz-hold .hz-crawl-track {
   animation-play-state: paused;
 }
 .hz-crawl-group {
@@ -1509,24 +1554,65 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   .hz-crawl-group { padding-right: 0; }
 }
 
-/* The composer dock (app/page.tsx) — a chat-style bar pinned to the bottom of
-   the landing, holding the composer and its idea-crawl. The page scrolls UNDER
-   it, so it wears a glass fade: solid at the very bottom, dissolving to
-   transparent at the top with a light blur, so whatever passes behind stays
-   legible but recedes. It owns the safe-area inset so the composer never hides
-   under a phone's home indicator. */
-.landing-composer-dock {
-  /* Click-through everywhere except the composer itself, so the faded glass
-     margins never trap taps meant for the content scrolling behind. */
-  pointer-events: none;
-  padding-bottom: max(12px, env(safe-area-inset-bottom));
-  background: linear-gradient(to top, var(--background) 58%, color-mix(in srgb, var(--background) 50%, transparent) 84%, transparent);
-  /* One glass radius fleet-wide (tests/unit/glass.test.ts pins 20px). */
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
+/* CLIP IS NOT HIDDEN, AND ONLY ONE OF THEM LETS THE COMPOSER PIN.
+   The landing clips horizontally — the hero's full-bleed template lane runs to
+   100vw, and the shell header's right-hand row is briefly wider than a phone
+   while it hydrates — and it used to do that with `overflow: hidden` on this
+   root. That makes the root the SCROLLPORT for everything inside it, so a
+   sticky descendant is measured against a box that never scrolls: measured in
+   both Chromium and WebKit, the dock below simply scrolled away with the page,
+   and the shell header's own stickiness had been dead the same way. `clip`
+   clips identically (scrollWidth stays at the viewport in both engines) without
+   becoming a scroll container. It is CSS rather than a prop because gui types
+   `overflow` as visible | hidden | scroll. */
+.landing-root {
+  overflow-x: clip;
 }
-.landing-composer-dock > * {
-  pointer-events: auto;
+
+/* The composer rides the bottom of the viewport, and it is IN THE PAGE.
+   `position: fixed` put it over the landing from the first paint — a bar
+   floating above a hero it was never part of. Sticky keeps it in flow: it sits
+   where app/page.tsx writes it (the hero owns the first screen, so nothing
+   scrolls under it there), rides the bottom of the viewport through the page,
+   and comes to rest in the closing "Ship your first app today" section, which
+   is its one flow slot.
+
+   Two things a sticky box cannot survive, both measured in Chromium: an
+   ancestor with `overflow: hidden` (it becomes the scrollport, which never
+   scrolls, so the box just scrolls away) and an ancestor carrying a transform —
+   `translate` + `will-change` is the landing's Reveal fade-up exactly. So the
+   dock lives outside every Reveal and no ancestor between it and the viewport
+   clips. */
+.hz-dock {
+  position: sticky;
+  /* Flush with the bottom, and the inset lives INSIDE as padding: an inset
+     written as `bottom:` leaves a strip under the box where the page shows
+     through the ground below. As padding it does double duty — the composer's
+     breathing room when it is pinned, and its bottom margin in the CTA. */
+  bottom: 0;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  /* Sticky is positioned, so it already paints over its in-flow siblings; this
+     only settles it against sections that raise themselves. */
+  z-index: 20;
+  /* A ground, because the page passes BEHIND it: the bubble is opaque but the
+     idea crawl is chips with air between them, and a section heading read
+     straight through the gaps. In the composer's own flow slot (the closing
+     CTA) this is background over background, so one rule serves both states. */
+  background: var(--background);
+}
+/* The dissolve sits ABOVE the box rather than inside its padding: the padding
+   is the CTA band's rhythm and the fade is a fixed 40px, and braiding them made
+   one number answer two questions. A hard edge here would cut a heading in half
+   as it scrolled under. */
+.hz-dock::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  left: 0;
+  height: 40px;
+  background: linear-gradient(to top, var(--background), transparent);
+  pointer-events: none;
 }
 
 /* The `group` prop exists in this app for STATE only ($group-hover/press/
@@ -1869,6 +1955,20 @@ html:root [role="switch"][data-state="checked"] {
 .hz-composer .voice-control {
   width: 36px;
   height: 36px;
+}
+/* A dense row states the same equality one rung down: the landing composer's
+   send is `size="icon-sm"` (32), so the mic beside it is 32 rather than the
+   builder's 36. One box per row, whichever row it is. `html:root` because the
+   rule above it is (0,2,0) too, and a tie is decided by whichever line a reader
+   happens to move first. */
+html:root .hz-dense .voice-control {
+  width: 32px;
+  height: 32px;
+  /* The mic is a real <button>, so it also meets @hanzo/ui's own coarse floor
+     (`:where(button, …) { min-height: var(--tap-target) }` in theme.css) — a
+     floor beats a height, and it is what made this 32x44 while the buttons
+     beside it were 32x32. */
+  min-height: 0;
 }
 
 /* The gateway's provider marks.

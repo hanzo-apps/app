@@ -36,7 +36,7 @@
  */
 
 import type { Page } from '@/types';
-import { demoUrl } from './template-demos';
+import { demoUrl, lifts } from './template-demos';
 import { getLocalTemplatePreview } from './template-previews';
 
 /**
@@ -56,6 +56,34 @@ function rebase(html: string, base: string): string {
 /** Real markup, not an error page or a fragment a host returned with a 200. */
 function isDocument(html: string): boolean {
   return /<html[\s>]/i.test(html) || /<!doctype\s+html/i.test(html);
+}
+
+/**
+ * A lifted document still believes it lives where it was served.
+ *
+ * The preview frame is sandboxed without `allow-same-origin`, so the page paints
+ * at `about:srcdoc` on an opaque origin while its markup — and the `<base>` above
+ * — still name the site it came from. A client router boots by writing that
+ * address into session history, and `history.replaceState` REFUSES a URL from
+ * another origin: it throws, the boot stops on that line, and everything the
+ * router meant to do next never happens.
+ *
+ * Nothing is lost by letting the call fail. There is no second document in this
+ * frame and no back button pointed at one, so the entry it wanted to write has
+ * no reader; what depended on it was the rest of the startup, which now runs.
+ * `loop` is the case that shows the cost of not doing this: its design covers
+ * itself with a preloader until React mounts, and React never mounted, so a
+ * fully-rendered page sat behind a black screen forever.
+ *
+ * Injected ahead of the page's own scripts, which are deferred or module and so
+ * always run after it.
+ */
+const KEEP_BOOTING =
+  '<script>(function(){var h=history;["pushState","replaceState"].forEach(function(m){' +
+  'var f=h[m];h[m]=function(){try{return f.apply(h,arguments)}catch(e){}}})})();</script>';
+
+function keepBooting(html: string): string {
+  return html.replace(/<head([^>]*)>/i, `<head$1>${KEEP_BOOTING}`);
 }
 
 /**
@@ -191,7 +219,8 @@ export async function templatePages(slug: string): Promise<Page[] | null> {
   const shipped = getLocalTemplatePreview(clean);
   if (shipped) return [{ path: 'index.html', html: shipped }];
 
-  const demo = demoUrl(clean);
+  // A demo we can frame is not automatically a demo we can OPEN — see `lifts`.
+  const demo = lifts(clean) ? demoUrl(clean) : null;
   if (!demo) return null;
 
   const base = `${demo.replace(/\/+$/, '')}/`;
@@ -211,7 +240,7 @@ export async function templatePages(slug: string): Promise<Page[] | null> {
     if (!res.ok) return null;
     const html = await res.text();
     if (!isDocument(html)) return null;
-    const anchored = rebase(html, base);
+    const anchored = keepBooting(rebase(html, base));
     // Carrying the styles is an improvement on an already-working document, so
     // it degrades rather than fails: if the sheets cannot be fetched the page
     // still resolves them through <base>, exactly as it did before.

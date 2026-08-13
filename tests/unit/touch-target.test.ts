@@ -19,6 +19,10 @@ import { join } from "path";
  * same collision `.t_group_true` needs it for. Dropped, this rule is a silent
  * no-op on exactly the controls it exists for: nothing errors, nothing types
  * wrong, and every measurement goes back to passing at 36 wide.
+ *
+ * The floor has ONE exemption, `.hz-dense`, and the second half of this suite
+ * pins its shape as tightly as the floor itself — an exemption is where a floor
+ * goes to die quietly.
  */
 describe("the coarse-pointer touch floor", () => {
   const css = readFileSync(join(__dirname, "../../assets/globals.css"), "utf8");
@@ -52,10 +56,74 @@ describe("the coarse-pointer touch floor", () => {
   it("covers the same controls the deploy gate measures", () => {
     // The gate's predicate is button / [role=button] / a[href], prose excluded.
     // A rule that governs fewer elements than the check does fails in CI rather
-    // than on a phone, which is the wrong end to find it.
-    for (const sel of ["button", "\\[role='button'\\]", "a\\[href\\]"]) {
+    // than on a phone, which is the wrong end to find it. The two button-shaped
+    // selectors carry the dense-row exemption below; the others do not.
+    for (const sel of [
+      "button:not\\(:where\\(\\.hz-dense \\*\\)\\)",
+      "\\[role='button'\\]:not\\(:where\\(\\.hz-dense \\*\\)\\)",
+      "a\\[href\\]",
+    ]) {
       expect(coarse).toMatch(new RegExp(`(^|,|\\s)${sel}\\s*(,|\\{)`, "m"));
     }
+  });
+
+  // ── The one exemption, and why it is not a hole in the floor ──────────────
+  // `.hz-dense` is a dense cluster of SECONDARY controls inside one large
+  // primary target: the composer's action row (+ / Build / Base / mic / send)
+  // under a 62px field. Two things make it safe. @hanzo/ui already gives every
+  // Button a 44px HIT area with a transparent ::after (`touch()` →
+  // data-touch-y), so what this floor adds there is painted size, not reach —
+  // measured, all five controls rendered 44x44 on a phone against 32 on a
+  // desktop. And the field beside them is what a thumb actually aims at.
+  //
+  // It is deliberately narrow: opt-in per row, never a global relaxation, and
+  // it does not reach a standalone target — the starter chips (`.hz-tap`) stay
+  // 44, which is the whole point of them being tappable at all.
+  describe("the dense-row exemption", () => {
+    it("exempts the button-shaped selectors and NOTHING else", () => {
+      expect(coarse).toContain("button:not(:where(.hz-dense *))");
+      expect(coarse).toContain("[role='button']:not(:where(.hz-dense *))");
+      // A chip and a standalone link are targets in their own right.
+      expect(coarse).toMatch(/(^|,|\s)a\[href\]\s*,/m);
+      expect(coarse).toMatch(/(^|,|\s)\.hz-tap\s*\{/m);
+    });
+
+    it("is written forgiving, so a parser that cannot read it drops the exemption and not the floor", () => {
+      // `:where()` is forgiving: an unparseable argument matches nothing, so
+      // `:not(:where(…))` still matches everything and the 44px floor survives.
+      // Bare `:not(.hz-dense *)` fails the other way — one unsupported selector
+      // in a list invalidates the WHOLE rule, and the floor would vanish from
+      // every control on the page.
+      expect(coarse).not.toMatch(/:not\(\.hz-dense/);
+      expect(coarse).toMatch(/:not\(:where\(\.hz-dense \*\)\)/);
+    });
+
+    it("carries no specificity, so these selectors weigh what they always weighed", () => {
+      // `:where()` contributes 0 — `button:not(:where(…))` is (0,0,1), exactly
+      // `button`. If this were `:not(.hz-dense *)` the selectors would climb to
+      // (0,1,1) and quietly start outranking rules that used to tie with them.
+      expect(coarse).toMatch(/button:not\(:where\([^)]*\)\)/);
+    });
+
+    it("also opts the row out of the --control-h touch register", () => {
+      // The floor above names `button`, and @hanzo/ui's Button renders a DIV —
+      // so it never met this rule at all. Its height comes from the control
+      // spec (`[data-variant][data-size] { height: var(--control-h) }`), and
+      // --control-h is 44px below 767px. Both floors need the same exemption
+      // for the same reason; neither is the other's backstop, and exempting
+      // only one leaves the row at 32 wide and 44 tall.
+      expect(css).toMatch(
+        /html:root \.hz-dense \[data-variant\]\[data-size\]\s*\{[^}]*height:\s*auto/,
+      );
+    });
+
+    it("hands the box back to the library rather than naming a size", () => {
+      // `height: auto` lets the size variant the call site already asked for
+      // (`sm` / `icon-sm` = 32) be the box. A number here would be a second
+      // copy of @hanzo/ui's size table, and only one copy gets maintained.
+      const dense = css.slice(css.indexOf("html:root .hz-dense [data-variant]"));
+      expect(dense.slice(0, dense.indexOf("}"))).not.toMatch(/\d+px/);
+    });
   });
 
   it("leaves a link inside a sentence alone", () => {

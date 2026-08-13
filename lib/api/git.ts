@@ -12,6 +12,16 @@
 /** The git providers the import surface can talk to. */
 export type GitProvider = 'github' | 'gitlab' | 'hanzo';
 
+/**
+ * How many files the builder carries as a project — the ceiling `/v1/git/native`
+ * enforces and every producer of pages must respect.
+ *
+ * It lives here because two sides need the same number: a repository import that
+ * handed the editor more files than a commit accepts would leave every autosave
+ * refused with a 413, on a project whose files are already safely in its repo.
+ */
+export const MAX_PROJECT_PAGES = 50;
+
 export interface GitAccount {
   login: string;
   avatarUrl: string;
@@ -105,6 +115,42 @@ export async function fetchGitRepos(
 /** The builder deep-link an imported repo opens (existing /dev?repo= wire). */
 export function repoImportLink(cloneUrl: string): string {
   return `/dev?repo=${encodeURIComponent(cloneUrl)}&action=edit`;
+}
+
+export interface ImportRepoResult {
+  ok: boolean;
+  /** `owner/name` of the project's repo on git.hanzo.ai. */
+  repo?: string;
+  /** The project key the builder and every later commit use. */
+  slug?: string;
+  branch?: string;
+  /** Head of the imported history — what the builder reads its files from. */
+  commit?: string | null;
+  message?: string;
+  openLogin?: boolean;
+  status: number;
+}
+
+/**
+ * Import a repository (`POST /v1/git/import`) — it is cloned onto git.hanzo.ai
+ * under the signed-in user WITH its history, and becomes an ordinary project.
+ *
+ * Same-origin so the IAM session rides automatically. Never throws: a refusal
+ * comes back with `ok:false` and the reason to show.
+ */
+export async function importGitRepo(url: string, name?: string): Promise<ImportRepoResult> {
+  try {
+    const res = await fetch('/v1/git/import', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url, ...(name ? { name } : {}) }),
+    });
+    const data = (await res.json().catch(() => ({}))) as Partial<ImportRepoResult>;
+    return { ...data, ok: res.ok && data.ok === true, status: res.status };
+  } catch (e) {
+    return { ok: false, status: 0, message: e instanceof Error ? e.message : 'Network error' };
+  }
 }
 
 /** A page to push (mirrors the publish `pages[]`). */

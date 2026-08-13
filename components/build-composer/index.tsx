@@ -88,6 +88,20 @@ export function BuildComposer({
     textareaRef.current?.focus();
   };
 
+  // Hold the crawl still around a press. Hover pauses it for a pointer and a
+  // touch has no hover, so the chip a thumb aimed at keeps sliding: the press
+  // lands between two chips, or on the track, and nothing fills. `:active`
+  // (assets/globals.css) freezes it for the press itself; this keeps it frozen
+  // afterwards so a correction lands too, then lets the motif resume.
+  const [paused, setPaused] = useState(false);
+  const pauseRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const pause = () => {
+    clearTimeout(pauseRef.current);
+    setPaused(true);
+    pauseRef.current = setTimeout(() => setPaused(false), 3000);
+  };
+  useEffect(() => () => clearTimeout(pauseRef.current), []);
+
   useEffect(() => {
     setWithBase(baseEnabled());
   }, []);
@@ -272,9 +286,13 @@ export function BuildComposer({
             onBlur={() => setFocused(false)}
             placeholder={placeholder}
             aria-label="Ask Hanzo to build"
-            width="100%" backgroundColor="transparent" borderWidth={0} paddingHorizontal="$4" paddingBottom="$2" paddingTop="$4" fontSize={16} lineHeight="1.375" color="$color" placeholderTextColor="$color11" focusStyle={{ borderWidth: 0 }}
+            width="100%" backgroundColor="transparent" borderWidth={0} paddingHorizontal="$3.5" paddingBottom="$1.5" paddingTop="$3" fontSize={16} lineHeight="1.375" color="$color" placeholderTextColor="$color11" focusStyle={{ borderWidth: 0 }}
   />
-          <XStack alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$2.5" paddingBottom="$2.5">
+          {/* `.hz-dense`: the field is the tap target here, this row is its
+              secondary chrome, so it keeps the library's own 32px controls on a
+              phone instead of the 44px coarse floor (assets/globals.css states
+              both halves). */}
+          <XStack className="hz-dense" alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$2" paddingBottom="$2">
             <XStack alignItems="center" gap="$1">
               {/* [+] — bring in existing code, the same affordance the builder's
                   composer has, on the left of the row. Import routes to /new
@@ -390,12 +408,17 @@ export function BuildComposer({
       {/* Starter prompts — honest app types, as ONE continuous "news crawl"
           (the .hz-crawl marquee in globals.css): the set is rendered twice and
           the track translates exactly one copy, so the loop never seams.
-          Clicking one IS the intent, so it submits through the same `submit`
-          the send button and Enter use; the draft is set too so it stays
-          visible if submit bounces to login. Hover pauses the crawl so a moving
-          chip can be caught; the second copy is decorative (aria-hidden). */}
+          Clicking one fills the draft (`fillIdea`) so it can be read and edited
+          before it is sent, by the same send button and Enter a typed idea uses.
+          Hover, focus and a press each hold the crawl still so a moving chip can
+          be caught; the second copy is decorative (aria-hidden). */}
       {!!starters?.length && (
-        <YStack marginTop="$4" width="100%" className="hz-crawl">
+        <YStack
+          marginTop="$4"
+          width="100%"
+          className={paused ? "hz-crawl hz-hold" : "hz-crawl"}
+          onPointerDown={pause}
+        >
           <XStack className="hz-crawl-track">
             {[0, 1].map((copy) => (
               <XStack key={copy} className="hz-crawl-group" {...(copy === 1 ? { "aria-hidden": true } : {})}>

@@ -184,6 +184,10 @@ function Dev() {
     (async () => {
       const staged = await readStagedProject();
       if (!alive) return;
+      // An imported repository arrives with the project it already belongs to.
+      // Naming it here is what points autosave, the history panel and the coding
+      // agent's sandbox at the repo that was just cloned, instead of a fresh one.
+      if (staged?.repo) (window as any).__projectSlug = staged.repo;
       if (staged?.files?.length) {
         const pages: Page[] = staged.files
           .map((f) => ({ path: f.path, html: f.text }))
@@ -291,9 +295,8 @@ function Dev() {
   // Savor; the only clue was that the result looked wrong. The two paths below are
   // now told apart by one fact — whether the template publishes real source — and
   // the recreation says so in the chat instead of passing itself off as the
-  // template. Today almost every slug lands on that branch, because the template
-  // demos it reads were wiped; the greeting is honest about it rather than hiding
-  // it, and the loading path starts working again the moment they are redeployed.
+  // template. Most catalog slugs still land on that branch: source comes from the
+  // deployed demos, and only the handful in `lib/template-demos` have one.
   useEffect(() => {
     if (seedPrompt.trim()) return; // a seeded fork already auto-generates
     if (action !== "edit" || !repoData?.name || templateEditDone) return;
@@ -314,19 +317,18 @@ function Dev() {
         // The template itself. AskAI greets and waits — NO generation: there is
         // nothing to build, it is already here.
         setTemplatePages(pages);
-        // Be honest about what the live preview can actually RUN. This builder
-        // renders a single self-contained HTML document in an iframe — it does
-        // not compile a framework project. So a React/Next/Vue/Svelte template's
-        // published source (uncompiled /src/*.tsx + a bundler entry) paints as
-        // unstyled markup here, which reads to a first-time visitor as "broken."
-        // Rather than greet that garbage with "tell me what to change" (a lie),
-        // name it and offer the path that WORKS: one word rebuilds it as a clean,
-        // fully-editable HTML version the preview runs and the model can patch.
-        const fw = (meta?.framework || "").toLowerCase();
-        const needsBuild = /react|next|vue|svelte|angular|solid|vite|remix|astro|nuxt|preact/.test(fw);
-        (window as any).__assistantGreeting = needsBuild
-          ? `${title} is a ${meta?.framework} template. This live preview runs a single self-contained HTML page, so its framework parts won't render here the way they do in a full build. Tell me what to change — or say “rebuild as HTML” and I'll recreate it as a clean, fully-editable version that runs and previews correctly.`
-          : `${title} is loaded — tell me what to change.`;
+        // The greeting reports which of the two branches happened, and nothing
+        // else. It used to read `meta.framework` and warn that a "React 18"
+        // template's "framework parts won't render here" — but that field is
+        // marketing copy from the catalog, written per template by hand, and it
+        // says nothing about the bytes we just loaded. `templatePages` returns
+        // ONE self-contained document or null; there is no branch that hands
+        // back uncompiled `/src/*.tsx`, so the warning was never true. It fired
+        // on ten of the eighteen verified demos — six of which open and render
+        // exactly as they should — and offered to "rebuild" the very thing
+        // already on screen, talking the user out of a working template and
+        // into an imitation of it.
+        (window as any).__assistantGreeting = `${title} is loaded — tell me what to change.`;
       } else {
         // No published source. Say that, then build from the description.
         (window as any).__assistantGreeting =

@@ -3,7 +3,6 @@
 import { sends } from '@hanzo/ui/chat';
 import { YStack, XStack, H2, Paragraph, Image, SizableText, H3 } from '@hanzo/ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useIam } from "@hanzo/iam/react";
 import {
   ArrowRight,
@@ -35,14 +34,14 @@ import {
   fetchGitAccounts,
   fetchGitRepos,
   relativeTime,
-  repoImportLink,
   type GitAccount,
   type GitProvider,
   type GitProviderStatus,
   type GitRepo,
 } from "@/lib/api/git";
 import { linkProvider } from "@/lib/hanzo/iam";
-import { isGitUrl, gitUrlGateMessage } from "@/lib/git/url";
+import { isGitUrl } from "@/lib/git/url";
+import { useRepoImport } from "@/lib/import/use-repo-import";
 import { Spinner } from "@/components/ui/spinner";
 
 /**
@@ -60,16 +59,26 @@ const PROVIDER_META: Record<GitProvider, { label: string; Icon: typeof Github }>
 /**
  * Import Git Repository — the real, connected-account import panel.
  *
- * Lists the signed-in user's IAM-linked GitHub accounts (self + orgs) and their
- * live repositories via the same-origin `/v1/git/*` BFF. Selecting an account
- * loads its repos; each row imports into the builder through the existing
- * `/dev?repo=<clone_url>` wire. When nothing is connected it shows an HONEST
- * "Connect GitHub" CTA (never fabricated rows), and a "paste a repository URL"
- * affordance is always available as the fallback.
+ * Lists the signed-in user's IAM-linked GitHub and GitLab accounts (self + orgs)
+ * and their live repositories via the same-origin `/v1/git/*` BFF. Selecting an
+ * account loads its repos; a row and the paste box perform the SAME import
+ * (`useRepoImport`) — the repo is cloned onto git.hanzo.ai with its history and
+ * opened as a project. When nothing is connected it shows an HONEST "Connect"
+ * CTA (never fabricated rows), and pasting a URL always works without one.
  */
 export function ImportGitPanel() {
-  const router = useRouter();
   const { sdk, isAuthenticated, login } = useIam();
+
+  // Sign in and come back here — the one path for every control on this panel
+  // that needs an account it does not have.
+  const signIn = useCallback(() => {
+    try {
+      localStorage.setItem("redirectAfterLogin", window.location.pathname);
+    } catch {
+      /* storage unavailable */
+    }
+    void login();
+  }, [login]);
 
   const [loadingAccounts, setLoadingAccounts] = useState(true);
   const [connected, setConnected] = useState(false);
@@ -81,9 +90,12 @@ export function ImportGitPanel() {
   const [repos, setRepos] = useState<GitRepo[]>([]);
   const [loadingRepos, setLoadingRepos] = useState(false);
   const [search, setSearch] = useState("");
-  const [importing, setImporting] = useState<string>("");
 
   const [pasteUrl, setPasteUrl] = useState("");
+
+  // A row's Import and the paste box are the SAME action — clone the repo onto
+  // git.hanzo.ai with its history, then open it in the builder.
+  const { importing, importRepo } = useRepoImport(signIn);
 
   // True while the user is off linking GitHub in the hanzo.id account tab, so a
   // return to this tab re-checks the connection (idle refocus stays a no-op).
@@ -171,13 +183,8 @@ export function ImportGitPanel() {
       })();
       return;
     }
-    try {
-      localStorage.setItem("redirectAfterLogin", window.location.pathname);
-    } catch {
-      /* storage unavailable */
-    }
-    void login();
-  }, [isAuthenticated, sdk, login, refreshAccounts]);
+    signIn();
+  }, [isAuthenticated, sdk, signIn, refreshAccounts]);
 
   const gitlabStatus = providers.find((p) => p.provider === "gitlab");
   const gitlabConnectable = gitlabStatus?.connectable ?? false;
@@ -205,33 +212,11 @@ export function ImportGitPanel() {
       })();
       return;
     }
-    try {
-      localStorage.setItem("redirectAfterLogin", window.location.pathname);
-    } catch {
-      /* storage unavailable */
-    }
-    void login();
-  }, [gitlabConnectable, isAuthenticated, sdk, login, refreshAccounts]);
-
-  const importRepo = useCallback(
-    (cloneUrl: string) => {
-      setImporting(cloneUrl);
-      router.push(repoImportLink(cloneUrl));
-    },
-    [router],
-  );
+    signIn();
+  }, [gitlabConnectable, isAuthenticated, sdk, signIn, refreshAccounts]);
 
   const submitPaste = useCallback(() => {
-    const url = pasteUrl.trim();
-    if (!isGitUrl(url)) return;
-    // Honest gate: SSH/private remotes can't be fetched — tell the user rather
-    // than routing to a dead end.
-    const gate = gitUrlGateMessage(url);
-    if (gate) {
-      toast.error(gate);
-      return;
-    }
-    importRepo(url);
+    void importRepo(pasteUrl);
   }, [pasteUrl, importRepo]);
 
   const activeAccount = accounts.find((a) => a.login === active);
@@ -434,7 +419,7 @@ export function ImportGitPanel() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => importRepo(r.cloneUrl)}
+                    onClick={() => void importRepo(r.cloneUrl)}
                     disabled={Boolean(importing)}
                   >
                     {importing === r.cloneUrl ? (
@@ -459,7 +444,7 @@ export function ImportGitPanel() {
           Paste any repository URL
         </Label>
         <Paragraph marginBottom="$2" fontSize="$1" color="$color11">
-          Your <SizableText fontWeight="500" color="$color">git.hanzo.ai</SizableText> repos, GitHub, GitLab, or any git remote — clone, edit, and Push to Git.
+          Your <SizableText fontWeight="500" color="$color">git.hanzo.ai</SizableText> repos, GitHub, GitLab, or any git remote — imported with their full history, then edit and Push to Git.
         </Paragraph>
         <XStack alignItems="center" gap="$2">
           <Input
@@ -469,7 +454,7 @@ export function ImportGitPanel() {
             onKeyDown={(e) => {
               if (sends(e.key, e.nativeEvent)) submitPaste();
             }}
-            placeholder="git.hanzo.ai/hanzoai/app  ·  github.com/org/repo  ·  git@…"
+            placeholder="github.com/org/repo  ·  gitlab.com/group/project  ·  git.hanzo.ai/you/site"
             height={36} flex={1}
           />
           <Button

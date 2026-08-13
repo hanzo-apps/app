@@ -210,15 +210,12 @@ export default function LandingPage() {
     router.push(`/dev?template=hanzo-apps/${t.slug}&action=edit`);
   };
 
-  // The composer is the always-present bottom dock, so a CTA lower on the page
-  // focuses it rather than mounting a second composer.
-  const focusComposerDock = () => {
-    const box = document.getElementById("build")?.querySelector("textarea");
-    (box as HTMLTextAreaElement | null | undefined)?.focus();
-  };
-
   return (
-    <YStack position="relative" minHeight="100%" paddingBottom={184} backgroundColor="$background" overflow="hidden" className="landing-root">
+    // The clip is CSS (`.landing-root`, assets/globals.css) because gui types
+    // `overflow` as visible|hidden|scroll and the value has to be `clip`: hidden
+    // would make this box the scrollport for everything inside it and the
+    // composer's `position: sticky` would do nothing at all.
+    <YStack position="relative" minHeight="100%" backgroundColor="$background" className="landing-root">
       {/* Monochrome hero glow — single soft white radial, zero hue. */}
       <YStack pointerEvents="none" position="fixed" top={0} right={0} bottom={0} left={0} zIndex={0} overflow="hidden">
         <YStack position="absolute" left="50%" top="-12%" height={560} width={900} marginLeft={-450} borderRadius="$10" backgroundColor="$color0075" filter="blur(130px)" />
@@ -226,9 +223,18 @@ export default function LandingPage() {
 
       <Header />
 
+      {/* Everything the composer rides over, and its own flow slot at the end.
+          A sticky box is held inside its containing block, so this stack is
+          exactly the run of the page the composer stays on screen for: the hero
+          through the closing CTA, where it comes to rest. */}
       <YStack position="relative" zIndex={10}>
-        {/* ── Hero ─────────────────────────────────────────────── */}
-        <YStack paddingHorizontal="$4" paddingBottom="$9" paddingTop="$10" $md={{ paddingHorizontal: "$6", paddingBottom: "$11", paddingTop: "$12" }}>
+        {/* ── Hero — the first screen, and the composer's home ──────
+            `100svh` so the hero OWNS the fold: the copy centres in the space
+            above the composer's slot (the padding below), and the composer sits
+            at the bottom of this screen with nothing scrolling under it. It is
+            the small viewport unit because a phone's URL bar moves the large
+            one, which would push the composer under the fold on first paint. */}
+        <YStack minHeight="100svh" justifyContent="center" paddingHorizontal="$4" paddingBottom={200} paddingTop="$8" $md={{ paddingHorizontal: "$6" }}>
           <YStack alignSelf="center" maxWidth={768}>
             <Reveal>
               <XStack alignSelf="center" marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color0025" paddingHorizontal="$3" paddingVertical="$1.5">
@@ -239,7 +245,13 @@ export default function LandingPage() {
             </Reveal>
 
             <Reveal delay={60}>
-              <H1 fontSize="1.9rem" fontWeight="600" textAlign="center" lineHeight="1.05" letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: 48 }}>
+              {/* 17px is the largest size that keeps the WHOLE sentence on one
+                  line at 390: measured, 358px of room and 17.5px renders 354 —
+                  so this is the fit with the slack a webfont's metrics need.
+                  At 30.4px it wrapped to three lines with "it." alone on the
+                  last. $sm and up are untouched, where the <br> below splits it
+                  into two deliberate lines. */}
+              <H1 fontSize={17} fontWeight="600" textAlign="center" lineHeight="1.05" letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: 48 }}>
                 {/* The space is explicit: JSX drops the whitespace around the <br>,
                     and the <br> is hidden below sm — without it the mobile heading
                     reads "Describe your app.Hanzo builds and ships it." */}
@@ -256,12 +268,14 @@ export default function LandingPage() {
               </Paragraph>
             </Reveal>
 
-            {/* The composer is pinned to the bottom of the viewport as a fixed
-                chat-style dock (.landing-composer-dock, at the end of the page)
-                — so the hero leads with the headline and the template lane, and
-                typing lives in the always-present dock with its idea crawl. */}
+          </YStack>
+        </YStack>
+
+        {/* ── Below the fold — the template lane and the hero visual ── */}
+        <YStack paddingHorizontal="$4" paddingTop="$6" paddingBottom="$9" $md={{ paddingHorizontal: "$6", paddingBottom: "$11" }}>
+          <YStack alignSelf="center" maxWidth={768}>
             <Reveal delay={180}>
-              <YStack alignSelf="center" width="100%" marginTop="$2" maxWidth={672}>
+              <YStack alignSelf="center" width="100%" maxWidth={672}>
 
                 {/* Or start from one of our great templates — one click forks it
                     into the builder, seeded from that template. */}
@@ -462,33 +476,38 @@ export default function LandingPage() {
           </YStack>
         )}
 
-        {/* ── Final CTA — the SAME composer as the hero, ready to type ── */}
+        {/* ── Ship your first app today — where the composer comes to rest ── */}
         <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
           <Reveal alignSelf="center" width="100%" maxWidth={672}>
-            <YStack>
-              <H2 fontSize="$10" fontWeight="500" textAlign="center" letterSpacing={-0.4} $md={{ fontSize: "$12" }} lineHeight="1.1">
-                Ship your first app today.
-              </H2>
-              <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" textAlign="center" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
-                Start with a sentence. Deploy to Hanzo Cloud in one click.
-              </Paragraph>
-            </YStack>
-            <XStack
-              role="button"
-              tabIndex={0}
-              onClick={focusComposerDock}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  focusComposerDock();
-                }
-              }}
-              className="hz-tap"
-              alignSelf="center" marginTop="$6" height={48} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$5" cursor="pointer" hoverStyle={{ borderColor: "$color5", backgroundColor: "$color4" }}
-            >
-              <SizableText fontSize="$3" fontWeight="500" color="$color">Start building</SizableText>
-            </XStack>
+            <H2 fontSize="$10" fontWeight="500" textAlign="center" letterSpacing={-0.4} $md={{ fontSize: "$12" }} lineHeight="1.1">
+              Ship your first app today.
+            </H2>
+            <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" textAlign="center" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
+              Start with a sentence. Deploy to Hanzo Cloud in one click.
+            </Paragraph>
           </Reveal>
+        </YStack>
+
+        {/* THE composer — one on the page, and this is its flow slot.
+            It must be the LAST child of the stack it rides (a sticky box is
+            held inside its containing block, and it pins only while its own
+            flow position is below the viewport), and OUTSIDE the Reveal above
+            it, whose fade-up transform would make it scroll like anything else.
+            .hz-dock (assets/globals.css) is the whole pinning rule. */}
+        <YStack
+          className="hz-dock"
+          paddingHorizontal="$4"
+          $md={{ paddingHorizontal: "$6" }}
+        >
+          <YStack id="build" alignSelf="center" width="100%" maxWidth={672}>
+            <BuildComposer
+              showPill={false}
+              subline={false}
+              typewriter={TYPED}
+              starters={STARTERS}
+              onSubmit={startBuild}
+            />
+          </YStack>
         </YStack>
       </YStack>
 
@@ -510,33 +529,6 @@ export default function LandingPage() {
 
       <LazySection minHeight={200}><PreFooterCTA /></LazySection>
       <LazySection minHeight={240}><SiteFooter /></LazySection>
-
-      {/* ── Composer dock — the ONE place to type, pinned to the bottom of the
-          viewport as a chat-style bar (per the ask). It lives OUTSIDE every
-          Reveal so `position: fixed` resolves against the viewport (the hero
-          glow above is fixed the same way), above the page. Its idea-crawl
-          rides inside the composer; .landing-composer-dock owns the glass fade
-          and the safe-area inset. */}
-      <YStack
-        position="fixed"
-        bottom={0}
-        left={0}
-        right={0}
-        zIndex={40}
-        paddingHorizontal="$4"
-        paddingTop="$5"
-        className="landing-composer-dock"
-      >
-        <YStack id="build" alignSelf="center" width="100%" maxWidth={672}>
-          <BuildComposer
-            showPill={false}
-            subline={false}
-            typewriter={TYPED}
-            starters={STARTERS}
-            onSubmit={startBuild}
-          />
-        </YStack>
-      </YStack>
     </YStack>
   );
 }

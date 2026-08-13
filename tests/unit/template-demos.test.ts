@@ -7,7 +7,7 @@
  */
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { demoCount, demoUrl } from '@/lib/template-demos';
+import { demoCount, demoUrl, lifts } from '@/lib/template-demos';
 import { TEMPLATES, getTemplate } from '@/lib/templates-catalog';
 
 const withDemo = TEMPLATES.filter((t) => t.demo);
@@ -28,6 +28,24 @@ describe('template demos', () => {
     for (const slug of ['beta', 'serif', 'prism', 'savor', 'soar', 'metrics']) {
       expect(getTemplate(slug)).toBeDefined();
       expect(demoUrl(slug)).toBeNull();
+    }
+  });
+
+  it('keeps the demo link for a build that cannot travel', () => {
+    // Showing a template and OPENING one ask different things of the same site.
+    // These four render their own design at `<slug>.hanzo.app` — so the marketing
+    // page must keep framing them — and produce an error screen or an empty root
+    // once lifted onto the preview's opaque origin.
+    for (const slug of ['kinetic', 'prism-react', 'saas-landing', 'synapse']) {
+      expect(demoUrl(slug)).toBe(`https://${slug}.hanzo.app`);
+      expect(lifts(slug)).toBe(false);
+    }
+  });
+
+  it('lets every other verified demo be opened', () => {
+    for (const t of withDemo) {
+      if (['kinetic', 'prism-react', 'saas-landing', 'synapse'].includes(t.slug)) continue;
+      expect(lifts(t.slug)).toBe(true);
     }
   });
 
