@@ -1700,51 +1700,6 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   pointer-events: none;
 }
 
-/* The film's slot — the other box in the fold, and the reason it is sized here
-   rather than by a prop.
-
-   The film may never be SHORTER than 4/3. Its whole picture lives in the
-   centred 1200px square of a 1600x1200 master, so a box wider than 4/3 crops
-   into that square from the top and the bottom, while anything between 4/3 and
-   1/1 only trims the sides the master keeps spare — which is exactly what a
-   phone does. So the box is driven by WIDTH (`.hz-film` in hero-video.tsx
-   declares the ratio at both widths) and the width is what has to be capped.
-
-   Capped by the fold, because the film has to be seen without scrolling, and
-   the film AND ITS CAPTION have to come to rest above the dock's 40px
-   dissolve rather than inside it — measured at 768 before this rule was
-   solved: the caption sat flush with the dock's top edge, half faded out.
-
-   The hero centres its content in a box running from y=108 (the 60px header
-   plus its own 48px $8 padding) to 100svh−140 (its 200px reserve for the
-   dock), so a block of height H rests at 108 + (100svh − 248 + H) / 2, and the
-   dissolve starts at 100svh − 163 (the 123px dock plus its fade). Those give
-   ONE rule, H ≤ 100svh − 294, and the film's share of H is what the copy under
-   it leaves: the gap (32, stacked only) and the copy itself — measured at 128
-   on a phone, where the headline is one 17px line, and 226 from $sm, where it
-   is two lines at 48px over a two-line subline.
-
-   Every number here is measured, and $8 is why: it is 48px, not the 32 the
-   ramp reads like, and taking it for 32 put three viewports 8-16px under the
-   fade — close enough to look deliberate and wrong at every one of them.
-
-   `svh`, not `vh`: a phone's URL bar moves the large unit, and the film would
-   slide under the dock the moment it retracted. */
-.hz-fold {
-  max-width: calc(100svh - 454px); /* 294 + 32 + 128, square */
-}
-@media (min-width: 768px) {
-  .hz-fold {
-    max-width: calc((100svh - 552px) * 4 / 3); /* 294 + 32 + 226 */
-  }
-}
-@media (min-width: 1024px) {
-  /* Beside the copy, not under it: the copy and the gap stop costing height. */
-  .hz-fold {
-    max-width: calc((100svh - 294px) * 4 / 3);
-  }
-}
-
 /* The `group` prop exists in this app for STATE only ($group-hover/press/
    focus), which compiles to descendant selectors. Tamagui's group ALSO emits
    `container-type: inline-size` to power $group-<size> container queries —

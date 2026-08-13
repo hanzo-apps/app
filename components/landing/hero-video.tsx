@@ -26,8 +26,11 @@
 // player would still download it, so respecting the preference means no <video>
 // at all.
 //
-// The width is NOT decided here. The film has one mount, and how big it may be
-// is a question about the fold around it — `.hz-fold` in assets/globals.css.
+// The film COVERS its hero: absolute, inset 0, `object-fit: cover`. It was a
+// capped box instead, and the cap is why it rendered as a 432px thumbnail on a
+// 1440x900 screen and, before that, below the fold entirely — where a browser
+// will not autoplay it at all. The hero (app/page.tsx) is the positioned box
+// this fills; nothing here decides a width.
 
 import { useEffect, useState } from "react";
 import { YStack } from "@hanzo/ui";
@@ -50,14 +53,38 @@ export default function HeroVideo() {
   return (
     <YStack width="100%" className="hz-film">
       <style>{`
+        .hz-film { position: absolute; inset: 0; }
         .hz-film .frame {
-          position: relative; width: 100%; aspect-ratio: 1 / 1;
-          border-radius: 1.5rem; overflow: hidden; background: var(--background);
+          position: absolute; inset: 0; width: 100%; height: 100%;
+          overflow: hidden; background: var(--background);
         }
-        @media (min-width: 768px) { .hz-film .frame { aspect-ratio: 4 / 3; } }
         .hz-film .frame > * {
           position: absolute; inset: 0; width: 100%; max-width: 100%; height: 100%;
           object-fit: cover; display: block;
+        }
+        /* The film IS the fold, so the copy sits ON it and has to stay readable
+           over whatever frame is playing. A scrim, not a dimmed video: dimming
+           the film costs the picture everywhere, while this only pays where the
+           text is — dense behind the words, clear at the edges. */
+        .hz-film::after {
+          content: ""; position: absolute; inset: 0; pointer-events: none;
+          /* Phone: the frame is cropped to its centred square and the copy sits
+             over it, so the scrim runs top-to-bottom and goes near-black under
+             the words. */
+          background:
+            linear-gradient(to bottom, rgba(0,0,0,.25) 0%, rgba(0,0,0,.08) 24%, rgba(0,0,0,.58) 56%, rgba(0,0,0,.96) 82%, rgba(0,0,0,1) 100%);
+        }
+        /* Wide: the copy is pinned LEFT and the film's subject sits centre-right,
+           so they no longer occupy the same pixels — which is the whole reason
+           this reads at full bleed. The scrim turns horizontal to match: opaque
+           where the sentence is, clear across the picture, and a short vertical
+           wash at the foot so the composer's dock has ground to sit on. */
+        @media (min-width: 1024px) {
+          .hz-film::after {
+            background:
+              linear-gradient(to right, rgba(0,0,0,.97) 0%, rgba(0,0,0,.88) 26%, rgba(0,0,0,.45) 44%, rgba(0,0,0,0) 62%),
+              linear-gradient(to bottom, rgba(0,0,0,.35) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 62%, rgba(0,0,0,.85) 100%);
+          }
         }
       `}</style>
 

@@ -14,11 +14,15 @@ const css = readFileSync(join(ROOT, "assets/globals.css"), "utf8");
  * be running when the page arrives — so either wrapper puts it back to sleep
  * and nothing about the page looks broken.
  *
- * The size is the other half, and `.hz-fold` is the whole of it: one cap per
- * arrangement, each the height the fold has spare converted through the
- * film's ratio. Delete it and nothing errors — the film simply grows until it
- * is under the composer, which reads as fine on a tall desktop and is wrong on
- * every phone.
+ * The size is the other half, and it is now the whole fold: the film covers the
+ * hero. It was capped instead — one `max-width` per arrangement, each the
+ * height the fold had spare converted through the film's ratio — and that
+ * arithmetic is what rendered it 432px wide on a 1440x900 screen and, on the
+ * shipped build before it, below the fold entirely and therefore never playing,
+ * because a browser will not autoplay a film it cannot see. A cap that can put
+ * the hero visual off screen is not a cap worth keeping, so what is pinned here
+ * is the opposite invariant: the film fills its hero and the hero is what
+ * positions it.
  */
 describe("the fold holds the film", () => {
   it("opens the hero with the film, before the copy and the band below", () => {
@@ -31,11 +35,18 @@ describe("the fold holds the film", () => {
   });
 
   it("does not put the film to sleep behind Reveal or LazySection", () => {
-    // Its slot IS its parent, with nothing in between — which is the only
-    // assertion that separates a wrapper from a sibling. The copy column above
-    // is full of <Reveal>s, so "no Reveal nearby" reads correct and fails on
-    // the shipped file.
-    expect(landing).toMatch(/<YStack className="hz-fold"[^>]*>\s*<HeroVideo \/>/);
+    // Nothing that gates visibility may stand between the hero and the film.
+    // Checking "no Reveal nearby" would read correct and pass on any file — the
+    // copy column below is full of them — so this looks at the span BETWEEN the
+    // hero's opening tag and the mount, which is the only region a wrapper
+    // could occupy.
+    const hero = landing.indexOf('minHeight="100svh"');
+    const mount = landing.indexOf("<HeroVideo />");
+    expect(hero).toBeGreaterThan(-1);
+    expect(mount).toBeGreaterThan(hero);
+    const between = landing.slice(hero, mount);
+    expect(between).not.toMatch(/<Reveal\b/);
+    expect(between).not.toMatch(/<LazySection\b/);
     expect(landing.match(/<HeroVideo \/>/g)).toHaveLength(1);
   });
 
@@ -47,16 +58,19 @@ describe("the fold holds the film", () => {
     expect(film).toMatch(/setPlay\(!reducedMotion\(\)\)/);
   });
 
-  it("caps the film once per arrangement", () => {
-    // Square on a phone, 4/3 stacked, 4/3 beside the copy. Fewer means one of
-    // them silently inherits another's budget, which is only visible as a film
-    // sunk under the composer on the viewport nobody opened.
-    const caps = css
-      .slice(css.indexOf(".hz-fold {"))
-      .match(/\.hz-fold \{\s*max-width: calc\(/g);
-    expect(caps).toHaveLength(3);
-    // The film owns its ratio and nothing else; the fold owns the width.
-    expect(film).toContain("aspect-ratio: 1 / 1");
+  it("fills the fold instead of being capped inside it", () => {
+    // The film covers its hero, and the hero is the box it is absolute against.
+    // Miss the second and `inset: 0` resolves against whatever ancestor happens
+    // to be positioned — which is not a crash, just a film somewhere else.
+    expect(film).toMatch(/\.hz-film \{ position: absolute; inset: 0; \}/);
+    expect(film).toMatch(/object-fit: cover/);
+    expect(landing).toMatch(/position="relative" overflow="hidden" minHeight="100svh"/);
+
+    // The old cap is gone from BOTH sides. Left in the stylesheet it is dead
+    // weight that reads as live sizing; left on the mount it silently shrinks
+    // the film back again.
+    expect(css).not.toContain(".hz-fold");
+    expect(landing).not.toContain("hz-fold");
     expect(film).not.toContain("maxWidth");
   });
 });

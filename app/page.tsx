@@ -222,34 +222,32 @@ export default function LandingPage() {
             under it. It is the small viewport unit because a phone's URL bar
             moves the large one, which would push the composer under the fold on
             first paint. */}
-        <YStack minHeight="100svh" justifyContent="center" paddingHorizontal="$4" paddingBottom={200} paddingTop="$8" $md={{ paddingHorizontal: "$6" }}>
-          {/* The film comes FIRST — it is what the screen opens with, and the
-              sentence reads under it. A phone therefore stacks film, pill,
-              headline, subline, with the composer already at the bottom.
+        {/* `position: relative` is what the film is absolute AGAINST, and
+            `overflow: hidden` is what keeps a covered 4:3 master from painting
+            past the fold on a viewport wider than it is tall. Without the
+            second, `object-fit: cover` still crops the PICTURE correctly and the
+            element's own box spills — which reads as a page that scrolls
+            sideways for no visible reason. */}
+        <YStack position="relative" overflow="hidden" minHeight="100svh" justifyContent="center" paddingHorizontal="$4" paddingBottom={200} paddingTop="$8" $md={{ paddingHorizontal: "$6" }}>
+          {/* The film IS the fold — full width, full height, behind everything.
+              It was a capped box beside the copy, sized by arithmetic that kept
+              it and a caption above the composer's dock; that math is why it
+              rendered as a 432px thumbnail on a 1440x900 screen and, at 513,
+              below the fold entirely and never playing. A hero film that has to
+              be scrolled to is not a hero film.
 
-              From $lg the two stand side by side instead, because stacked they
-              cannot both be big: a 1280x800 fold holds the copy, the composer's
-              123px dock and its 200px reserve, which leaves the film 248px of
-              height — a 331px thumbnail. Beside the copy it is 576x432. The row
-              is `row-reverse` so the film keeps its place as the FIRST thing in
-              the document and still lands on the right, where a product shot
-              belongs next to a left-aligned headline.
+              So the cap is gone and the picture is the screen: `position:
+              absolute; inset: 0` inside this relative hero, `object-fit: cover`
+              on a 1600x1200 master whose subject lives in the centred 1200
+              square — so every viewport crops into spare frame and never into
+              the picture. The copy rides on top of it (see the scrim in
+              hero-video.tsx). Deliberately bare of LazySection and Reveal: both
+              decide when it may be seen, and its one job is to already be
+              running. */}
+          <HeroVideo />
 
-              1200 is two 576px columns and the $8 (48px) gap between them, and
-              576 is measured: it is the width the headline needs for the two
-              deliberate lines its <br> writes. At 1152 the columns came out 552
-              and "Hanzo builds and ships it." broke across two more. */}
-          <YStack alignSelf="center" width="100%" maxWidth={768} gap="$6" $lg={{ flexDirection: "row-reverse", alignItems: "center", maxWidth: 1200, gap: "$8" }}>
-            {/* The film — the hero visual, playing before anyone scrolls, and
-                the first thing in the fold rather than something under it.
-                Deliberately bare of LazySection and Reveal: both decide when it
-                may be seen, and its one job is to already be running. `.hz-fold`
-                (assets/globals.css) is what keeps it inside the fold. */}
-            <YStack className="hz-fold" alignSelf="center" width="100%" $lg={{ flex: 1, minWidth: 0 }}>
-              <HeroVideo />
-            </YStack>
-
-            <YStack alignSelf="center" maxWidth={768} $lg={{ flex: 1, width: "100%", maxWidth: 576 }}>
+          <YStack position="relative" zIndex={1} alignSelf="center" width="100%" maxWidth={768} gap="$6" $lg={{ maxWidth: 1200, alignItems: "flex-start" }}>
+            <YStack alignSelf="center" maxWidth={768} $lg={{ width: "100%", maxWidth: 520, alignSelf: "flex-start" }}>
               <Reveal>
                 <XStack alignSelf="center" marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color0025" paddingHorizontal="$3" paddingVertical="$1.5" $lg={{ alignSelf: "flex-start" }}>
                   <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
@@ -275,16 +273,6 @@ export default function LandingPage() {
                 </H1>
               </Reveal>
 
-              <Reveal delay={120}>
-                {/* 12 on a phone, and the media queries are MIN-width, so that is the
-                    BASE and $md is the desktop branch. Written the other way round it
-                    reads as "small on phones" and does the exact opposite. $4 measured
-                    15px here, which wrapped the sentence to three lines at 390. */}
-                <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize={12} textAlign="center" color="$color11" $md={{ fontSize: "$6" }} $lg={{ alignSelf: "flex-start", textAlign: "left" }} lineHeight="1.5">
-                  One prompt becomes a live app on Hanzo Cloud — UI, database,
-                  auth, and 400+ AI models, wired in and deployed.
-                </Paragraph>
-              </Reveal>
             </YStack>
           </YStack>
         </YStack>
