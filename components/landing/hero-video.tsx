@@ -1,117 +1,94 @@
 "use client";
 
-// The hero film — 12 seconds, generated with HyperFrames from this product's
-// own chrome, copy and typefaces (Geist / Geist Mono on true black): a prompt is
-// typed into the composer, the agent streams its work, the app renders in the
-// preview, then it publishes to a live URL. Honest by construction — the app in
-// the preview is drawn as STRUCTURE, so there is no customer to invent and no
-// number to make up, and the URL is the placeholder one (`your-app.hanzo.app`).
+// The hero film — and the hero IS the film. There is no headline beside it, no
+// pill above it and no subline under it: the film says the whole thing itself,
+// in the product's own chrome, copy and typefaces, and anything repeating that
+// in HTML would only be saying it twice.
 //
-// The master is 1600x1200, and everything that matters sits inside its centred
-// 1200px SQUARE. That is the whole responsive trick: a phone crops the frame to
-// 1:1 and loses nothing, a tablet and up sees the entire 4:3. `object-fit:
-// cover` performs the crop, and because the frame declares its own
-// aspect-ratio at both widths the box is the right size before a byte of video
-// arrives — the file landing shifts nothing.
+// It fills the fold edge to edge. `object-fit: cover` crops it to whatever
+// shape the screen is, so the master must be the RIGHT shape to begin with:
+// a phone is 0.46 wide-to-tall and a laptop is 1.6, and one master cannot be
+// both — covering a 390x844 phone with a 16:9 master shows the middle QUARTER
+// of it. So there are two, each composed for its own frame, and the page picks
+// by ORIENTATION rather than by width: a 768x1024 tablet is portrait, and
+// handing it the wide master would crop 555px off each side.
 //
-// Frame 0 of the film IS the poster, so the still and the first played frame
-// are the same picture and the swap is invisible.
+// It does NOT loop. The film ends on the finished app and stays there, so the
+// last thing on screen is the product, running.
 //
-// THE STILL IS WHAT THE SERVER SENDS. It is the hero visual now, so it has to
-// be there in the first bytes — and the still is the only answer a server pass
-// can give, because whether motion is welcome is a media query it cannot read.
-// So every path renders the picture first and the film replaces it on mount,
-// which costs nothing (the swap is invisible) and settles two things at once:
-// the box never shifts, and reduced motion never fetches the megabyte. A paused
-// player would still download it, so respecting the preference means no <video>
-// at all.
+// THE STILL IS WHAT THE SERVER SENDS, and <picture> picks which still without
+// a line of JavaScript: motion gets frame 0 — the same picture the film opens
+// on, so when the player takes over the swap is invisible — and reduced motion
+// gets the FINAL frame instead, the finished app, because that viewer never
+// sees the film and the payoff is the one image worth having. Each viewer
+// downloads exactly one of the four, and no <video> is ever created for the
+// reduced-motion path: a paused player still fetches the megabytes.
 //
-// The film COVERS its hero: absolute, inset 0, `object-fit: cover`. It was a
-// capped box instead, and the cap is why it rendered as a 432px thumbnail on a
-// 1440x900 screen and, before that, below the fold entirely — where a browser
-// will not autoplay it at all. The hero (app/page.tsx) is the positioned box
-// this fills; nothing here decides a width.
+// Nothing here declares an aspect ratio, and nothing needs to: the box is the
+// fold. It is the right size before a byte of media arrives.
 
 import { useEffect, useState } from "react";
 import { YStack } from "@hanzo/ui";
 
-const POSTER = "/hero.jpg";
-const FILM = "/hero.mp4";
-const ALT =
-  "The Hanzo builder: one prompt becomes a running app, published to a live URL.";
+const TALL = { film: "/hero-tall.mp4", first: "/hero-tall-first.jpg", last: "/hero-tall-last.jpg" };
+const WIDE = { film: "/hero-wide.mp4", first: "/hero-wide-first.jpg", last: "/hero-wide-last.jpg" };
 
-function reducedMotion(): boolean {
-  return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
-}
+const PORTRAIT = "(orientation: portrait)";
+const REDUCE = "(prefers-reduced-motion: reduce)";
+
+// The film's own message, for anyone who cannot watch it — and for anything
+// reading the page rather than watching it.
+const ALT =
+  "Describe your app in a sentence: Hanzo writes it, wires in a database, auth and AI, and ships it — running.";
 
 export default function HeroVideo() {
-  const [play, setPlay] = useState(false);
+  const [film, setFilm] = useState<typeof TALL | null>(null);
+
   useEffect(() => {
-    setPlay(!reducedMotion());
+    const motion = window.matchMedia?.(REDUCE);
+    const portrait = window.matchMedia?.(PORTRAIT);
+    // No player at all when motion is unwelcome — the still already answered.
+    if (!portrait || motion?.matches) return;
+    const pick = () => setFilm(portrait.matches ? TALL : WIDE);
+    pick();
+    // A phone that turns sideways is a different frame, and the master it was
+    // handed is now the wrong shape for it.
+    portrait.addEventListener("change", pick);
+    return () => portrait.removeEventListener("change", pick);
   }, []);
 
   return (
-    <YStack width="100%" className="hz-film">
+    <YStack position="relative" width="100%" minHeight="100svh" backgroundColor="$background" className="hz-hero">
       <style>{`
-        .hz-film { position: absolute; inset: 0; }
-        .hz-film .frame {
-          position: absolute; inset: 0; width: 100%; height: 100%;
-          overflow: hidden; background: var(--background);
-        }
-        .hz-film .frame > * {
-          position: absolute; inset: 0; width: 100%; max-width: 100%; height: 100%;
+        /* The <img> is inside <picture>, so this cannot be a child selector —
+           picture itself lays out nothing and is not positioned, which is why
+           the image still anchors to the fold box. */
+        .hz-hero img, .hz-hero video {
+          position: absolute; inset: 0;
+          width: 100%; max-width: 100%; height: 100%;
           object-fit: cover; display: block;
-        }
-        /* The film IS the fold, so the copy sits ON it and has to stay readable
-           over whatever frame is playing. A scrim, not a dimmed video: dimming
-           the film costs the picture everywhere, while this only pays where the
-           text is — dense behind the words, clear at the edges. */
-        .hz-film::after {
-          content: ""; position: absolute; inset: 0; pointer-events: none;
-          /* Phone: the frame is cropped to its centred square and the copy sits
-             over it, so the scrim runs top-to-bottom and goes near-black under
-             the words. */
-          background:
-            linear-gradient(to bottom, rgba(0,0,0,.25) 0%, rgba(0,0,0,.08) 24%, rgba(0,0,0,.58) 56%, rgba(0,0,0,.96) 82%, rgba(0,0,0,1) 100%);
-        }
-        /* Wide: the copy is pinned LEFT and the film's subject sits centre-right,
-           so they no longer occupy the same pixels — which is the whole reason
-           this reads at full bleed. The scrim turns horizontal to match: opaque
-           where the sentence is, clear across the picture, and a short vertical
-           wash at the foot so the composer's dock has ground to sit on. */
-        @media (min-width: 1024px) {
-          .hz-film::after {
-            background:
-              linear-gradient(to right, rgba(0,0,0,.97) 0%, rgba(0,0,0,.88) 26%, rgba(0,0,0,.45) 44%, rgba(0,0,0,0) 62%),
-              linear-gradient(to bottom, rgba(0,0,0,.35) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 62%, rgba(0,0,0,.85) 100%);
-          }
         }
       `}</style>
 
-      {/* No caption. It read "One prompt, built and published on Hanzo Cloud"
-          and it labelled the film from below — which worked when the film was
-          the thing past the fold, and stopped working when the film became the
-          first thing on the page: the label then landed between the picture
-          and the pill, two mono micro-lines deep, saying what the subline four
-          lines down already says in full. The picture is introduced by the
-          sentence under it now. */}
-      <YStack className="frame">
-        {!play ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={POSTER} alt={ALT} fetchPriority="high" />
-        ) : (
-          <video
-            src={FILM}
-            poster={POSTER}
-            aria-label={ALT}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-          />
-        )}
-      </YStack>
+      {film ? (
+        <video
+          src={film.film}
+          poster={film.first}
+          aria-label={ALT}
+          autoPlay
+          muted
+          playsInline
+          preload="auto"
+        />
+      ) : (
+        <picture>
+          <source media={`${REDUCE} and ${PORTRAIT}`} srcSet={TALL.last} />
+          <source media={REDUCE} srcSet={WIDE.last} />
+          <source media={PORTRAIT} srcSet={TALL.first} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={WIDE.first} alt={ALT} fetchPriority="high" />
+        </picture>
+      )}
     </YStack>
   );
 }

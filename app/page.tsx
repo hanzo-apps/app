@@ -1,6 +1,6 @@
 "use client";
 
-import { SizableText, YStack, XStack, H1, Paragraph, H2, H3 } from '@hanzo/ui';
+import { SizableText, YStack, XStack, Paragraph, H2, H3 } from '@hanzo/ui';
 import { useState, useEffect, useMemo } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -215,67 +215,18 @@ export default function LandingPage() {
           exactly the run of the page the composer stays on screen for: the hero
           through the closing CTA, where it comes to rest. */}
       <YStack position="relative" zIndex={10}>
-        {/* ── Hero — the first screen: the film, the sentence, the composer ──
-            `100svh` so the hero OWNS the fold: the film and the copy centre in
-            the space above the composer's slot (the padding below), and the
-            composer sits at the bottom of this screen with nothing scrolling
-            under it. It is the small viewport unit because a phone's URL bar
-            moves the large one, which would push the composer under the fold on
-            first paint. */}
-        {/* `position: relative` is what the film is absolute AGAINST, and
-            `overflow: hidden` is what keeps a covered 4:3 master from painting
-            past the fold on a viewport wider than it is tall. Without the
-            second, `object-fit: cover` still crops the PICTURE correctly and the
-            element's own box spills — which reads as a page that scrolls
-            sideways for no visible reason. */}
-        <YStack position="relative" overflow="hidden" minHeight="100svh" justifyContent="center" paddingHorizontal="$4" paddingBottom={200} paddingTop="$8" $md={{ paddingHorizontal: "$6" }}>
-          {/* The film IS the fold — full width, full height, behind everything.
-              It was a capped box beside the copy, sized by arithmetic that kept
-              it and a caption above the composer's dock; that math is why it
-              rendered as a 432px thumbnail on a 1440x900 screen and, at 513,
-              below the fold entirely and never playing. A hero film that has to
-              be scrolled to is not a hero film.
+        {/* ── Hero — the film, and nothing else ──
+            It owns the fold, edge to edge, and the composer docks over its
+            foot. There is no pill, headline or subline here any more: the film
+            says all three itself, in the product's own chrome and type, and a
+            copy of that sentence in HTML beside it was the same thing twice.
+            With the copy gone the scrim went too — it existed to keep words
+            legible over a picture, and there are no words.
 
-              So the cap is gone and the picture is the screen: `position:
-              absolute; inset: 0` inside this relative hero, `object-fit: cover`
-              on a 1600x1200 master whose subject lives in the centred 1200
-              square — so every viewport crops into spare frame and never into
-              the picture. The copy rides on top of it (see the scrim in
-              hero-video.tsx). Deliberately bare of LazySection and Reveal: both
-              decide when it may be seen, and its one job is to already be
-              running. */}
-          <HeroVideo />
-
-          <YStack position="relative" zIndex={1} alignSelf="center" width="100%" maxWidth={768} gap="$6" $lg={{ maxWidth: 1200, alignItems: "flex-start" }}>
-            <YStack alignSelf="center" maxWidth={768} $lg={{ width: "100%", maxWidth: 520, alignSelf: "flex-start" }}>
-              <Reveal>
-                <XStack alignSelf="center" marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color0025" paddingHorizontal="$3" paddingVertical="$1.5" $lg={{ alignSelf: "flex-start" }}>
-                  <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
-                    Apps, wired to real data &amp; AI
-                  </SizableText>
-                </XStack>
-              </Reveal>
-
-              <Reveal delay={60}>
-                {/* 17px is the largest size that keeps the WHOLE sentence on one
-                    line at 390: measured, 358px of room and 17.5px renders 354 —
-                    so this is the fit with the slack a webfont's metrics need.
-                    At 30.4px it wrapped to three lines with "it." alone on the
-                    last. $sm and up are untouched, where the <br> below splits it
-                    into two deliberate lines. */}
-                <H1 fontSize={17} fontWeight="600" textAlign="center" lineHeight="1.05" letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: 48 }} $lg={{ textAlign: "left" }}>
-                  {/* The space is explicit: JSX drops the whitespace around the <br>,
-                      and the <br> is hidden below sm — without it the mobile heading
-                      reads "Describe your app.Hanzo builds and ships it." */}
-                  Describe your app.{' '}
-                  <br className="break-sm" />
-                  Hanzo builds and ships it.
-                </H1>
-              </Reveal>
-
-            </YStack>
-          </YStack>
-        </YStack>
+            The film sizes itself (`100svh`, components/landing/hero-video.tsx),
+            which is also what retired the arithmetic that used to fit it around
+            the copy: there is nothing left to fit it around. */}
+        <HeroVideo />
 
         {/* ── Below the fold — the template lane ── */}
         <YStack paddingHorizontal="$4" paddingTop="$6" paddingBottom="$9" $md={{ paddingHorizontal: "$6", paddingBottom: "$11" }}>
