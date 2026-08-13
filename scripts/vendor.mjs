@@ -32,20 +32,36 @@ mkdirSync(out, { recursive: true });
 
 let total = 0;
 for (const { from, file } of entries) {
-  // Resolve the package ROOT and join the file, rather than resolving the file
-  // itself: a modern package's `exports` map lists only its entry points, so
-  // asking for `@tailwindcss/browser/dist/index.global.js` — a real file, right
-  // there on disk — throws ERR_PACKAGE_PATH_NOT_EXPORTED. `package.json` is the
-  // one subpath every package still exposes.
+  // TWO WAYS IN, because packages disagree about which one they leave open.
+  //
+  // Asking for the file directly is the honest question, and it is the only one
+  // that works for `@hanzo/design`: its `exports` map is strict and does not
+  // list `./package.json`, so resolving the root throws
+  // ERR_PACKAGE_PATH_NOT_EXPORTED even though the file is right there.
+  //
+  // Resolving the ROOT and joining is what works for a package whose `exports`
+  // lists only its entry points — `feather-icons/dist/feather.min.js` is a real
+  // file that the map does not name, and asking for it directly throws for the
+  // mirror-image reason.
+  //
+  // Neither alone covers the list, so try the subpath, then the root.
   const parts = from.split('/');
   const pkg = from.startsWith('@') ? parts.slice(0, 2).join('/') : parts[0];
   const sub = from.slice(pkg.length + 1);
+  const attempt = (f) => {
+    const p = f();
+    statSync(p);
+    return p;
+  };
   let src;
   try {
-    src = join(dirname(require.resolve(`${pkg}/package.json`)), sub);
-    statSync(src);
+    src = attempt(() => require.resolve(from));
   } catch {
-    throw new Error(`vendor: cannot resolve ${from} — is ${pkg} in package.json?`);
+    try {
+      src = attempt(() => join(dirname(require.resolve(`${pkg}/package.json`)), sub));
+    } catch {
+      throw new Error(`vendor: cannot resolve ${from} — is ${pkg} in package.json?`);
+    }
   }
   const dest = join(out, file);
   mkdirSync(dirname(dest), { recursive: true }); // `images/marker-icon.png` is nested

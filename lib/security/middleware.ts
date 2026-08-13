@@ -95,8 +95,9 @@ const policy = (dev: boolean) => {
     // Google Fonts is gone from both of these. It was here because the skill
     // prompts offered it as the font choice, which put a request to Google on
     // every view of every site built here — a third party learning who reads
-    // our customers' pages, for a typeface. Those prompts now specify the
-    // system stack, which costs no request at all.
+    // our customers' pages, for a typeface. The two faces a generated page uses
+    // now arrive inside the design stylesheet we serve from `/vendor/`, which
+    // is why `font-src` needs the same origin list and no third party at all.
     src("style-src 'self' 'unsafe-inline'", ...CDN, ...OURS, ...http),
     src("font-src 'self' data:", ...CDN, ...OURS, ...http),
     // `http:`/`https:` already cover localhost — naming it again would be noise.

@@ -127,12 +127,12 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
               <Globe size={16} />
               <SizableText fontSize="$3" flex={1}>{publicUrl}</SizableText>
               {settings.enabled && (
-                <Badge variant="default" className="ml-2">
+                <Badge variant="default">
                   Live
                 </Badge>
               )}
               {!settings.enabled && (
-                <Badge variant="secondary" className="ml-2">
+                <Badge variant="secondary">
                   Not Published
                 </Badge>
               )}

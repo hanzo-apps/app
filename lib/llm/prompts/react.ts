@@ -35,8 +35,10 @@ IMPORTING NPM PACKAGES:
 CSS STYLING:
 - Import CSS files directly: import "./App.css"
 - CSS modules are NOT supported — use plain CSS with unique class names
-- For Tailwind CSS, add to index.html <head>: <script src="https://hanzo.app/vendor/tailwind.js"></script>
-- For other CSS frameworks, use CDN links in index.html
+- For the Hanzo design system, add to index.html <head>: <link rel="stylesheet" href="https://hanzo.app/vendor/design/styles.css"/>
+  It is a plain stylesheet: dark ground, Geist type, styled controls, and the whole token table
+  (--background --foreground --surface-card --border --primary --space-* --text-* --radius-* --container-*).
+  Write ordinary CSS against those tokens. Do NOT use Tailwind or any other utility-class framework.
 
 ROUTING (Single Page App):
 - Use hash-based routing for SPAs: window.location.hash

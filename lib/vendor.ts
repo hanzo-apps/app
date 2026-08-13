@@ -1,12 +1,12 @@
 /**
  * The libraries a generated site may load, served from OUR origin.
  *
- * Generated pages used to be told to fetch Tailwind, icons, animation and maps
- * from `cdn.tailwindcss.com`, `cdn.jsdelivr.net`, `unpkg.com` and
- * `cdnjs.cloudflare.com` — four origins we do not own, on every page load of
- * every site anyone builds here, with our CSP widened to permit them. That is
- * four parties who can see our customers' visitors and who can change what
- * executes on their pages.
+ * Generated pages used to be told to fetch a utility-class framework, icons,
+ * animation and maps from `cdn.tailwindcss.com`, `cdn.jsdelivr.net`,
+ * `unpkg.com` and `cdnjs.cloudflare.com` — four origins we do not own, on every
+ * page load of every site anyone builds here, with our CSP widened to permit
+ * them. That is four parties who can see our customers' visitors and who can
+ * change what executes on their pages.
  *
  * Now the bytes come from npm, pinned in `package.json`, copied into `public/`
  * by `scripts/vendor.mjs` at install and build time — the same mechanism that
@@ -27,12 +27,35 @@ interface Lib {
 
 export const LIBS = {
   /**
-   * Tailwind's OFFICIAL browser build. `cdn.tailwindcss.com` is the same idea
-   * — compile utility classes in the page — but it is their host, not a
-   * package, so it can neither be pinned nor audited. This one is `npm i
-   * @tailwindcss/browser`, and it is Tailwind 4.
+   * THE STYLE LAYER. `@hanzo/design` is the token table every Hanzo surface
+   * renders on — the same one `@hanzo/gui` reads — shipped as one flat
+   * stylesheet: the palette, the type scale, the space ramp, and a base layer
+   * that dresses bare HTML (ground, ink, headings, links, controls, focus
+   * ring). A generated page links it and is already Hanzo before it writes a
+   * single rule of its own.
+   *
+   * It replaced a 276 KB browser build of Tailwind, and the size is the smaller
+   * half of why. Tailwind-in-the-page is a COMPILER: the styles do not exist
+   * until a script has run, so with JavaScript blocked — an extension, a
+   * corporate proxy, a slow phone giving up — the page renders as Times New
+   * Roman on white with blue links. Measured, both ways, at 390px and 1440px.
+   * A stylesheet has no such state; the page is styled when the CSS lands.
+   *
+   * It brings its two Geist faces with it, and they are NOT optional: the sheet
+   * asks for them RELATIVELY (`url(./assets/fonts/…)`, so the package works
+   * wherever it is mounted), so they resolve against wherever we serve the
+   * sheet FROM. Hence its own directory, with the faces beside it in exactly
+   * the shape the package has them — `design/assets/fonts/…`.
+   *
+   * Get that wrong and nothing announces it. `font-family` still COMPUTES to
+   * "Geist" whether or not the face ever arrived, because a computed style is
+   * the declared value, not the loaded one; the page simply renders in the
+   * fallback system sans. The only honest check is `document.fonts.check()`,
+   * and that is what tests/e2e asks.
    */
-  tailwind: { from: '@tailwindcss/browser/dist/index.global.js', file: 'tailwind.js' },
+  design: { from: '@hanzo/design/styles.css', file: 'design/styles.css' },
+  geist: { from: '@hanzo/design/assets/fonts/Geist-Variable.woff2', file: 'design/assets/fonts/Geist-Variable.woff2' },
+  geistMono: { from: '@hanzo/design/assets/fonts/GeistMono-Variable.woff2', file: 'design/assets/fonts/GeistMono-Variable.woff2' },
   /** Icons. One set, so a page never loads two icon fonts to draw two glyphs. */
   feather: { from: 'feather-icons/dist/feather.min.js', file: 'feather.js' },
   /**
@@ -82,7 +105,7 @@ export function url(name: LibName): string {
 
 /** `<script src>`/`<link href>` tags, ready to paste into a document head. */
 export const TAGS = {
-  tailwind: `<script src="${url('tailwind')}"></script>`,
+  design: `<link rel="stylesheet" href="${url('design')}"/>`,
   feather: `<script src="${url('feather')}"></script>`,
   anime: `<script src="${url('anime')}"></script>`,
   leaflet: `<link rel="stylesheet" href="${url('leafletCss')}"/>\n<script src="${url('leaflet')}"></script>`,
@@ -104,7 +127,31 @@ export const TAGS = {
  * (`/npm/animejs/lib/anime.iife.min.js`, `@latest`, a pinned `1.9.4`).
  */
 const LEGACY: ReadonlyArray<readonly [RegExp, string]> = [
-  [/https?:\/\/cdn\.tailwindcss\.com[^"'\s)]*/g, url('tailwind')],
+  /**
+   * THE UTILITY-CLASS COMPILER, and why this one rule swaps a TAG rather than a
+   * URL. Every other entry here is a like-for-like: a script that was fetched
+   * from someone else is fetched from us instead, same tag, same shape. The
+   * utility framework has no like-for-like — the style layer is now a
+   * STYLESHEET, so `<script src=…tailwind.js>` has to become `<link rel=…>`,
+   * which a URL substitution cannot express.
+   *
+   * Two spellings reach us: `cdn.tailwindcss.com`, from before we vendored
+   * anything, and `hanzo.app/vendor/tailwind.js`, from the window when we
+   * served our own copy. Both are gone from disk, so both would 404 — and a
+   * 404'd script is the WORST version of this: no error a visitor can see, and
+   * the page renders as unstyled markup on white. The link puts those documents
+   * on the ground, ink, typeface and controls of the design sheet, which is not
+   * the layout their utility classes described, but is a page a person can read
+   * instead of a page that looks broken.
+   */
+  [/<script\b[^>]*\bsrc=["'][^"']*(?:cdn\.tailwindcss\.com|\/vendor\/tailwind\.js)[^"']*["'][^>]*>\s*<\/script>/gi, TAGS.design],
+  /**
+   * …and the config block that used to follow it. `tailwind.config = {…}` on a
+   * page with no `tailwind` global is a ReferenceError, which aborts that
+   * script — so leaving these behind trades a styling fault for a console full
+   * of thrown errors on documents we are otherwise healing.
+   */
+  [/<script\b(?![^>]*\bsrc=)[^>]*>\s*(?:if\s*\(\s*window\.tailwind\s*\)\s*)?tailwind\.config\s*=[\s\S]*?<\/script>/gi, ''],
   [/https?:\/\/(cdn\.jsdelivr\.net|unpkg\.com)\/npm\/feather-icons[^"'\s)]*/g, url('feather')],
   [/https?:\/\/(cdn\.jsdelivr\.net|unpkg\.com)\/npm\/animejs[^"'\s)]*/g, url('anime')],
   [/https?:\/\/(unpkg\.com|cdn\.jsdelivr\.net)(\/npm)?\/leaflet@?[^"'\s)]*\.css/g, url('leafletCss')],

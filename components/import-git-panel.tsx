@@ -325,9 +325,9 @@ export function ImportGitPanel() {
                     <GitlabIcon size={16} />
                     Add GitLab Account
                     {!gitlabConnectable && (
-                      <Badge variant="outline" className="ml-auto">
-                        Needs setup
-                      </Badge>
+                      <XStack marginLeft="auto">
+                        <Badge variant="outline">Needs setup</Badge>
+                      </XStack>
                     )}
                   </DropdownMenuItem>
                   {/* Stays open: this row reveals the provider list in place, so
@@ -341,7 +341,7 @@ export function ImportGitPanel() {
                       <SizableText paddingHorizontal="$1" fontSize="$1" letterSpacing={0.4} color="$color11">
                         Providers
                       </SizableText>
-                      <Badge variant="outline" className="gap-1.5">
+                      <Badge variant="outline">
                         <Github size={14} /> GitHub
                       </Badge>
                       {gitlabConnectable ? (
@@ -349,11 +349,11 @@ export function ImportGitPanel() {
                           <GitlabIcon size={14} /> GitLab
                         </Button>
                       ) : (
-                        <Badge variant="outline" className="gap-1.5" title="GitLab connect is being set up">
+                        <Badge variant="outline" title="GitLab connect is being set up">
                           <GitlabIcon size={14} /> GitLab · Setup
                         </Badge>
                       )}
-                      <Badge variant="outline" className="gap-1.5">
+                      <Badge variant="outline">
                         <Globe size={14} /> Bitbucket · Soon
                       </Badge>
                     </YStack>

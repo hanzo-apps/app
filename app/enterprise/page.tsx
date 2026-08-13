@@ -48,10 +48,12 @@ export default function EnterprisePage() {
       {/* Hero Section */}
       <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
         <YStack maxWidth={896} alignSelf="center">
-          <Badge className="mb-4">
-            <Building size={16} />
-            Enterprise Ready
-          </Badge>
+          <YStack marginBottom="$4">
+            <Badge>
+              <Building size={16} />
+              Enterprise Ready
+            </Badge>
+          </YStack>
           <H1 fontSize="$11" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$13" }} lineHeight="1.1">
             AI Development at
             <SizableText color="$color">
@@ -107,9 +109,9 @@ export default function EnterprisePage() {
         <YStack maxWidth={1280} alignSelf="center">
           <YStack gap="$10" alignItems="center">
             <div>
-              <Badge variant="secondary" className="mb-4">
-                Security First
-              </Badge>
+              <YStack marginBottom="$4">
+                <Badge variant="secondary">Security First</Badge>
+              </YStack>
               <H2 fontSize="$10" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$11" }} lineHeight="1.1">
                 Bank-grade security & compliance
               </H2>

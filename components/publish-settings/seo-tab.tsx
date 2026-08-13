@@ -124,7 +124,7 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
           {settings.seo.keywords && settings.seo.keywords.length > 0 && (
             <XStack flexWrap="wrap" gap="$2" marginTop="$2">
               {settings.seo.keywords.map((keyword) => (
-                <Badge key={keyword} variant="secondary" className="gap-1">
+                <Badge key={keyword} variant="secondary">
                   {keyword}
                   <Button
                     onClick={() => handleRemoveKeyword(keyword)}

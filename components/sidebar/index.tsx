@@ -54,10 +54,6 @@ import { useFolders } from '@/hooks/useFolders';
 import { markProjectOpened, orderByRecentlyOpened } from '@/lib/recent-projects';
 import { VERSION } from '@/lib/version';
 
-// Collapsed sidebar width (icon-only rail). Kept exported for callers that lay
-// out around the sidebar; the width itself is applied via a Tailwind class now.
-export const COLLAPSED_SIDEBAR_WIDTH = 56;
-
 interface SidebarItem {
   id: string;
   label: string;

@@ -631,7 +631,7 @@ bearer, so the BFF forwards the token and nothing else.
 
 ### A generated site's libraries come from US — `lib/vendor.ts`, one origin
 
-Tailwind, icons, animation and maps used to be fetched by every generated site
+Style, icons, animation and maps used to be fetched by every generated site
 from `cdn.tailwindcss.com`, `cdn.jsdelivr.net`, `unpkg.com` and
 `cdnjs.cloudflare.com`, with Google Fonts beside them, and this app's CSP was
 widened to permit all four. That is four parties in front of every visitor to
@@ -647,10 +647,22 @@ read it. Add a library there and nowhere else.
 
 Four things that are load-bearing and non-obvious:
 
-- **`@tailwindcss/browser` is the play CDN's real replacement.** Same idea —
-  compile utility classes in the page — but a package, so it can be pinned.
-  Verified in a browser rather than assumed: `flex`, `bg-blue-600`,
-  `rounded-lg` (8px), `p-6` (24px), `text-3xl` (30px) all compile.
+- **A generated page's style layer is `@hanzo/design`, and it is a SHEET.**
+  One `<link>` at `/vendor/design/styles.css` carries the tokens plus a base
+  layer that dresses bare HTML, so the page is dark, typeset in Geist and on
+  brand before it writes a rule. It replaced a 276 KB browser build of
+  Tailwind, and the byte count is the smaller half of why: a utility framework
+  in the page is a COMPILER, so with JavaScript blocked the page renders as
+  Times New Roman on white. Measured both ways at 390px and 1440px — same
+  markup, JS off: `#0a0a0a`, Geist loaded, controls styled.
+- **The sheet's two Geist faces are relative to the sheet.** It asks for
+  `url(./assets/fonts/…)`, so the faces are served BESIDE it at
+  `/vendor/design/assets/fonts/`. Get this wrong and nothing says so, and the
+  two obvious checks both lie: `getComputedStyle().fontFamily` is the DECLARED
+  value, and `document.fonts.check('16px Geist')` returns true whenever a
+  matching `@font-face` RULE exists — including for a face whose download
+  404'd. `FontFace.status` (`loaded` vs `error`) is the only one that answers,
+  and `tests/e2e/generated-page.spec.ts` asks that one.
 - **anime is held at 3.x deliberately.** 4.x replaced `anime({targets})` with
   named exports; the sites already published here and the code a model writes
   unprompted are both 3.x, so a version bump breaks them with no error anyone
@@ -660,8 +672,17 @@ Four things that are load-bearing and non-obvious:
   `withBridge` rewrites on the way in — which heals what is already saved.
   Tighten the policy without it and every site built earlier previews blank.
 - **A missing vendor file is invisible.** `scripts/vendor.mjs` throws rather
-  than skipping, because a silent skip 404s Tailwind for every generated page
-  while the app itself stays perfectly healthy — a defect only customers see.
+  than skipping, because a silent skip 404s the stylesheet for every generated
+  page while the app itself stays perfectly healthy — a defect only customers
+  see. It resolves a source two ways (the subpath, then the package root)
+  because packages disagree about which their `exports` map leaves open:
+  `@hanzo/design` exposes `./styles.css` and not `./package.json`, and
+  `feather-icons` is the mirror image.
+- **`rewrite` turns the old Tailwind SCRIPT into the new LINK.** It is the one
+  entry that swaps a tag rather than a URL, because the style layer stopped
+  being a script. Both spellings a stored document can carry —
+  `cdn.tailwindcss.com` and our own `/vendor/tailwind.js` — are gone from disk,
+  so a URL-level rewrite would leave a 404 and a page of unstyled markup.
 
 `tests/unit/vendor.test.ts` fails if a third-party host returns to a prompt or
 to the policy; both mutations are checked, so this cannot quietly regress.

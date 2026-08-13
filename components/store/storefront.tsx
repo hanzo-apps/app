@@ -247,7 +247,9 @@ export function Storefront() {
                       </AspectRatio>
                       {product.listPriceCents &&
                         product.listPriceCents > product.priceCents && (
-                          <Badge className="absolute top-2 left-2">Sale</Badge>
+                          <YStack position="absolute" top="$2" left="$2">
+                            <Badge>Sale</Badge>
+                          </YStack>
                         )}
                     </YStack>
                     <CardContent padding="$4">

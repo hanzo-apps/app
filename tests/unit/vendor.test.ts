@@ -14,7 +14,6 @@ const read = (p: string) => readFileSync(join(root, p), 'utf8');
  */
 const GENERATES = [
   'lib/prompts.ts',
-  'lib/project-templates.ts',
   'lib/llm/prompts/react.ts',
   'lib/llm/prompts/preact.ts',
   'lib/llm/prompts/svelte.ts',
@@ -57,7 +56,6 @@ describe('documents saved before we hosted these still render', () => {
   // inherits an app policy that no longer allows them — so without the rewrite
   // a site that worked yesterday previews as unstyled markup.
   const legacy = [
-    ['https://cdn.tailwindcss.com', url('tailwind')],
     ['https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js', url('feather')],
     ['https://cdn.jsdelivr.net/npm/animejs/lib/anime.iife.min.js', url('anime')],
     ['https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', url('leaflet')],
@@ -73,6 +71,35 @@ describe('documents saved before we hosted these still render', () => {
   it('is idempotent, because it runs on every preview frame', () => {
     const once = rewrite('<script src="https://cdn.tailwindcss.com"></script>');
     expect(rewrite(once)).toBe(once);
+  });
+
+  /**
+   * The utility-class framework is the one rewrite that swaps a TAG, because
+   * the style layer stopped being a script. Both spellings a stored document
+   * can carry — the CDN we never owned, and the copy we served ourselves — are
+   * gone from disk, so a URL-level rewrite would leave a 404'd script and a
+   * page of unstyled markup on white.
+   */
+  it.each([
+    'https://cdn.tailwindcss.com',
+    'https://hanzo.app/vendor/tailwind.js',
+  ])('turns the %s script into the design stylesheet', (src) => {
+    const out = rewrite(`<head><script src="${src}"></script></head>`);
+    expect(out).toContain(`<link rel="stylesheet" href="${url('design')}"/>`);
+    expect(out).not.toContain('<script');
+    expect(rewrite(out)).toBe(out);
+  });
+
+  it('drops the config block that script left behind', () => {
+    // `tailwind.config = {…}` with no `tailwind` global is a ReferenceError,
+    // which aborts the script it sits in. Healing the styling and leaving a
+    // thrown error behind is not healing.
+    const out = rewrite(
+      '<script src="https://hanzo.app/vendor/tailwind.js"></script>\n' +
+        '<script>tailwind.config = { theme: { extend: { colors: { primary: "#3B82F6" } } } }</script>',
+    );
+    expect(out).not.toMatch(/tailwind\.config/);
+    expect(rewrite(out)).toBe(out);
   });
 
   it('leaves a document that names nobody alone', () => {
@@ -92,6 +119,27 @@ describe('documents saved before we hosted these still render', () => {
 });
 
 describe('a stylesheet we host brings its own assets', () => {
+  /**
+   * The design sheet asks for its two Geist faces RELATIVELY
+   * (`url(../assets/fonts/…)`), so they resolve against wherever we serve it
+   * from — which is why it is served one directory down, at
+   * `/vendor/design/styles.css`. Ship it flat, or ship it without the faces,
+   * and every generated page silently falls back to the system sans: no error,
+   * no 404 anyone reads, just the wrong typeface everywhere forever.
+   */
+  it('ships every font the design sheet asks for, at the path it asks for', () => {
+    // By path: the package's "." export is ESM-only and asking for the .css
+    // directly lands on jest's style mock. `toBeGreaterThan(0)` below catches
+    // either mistake rather than passing against nothing.
+    const css = readFileSync(join(root, 'node_modules/@hanzo/design/styles.css'), 'utf8');
+    const wanted = [...new Set([...css.matchAll(/url\(["']?([^)"']+\.woff2)["']?\)/g)].map((m) => m[1]))];
+    expect(wanted.length).toBeGreaterThan(0); // or the assertion below is vacuous
+    const shipped = new Set<string>(Object.values(LIBS).map((l) => l.file));
+    // Resolve each `url()` against the sheet's own served directory.
+    const sheetDir = dirname(LIBS.design.file);
+    expect(wanted.filter((w) => !shipped.has(join(sheetDir, w)))).toEqual([]);
+  });
+
   it('ships every image leaflet.css asks for', () => {
     // `leaflet.css` references its marker and layers icons RELATIVELY
     // (`url(images/marker-icon.png)`), so they resolve against wherever we

@@ -106,7 +106,7 @@ export function CheckpointPanel({
                   <XStack alignItems="center" gap="$1.5" marginBottom="$1">
                     <Badge
                       variant={cp.kind === 'manual' ? 'default' : 'secondary'}
-                      className="h-4 px-1.5 text-[9px] leading-none"
+                     
                     >
                       {cp.kind === 'manual' ? 'save' : cp.kind}
                     </Badge>

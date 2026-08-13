@@ -581,13 +581,17 @@ export default function PlaygroundPage() {
                         ))}
                       </YStack>
                       {activeResult.models[0].latency < activeResult.models[1].latency ? (
-                        <Badge className="mt-2">
-                          {leftConfig.model} is {((1 - activeResult.models[0].latency / activeResult.models[1].latency) * 100).toFixed(0)}% faster
-                        </Badge>
+                        <YStack marginTop="$2">
+                          <Badge>
+                            {leftConfig.model} is {((1 - activeResult.models[0].latency / activeResult.models[1].latency) * 100).toFixed(0)}% faster
+                          </Badge>
+                        </YStack>
                       ) : (
-                        <Badge className="mt-2">
-                          {rightConfig.model} is {((1 - activeResult.models[1].latency / activeResult.models[0].latency) * 100).toFixed(0)}% faster
-                        </Badge>
+                        <YStack marginTop="$2">
+                          <Badge>
+                            {rightConfig.model} is {((1 - activeResult.models[1].latency / activeResult.models[0].latency) * 100).toFixed(0)}% faster
+                          </Badge>
+                        </YStack>
                       )}
                     </div>
 
