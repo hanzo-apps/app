@@ -10,6 +10,22 @@ logged-in projects logic in `page.tsx`; elevate design only.
   fade-up, ~500ms ease-out, `delay` for stagger). Fails open on reduced-motion
   OR no-IntersectionObserver so content is never stuck hidden. Every section
   uses this — no per-file animation code.
+- **`hero-video.tsx`** — the film, first thing past the fold: 12s, generated
+  with HyperFrames from this product's own chrome, copy and typefaces. Prompt
+  typed → agent streams → app renders → published to `your-app.hanzo.app`. The
+  master (`public/hero.mp4`, 1600x1200, 953 KB) keeps everything that matters
+  inside its centred **1200px square**, so a phone crops to `1/1` and loses
+  nothing while ≥768 sees the whole 4:3 — that is the entire responsive story:
+  `object-fit: cover` plus an `aspect-ratio` the frame declares at both widths,
+  so the box is right before a byte arrives. **Frame 0 IS the poster**
+  (`public/hero.jpg`), so the still and the first played frame are one picture
+  and the swap is invisible. Reduced motion gets that still and **no `<video>`
+  at all** — a paused player would still fetch the megabyte. Deliberately bare
+  of `LazySection`/`Reveal`: both decide when it may be seen, and its one job is
+  to already be running. Chrome defers offscreen muted autoplay, so it starts
+  the instant it enters view with no gesture — measured at 390/768/1280.
+  `tests/unit/hero-video.test.tsx` pins muted + playsInline, because autoplay is
+  not one flag and losing either leaves a poster frame forever, with no error.
 - **`hero-preview.tsx`** — hero focal visual: an honest, schematic browser frame
   (`your-app.hanzo.app` URL, semantic green Live dot, wireframe UI, "Wired in:
   Database · Auth · AI · Storage"). Deliberately a wireframe — communicates

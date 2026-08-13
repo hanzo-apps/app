@@ -19,6 +19,9 @@ import { ProjectThumb } from "@/components/project-thumb";
 // Below-the-fold sections: code-split out of the initial bundle and mounted on
 // scroll via <LazySection>. The hero (Header + composer) stays eager so it paints
 // instantly; these chunks load as the viewport approaches each one.
+// Client-only: it reads prefers-reduced-motion at its first render, and a
+// server pass cannot know the answer.
+const HeroVideo = dynamic(() => import("@/components/landing/hero-video"), { ssr: false });
 const HeroPreview = dynamic(() => import("@/components/landing/hero-preview"), { ssr: false });
 const LogoWall = dynamic(() => import("@/components/landing/logo-wall"), { ssr: false });
 const CloudIntegration = dynamic(() => import("@/components/landing/cloud-integration"), { ssr: false });
@@ -74,26 +77,6 @@ interface LandingProject {
   liveUrl: string | null;
   updatedAtIso: string | null;
 }
-
-// Honest app-type starters (not fabricated products) — an infinite "news
-// crawl" on ONE line under the composer (the .hz-crawl marquee in
-// components/build-composer + assets/globals.css). The old "exactly four /
-// they must fit one static row" constraint is gone: the row scrolls, so more
-// ideas read better than fewer. Every entry is a real app TYPE, not a product.
-const STARTERS = [
-  "Internal admin dashboard",
-  "AI support chatbot",
-  "SaaS app with billing",
-  "Marketplace with auth",
-  "Realtime chat app",
-  "Customer portal",
-  "Booking & scheduling",
-  "Analytics dashboard",
-  "Landing page with waitlist",
-  "Inventory tracker",
-  "CRM for a small team",
-  "Docs site with search",
-];
 
 // Typewriter phrases for the composer — the same honest app types, phrased as
 // natural completions of "Ask Hanzo to build …".
@@ -282,8 +265,13 @@ export default function LandingPage() {
           </YStack>
         </YStack>
 
-        {/* ── Below the fold — the template lane and the hero visual ── */}
+        {/* ── Below the fold — the film, the template lane and the hero visual ── */}
         <YStack paddingHorizontal="$4" paddingTop="$6" paddingBottom="$9" $md={{ paddingHorizontal: "$6", paddingBottom: "$11" }}>
+          {/* The film is the first thing past the fold and it plays on load —
+              no LazySection and no Reveal, because both would decide when it
+              may be seen and it has exactly one job: to already be running. */}
+          <HeroVideo />
+
           <YStack alignSelf="center" maxWidth={768}>
             <Reveal delay={180}>
               <YStack alignSelf="center" width="100%" maxWidth={672}>
@@ -515,7 +503,6 @@ export default function LandingPage() {
               showPill={false}
               subline={false}
               typewriter={TYPED}
-              starters={STARTERS}
               onSubmit={startBuild}
             />
           </YStack>
