@@ -36,13 +36,29 @@ import {
   Plus,
   GitBranch,
   Paperclip,
+  FileText,
+  Table,
+  Image as Picture,
+  X,
 } from 'lucide-react';
+import { ACCEPT, inline, seed, take, type Attachment, type Read } from '@/lib/attach';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Textarea, Button } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
 import { baseEnabled, setBaseEnabled } from '@/lib/base/flag';
 import { startNewBuild } from '@/lib/dev/workspace';
 
 export type ComposerMode = 'build' | 'plan';
+
+// A spreadsheet gets the table, a picture the frame, a container we cannot open
+// the clip. Everything else we can read is a page.
+const mark = (read: Read, name: string) =>
+  read === 'image'
+    ? Picture
+    : read === 'open'
+      ? Paperclip
+      : name.toLowerCase().endsWith('.csv')
+        ? Table
+        : FileText;
 
 const MODES: { value: ComposerMode; label: string; icon: React.ElementType; hint: string }[] = [
   { value: 'build', label: 'Build', icon: Hammer, hint: 'Generate and edit the app directly' },
@@ -79,6 +95,56 @@ export function BuildComposer({
   const [withBase, setWithBase] = useState(true);
   const [focused, setFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  /**
+   * Files dropped on the bubble, or picked from [+].
+   *
+   * The drop target is the WHOLE bubble, which is what a person aims at. That
+   * makes `over` a counter rather than a flag: dragenter/dragleave fire again for
+   * every child the pointer crosses, so a boolean flickers off the moment the
+   * pointer passes over the textarea inside.
+   */
+  const [files, setFiles] = useState<Attachment[]>([]);
+  const [refused, setRefused] = useState<string[]>([]);
+  const [over, setOver] = useState(false);
+  const depth = useRef(0);
+  const pickerRef = useRef<HTMLInputElement>(null);
+
+  const add = (incoming: File[]) => {
+    const { kept, refused: no } = take(incoming);
+    setRefused(no);
+    // Same file twice is one attachment — the id is name+size+mtime.
+    setFiles((prev) => [...prev, ...kept.filter((k) => !prev.some((p) => p.id === k.id))]);
+  };
+
+  const dragging = {
+    onDragEnter: (e: React.DragEvent) => {
+      if (!Array.from(e.dataTransfer.types).includes('Files')) return;
+      e.preventDefault();
+      depth.current += 1;
+      setOver(true);
+    },
+    onDragOver: (e: React.DragEvent) => {
+      if (!Array.from(e.dataTransfer.types).includes('Files')) return;
+      // Without this the browser navigates to the file instead of dropping it.
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+    },
+    onDragLeave: () => {
+      depth.current -= 1;
+      if (depth.current <= 0) {
+        depth.current = 0;
+        setOver(false);
+      }
+    },
+    onDrop: (e: React.DragEvent) => {
+      e.preventDefault();
+      depth.current = 0;
+      setOver(false);
+      const dropped = Array.from(e.dataTransfer.files);
+      if (dropped.length) add(dropped);
+    },
+  };
 
   // A starter/crawl chip FILLS the composer — it does not submit. The draft
   // appears so it can be read and edited, then sent with the send button or
@@ -217,28 +283,50 @@ export function BuildComposer({
    * updates are async — the click cannot rely on `idea` having landed yet).
    */
   const submit = (raw: string = idea) => {
-    const text = raw.trim();
+    // A file on its own is a request too, so it carries the prompt the builder
+    // would otherwise have to ask for.
+    const text = raw.trim() || (files.length ? 'Build an app from these files.' : '');
     if (!text) return;
     // Top-of-funnel build INTENT — the landing composer fires this for logged-out
     // visitors too, and no app exists yet (that is `app_created`, at publish).
     // FUNNELS.appShip step 2. Enumerated props only; never the prompt text.
     analytics.capture(EVENTS.BUILD_STARTED, { mode, withBase });
     setBaseEnabled(withBase);
-    if (onSubmit) {
-      onSubmit(text, mode);
-      return;
-    }
+
     // Default seed pipeline (PRESERVED contract + the one new mode key).
-    try {
-      // A fresh prompt is a NEW project — drop the previous unsaved build's
-      // minted repo id so this one does not commit into that one's history.
-      startNewBuild();
-      localStorage.setItem('initialPrompt', text);
-      localStorage.setItem('initialMode', mode);
-    } catch {
-      // localStorage may be unavailable; /dev also accepts ?prompt= / ?mode=.
-    }
-    router.push('/dev');
+    const go = (brief: string) => {
+      if (onSubmit) {
+        onSubmit(brief, mode);
+        return;
+      }
+      try {
+        // A fresh prompt is a NEW project — drop the previous unsaved build's
+        // minted repo id so this one does not commit into that one's history.
+        startNewBuild();
+        localStorage.setItem('initialPrompt', brief);
+        localStorage.setItem('initialMode', mode);
+      } catch {
+        // localStorage may be unavailable; /dev also accepts ?prompt= / ?mode=.
+      }
+      router.push('/dev');
+    };
+
+    // With nothing attached this stays SYNCHRONOUS, which is the contract every
+    // caller already has: a click seeds and pushes before it returns. Reading a
+    // file is the only reason to defer, so it is the only case that defers.
+    if (!files.length) return go(text);
+
+    void (async () => {
+      // What can be read joins the prompt HERE. An image cannot: it has to be
+      // uploaded, and uploading needs a project, which does not exist until the
+      // builder makes one — so images travel as files and the builder ingests
+      // them through its own ONE upload path.
+      const brief = `${text}\n\n${await inline(files)}`;
+      // Awaited: the login bounce is a top-level navigation, and a write still
+      // in flight when the page goes away never lands.
+      await seed(files.filter((f) => f.read === 'image'));
+      go(brief);
+    })();
   };
 
   // Say the idea instead of typing it. The same machine hanzo.chat and the
@@ -296,8 +384,18 @@ export function BuildComposer({
           12 outside and 14 inside — the inner corner rounder than the corner
           containing it, so the gradient showed a fatter sliver at the corners
           than along the edges. Change the two together or the seam comes back. */}
-      <YStack borderRadius={28} elevation={6} className="hz-composer">
-        <YStack data-field-box borderRadius={26.5} backgroundColor="$background">
+      <YStack borderRadius={28} elevation={6} className="hz-composer" {...dragging}>
+        <YStack
+          data-field-box
+          borderRadius={26.5}
+          backgroundColor="$background"
+          // Drawn INSIDE the bubble (negative offset) so the gradient rim stays
+          // the outermost edge and the pill does not appear to grow on hover.
+          outlineWidth={over ? 2 : 0}
+          outlineStyle="dashed"
+          outlineColor="$color8"
+          outlineOffset={-6}
+        >
           <Textarea
             ref={textareaRef}
             value={idea}
@@ -315,6 +413,64 @@ export function BuildComposer({
             aria-label="Ask Hanzo to build"
             width="100%" backgroundColor="transparent" borderWidth={0} paddingHorizontal="$3.5" paddingBottom="$1.5" paddingTop="$3" fontSize={16} lineHeight="1.375" color="$color" placeholderTextColor="$color11" focusStyle={{ borderWidth: 0 }}
   />
+          {/* What is attached, and what was turned away, between the field and
+              its controls — the answer to "did that land?" belongs next to the
+              thing it was dropped on. */}
+          {files.length > 0 && (
+            <XStack flexWrap="wrap" gap="$1.5" paddingHorizontal="$3.5" paddingBottom="$1.5">
+              {files.map(({ id, file, read }) => {
+                const Mark = mark(read, file.name);
+                return (
+                  <XStack
+                    key={id}
+                    alignItems="center"
+                    gap="$1.5"
+                    maxWidth={208}
+                    borderRadius="$10"
+                    borderWidth={1}
+                    borderColor="$borderColor"
+                    backgroundColor="$color2"
+                    paddingLeft="$2.5"
+                    paddingRight="$1"
+                    paddingVertical="$1"
+                  >
+                    <Mark size={12} />
+                    <SizableText fontSize="$1" color="$color11" numberOfLines={1}>
+                      {file.name}
+                    </SizableText>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label={`Remove ${file.name}`}
+                      onClick={() => setFiles((p) => p.filter((f) => f.id !== id))}
+                      width={18} height={18} borderWidth={0} backgroundColor="transparent"
+                    >
+                      <X size={11} />
+                    </Button>
+                  </XStack>
+                );
+              })}
+            </XStack>
+          )}
+          {refused.length > 0 && (
+            <SizableText paddingHorizontal="$3.5" paddingBottom="$1.5" fontSize="$1" color="$color11">
+              {refused.join(' · ')}
+            </SizableText>
+          )}
+          {/* The picker offers exactly what a drop accepts. Cleared after every
+              change so choosing the same file twice still fires. */}
+          <input
+            ref={pickerRef}
+            type="file"
+            multiple
+            accept={ACCEPT}
+            style={{ display: 'none' }}
+            onChange={(e) => {
+              add(Array.from(e.target.files ?? []));
+              e.target.value = '';
+            }}
+          />
           {/* `.hz-dense`: the field is the tap target here, this row is its
               secondary chrome, so it keeps the library's own 32px controls on a
               phone instead of the 44px coarse floor (assets/globals.css states
@@ -323,9 +479,9 @@ export function BuildComposer({
             <XStack alignItems="center" gap="$1">
               {/* [+] — bring in existing code, the same affordance the builder's
                   composer has, on the left of the row. Import routes to /new
-                  (Git import); attach opens the builder where the uploader
-                  lives. Both destinations are real — nothing lists a surface
-                  that does not exist. */}
+                  (Git import); attach opens the picker HERE, because files now
+                  land on this composer and travel with the prompt. It used to
+                  send you to the builder to find an uploader. */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   {/* A real circle. The Button's size variant pins a rounded-
@@ -350,10 +506,10 @@ export function BuildComposer({
                       <SizableText>Import a repo or site</SizableText>
                     </XStack>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push('/dev')}>
+                  <DropdownMenuItem onClick={() => pickerRef.current?.click()}>
                     <XStack alignItems="center" gap="$2">
                       <Paperclip size={15} />
-                      <SizableText>Attach files in the builder</SizableText>
+                      <SizableText>Attach files</SizableText>
                     </XStack>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -425,7 +581,7 @@ export function BuildComposer({
                 onClick={() => submit(idea.trim() ? idea : (armedIdea ?? ''))}
                 onFocus={() => { freezeRef.current = true; }}
                 onBlur={() => { freezeRef.current = false; }}
-                disabled={!(idea.trim() || armedIdea)}
+                disabled={!(idea.trim() || armedIdea || files.length)}
                 aria-label={armedIdea && !idea.trim() ? `Build ${armedIdea}` : "Start building"}
                 variant="ghost"
                 className="hz-round"

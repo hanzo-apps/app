@@ -28,6 +28,7 @@ import { Settings } from "@/components/editor/ask-ai/settings";
 import { LoginModal } from "@/components/login-modal";
 import { ReImagine } from "@/components/editor/ask-ai/re-imagine";
 import { imageFilesFrom, uploadProjectImages } from "@/lib/upload-project-images";
+import { claim } from "@/lib/attach";
 import { space } from "@/lib/dev/draft";
 import {
   addReferenceImages,
@@ -353,6 +354,29 @@ export function AskAI({
     else toast.error("Couldn't upload image(s). Please try again.");
     setIsUploading(false);
   };
+
+  /**
+   * Pictures dropped on the landing composer, ingested once there is a project
+   * to hold them.
+   *
+   * They arrive as Files, not URLs, because uploading needs a space_id and the
+   * landing has no project yet — that is exactly why its [+] used to send people
+   * here to find an uploader. The composer inlines what it CAN read into the
+   * prompt itself and hands the pictures over; this waits for the space and then
+   * uses the same ONE upload path a drop uses, so there is still one uploader.
+   */
+  const [seeded, setSeeded] = useState<File[]>([]);
+  useEffect(() => {
+    void claim().then((list) => setSeeded(list.filter((a) => a.read === "image").map((a) => a.file)));
+  }, []);
+  useEffect(() => {
+    // Keyed on both, because the read and the project can land in either order.
+    if (!seeded.length || !space(project?.space_id)) return;
+    const held = seeded;
+    setSeeded([]);
+    void ingestFiles(held);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seeded, project?.space_id]);
 
   const isFileDrag = (e: React.DragEvent) =>
     Array.from(e.dataTransfer?.types ?? []).includes("Files");
