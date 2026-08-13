@@ -134,9 +134,11 @@ export function BuildComposer({
   //
   // A fully-typed phrase is ARMED: for the ~3s it rests on screen (the read
   // window) the send button builds THAT example, so a reader who likes what
-  // they see ships it in one tap without typing a word. Hovering or focusing
-  // send holds the phrase (freezeRef) so the reach never races the erase —
-  // what you see stays what you'd build.
+  // they see ships it in one tap without typing a word. That 3s is the whole
+  // window for pointer and touch; keyboard focus on send additionally HOLDS the
+  // phrase (freezeRef, via its onFocus/onBlur) so a Tab-then-Enter reach never
+  // races the erase. A mouse can't extend it the same way — @hanzo/ui's Button
+  // narrows out onHoverIn — so the 3s is deliberately generous.
   const [typed, setTyped] = useState('');
   const [armed, setArmed] = useState<string | null>(null);
   const armedRef = useRef<string | null>(null);
