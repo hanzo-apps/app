@@ -403,9 +403,21 @@ html:root .hz-composer .hz-round {
      label to widen them: Build and Base are already past the floor and are left
      alone rather than grown into each other.
 
+     TWO handles, because there are two ways to spell an icon-only control here
+     and this rule must not care which. `size="icon"` emits `data-size`;
+     `.hz-round` (the circular composer controls) cannot use that size at all,
+     because the size variant pins a rounded-RECTANGLE with `!important`. Keying
+     on `data-size` alone is what broke this the first time — the circles change
+     dropped that attribute and the slop silently went with it, taking `+` and
+     send back to 36 wide with nothing to say so. The deploy gate caught it; the
+     lesson is that a rule anchored on ONE spelling of a thing is a rule that
+     stops applying the moment someone spells it the other way.
+
      `html:root` for the reason stated just above — a bare class ties with gui's
      atomic classes and loses on load order. */
-  html:root .hz-dense [data-size^='icon']::after {
+  html:root .hz-dense [data-size^='icon']::after,
+  html:root .hz-dense .hz-round::after,
+  html:root .hz-composer .hz-round::after {
     left: -6px;
     right: -6px;
   }
