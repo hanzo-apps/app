@@ -17,10 +17,12 @@ import Reveal from "./reveal";
 // render as a dozen invisible holes on a black card, and why `mono` is a field
 // here rather than a guess at render time — see `.hz-mark-mono` in globals.css.
 //
-// Zen is Hanzo's own family and leads the list, because it is the one the copy
-// above names first and the only one that is ours.
+// Zen is made by Zoo Labs Foundation, a 501(c)(3) frontier lab at
+// zoo.industries, and carries THEIR mark — not Hanzo's. It leads the list
+// because it is the family the copy above names first. `href` is Zen's alone:
+// a row that credits someone else has to be able to reach them.
 const providers = [
-  { name: "Zen",          src: "/logos/providers/zen.svg",         mono: true,  ours: true },
+  { name: "Zen",          src: "/logos/providers/zoo.svg",         lead: true, by: "Zoo Labs Foundation", href: "https://zoo.industries" },
   { name: "OpenAI",       src: "/logos/providers/openai.svg",      mono: true  },
   { name: "Anthropic",    src: "/logos/providers/anthropic.svg"    },
   { name: "Google",       src: "/logos/providers/gemini.svg"       },
@@ -54,8 +56,17 @@ export default function ModelsStrip() {
             One API. 400+ models.
           </H2>
           <Paragraph marginTop="$4" maxWidth={448} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
-            Your app calls any frontier model — Hanzo&apos;s own Zen family plus
-            Anthropic, OpenAI, Google, Mistral and more — through OpenAI-
+            Your app calls any frontier model — the Zen family from{" "}
+            <Anchor
+              href="https://zoo.industries"
+              target="_blank"
+              rel="noopener noreferrer"
+              color="$color"
+              hoverStyle={{ color: "$color11" }}
+            >
+              Zoo Labs Foundation
+            </Anchor>{" "}
+            plus Anthropic, OpenAI, Google, Mistral and more — through OpenAI-
             and Anthropic-compatible endpoints. Swap models with one string,
             and connect MCP tool servers the gateway can call mid-completion.
           </Paragraph>
@@ -103,14 +114,27 @@ Authorization: Bearer $HANZO_KEY
             Routed providers
           </Paragraph>
           <YStack className="hz-providers">
-            {providers.map((p) => (
-              <XStack
+            {providers.map((p) => {
+              // The tile IS the link — `.hz-providers` is a grid, so a wrapping
+              // <a> would become the grid item and the tile a block inside it.
+              const Tile = p.href ? Anchor : XStack;
+              return (
+              <Tile
                 key={p.name}
+                {...(p.href && {
+                  href: p.href,
+                  target: "_blank",
+                  rel: "noopener noreferrer",
+                  textDecorationLine: "none",
+                  // "Zen" alone does not say where the link goes.
+                  "aria-label": `${p.name} — made by ${p.by}`,
+                })}
+                display="flex"
                 alignItems="center"
                 gap="$3"
                 borderWidth={1}
-                borderColor={p.ours ? "$color6" : "$borderColor"}
-                backgroundColor={p.ours ? "$color3" : "$color2"}
+                borderColor={p.lead ? "$color6" : "$borderColor"}
+                backgroundColor={p.lead ? "$color3" : "$color2"}
                 borderRadius="$4"
                 paddingHorizontal="$3.5"
                 paddingVertical="$3"
@@ -129,8 +153,9 @@ Authorization: Bearer $HANZO_KEY
                 <SizableText fontSize="$3" color="$color" numberOfLines={1}>
                   {p.name}
                 </SizableText>
-              </XStack>
-            ))}
+              </Tile>
+              );
+            })}
           </YStack>
         </Reveal>
       </YStack>

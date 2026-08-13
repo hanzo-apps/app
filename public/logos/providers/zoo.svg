@@ -1,0 +1,19 @@
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Zoo">
+  <!-- Zoo brand mark: iridescent additive (RGB) Venn disc with white center,
+       matching the live zoo.ngo mark. Primaries green/red/blue overlap into
+       yellow/cyan/magenta and a white triple-overlap core. -->
+  <defs>
+    <clipPath id="zd-disc"><circle cx="512" cy="511" r="500"/></clipPath>
+    <clipPath id="zd-top"><circle cx="512" cy="250" r="430"/></clipPath>
+    <clipPath id="zd-ll"><circle cx="240" cy="670" r="430"/></clipPath>
+  </defs>
+  <g clip-path="url(#zd-disc)">
+    <circle cx="512" cy="250" r="430" fill="#00A652"/>
+    <circle cx="240" cy="670" r="430" fill="#ED1C24"/>
+    <circle cx="784" cy="670" r="430" fill="#2E3192"/>
+    <g clip-path="url(#zd-top)"><circle cx="240" cy="670" r="430" fill="#FCF006"/></g>
+    <g clip-path="url(#zd-top)"><circle cx="784" cy="670" r="430" fill="#01ACF1"/></g>
+    <g clip-path="url(#zd-ll)"><circle cx="784" cy="670" r="430" fill="#EA018E"/></g>
+    <g clip-path="url(#zd-top)"><g clip-path="url(#zd-ll)"><circle cx="784" cy="670" r="430" fill="#FFFFFF"/></g></g>
+  </g>
+</svg>

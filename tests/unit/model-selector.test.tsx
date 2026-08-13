@@ -151,7 +151,13 @@ describe("brand marks", () => {
     }
   });
 
-  it("draws Enso CLOSED and Zen OPEN — they are two marks, not one", () => {
+  // This used to read "Enso CLOSED and Zen OPEN", pinning the two as a matched
+  // pair of house marks — the same brush ring, one closed and one left open.
+  // That pairing was the bug: Zoo Labs Foundation makes Zen, so it wears Zoo's
+  // venn, the way gpt wears OpenAI's mark. Enso is still Hanzo's and unchanged.
+  // What survives from the old test is the part that was always right: the two
+  // may not collapse into one another, and neither may decay to a monogram.
+  it("draws Enso as Hanzo's ring and Zen as Zoo's venn — two makers, two marks", () => {
     const mark = (family: string) => {
       const { container, unmount } = render(
         <WithGui>
@@ -165,24 +171,26 @@ describe("brand marks", () => {
     const enso = mark("enso");
     const zen = mark("zen");
 
-    // Enso completes the circle — a full ring, no arc, no gap.
+    // Enso completes the circle — one full ring, no arc, no gap.
     expect(enso).toContain("<circle");
     expect(enso).not.toContain("<path");
-    // Zen is the ensō: a single open brush arc.
-    expect(zen).toContain("<path");
-    expect(zen).not.toContain("<circle");
+    expect((enso.match(/<circle/g) ?? []).length).toBe(1);
+    expect(enso).toContain('r="8.88"');
+    expect(enso).toContain('stroke-width="2.64"');
+
+    // Zen wears Zoo's mark: three circles for the additive primaries, the ring
+    // that holds them, and the disc that cuts them back to it.
+    expect((zen.match(/<circle/g) ?? []).length).toBe(5);
+    expect(zen).not.toContain("<path");
+    expect(zen).toContain('stroke="currentColor"');
+    // Cut in user units, so the mark holds its shape at any icon size.
+    expect(zen).toContain("clipPath");
 
     // Sharing a mark is the failure this pins: neither may fall back to the
     // other, and neither may fall back to a monogram.
     expect(zen).not.toBe(enso);
     expect(enso).not.toBe("");
     expect(zen).not.toBe("");
-
-    // Same radius and stroke, so the two sit at equal weight side by side —
-    // the gap is the ONLY thing that distinguishes them.
-    expect(enso).toContain('r="8.88"');
-    expect(zen).toContain("A8.88 8.88");
-    for (const html of [enso, zen]) expect(html).toContain('stroke-width="2.64"');
   });
 
   it("falls back to a monogram for a family it has never heard of", () => {
