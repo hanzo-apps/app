@@ -331,7 +331,7 @@ export function BuildComposer({
                     size="icon-sm"
                     variant="ghost"
                     aria-label="Add to this build"
-                    borderRadius={999} borderWidth={1} borderColor="$borderColor" backgroundColor="$color005" hoverStyle={{ borderColor: "$color06" }}
+                    borderRadius={999} aspectRatio={1} backgroundColor="$color005" hoverStyle={{ backgroundColor: "$color3" }}
                   >
                     <Plus size={16} />
                   </Button>
@@ -359,7 +359,7 @@ export function BuildComposer({
                     type="button"
                     size="sm"
                     variant="ghost"
-                    alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color005" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$color06" }}
+                    alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color005" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color3" }}
                   >
                     <XStack alignItems="center" gap="$1.5">
                       <CurrentMode.icon size={14} />
@@ -387,9 +387,9 @@ export function BuildComposer({
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Base backend toggle — spawn a Hanzo Base for this app. Active
-                  is said by the BORDER alone (white, monochrome) — a fill made
-                  the chip read as a pressed gray slab. */}
+              {/* Base backend toggle — spawn a Hanzo Base for this app. The row
+                  carries no outlines, so active is said by the label and icon
+                  going bright (monochrome) — a fill read as a pressed slab. */}
               <Button
                 type="button"
                 size="sm"
@@ -397,11 +397,11 @@ export function BuildComposer({
                 onClick={toggleBase}
                 aria-pressed={withBase}
                 title="Hanzo Base backend — database, auth, realtime for this app"
-                group alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} backgroundColor="$color005" {...{ borderColor: withBase ? "$color8" : "$borderColor" }} paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: withBase ? "$color" : "$color06" }}
+                group alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color005" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color3" }}
               >
-                <XStack alignItems="center" gap="$1.5">
+                <XStack alignItems="center" gap="$1.5" opacity={withBase ? 1 : 0.5} $group-hover={{ opacity: 1 }}>
                   <Database size={14} />
-                  <SizableText fontSize="$1" color={withBase ? "$color" : "$color11"} $group-hover={{ color: "$color" }}>Base</SizableText>
+                  <SizableText fontSize="$1">Base</SizableText>
                 </XStack>
               </Button>
             </XStack>
@@ -422,8 +422,8 @@ export function BuildComposer({
                 onBlur={() => { freezeRef.current = false; }}
                 disabled={!(idea.trim() || armedIdea)}
                 aria-label={armedIdea && !idea.trim() ? `Build ${armedIdea}` : "Start building"}
-                variant="outline"
-                alignItems="center" justifyContent="center" borderRadius={999} backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3", borderColor: "$borderColor" }}
+                variant="ghost"
+                alignItems="center" justifyContent="center" borderRadius={999} aspectRatio={1} backgroundColor="$color5" hoverStyle={{ backgroundColor: "$color6" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3" }}
               >
                 <ArrowUp size={16} strokeWidth={2.5} />
               </Button>
