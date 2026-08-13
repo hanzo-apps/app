@@ -2127,6 +2127,61 @@ html:root .hz-providers {
   display: none !important;
 }
 
+/* "Meet Hanzo" sat 10px right of every row under it. The shell gives the mobile
+   sheet's disclosure `padding: 0 22px` while the nav links below it get 12px, so
+   the label started at 35px against their 25px and the one BOLD row in the menu
+   was also the one that did not line up.
+
+   `div[data-hanzo-shell]`, by tag, and that is the whole point: opening the sheet
+   mounts a SECOND shell root beside the header's, and the two are distinguishable
+   only by element — HEADER is the desktop chrome, whose own Meet Hanzo is already
+   at 12px and must not move. `> button` is the disclosure itself; measured, the
+   selector matches exactly one element with the sheet open.
+
+   `!important` because the shell writes its entire style INLINE (`padding: 0px
+   22px` on the element), and an inline declaration beats any stylesheet rule on
+   the same property whatever its specificity — the same reason the coarse-pointer
+   floor above needs it. Without it this rule is a silent no-op.
+
+   Both sides, not just the left: the row is `space-between` with a chevron at its
+   end, so trimming one inset alone would align the label and leave the chevron
+   10px further out than everything else in the sheet. */
+div[data-hanzo-shell] > button {
+  padding-inline: 12px !important;
+}
+
+/* The header flashes its DESKTOP nav on a phone before hydration.
+   @hanzogui/shell chooses hamburger-vs-nav in JS, so the server always renders
+   the desktop branch and the swap happens only once React runs. Reproduced by
+   loading production with JavaScript disabled at 390 — which IS the
+   pre-hydration frame: `Meet Hanzo ⌄ Features Download Pricing Reso…` laid out
+   in a row at y=8, the items overlapping each other and running off the right
+   edge (Resources at x=347, Solutions 437, Help 521, on a 390px screen). That
+   is the "items at the upper margin" flash, and on a slow phone it is the first
+   thing a visitor sees.
+
+   A media query fixes it where JS cannot: it is authoritative at FIRST PAINT,
+   before a line of script has run, so the server frame and the hydrated frame
+   agree. Below 900 the shell hides these three anyway — this only stops them
+   being painted in the gap, and changes nothing after hydration.
+
+   900 is measured, not guessed: the nav is absent at 899 and shown at 900.
+   Matching it exactly matters in both directions — hide too wide and a desktop
+   header loses its nav to CSS the JS still thinks it should have.
+
+   `button:not([aria-label])` is load-bearing. The hamburger is ALSO a
+   direct-child button, so a bare `> button` would hide the only way into the
+   menu on the very screens this rule is for. The disclosure carries no
+   aria-label; the hamburger is labelled "Open menu". The logo and the identity
+   slot are deliberately untouched — they are correct at every width. */
+@media (max-width: 899px) {
+  header[data-hanzo-shell] > button:not([aria-label]),
+  header[data-hanzo-shell] > nav,
+  header[data-hanzo-shell] > a[href$="/download"] {
+    display: none !important;
+  }
+}
+
 /* AN OVERLAY THAT CARRIES TEXT IS OPAQUE. One law, every floating surface.
    @hanzo/ui frosts its own `[data-slot="dropdown-menu-content"]` and even
    carries the -webkit- prefix for it, but gui renders poppers and dialogs as
