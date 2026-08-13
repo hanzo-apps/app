@@ -241,6 +241,22 @@ a {
   padding: 1.5px;
 }
 
+/* The composer's + and send are circles, not the library's rounded squares.
+ * @hanzo/ui gives every Button `[data-variant][data-size]{ border-radius:
+ * var(--control-radius) !important }` — specificity (0,3,0), so a Tamagui prop
+ * or an inline style loses to it. This clears (0,3,0) by scoping the class under
+ * `.hz-composer` → (0,3,1), the same `html:root`-for-weight trick the `.hz-dense`
+ * block below uses, and carries the whole shape here rather than inline: a 36px
+ * square (so width matches the row's height) with a radius past half of it. */
+html:root .hz-composer .hz-round {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  padding: 0 !important;
+  border-radius: 9999px !important;
+}
+
 /* The composer grows with what you type; it is never dragged.
  *
  * A `<textarea>` defaults to `resize: vertical`, which paints a grab handle in

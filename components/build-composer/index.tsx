@@ -328,12 +328,17 @@ export function BuildComposer({
                   that does not exist. */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
+                  {/* A real circle. The Button's size variant pins a rounded-
+                      rectangle shape with !important that a Tamagui prop or an
+                      inline `style` can't outrank, so `.hz-round` (globals.css,
+                      scoped under `.hz-composer` to outweigh it) carries the
+                      whole shape — the 36px square and the round corner. */}
                   <Button
                     type="button"
-                    size="icon-sm"
                     variant="ghost"
                     aria-label="Add to this build"
-                    borderRadius={999} aspectRatio={1} backgroundColor="$color005" hoverStyle={{ backgroundColor: "$color3" }}
+                    className="hz-round"
+                    alignItems="center" justifyContent="center" borderWidth={0} backgroundColor="$color3" hoverStyle={{ backgroundColor: "$color4" }}
                   >
                     <Plus size={16} />
                   </Button>
@@ -359,9 +364,8 @@ export function BuildComposer({
                 <DropdownMenuTrigger asChild>
                   <Button
                     type="button"
-                    size="sm"
                     variant="ghost"
-                    alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color005" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color3" }}
+                    height={34} alignItems="center" gap="$1.5" borderWidth={0} borderRadius="$5" backgroundColor="$color005" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color3" }}
                   >
                     <XStack alignItems="center" gap="$1.5">
                       <CurrentMode.icon size={14} />
@@ -394,12 +398,11 @@ export function BuildComposer({
                   going bright (monochrome) — a fill read as a pressed slab. */}
               <Button
                 type="button"
-                size="sm"
                 variant="ghost"
                 onClick={toggleBase}
                 aria-pressed={withBase}
                 title="Hanzo Base backend — database, auth, realtime for this app"
-                group alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color005" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color3" }}
+                group height={34} alignItems="center" gap="$1.5" borderWidth={0} borderRadius="$5" backgroundColor="$color005" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color3" }}
               >
                 <XStack alignItems="center" gap="$1.5" opacity={withBase ? 1 : 0.5} $group-hover={{ opacity: 1 }}>
                   <Database size={14} />
@@ -417,7 +420,7 @@ export function BuildComposer({
                   <Mic size={16} fill={state === "idle" ? "none" : "currentColor"} />
                 )}
               </Voice>
-              <Button size="icon-sm"
+              <Button
                 type="button"
                 onClick={() => submit(idea.trim() ? idea : (armedIdea ?? ''))}
                 onFocus={() => { freezeRef.current = true; }}
@@ -425,7 +428,8 @@ export function BuildComposer({
                 disabled={!(idea.trim() || armedIdea)}
                 aria-label={armedIdea && !idea.trim() ? `Build ${armedIdea}` : "Start building"}
                 variant="ghost"
-                alignItems="center" justifyContent="center" borderRadius={999} aspectRatio={1} backgroundColor="$color5" hoverStyle={{ backgroundColor: "$color6" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3" }}
+                className="hz-round"
+                alignItems="center" justifyContent="center" borderWidth={0} backgroundColor="$color5" hoverStyle={{ backgroundColor: "$color6" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3" }}
               >
                 <ArrowUp size={16} strokeWidth={2.5} />
               </Button>
