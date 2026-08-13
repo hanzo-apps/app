@@ -75,14 +75,24 @@ interface LandingProject {
   updatedAtIso: string | null;
 }
 
-// Honest app-type starters (not fabricated products) — shown as pills.
-// Exactly FOUR: they read as one row under the composer at desktop widths;
-// a fifth wrapped alone onto a second line and looked stranded.
+// Honest app-type starters (not fabricated products) — an infinite "news
+// crawl" on ONE line under the composer (the .hz-crawl marquee in
+// components/build-composer + assets/globals.css). The old "exactly four /
+// they must fit one static row" constraint is gone: the row scrolls, so more
+// ideas read better than fewer. Every entry is a real app TYPE, not a product.
 const STARTERS = [
   "Internal admin dashboard",
   "AI support chatbot",
   "SaaS app with billing",
   "Marketplace with auth",
+  "Realtime chat app",
+  "Customer portal",
+  "Booking & scheduling",
+  "Analytics dashboard",
+  "Landing page with waitlist",
+  "Inventory tracker",
+  "CRM for a small team",
+  "Docs site with search",
 ];
 
 // Typewriter phrases for the composer — the same honest app types, phrased as
@@ -200,8 +210,15 @@ export default function LandingPage() {
     router.push(`/dev?template=hanzo-apps/${t.slug}&action=edit`);
   };
 
+  // The composer is the always-present bottom dock, so a CTA lower on the page
+  // focuses it rather than mounting a second composer.
+  const focusComposerDock = () => {
+    const box = document.getElementById("build")?.querySelector("textarea");
+    (box as HTMLTextAreaElement | null | undefined)?.focus();
+  };
+
   return (
-    <YStack position="relative" minHeight="100%" backgroundColor="$background" overflow="hidden" className="landing-root">
+    <YStack position="relative" minHeight="100%" paddingBottom={184} backgroundColor="$background" overflow="hidden" className="landing-root">
       {/* Monochrome hero glow — single soft white radial, zero hue. */}
       <YStack pointerEvents="none" position="fixed" top={0} right={0} bottom={0} left={0} zIndex={0} overflow="hidden">
         <YStack position="absolute" left="50%" top="-12%" height={560} width={900} marginLeft={-450} borderRadius="$10" backgroundColor="$color0075" filter="blur(130px)" />
@@ -239,16 +256,12 @@ export default function LandingPage() {
               </Paragraph>
             </Reveal>
 
-            {/* ── Prompt composer — the ONE BuildComposer ── */}
+            {/* The composer is pinned to the bottom of the viewport as a fixed
+                chat-style dock (.landing-composer-dock, at the end of the page)
+                — so the hero leads with the headline and the template lane, and
+                typing lives in the always-present dock with its idea crawl. */}
             <Reveal delay={180}>
-              <YStack id="build" alignSelf="center" width="100%" marginTop="$6" maxWidth={672}>
-                <BuildComposer
-                  showPill={false}
-                  subline={false}
-                  typewriter={TYPED}
-                  starters={STARTERS}
-                  onSubmit={startBuild}
-  />
+              <YStack alignSelf="center" width="100%" marginTop="$2" maxWidth={672}>
 
                 {/* Or start from one of our great templates — one click forks it
                     into the builder, seeded from that template. */}
@@ -460,13 +473,21 @@ export default function LandingPage() {
                 Start with a sentence. Deploy to Hanzo Cloud in one click.
               </Paragraph>
             </YStack>
-            <YStack marginTop="$6">
-              <BuildComposer
-                showPill={false}
-                typewriter={TYPED}
-                onSubmit={startBuild}
-  />
-            </YStack>
+            <XStack
+              role="button"
+              tabIndex={0}
+              onClick={focusComposerDock}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  focusComposerDock();
+                }
+              }}
+              className="hz-tap"
+              alignSelf="center" marginTop="$6" height={48} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$5" cursor="pointer" hoverStyle={{ borderColor: "$color5", backgroundColor: "$color4" }}
+            >
+              <SizableText fontSize="$3" fontWeight="500" color="$color">Start building</SizableText>
+            </XStack>
           </Reveal>
         </YStack>
       </YStack>
@@ -489,6 +510,33 @@ export default function LandingPage() {
 
       <LazySection minHeight={200}><PreFooterCTA /></LazySection>
       <LazySection minHeight={240}><SiteFooter /></LazySection>
+
+      {/* ── Composer dock — the ONE place to type, pinned to the bottom of the
+          viewport as a chat-style bar (per the ask). It lives OUTSIDE every
+          Reveal so `position: fixed` resolves against the viewport (the hero
+          glow above is fixed the same way), above the page. Its idea-crawl
+          rides inside the composer; .landing-composer-dock owns the glass fade
+          and the safe-area inset. */}
+      <YStack
+        position="fixed"
+        bottom={0}
+        left={0}
+        right={0}
+        zIndex={40}
+        paddingHorizontal="$4"
+        paddingTop="$5"
+        className="landing-composer-dock"
+      >
+        <YStack id="build" alignSelf="center" width="100%" maxWidth={672}>
+          <BuildComposer
+            showPill={false}
+            subline={false}
+            typewriter={TYPED}
+            starters={STARTERS}
+            onSubmit={startBuild}
+          />
+        </YStack>
+      </YStack>
     </YStack>
   );
 }

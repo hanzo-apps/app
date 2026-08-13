@@ -78,6 +78,15 @@ describe("BuildComposer starters", () => {
     expect(onSubmit).toHaveBeenCalledWith("Realtime chat app", "build");
   });
 
+  it("renders the starters as a seamless crawl — each twice, only one a button", () => {
+    renderComposer(<BuildComposer starters={STARTERS} />);
+    // The set is duplicated so the marquee (.hz-crawl) loops without a seam;
+    // the second copy is decorative (aria-hidden), so it is NOT an accessible
+    // button — screen readers and keyboard see each starter exactly once.
+    expect(screen.getAllByText("Realtime chat app")).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: "Realtime chat app" })).toHaveLength(1);
+  });
+
   it("goes through the same submit a typed message uses (seed + /dev push)", () => {
     renderComposer(<BuildComposer starters={STARTERS} />);
 

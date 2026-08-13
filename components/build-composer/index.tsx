@@ -341,34 +341,50 @@ export function BuildComposer({
         </YStack>
       </YStack>
 
-      {/* Starter prompts — honest app types. Clicking one IS the intent, so it
-          submits through the same `submit` the send button and Enter use; the
-          draft is set too so it stays visible if submit bounces to login. */}
+      {/* Starter prompts — honest app types, as ONE continuous "news crawl"
+          (the .hz-crawl marquee in globals.css): the set is rendered twice and
+          the track translates exactly one copy, so the loop never seams.
+          Clicking one IS the intent, so it submits through the same `submit`
+          the send button and Enter use; the draft is set too so it stays
+          visible if submit bounces to login. Hover pauses the crawl so a moving
+          chip can be caught; the second copy is decorative (aria-hidden). */}
       {!!starters?.length && (
-        <XStack marginTop="$4" flexWrap="wrap" justifyContent="center" gap="$2">
-          {starters.map((s) => (
-            <SizableText
-              key={s}
-              role="button"
-              tabIndex={0}
-              onClick={() => {
-                setIdea(s);
-                submit(s);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setIdea(s);
-                  submit(s);
-                }
-              }}
-              className="hz-tap"
-              cursor="pointer" flexShrink={0} whiteSpace="nowrap" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$color5", backgroundColor: "$color4", color: "$color" }}
-            >
-              {s}
-            </SizableText>
-          ))}
-        </XStack>
+        <YStack marginTop="$4" width="100%" className="hz-crawl">
+          <XStack className="hz-crawl-track">
+            {[0, 1].map((copy) => (
+              <XStack key={copy} className="hz-crawl-group" {...(copy === 1 ? { "aria-hidden": true } : {})}>
+                {starters.map((s) => {
+                  const clone = copy === 1;
+                  return (
+                    <SizableText
+                      key={`${copy}-${s}`}
+                      {...(clone ? {} : { role: "button", tabIndex: 0 })}
+                      onClick={() => {
+                        setIdea(s);
+                        submit(s);
+                      }}
+                      onKeyDown={
+                        clone
+                          ? undefined
+                          : (e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                setIdea(s);
+                                submit(s);
+                              }
+                            }
+                      }
+                      className="hz-tap"
+                      cursor="pointer" flexShrink={0} whiteSpace="nowrap" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$color5", backgroundColor: "$color4", color: "$color" }}
+                    >
+                      {s}
+                    </SizableText>
+                  );
+                })}
+              </XStack>
+            ))}
+          </XStack>
+        </YStack>
       )}
 
       {/* Subtle honest sub-line — no fabricated claims.

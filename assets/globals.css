@@ -1465,6 +1465,70 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   .hz-logo-group { padding-right: 0; }
 }
 
+/* Idea crawl — the composer's starter prompts as ONE continuous news-ticker
+   line (components/build-composer). Same seamless technique as the sibling
+   .hz-logo-marquee above (the set is rendered twice and the track translates
+   exactly one copy, so the seam never shows), but ALWAYS on and leftward —
+   here it is a deliberate motif, not a mobile-overflow fallback. The chips
+   stay clickable; hover/focus pauses the crawl so a moving chip can be caught,
+   and the second copy is decorative (aria-hidden). */
+.hz-crawl {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 28px, black calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to right, transparent, black 28px, black calc(100% - 28px), transparent);
+}
+.hz-crawl-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: hz-crawl-scroll var(--crawl-duration, 40s) linear infinite;
+}
+.hz-crawl:hover .hz-crawl-track,
+.hz-crawl:focus-within .hz-crawl-track {
+  animation-play-state: paused;
+}
+.hz-crawl-group {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 10px;
+  /* Trailing gap == internal gap, so copy-2's first chip sits the same
+     distance from copy-1's last as any two neighbours: no seam at the wrap. */
+  padding-right: 10px;
+}
+@keyframes hz-crawl-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+/* Motion off → no animation, drop the duplicate, hand-scroll the single row. */
+@media (prefers-reduced-motion: reduce) {
+  .hz-crawl-track { animation: none; transform: none; }
+  .hz-crawl { overflow-x: auto; scrollbar-width: none; }
+  .hz-crawl::-webkit-scrollbar { display: none; }
+  .hz-crawl-group[aria-hidden="true"] { display: none; }
+  .hz-crawl-group { padding-right: 0; }
+}
+
+/* The composer dock (app/page.tsx) — a chat-style bar pinned to the bottom of
+   the landing, holding the composer and its idea-crawl. The page scrolls UNDER
+   it, so it wears a glass fade: solid at the very bottom, dissolving to
+   transparent at the top with a light blur, so whatever passes behind stays
+   legible but recedes. It owns the safe-area inset so the composer never hides
+   under a phone's home indicator. */
+.landing-composer-dock {
+  /* Click-through everywhere except the composer itself, so the faded glass
+     margins never trap taps meant for the content scrolling behind. */
+  pointer-events: none;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--background) 58%, color-mix(in srgb, var(--background) 50%, transparent) 84%, transparent);
+  /* One glass radius fleet-wide (tests/unit/glass.test.ts pins 20px). */
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+.landing-composer-dock > * {
+  pointer-events: auto;
+}
+
 /* The `group` prop exists in this app for STATE only ($group-hover/press/
    focus), which compiles to descendant selectors. Tamagui's group ALSO emits
    `container-type: inline-size` to power $group-<size> container queries —
