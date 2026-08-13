@@ -112,6 +112,18 @@ it('gives every icon-only Button size="icon"', () => {
       const props = s.slice(i, end)
       if (!props.includes('aria-label')) continue
       if (/size=\{?["']icon/.test(props)) continue
+      // `.hz-round` is the second legitimate answer, and this guard exists for
+      // the INVARIANT — a glyph that is not squashed — rather than for one
+      // spelling of it. `size="icon"` earns its pass by zeroing the padding from
+      // inside the component; `html:root .hz-composer .hz-round` (globals.css)
+      // earns the same pass by pinning a 36px box AND `padding: 0`, both
+      // `!important`. It exists because the size variant also pins a
+      // rounded-RECTANGLE with `!important`, which no prop or inline style can
+      // outrank — so a circular icon button cannot be spelled the first way.
+      // Without this the composer's + and send read as offenders while being
+      // measurably correct, and a guard that fails on correct code is one people
+      // learn to switch off.
+      if (/className=["'][^"']*\bhz-round\b/.test(props)) continue
       const close = s[end - 2] === '/' ? end : closeOf(s, end)
       if (close < 0) continue
       const body = s[end - 2] === '/' ? '' : s.slice(end, close)
