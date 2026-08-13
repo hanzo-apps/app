@@ -380,8 +380,16 @@ export default function HeroPreview() {
             stack (chat above preview) below $md, which read as a broken layout
             at laptop and phone alike; the rail simply narrows instead. ── */}
         <XStack height={340} $md={{ height: 360 }}>
-          {/* Chat rail — transcript + the rounded composer input. */}
-          <YStack width="36%" minWidth={120} maxWidth={220} flexShrink={0} borderRightWidth={1} borderColor="$borderColor" backgroundColor="$background">
+          {/* Chat rail — transcript + the rounded composer input.
+              Phones get the PREVIEW only. 36% of a 358px frame clamps to the
+              120px floor, and at that width the rail's own composer rendered
+              "Add a l" and its send row collapsed into a smudge — two
+              illegible panes where one legible one belongs. The prompt half of
+              the story is already told by the real composer directly above this
+              demo, so what the mock has left to show on a phone is the OUTPUT.
+              display:none is the BASE and $sm switches it back on, because these
+              media queries are min-width. */}
+          <YStack display="none" $sm={{ display: "flex" }} width="36%" minWidth={120} maxWidth={220} flexShrink={0} borderRightWidth={1} borderColor="$borderColor" backgroundColor="$background">
             <XStack alignItems="center" gap="$2" paddingHorizontal="$2.5" paddingTop="$2.5">
               <Sparkles size={12} />
               <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
@@ -515,11 +523,16 @@ export default function HeroPreview() {
               {busy ? (streamLine ?? "working…") : live ? "pushed to main · e4b21c7" : "main"}
             </SizableText>
           </XStack>
-          <XStack marginLeft="auto" flexShrink={0} alignItems="center" gap="$1.5">
+          {/* Shrinkable, and minWidth 0 so it CAN: flexShrink={0} here meant the
+              live URL could not yield an inch, so at 390 it ran 4px past the
+              frame and the mock browser looked broken. The dot still refuses to
+              shrink — it is 6px and it is the signal — and the URL truncates
+              instead, which is what a real address bar does. */}
+          <XStack marginLeft="auto" minWidth={0} flexShrink={1} alignItems="center" gap="$1.5">
             {live ? (
               <>
-                <SizableText height={6} width={6} borderRadius="$10" backgroundColor="$color" className="livedot" />
-                <SizableText fontFamily="$mono" fontSize="$1" color="$color">Live at {SLUG}</SizableText>
+                <SizableText flexShrink={0} height={6} width={6} borderRadius="$10" backgroundColor="$color" className="livedot" />
+                <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">Live at {SLUG}</SizableText>
               </>
             ) : phase === "publishing" ? (
               <>

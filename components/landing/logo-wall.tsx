@@ -37,7 +37,12 @@ function LogoRow({ dup = false }: { dup?: boolean }) {
           key={(dup ? "b-" : "a-") + p.alt}
           src={p.src}
           alt={dup ? "" : p.alt}
-          filter="brightness(0) invert(1)" height="$5" width="auto" objectFit="contain" opacity={0.45} hoverStyle={{ opacity: 0.9 }} flexShrink={0} $md={{ height: 22 }}
+          // The media queries are MIN-width, so the phone value is the BASE and
+          // $md is the one that switches it back for desktop. Written the other
+          // way round — height="$5" with $md={{ height: 22 }} — it read as
+          // "small on phones" and did the exact opposite: $5 is 52px, measured
+          // live at 390px, which fits barely two marks on screen and clips both.
+          filter="brightness(0) invert(1)" height={22} width="auto" objectFit="contain" opacity={0.45} hoverStyle={{ opacity: 0.9 }} flexShrink={0} $md={{ height: "$5" }}
   />
       ))}
     </XStack>
