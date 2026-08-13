@@ -47,6 +47,26 @@ const OURS = ['https://*.hanzo.ai', 'https://*.hanzo.app'];
 const IDP = ['https://hanzo.id', 'https://lux.id', 'https://zoo.id', 'https://pars.id'];
 
 /**
+ * Cloudflare Web Analytics, which the ZONE injects — not this repo.
+ *
+ * Web Analytics is on with `auto_install` across the estate (every hanzo zone),
+ * so the edge appends `beacon.min.js` to each HTML response on the way out.
+ * Nothing in this repo asks for it and nothing here can stop asking: the tag is
+ * added after the app has finished responding. This policy then refused it, so
+ * the beacon executed nowhere and the analytics measured nothing, at the cost of
+ * a blocked request and a console error on every page view.
+ *
+ * Measured live on hanzo.app at 375x667: `script-src-elem` blocked
+ * `static.cloudflareinsights.com/beacon.min.js/v4513…`.
+ *
+ * Two hosts, because they are two different jobs: the script is served from
+ * `static.`, and the beacon reports to the apex `cloudflareinsights.com`
+ * (`/cdn-cgi/rum`). Allowing only the first loads a script that can send nothing.
+ */
+const RUM_SCRIPT = 'https://static.cloudflareinsights.com';
+const RUM_REPORT = 'https://cloudflareinsights.com';
+
+/**
  * ONE policy, stated once.
  *
  * Development used to RESTATE the whole thing instead of deriving it, and the
@@ -71,7 +91,7 @@ const policy = (dev: boolean) => {
   const src = (...parts: string[]) => parts.join(' ');
   return [
     "default-src 'self'",
-    src("script-src 'self' 'unsafe-inline' 'unsafe-eval'", ...CDN, ...OURS, ...http),
+    src("script-src 'self' 'unsafe-inline' 'unsafe-eval'", ...CDN, ...OURS, RUM_SCRIPT, ...http),
     // Google Fonts is gone from both of these. It was here because the skill
     // prompts offered it as the font choice, which put a request to Google on
     // every view of every site built here — a third party learning who reads
@@ -105,6 +125,7 @@ const policy = (dev: boolean) => {
       "connect-src 'self' blob: wss://*.hanzo.ai https://api.openai.com https://api.anthropic.com",
       ...OURS,
       ...IDP,
+      RUM_REPORT,
       ...http,
       ...socket,
     ),
