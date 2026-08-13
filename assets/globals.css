@@ -456,6 +456,35 @@ html:root .hz-shot {
   overflow-y: auto;
 }
 
+/* THE IDLE PLACEHOLDER IS TEXT THE BOX WAS NEVER SIZED FOR.
+ *
+ * `rows` is a two-line floor and the field's auto-grow lifts it from the typed
+ * VALUE (see components/build-composer) — a placeholder is not one, so the
+ * longest phrase the typewriter rests on, "Ask Hanzo to build a customer portal
+ * with login and a dashboard", simply drew its third line behind the action row
+ * and was sliced. Nothing errors; the sentence just ends early.
+ *
+ * Measured across all twelve phrases: that one is the worst at every width, and
+ * it needs three lines only at 322px and below — 323 up it is two, and 640 up
+ * it is one. So this is the narrow phones' rule alone (320, and the 280 of a
+ * folded phone), cut at 340 to leave a little room under the boundary without
+ * reaching 360, the narrowest width in common use.
+ *
+ * 84 = three 22px lines + the field's 12px top and 6px bottom padding.
+ *
+ * A FLOOR, never a height: `scrollHeight` cannot report less than the padding
+ * box, so the auto-grow reads 84 while the box is idle and keeps growing past
+ * it the moment a longer idea is typed.
+ *
+ * `!important` because the tap-target floor above states `textarea { min-height:
+ * 44px !important }`, and an important declaration is only outranked by another
+ * one. */
+@media (max-width: 340px) {
+  html:root .hz-ask {
+    min-height: 84px !important;
+  }
+}
+
 /* The ring DRAWS A RING. It used to draw a filled DISC and rely on the panel
    above it being opaque to cover the middle — which made the panel's opacity
    load-bearing for something that was never about the panel. The moment the

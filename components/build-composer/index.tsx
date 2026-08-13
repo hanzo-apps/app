@@ -411,6 +411,12 @@ export function BuildComposer({
             onBlur={() => setFocused(false)}
             placeholder={placeholder}
             aria-label="Ask Hanzo to build"
+            // The idle placeholder needs a third line on the narrowest phones,
+            // and `rows` is a two-line floor the auto-grow above never lifts —
+            // it measures the typed value, and the placeholder is not one.
+            // `.hz-ask` (assets/globals.css) is that floor; the arithmetic and
+            // the width it starts at are stated there.
+            className="hz-ask"
             width="100%" backgroundColor="transparent" borderWidth={0} paddingHorizontal="$3.5" paddingBottom="$1.5" paddingTop="$3" fontSize={16} lineHeight="1.375" color="$color" placeholderTextColor="$color11" focusStyle={{ borderWidth: 0 }}
   />
           {/* What is attached, and what was turned away, between the field and
