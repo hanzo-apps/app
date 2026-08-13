@@ -17,12 +17,20 @@
 // Frame 0 of the film IS the poster, so the still and the first played frame
 // are the same picture and the swap is invisible.
 //
-// Reduced motion gets that still and no <video> at all. A paused player would
-// still fetch the megabyte; an image is both the honest answer and the cheap
-// one.
+// THE STILL IS WHAT THE SERVER SENDS. It is the hero visual now, so it has to
+// be there in the first bytes — and the still is the only answer a server pass
+// can give, because whether motion is welcome is a media query it cannot read.
+// So every path renders the picture first and the film replaces it on mount,
+// which costs nothing (the swap is invisible) and settles two things at once:
+// the box never shifts, and reduced motion never fetches the megabyte. A paused
+// player would still download it, so respecting the preference means no <video>
+// at all.
+//
+// The width is NOT decided here. The film has one mount, and how big it may be
+// is a question about the fold around it — `.hz-fold` in assets/globals.css.
 
 import { useEffect, useState } from "react";
-import { YStack, Paragraph } from "@hanzo/ui";
+import { YStack } from "@hanzo/ui";
 
 const POSTER = "/hero.jpg";
 const FILM = "/hero.mp4";
@@ -30,22 +38,17 @@ const ALT =
   "The Hanzo builder: one prompt becomes a running app, published to a live URL.";
 
 function reducedMotion(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true
-  );
+  return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
 }
 
 export default function HeroVideo() {
-  const [still, setStill] = useState(reducedMotion);
-  // Read again on mount, so a pass that rendered without a window is corrected
-  // rather than left playing at someone who asked for no motion.
+  const [play, setPlay] = useState(false);
   useEffect(() => {
-    setStill(reducedMotion());
+    setPlay(!reducedMotion());
   }, []);
 
   return (
-    <YStack alignSelf="center" width="100%" maxWidth={920} className="hz-film">
+    <YStack width="100%" className="hz-film">
       <style>{`
         .hz-film .frame {
           position: relative; width: 100%; aspect-ratio: 1 / 1;
@@ -58,10 +61,17 @@ export default function HeroVideo() {
         }
       `}</style>
 
+      {/* No caption. It read "One prompt, built and published on Hanzo Cloud"
+          and it labelled the film from below — which worked when the film was
+          the thing past the fold, and stopped working when the film became the
+          first thing on the page: the label then landed between the picture
+          and the pill, two mono micro-lines deep, saying what the subline four
+          lines down already says in full. The picture is introduced by the
+          sentence under it now. */}
       <YStack className="frame">
-        {still ? (
+        {!play ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={POSTER} alt={ALT} />
+          <img src={POSTER} alt={ALT} fetchPriority="high" />
         ) : (
           <video
             src={FILM}
@@ -75,17 +85,6 @@ export default function HeroVideo() {
           />
         )}
       </YStack>
-
-      <Paragraph
-        marginTop="$4"
-        textAlign="center"
-        fontFamily="$mono"
-        fontSize="$1"
-        lineHeight="1.4"
-        color="$color11"
-      >
-        One prompt, built and published on Hanzo Cloud
-      </Paragraph>
     </YStack>
   );
 }

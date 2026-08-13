@@ -9,6 +9,7 @@ import { Github } from "lucide-react";
 import { fetchPublishedSlugs } from "@/lib/api/templates";
 import Header from "@/components/layout/header";
 import Reveal from "@/components/landing/reveal";
+import HeroVideo from "@/components/landing/hero-video";
 import LazySection from "@/components/landing/lazy-section";
 import { TemplateThumb } from "@/components/template-thumb";
 import { TEMPLATE_SHOTS } from "@/lib/template-shots";
@@ -17,12 +18,8 @@ import { BuildComposer, type ComposerMode } from "@/components/build-composer";
 import { ProjectThumb } from "@/components/project-thumb";
 
 // Below-the-fold sections: code-split out of the initial bundle and mounted on
-// scroll via <LazySection>. The hero (Header + composer) stays eager so it paints
-// instantly; these chunks load as the viewport approaches each one.
-// Client-only: it reads prefers-reduced-motion at its first render, and a
-// server pass cannot know the answer.
-const HeroVideo = dynamic(() => import("@/components/landing/hero-video"), { ssr: false });
-const HeroPreview = dynamic(() => import("@/components/landing/hero-preview"), { ssr: false });
+// scroll via <LazySection>. The hero — Header, film and composer — stays eager
+// so it paints instantly; these chunks load as the viewport approaches each one.
 const LogoWall = dynamic(() => import("@/components/landing/logo-wall"), { ssr: false });
 const CloudIntegration = dynamic(() => import("@/components/landing/cloud-integration"), { ssr: false });
 const ModelsStrip = dynamic(() => import("@/components/landing/models-strip"), { ssr: false });
@@ -218,60 +215,82 @@ export default function LandingPage() {
           exactly the run of the page the composer stays on screen for: the hero
           through the closing CTA, where it comes to rest. */}
       <YStack position="relative" zIndex={10}>
-        {/* ── Hero — the first screen, and the composer's home ──────
-            `100svh` so the hero OWNS the fold: the copy centres in the space
-            above the composer's slot (the padding below), and the composer sits
-            at the bottom of this screen with nothing scrolling under it. It is
-            the small viewport unit because a phone's URL bar moves the large
-            one, which would push the composer under the fold on first paint. */}
+        {/* ── Hero — the first screen: the sentence, the film, the composer ──
+            `100svh` so the hero OWNS the fold: the copy and the film centre in
+            the space above the composer's slot (the padding below), and the
+            composer sits at the bottom of this screen with nothing scrolling
+            under it. It is the small viewport unit because a phone's URL bar
+            moves the large one, which would push the composer under the fold on
+            first paint. */}
         <YStack minHeight="100svh" justifyContent="center" paddingHorizontal="$4" paddingBottom={200} paddingTop="$8" $md={{ paddingHorizontal: "$6" }}>
-          <YStack alignSelf="center" maxWidth={768}>
-            <Reveal>
-              <XStack alignSelf="center" marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color0025" paddingHorizontal="$3" paddingVertical="$1.5">
-                <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
-                  Apps, wired to real data &amp; AI
-                </SizableText>
-              </XStack>
-            </Reveal>
+          {/* The film comes FIRST — it is what the screen opens with, and the
+              sentence reads under it. A phone therefore stacks film, pill,
+              headline, subline, with the composer already at the bottom.
 
-            <Reveal delay={60}>
-              {/* 17px is the largest size that keeps the WHOLE sentence on one
-                  line at 390: measured, 358px of room and 17.5px renders 354 —
-                  so this is the fit with the slack a webfont's metrics need.
-                  At 30.4px it wrapped to three lines with "it." alone on the
-                  last. $sm and up are untouched, where the <br> below splits it
-                  into two deliberate lines. */}
-              <H1 fontSize={17} fontWeight="600" textAlign="center" lineHeight="1.05" letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: 48 }}>
-                {/* The space is explicit: JSX drops the whitespace around the <br>,
-                    and the <br> is hidden below sm — without it the mobile heading
-                    reads "Describe your app.Hanzo builds and ships it." */}
-                Describe your app.{' '}
-                <br className="break-sm" />
-                Hanzo builds and ships it.
-              </H1>
-            </Reveal>
+              From $lg the two stand side by side instead, because stacked they
+              cannot both be big: a 1280x800 fold holds the copy, the composer's
+              123px dock and its 200px reserve, which leaves the film 248px of
+              height — a 331px thumbnail. Beside the copy it is 576x432. The row
+              is `row-reverse` so the film keeps its place as the FIRST thing in
+              the document and still lands on the right, where a product shot
+              belongs next to a left-aligned headline.
 
-            <Reveal delay={120}>
-              {/* 12 on a phone, and the media queries are MIN-width, so that is the
-                  BASE and $md is the desktop branch. Written the other way round it
-                  reads as "small on phones" and does the exact opposite. $4 measured
-                  15px here, which wrapped the sentence to three lines at 390. */}
-              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize={12} textAlign="center" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
-                One prompt becomes a live app on Hanzo Cloud — UI, database,
-                auth, and 400+ AI models, wired in and deployed.
-              </Paragraph>
-            </Reveal>
+              1200 is two 576px columns and the $8 (48px) gap between them, and
+              576 is measured: it is the width the headline needs for the two
+              deliberate lines its <br> writes. At 1152 the columns came out 552
+              and "Hanzo builds and ships it." broke across two more. */}
+          <YStack alignSelf="center" width="100%" maxWidth={768} gap="$6" $lg={{ flexDirection: "row-reverse", alignItems: "center", maxWidth: 1200, gap: "$8" }}>
+            {/* The film — the hero visual, playing before anyone scrolls, and
+                the first thing in the fold rather than something under it.
+                Deliberately bare of LazySection and Reveal: both decide when it
+                may be seen, and its one job is to already be running. `.hz-fold`
+                (assets/globals.css) is what keeps it inside the fold. */}
+            <YStack className="hz-fold" alignSelf="center" width="100%" $lg={{ flex: 1, minWidth: 0 }}>
+              <HeroVideo />
+            </YStack>
 
+            <YStack alignSelf="center" maxWidth={768} $lg={{ flex: 1, width: "100%", maxWidth: 576 }}>
+              <Reveal>
+                <XStack alignSelf="center" marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color0025" paddingHorizontal="$3" paddingVertical="$1.5" $lg={{ alignSelf: "flex-start" }}>
+                  <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
+                    Apps, wired to real data &amp; AI
+                  </SizableText>
+                </XStack>
+              </Reveal>
+
+              <Reveal delay={60}>
+                {/* 17px is the largest size that keeps the WHOLE sentence on one
+                    line at 390: measured, 358px of room and 17.5px renders 354 —
+                    so this is the fit with the slack a webfont's metrics need.
+                    At 30.4px it wrapped to three lines with "it." alone on the
+                    last. $sm and up are untouched, where the <br> below splits it
+                    into two deliberate lines. */}
+                <H1 fontSize={17} fontWeight="600" textAlign="center" lineHeight="1.05" letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: 48 }} $lg={{ textAlign: "left" }}>
+                  {/* The space is explicit: JSX drops the whitespace around the <br>,
+                      and the <br> is hidden below sm — without it the mobile heading
+                      reads "Describe your app.Hanzo builds and ships it." */}
+                  Describe your app.{' '}
+                  <br className="break-sm" />
+                  Hanzo builds and ships it.
+                </H1>
+              </Reveal>
+
+              <Reveal delay={120}>
+                {/* 12 on a phone, and the media queries are MIN-width, so that is the
+                    BASE and $md is the desktop branch. Written the other way round it
+                    reads as "small on phones" and does the exact opposite. $4 measured
+                    15px here, which wrapped the sentence to three lines at 390. */}
+                <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize={12} textAlign="center" color="$color11" $md={{ fontSize: "$6" }} $lg={{ alignSelf: "flex-start", textAlign: "left" }} lineHeight="1.5">
+                  One prompt becomes a live app on Hanzo Cloud — UI, database,
+                  auth, and 400+ AI models, wired in and deployed.
+                </Paragraph>
+              </Reveal>
+            </YStack>
           </YStack>
         </YStack>
 
-        {/* ── Below the fold — the film, the template lane and the hero visual ── */}
+        {/* ── Below the fold — the template lane ── */}
         <YStack paddingHorizontal="$4" paddingTop="$6" paddingBottom="$9" $md={{ paddingHorizontal: "$6", paddingBottom: "$11" }}>
-          {/* The film is the first thing past the fold and it plays on load —
-              no LazySection and no Reveal, because both would decide when it
-              may be seen and it has exactly one job: to already be running. */}
-          <HeroVideo />
-
           <YStack alignSelf="center" maxWidth={768}>
             <Reveal delay={180}>
               <YStack alignSelf="center" width="100%" maxWidth={672}>
@@ -359,16 +378,6 @@ export default function LandingPage() {
                 </YStack>
               </YStack>
             </Reveal>
-          </YStack>
-
-          {/* Hero focal visual — the builder building an app, live. Lazy: it sits
-              just below the composer, so it mounts the moment it nears view. */}
-          <YStack marginTop="$10" $md={{ marginTop: "$11" }}>
-            <LazySection minHeight={440} rootMargin="900px 0px">
-              <Reveal delay={240}>
-                <HeroPreview />
-              </Reveal>
-            </LazySection>
           </YStack>
         </YStack>
 
