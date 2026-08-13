@@ -262,7 +262,11 @@ export default function LandingPage() {
             </Reveal>
 
             <Reveal delay={120}>
-              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" textAlign="center" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
+              {/* 12 on a phone, and the media queries are MIN-width, so that is the
+                  BASE and $md is the desktop branch. Written the other way round it
+                  reads as "small on phones" and does the exact opposite. $4 measured
+                  15px here, which wrapped the sentence to three lines at 390. */}
+              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize={12} textAlign="center" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
                 One prompt becomes a live app on Hanzo Cloud — UI, database,
                 auth, and 400+ AI models, wired in and deployed.
               </Paragraph>
