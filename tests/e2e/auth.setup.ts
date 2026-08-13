@@ -24,7 +24,7 @@ setup('authenticate via Hanzo IAM (hanzo.id OIDC)', async ({ page }) => {
 
   // A protected route redirects straight to the hanzo.id (IAM) authorize form
   // — there is no intermediate in-app login to click through. Do NOT touch the
-  // "Continue with <provider>" buttons; use the email/password fields + "Sign in".
+  // "Continue with <provider>" buttons; use the email/password fields + "Continue".
   await page.goto('/dashboard');
   await page.waitForURL(/hanzo\.id\/login\/oauth\/authorize/, { timeout: 30_000 });
 
@@ -69,17 +69,32 @@ setup('authenticate via Hanzo IAM (hanzo.id OIDC)', async ({ page }) => {
   await expect(identity).toHaveValue(email);
   await expect(secret).not.toHaveValue('');
 
-  await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+  // The submit says "Continue". It said "Sign in" when this was written and the
+  // string is now absent from the page entirely, so the click resolved against
+  // nothing for 15s and took the whole authenticated suite with it — the two
+  // assertions above passed, which is what says the drift is the LABEL and not
+  // the credentials.
+  //
+  // `exact` is not decoration here: the name match is a substring by default and
+  // this form carries four "Continue with <provider>" buttons, so a loose
+  // "Continue" matches five elements and presses Google.
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
 
   // Success → callback exchanges the PKCE code → back on hanzo.app. IAM may
   // interpose a one-time consent; approve it if shown. If we're bounced back to the
   // form with an error, the creds are wrong — fail loudly rather than hang.
+  //
+  // That matcher also spells "continue", so it now describes the button pressed
+  // above as well. It is therefore consulted only once the credential form is
+  // GONE — otherwise the first pass of this loop presses submit a second time,
+  // underneath the redirect already in flight.
   const consent = page.getByRole('button', { name: /^(authorize|allow|agree|continue)$/i });
   const deadline = Date.now() + 30_000;
   while (Date.now() < deadline) {
     const url = page.url();
     if (/hanzo\.app\//.test(url) && !/\/auth\/callback/.test(url)) break;
-    if (await consent.count().catch(() => 0)) {
+    const stillOnForm = await secret.isVisible().catch(() => false);
+    if (!stillOnForm && (await consent.count().catch(() => 0))) {
       await consent.first().click().catch(() => {});
     }
     const err = await page
