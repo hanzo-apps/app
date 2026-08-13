@@ -12,7 +12,8 @@
 // Auth is the only app-owned piece: the signed-in account menu / sign-in CTAs
 // ride `identitySlot`, on the ONE IAM PKCE flow via useUser. "Get started" is
 // the SIGNUP funnel (IAM registration hint → builder, where OrgGate onboards
-// the new org); "Sign In" is plain login() for returning users.
+// the new org). There is no separate "Sign In": it called the same login()
+// and offered a choice that does not exist.
 
 import { HanzoHeader, resolveSurface } from "@hanzogui/shell";
 import { SizableText, YStack, Paragraph, XStack } from "@hanzo/ui";
@@ -86,21 +87,29 @@ export default function Header() {
     </DropdownMenu>
   );
 
+  // ONE way in.
+  //
+  // There were two — a ghost "Sign In" beside "Get started" — and they are the
+  // same door: both call `login()`, so the header offered a choice that does
+  // not exist and spent its most valuable inches doing it. The pair also read
+  // as equals, which is the opposite of what a header should say: one action,
+  // one weight.
+  //
+  // It stays `accent`, and the colour is NOT decided here. Reaching for a white
+  // fill by hand was tried and is wrong twice over, both pinned by tests: a
+  // Button in this shell must carry a variant or `accent`
+  // (ui-centralization), and re-spelling a foreground on an accent label is
+  // exactly how login-modal ended up at 1.07:1 and invisible
+  // (signed-out-emphasis). `accent` carries its own label colour; naming one is
+  // how that goes silent.
+  //
+  // So if the primary should be white, `accent` is where white belongs — ONE
+  // recipe in @hanzo/ui/glass, and then every signed-out surface agrees at once
+  // instead of this header disagreeing with the other four.
   const signedOutCTAs = (
-    <>
-      <Button onClick={() => login()} variant="ghost">
-        Sign In
-      </Button>
-      {/* This asked the library for its loud variant by name, which paints
-          identically today — measured rgb(51,51,51) on rgb(69,69,69), i.e.
-          `accent` exactly. Still the wrong spelling: a variant only reaches a
-          Button, and half this app's loud controls are an XStack or a Link.
-          One recipe that works on every element beats two names for one value.
-          (Old spelling described, not quoted — the ratchet greps source.) */}
-      <Button onClick={getStarted} {...accent}>
-        Get started
-      </Button>
-    </>
+    <Button onClick={getStarted} {...accent}>
+      Get started
+    </Button>
   );
 
   // The registry surface with THIS surface's nav as DATA (never a fork). The
