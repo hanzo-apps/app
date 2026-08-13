@@ -129,4 +129,22 @@ describe('CSP is one policy, not two', () => {
       expect([...connect]).toContain('https://hanzo.id')
     }
   })
+
+  it('lets the analytics beacon report from wherever it loads', () => {
+    // The zone appends beacon.min.js after this app has finished responding, so
+    // the script arrives from one host (script-src) and posts what it measured
+    // to another (connect-src). Naming one without the other is the state that
+    // looks fine and measures nothing: a beacon that loads and can send
+    // nothing, or a report nobody will make. The refusal is a console line, not
+    // an exception, so nothing else will ever say so.
+    //
+    // This names no source and copies no list — it asserts the two halves
+    // agree, which stays true if the zone's Web Analytics is switched off and
+    // both are dropped.
+    const rum = (m: Map<string, Set<string>>, d: string) =>
+      [...(m.get(d) || [])].some((s) => s.includes('cloudflareinsights.com'))
+    for (const [env, m] of [['production', prod], ['development', dev]] as const) {
+      expect([env, rum(m, 'script-src')]).toEqual([env, rum(m, 'connect-src')])
+    }
+  })
 })
