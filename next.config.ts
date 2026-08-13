@@ -82,12 +82,20 @@ const nextConfig: NextConfig = {
     // stylesheet, uncacheable, render-blocking, re-sent on every navigation.
   },
 
-  // /help was a dead route (404) linked from the builder footer and marketing
-  // footers. Point it at the real docs so every "Help" link resolves — one rule
-  // instead of editing each link site.
+  // /help sent everyone to docs.hanzo.ai. That was right in July, when /help
+  // 404'd and the redirect was the cheapest way to make the footer links
+  // resolve. `app/help/page.tsx` — the support hub, with the real channels on
+  // it — landed on 2026-07-18 and has never once been reachable, because a
+  // redirect runs BEFORE routing: the page was written, deployed, and shadowed.
+  //
+  // The premise expired, not the route. Five link sites point at /help (the
+  // header nav, pricing, docs, faq, and /support, which redirects here), and
+  // every one of them was leaving the app: docs.hanzo.ai is a different
+  // application (fumadocs), and on a phone it is the worse place to arrive —
+  // measured at 375x667, 56 of its 72 tap targets are under 44px, against 0 of
+  // 68 on this app's own pages.
   async redirects() {
     return [
-      { source: '/help', destination: 'https://docs.hanzo.ai', permanent: false },
       // The apps catalog moved to /install; keep old /apps links alive.
       { source: '/apps', destination: '/install', permanent: true },
     ];
