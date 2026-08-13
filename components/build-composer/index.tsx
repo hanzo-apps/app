@@ -131,7 +131,17 @@ export function BuildComposer({
 
   // Idle typewriter placeholder — pauses on focus/typing; static first phrase
   // under prefers-reduced-motion (mirrors the Reveal contract).
+  //
+  // A fully-typed phrase is ARMED: for the ~3s it rests on screen (the read
+  // window) the send button builds THAT example, so a reader who likes what
+  // they see ships it in one tap without typing a word. Hovering or focusing
+  // send holds the phrase (freezeRef) so the reach never races the erase —
+  // what you see stays what you'd build.
   const [typed, setTyped] = useState('');
+  const [armed, setArmed] = useState<string | null>(null);
+  const armedRef = useRef<string | null>(null);
+  armedRef.current = armed;
+  const freezeRef = useRef(false);
   const idle = !!typewriter?.length && !focused && idea.length === 0;
   const phraseRef = useRef(0);
   const charRef = useRef(0);
@@ -143,6 +153,7 @@ export function BuildComposer({
       window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     ) {
       setTyped(typewriter[0]);
+      setArmed(typewriter[0]); // static, but still one-tap buildable
       return;
     }
     let t: ReturnType<typeof setTimeout>;
@@ -153,11 +164,21 @@ export function BuildComposer({
         setTyped(phrase.slice(0, charRef.current));
         if (charRef.current >= phrase.length) {
           delRef.current = true;
-          t = setTimeout(tick, 1800);
+          setArmed(phrase);           // readable — and buildable in one tap
+          t = setTimeout(tick, 3000);  // the read/act pause
           return;
         }
         t = setTimeout(tick, 38);
       } else {
+        // Holding on the full phrase. Keep it up while a pointer or focus rests
+        // on send, so the tap that builds it never lands on a half-erased line.
+        if (armedRef.current) {
+          if (freezeRef.current) {
+            t = setTimeout(tick, 150);
+            return;
+          }
+          setArmed(null);
+        }
         charRef.current -= 1;
         setTyped(phrase.slice(0, Math.max(0, charRef.current)));
         if (charRef.current <= 0) {
@@ -172,6 +193,10 @@ export function BuildComposer({
     t = setTimeout(tick, 400);
     return () => clearTimeout(t);
   }, [idle, typewriter]);
+
+  // The example a bare send would build — only while the composer is genuinely
+  // idle (focusing or typing takes over and hands send the draft instead).
+  const armedIdea = idle ? armed : null;
 
   const placeholder = idle && typed
     ? `Ask Hanzo to build ${typed}█`
@@ -392,9 +417,11 @@ export function BuildComposer({
               </Voice>
               <Button size="icon-sm"
                 type="button"
-                onClick={() => submit()}
-                disabled={!idea.trim()}
-                aria-label="Start building"
+                onClick={() => submit(idea.trim() ? idea : (armedIdea ?? ''))}
+                onFocus={() => { freezeRef.current = true; }}
+                onBlur={() => { freezeRef.current = false; }}
+                disabled={!(idea.trim() || armedIdea)}
+                aria-label={armedIdea && !idea.trim() ? `Build ${armedIdea}` : "Start building"}
                 variant="outline"
                 alignItems="center" justifyContent="center" borderRadius={999} backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3", borderColor: "$borderColor" }}
               >

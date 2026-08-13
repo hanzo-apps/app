@@ -169,6 +169,36 @@ describe("BuildComposer starters", () => {
     expect(onSubmit).toHaveBeenCalledWith("a budget tracker", "build");
   });
 
+  // The typewriter is not just decoration: a fully-typed example ARMS the send
+  // button for the ~3s it rests on screen, so a reader who likes what they see
+  // builds it in one tap without typing a word. This pins that the armed phrase
+  // is what a bare send submits — the whole point of the read pause.
+  it("arms the fully-typed example — a bare send builds THAT phrase in one tap", () => {
+    jest.useFakeTimers();
+    try {
+      const onSubmit = jest.fn();
+      renderComposer(<BuildComposer typewriter={["a test app"]} onSubmit={onSubmit} />);
+
+      // Empty field, phrase mid-type → send is the generic "Start building",
+      // with nothing to build yet. (gui renders a role=button div, so assert the
+      // accessible name, not the native disabled attribute.)
+      expect(screen.queryByRole("button", { name: "Build a test app" })).toBeNull();
+      expect(screen.getByRole("button", { name: "Start building" })).toBeInTheDocument();
+
+      // Past the type-in (400ms lead + 10 chars × 38ms) into the read hold.
+      act(() => {
+        jest.advanceTimersByTime(400 + 10 * 38 + 60);
+      });
+
+      // Armed: send now NAMES exactly what a bare tap will build, and does.
+      const send = screen.getByRole("button", { name: "Build a test app" });
+      fireEvent.click(send);
+      expect(onSubmit).toHaveBeenCalledWith("a test app", "build");
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   it("holds the crawl still on a press, and lets it go again", () => {
     jest.useFakeTimers();
     try {

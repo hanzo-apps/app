@@ -99,10 +99,17 @@ const STARTERS = [
 // natural completions of "Ask Hanzo to build …".
 const TYPED = [
   "a customer portal with login and a dashboard",
+  "an internal admin dashboard for my team",
   "an AI support chatbot trained on my docs",
   "a SaaS app with Stripe billing and auth",
   "a marketplace with listings and checkout",
+  "a booking site with payments and reminders",
+  "a CRM to track leads and deals",
   "a realtime chat app with presence",
+  "an analytics dashboard with live charts",
+  "a landing page with an email waitlist",
+  "an inventory tracker with low-stock alerts",
+  "a docs site with full-text search",
 ];
 
 export default function LandingPage() {
