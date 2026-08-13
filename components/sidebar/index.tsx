@@ -76,7 +76,12 @@ const PRIMARY_ITEMS: SidebarItem[] = [
   { id: 'resources', label: 'Resources', icon: Sparkles, route: '/resources' },
   { id: 'connectors', label: 'Connectors', icon: Plug, route: '/connectors' },
   { id: 'agents', label: 'Agents', icon: Bot, route: '/agents' },
-  { id: 'sessions', label: 'Terminals', icon: TerminalSquare, route: 'https://tabs.hanzo.ai/app' },
+  // `href`, not `route`: tabs.hanzo.ai is another app. Through `route` this went
+  // to `router.push` with an absolute URL, which replaces hanzo.app in the tab —
+  // the reader loses their project to reach a terminal, and comes back by going
+  // back. `href` is the field that already means this and already opens a new
+  // tab; it was simply never used here.
+  { id: 'sessions', label: 'Terminals', icon: TerminalSquare, href: 'https://tabs.hanzo.ai/app' },
 ];
 
 // ── Projects group ──────────────────────────────────────────────────────────
