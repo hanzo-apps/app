@@ -1291,36 +1291,27 @@ export function AskAI({
         </XStack>
       )}
 
-      {/* THE SAME COMPOSER AS EVERYWHERE ELSE YOU TALK TO HANZO.
-          `.hz-composer` is the prism — a 1.5px-padded host carrying the slow
-          conic ring (::before) and its blurred halo (::after) — and the panel
-          inside it is glass. `/new` (components/build-composer) and hanzo.chat
-          both already render exactly this; the builder was the one surface that
-          did not, so the place you spend the most time typing was a flat black
-          box with a hard hairline while the other two glowed.
+      {/* Ask ONCE for build notifications, and only while the answer is
+          genuinely undecided — lib/notify owns the whole contract (denied is
+          a decision; a visible tab never gets one; ✕ is remembered).
 
-          The host draws the edge, so the panel carries NO border of its own: a
-          hairline inside the ring is the second edge that made this read heavy.
-          Radius is $8 outside / 14 inside, matching build-composer — concentric,
-          the inner radius smaller by the host's padding. */}
-      <YStack borderRadius="$8" elevation={6} zIndex={10} width="100%" className="hz-composer">
-      <YStack
-        className="glass"
-        position="relative" borderRadius={14} width="100%" group
-        onDragOver={handleDragOver}
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
-        {/* Ask ONCE for build notifications, and only while the answer is
-            genuinely undecided — lib/notify owns the whole contract (denied is
-            a decision; a visible tab never gets one; ✕ is remembered). */}
-        {askNotify && (
-          // A distinct rounded grey CARD, not a bare row — it used to blend
-          // into the composer with no ground of its own, so it read as chrome
-          // rather than a prompt. A $color3 fill, a hairline, its own radius and
-          // margin set it apart the way the reference does.
-          <XStack alignItems="center" gap="$2" margin="$2" marginBottom="$1" paddingVertical="$2" paddingLeft="$3" paddingRight="$2" borderRadius="$4" backgroundColor="$color3" borderWidth={1} borderColor="$color04">
+          It sits BEHIND the composer and shares its width. Inside the glass it
+          was inset by its own margin, so it read as a narrower panel floating
+          IN the composer — two stacked boxes with two different edges, and the
+          prompt looked like part of the input it was interrupting. Out here it
+          is one card the composer overlaps: same width, a lower `zIndex` than
+          the composer's 10, and a negative bottom margin so the composer covers
+          its lower edge and the two read as a stack rather than a sandwich. The
+          extra bottom padding is exactly that overlap, so nothing it says lands
+          under the composer. Bottom corners are square because they are never
+          seen. */}
+      {askNotify && (
+        <XStack
+          alignItems="center" gap="$2" width="100%" zIndex={0}
+          marginBottom={-14} paddingBottom={22}
+          paddingTop="$2" paddingLeft="$3" paddingRight="$2"
+          borderTopLeftRadius="$4" borderTopRightRadius="$4"
+          backgroundColor="$color3" borderWidth={1} borderBottomWidth={0} borderColor="$color04">
             <SizableText color="$color11"><Bell size={14} /></SizableText>
             <SizableText flex={1} minWidth={0} fontSize="$2" color="$color">
               Get notified when a build finishes
@@ -1352,8 +1343,30 @@ export function AskAI({
             >
               <X size={14} />
             </Button>
-          </XStack>
-        )}
+        </XStack>
+      )}
+
+      {/* THE SAME COMPOSER AS EVERYWHERE ELSE YOU TALK TO HANZO.
+          `.hz-composer` is the prism — a 1.5px-padded host carrying the slow
+          conic ring (::before) and its blurred halo (::after) — and the panel
+          inside it is glass. `/new` (components/build-composer) and hanzo.chat
+          both already render exactly this; the builder was the one surface that
+          did not, so the place you spend the most time typing was a flat black
+          box with a hard hairline while the other two glowed.
+
+          The host draws the edge, so the panel carries NO border of its own: a
+          hairline inside the ring is the second edge that made this read heavy.
+          Radius is $8 outside / 14 inside, matching build-composer — concentric,
+          the inner radius smaller by the host's padding. */}
+      <YStack borderRadius="$8" elevation={6} zIndex={10} width="100%" className="hz-composer">
+      <YStack
+        className="glass"
+        position="relative" borderRadius={14} width="100%" group
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
         {/* Resize grip — drag the input's top edge to grow/shrink it; keyboard
             accessible (↑ taller, ↓ shorter). The hit-area is the whole top
             edge, and the handle is INVISIBLE until that edge itself is hovered
