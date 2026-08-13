@@ -33,6 +33,9 @@ import {
   ChevronDown,
   Database,
   Sparkles,
+  Plus,
+  GitBranch,
+  Paperclip,
 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Textarea, Button } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
@@ -76,6 +79,14 @@ export function BuildComposer({
   const [withBase, setWithBase] = useState(true);
   const [focused, setFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // A starter/crawl chip FILLS the composer — it does not submit. The draft
+  // appears so it can be read and edited, then sent with the send button or
+  // Enter. (A moving chip is hard to "submit" by tap; filling is the fix.)
+  const fillIdea = (s: string) => {
+    setIdea(s);
+    textareaRef.current?.focus();
+  };
 
   useEffect(() => {
     setWithBase(baseEnabled());
@@ -265,11 +276,45 @@ export function BuildComposer({
   />
           <XStack alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$2.5" paddingBottom="$2.5">
             <XStack alignItems="center" gap="$1">
+              {/* [+] — bring in existing code, the same affordance the builder's
+                  composer has, on the left of the row. Import routes to /new
+                  (Git import); attach opens the builder where the uploader
+                  lives. Both destinations are real — nothing lists a surface
+                  that does not exist. */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type="button"
+                    size="icon-sm"
+                    variant="ghost"
+                    aria-label="Add to this build"
+                    borderRadius={999} borderWidth={1} borderColor="$borderColor" backgroundColor="$color005" hoverStyle={{ borderColor: "$color06" }}
+                  >
+                    <Plus size={16} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent width={236}>
+                  <DropdownMenuItem onClick={() => router.push('/new')}>
+                    <XStack alignItems="center" gap="$2">
+                      <GitBranch size={15} />
+                      <SizableText>Import a repo or site</SizableText>
+                    </XStack>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push('/dev')}>
+                    <XStack alignItems="center" gap="$2">
+                      <Paperclip size={15} />
+                      <SizableText>Attach files in the builder</SizableText>
+                    </XStack>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               {/* Build / Plan mode */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     type="button"
+                    size="sm"
                     variant="ghost"
                     alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color005" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$color06" }}
                   >
@@ -304,6 +349,7 @@ export function BuildComposer({
                   the chip read as a pressed gray slab. */}
               <Button
                 type="button"
+                size="sm"
                 variant="ghost"
                 onClick={toggleBase}
                 aria-pressed={withBase}
@@ -326,7 +372,7 @@ export function BuildComposer({
                   <Mic size={16} fill={state === "idle" ? "none" : "currentColor"} />
                 )}
               </Voice>
-              <Button size="icon"
+              <Button size="icon-sm"
                 type="button"
                 onClick={() => submit()}
                 disabled={!idea.trim()}
@@ -359,18 +405,14 @@ export function BuildComposer({
                     <SizableText
                       key={`${copy}-${s}`}
                       {...(clone ? {} : { role: "button", tabIndex: 0 })}
-                      onClick={() => {
-                        setIdea(s);
-                        submit(s);
-                      }}
+                      onClick={() => fillIdea(s)}
                       onKeyDown={
                         clone
                           ? undefined
                           : (e) => {
                               if (e.key === "Enter" || e.key === " ") {
                                 e.preventDefault();
-                                setIdea(s);
-                                submit(s);
+                                fillIdea(s);
                               }
                             }
                       }

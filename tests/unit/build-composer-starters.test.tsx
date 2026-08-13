@@ -1,10 +1,12 @@
 /**
- * A starter pill is an INTENT, not a draft.
+ * A starter chip FILLS the composer — it does not submit.
  *
- * Clicking "Realtime chat app" must SUBMIT that text through the composer's ONE
- * `submit` — the same path the send button and Enter use — and start the build.
- * Before the fix the click only called `setIdea(...)` and focused the textarea,
- * so the visitor had to press Enter a second time to actually go anywhere.
+ * The starters crawl as an animated ticker, and a moving chip is hard to
+ * "submit" by tap; the intent is to seed the draft so the visitor can read and
+ * edit it, THEN send. Clicking a chip sets the composer's text (and focuses
+ * it); the send button / Enter is what submits. This suite pins fill-then-send:
+ * a click fills without submitting, and a subsequent send goes through the one
+ * `submit` the send button and Enter use.
  */
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
@@ -67,15 +69,15 @@ describe("BuildComposer starters", () => {
     window.localStorage.clear();
   });
 
-  it("SUBMITS the starter text on one click, with the selected mode", () => {
+  it("FILLS the composer on click, and does not submit on its own", () => {
     const onSubmit = jest.fn();
     renderComposer(<BuildComposer starters={STARTERS} onSubmit={onSubmit} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Realtime chat app" }));
 
-    expect(onSubmit).toHaveBeenCalledTimes(1);
-    // Exact text, and the mode the user currently has selected (default Build).
-    expect(onSubmit).toHaveBeenCalledWith("Realtime chat app", "build");
+    // The draft is set for review; nothing is submitted yet.
+    expect(screen.getByLabelText("Ask Hanzo to build")).toHaveValue("Realtime chat app");
+    expect(onSubmit).not.toHaveBeenCalled();
   });
 
   it("renders the starters as a seamless crawl — each twice, only one a button", () => {
@@ -87,10 +89,11 @@ describe("BuildComposer starters", () => {
     expect(screen.getAllByRole("button", { name: "Realtime chat app" })).toHaveLength(1);
   });
 
-  it("goes through the same submit a typed message uses (seed + /dev push)", () => {
+  it("a filled starter then sends through the same submit a typed message uses (seed + /dev push)", () => {
     renderComposer(<BuildComposer starters={STARTERS} />);
 
     fireEvent.click(screen.getByRole("button", { name: "AI support chatbot" }));
+    fireEvent.click(screen.getByRole("button", { name: "Start building" }));
 
     // The default submit pipeline ran: seed persisted, builder opened.
     expect(window.localStorage.getItem("initialPrompt")).toBe("AI support chatbot");
@@ -99,13 +102,14 @@ describe("BuildComposer starters", () => {
     expect(capture).toHaveBeenCalledWith("build_started", expect.objectContaining({ mode: "build" }));
   });
 
-  it("submits with the mode the user picked — never silently changes it", () => {
+  it("sends the filled starter with the mode the user picked — never silently changes it", () => {
     const onSubmit = jest.fn();
     renderComposer(<BuildComposer starters={STARTERS} onSubmit={onSubmit} />);
 
     openMenu(screen.getByRole("button", { name: /Build/ }));
     fireEvent.click(screen.getByRole("menuitem", { name: /Plan/ }));
     fireEvent.click(screen.getByRole("button", { name: "Marketplace with auth" }));
+    fireEvent.click(screen.getByRole("button", { name: "Start building" }));
 
     expect(onSubmit).toHaveBeenCalledWith("Marketplace with auth", "plan");
   });
