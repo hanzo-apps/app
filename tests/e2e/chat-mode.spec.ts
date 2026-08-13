@@ -135,9 +135,14 @@ test.describe('chat mode', () => {
     await expect(assistant).toContainText('Hello');
     await expect(assistant).not.toContainText('Streaming works.');
 
-    // Completion: full text, markdown bold rendered as <strong>, cursor gone.
+    // Completion: full text, markdown bold actually rendered, cursor gone.
     await expect(assistant).toContainText('Streaming works.');
-    await expect(assistant.locator('strong')).toHaveText('Zen 5');
+    // Markdown is RENDERED, not echoed. MarkdownRenderer maps the `strong` node
+    // onto @hanzo/ui's SizableText, so bold arrives as a weighted run and there
+    // is no <strong> tag to find — the weight and the absent asterisks are the
+    // guarantee, and they are also what a reader actually sees.
+    await expect(assistant.getByText('Zen 5', { exact: true })).toHaveCSS('font-weight', '600');
+    await expect(assistant).not.toContainText('*');
     await expect(page.getByTestId('streaming-cursor')).toHaveCount(0);
 
     // Regenerate is offered on the finished turn.
@@ -208,29 +213,25 @@ test.describe('chat mode', () => {
   });
 });
 
-test.describe('mode switcher + work stub', () => {
-  test('chat | dev | work switcher routes between modes', async ({ page }) => {
+// The chat | dev | work SWITCHER was deleted on purpose (b2bc3d9b —
+// components/mode-switcher and both of its mounts): hanzo.app is the dev
+// surface and hanzo.chat is the chat surface until the two behave alike, and a
+// segmented control advertised a choice the product had not made. The modes are
+// still three real routes of one gated app, which is what survives to prove —
+// reached by URL, since that is now the way in.
+test.describe('modes', () => {
+  test('chat and work are real routes of the one app', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await mockChatBackend(page);
-    // Warm both routes so the dev server's first-compile latency never counts
-    // against the click's navigation wait.
+
     await page.goto('/work');
-    await page.goto('/chat');
-
-    const nav = page.getByRole('navigation', { name: 'App mode' }).first();
-    await expect(nav).toBeVisible();
-    await expect(nav.getByRole('link', { name: 'Chat' })).toHaveAttribute('aria-current', 'page');
-
-    await nav.getByRole('link', { name: 'Work' }).click();
     await expect(page).toHaveURL(/\/work$/);
-    await expect(page.getByText('Work mode is coming soon')).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Work mode is coming soon' }),
+    ).toBeVisible();
 
-    const workNav = page.getByRole('navigation', { name: 'App mode' }).first();
-    await expect(workNav.getByRole('link', { name: 'Work' })).toHaveAttribute(
-      'aria-current',
-      'page',
-    );
-    await workNav.getByRole('link', { name: 'Chat' }).click();
+    await page.goto('/chat');
     await expect(page).toHaveURL(/\/chat$/);
+    await expect(page.getByTestId('composer')).toBeVisible();
   });
 });
