@@ -365,6 +365,34 @@ a {
     align-items: center;
     justify-content: center;
   }
+
+  /* THE EXEMPTION ABOVE ASSUMES THE LIBRARY ALREADY MAKES THESE REACHABLE. On
+     the narrow axis it does not, and the deploy gate is what proved it.
+
+     `.hz-dense` keeps a control's PAINTED size on the reasoning that @hanzo/ui
+     hands every Button a 44px hit area anyway. It hands it a 44px TALL one:
+     `data-touch-y` emits `::after { top: -6px; bottom: -6px }` — top and bottom,
+     nothing on left or right, and the name says so. Measured on the composer at
+     390 with `hasTouch`, reachable boxes were Build 90x46, Base 71x46, mic 60x60
+     — and the two icon-only controls 32x44. So `+` and the send arrow are 32px
+     wide to a thumb, which is the miss this whole section exists to prevent, and
+     it was invisible because the exemption reads like it covers them.
+
+     Six each side takes a 32px control to exactly 44. It buys hit area, never
+     paint: `::after` is transparent and out of flow, so the row looks identical
+     and only the target grows. The neighbouring control is 8px away and its own
+     slop grows toward this one, so the two overlap by 4px — a strip where either
+     answer is the one the thumb was near, and far better than a gap neither
+     reaches. Scoped by `data-size^="icon"`, so it touches ONLY controls with no
+     label to widen them: Build and Base are already past the floor and are left
+     alone rather than grown into each other.
+
+     `html:root` for the reason stated just above — a bare class ties with gui's
+     atomic classes and loses on load order. */
+  html:root .hz-dense [data-size^='icon']::after {
+    left: -6px;
+    right: -6px;
+  }
 }
 
 /* A TEMPLATE PREVIEW NEEDS AN EDGE THAT WORKS ON A LIGHT SHOT TOO.
