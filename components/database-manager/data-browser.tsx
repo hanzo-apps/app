@@ -143,7 +143,7 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
       await runSql(deleteRow(selected)(pkCol)(String(id)));
       await loadRows(selected);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Delete failed');
+      setError(e instanceof Error ? e.message : 'The record was not deleted.');
     }
   };
 
@@ -158,7 +158,7 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
           </Button>
         </XStack>
         {tables.length === 0 && (
-          <Paragraph paddingHorizontal="$2" paddingVertical="$2" fontSize="$1" color="$color11">No collections yet.</Paragraph>
+          <Paragraph paddingHorizontal="$2" paddingVertical="$2" fontSize="$1" color="$color11">No collections yet. Create one in the SQL tab and it appears here.</Paragraph>
         )}
         {tables.map((t) => (
           <Button

@@ -73,7 +73,7 @@ export function SecretEditor({
         description: description.trim() || undefined,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save secret');
+      setError(err instanceof Error ? err.message : 'The secret was not saved. Your edits are still here.');
     } finally {
       setSaving(false);
     }
@@ -94,7 +94,7 @@ export function SecretEditor({
         <YStack rowGap="$4">
           {/* Name */}
           <YStack rowGap="$2">
-            <Label htmlFor="name">Secret Name</Label>
+            <Label htmlFor="name">Secret name</Label>
             <Input
               id="name"
               value={name}

@@ -47,7 +47,7 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
               Published
             </Label>
             <Paragraph fontSize="$1" color="$color11">
-              Make this deployment publicly accessible
+              Anyone with the URL can open this deployment
             </Paragraph>
           </YStack>
           <Switch
@@ -60,10 +60,10 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
         <XStack {...panel} {...row}>
           <YStack rowGap="$1">
             <Label htmlFor="under-construction" fontSize="$3" fontWeight="500">
-              Under Construction
+              Maintenance mode
             </Label>
             <Paragraph fontSize="$1" color="$color11">
-              Show maintenance overlay on live deployment
+              Visitors see a maintenance notice instead of the app. The deployment stays up.
             </Paragraph>
           </YStack>
           <Switch

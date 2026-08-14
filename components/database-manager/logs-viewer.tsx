@@ -78,7 +78,7 @@ export function LogsViewer({ deploymentId }: LogsViewerProps) {
         <AlertCircle size={32} />
         <Paragraph fontSize="$3" color="$color11">{error}</Paragraph>
         <Button variant="outline" onClick={loadLogs}>
-          Retry
+          Load the logs again
         </Button>
       </YStack>
     );
@@ -87,7 +87,7 @@ export function LogsViewer({ deploymentId }: LogsViewerProps) {
   return (
     <YStack height="100%">
       <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
-        <H3 fontSize="$3" fontWeight="500">Execution Logs</H3>
+        <H3 fontSize="$3" fontWeight="500">Function runs</H3>
         <XStack alignItems="center" gap="$2">
           <Button variant="ghost" size="sm" onClick={loadLogs}>
             <RefreshCw size={16} />
@@ -109,9 +109,9 @@ export function LogsViewer({ deploymentId }: LogsViewerProps) {
         {logs.length === 0 ? (
           <SizableText flexDirection="column" alignItems="center" justifyContent="center" height="100%" padding="$6" textAlign="center" display="flex">
             <Clock size={32} />
-            <Paragraph fontSize="$3" color="$color11">No execution logs yet</Paragraph>
+            <Paragraph fontSize="$3" color="$color11">No function runs yet</Paragraph>
             <Paragraph fontSize="$1" color="$color11" marginTop="$1">
-              Logs will appear here when functions are invoked
+              Every call to one of your functions is recorded here — which one ran, the method and path, how long it took, and whether it worked. Call a function and the first row lands.
             </Paragraph>
           </SizableText>
         ) : (

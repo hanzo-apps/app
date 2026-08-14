@@ -86,7 +86,7 @@ export function HFAuthPanel({ onAuthChange }: HFAuthPanelProps) {
         caps = await checkHFCapabilities();
         capabilitiesRef.current = caps;
       } catch {
-        toast.error('Failed to connect. Please try again.');
+        toast.error('Could not start the sign-in. Nothing was linked.');
         return;
       }
     }
@@ -102,7 +102,7 @@ export function HFAuthPanel({ onAuthChange }: HFAuthPanelProps) {
   const handleConnect = async () => {
     const key = tokenInput.trim();
     if (!key) {
-      toast.error('Please enter an access token');
+      toast.error('Paste an access token first.');
       return;
     }
     setIsConnecting(true);
@@ -118,7 +118,7 @@ export function HFAuthPanel({ onAuthChange }: HFAuthPanelProps) {
         toast.error('Invalid token. Check that it has "Inference Providers" permission.');
       }
     } catch {
-      toast.error('Failed to validate token. Please try again.');
+      toast.error('Could not check that token. Nothing was saved.');
     } finally {
       setIsConnecting(false);
     }
@@ -135,7 +135,7 @@ export function HFAuthPanel({ onAuthChange }: HFAuthPanelProps) {
       toast.success('Disconnected from HuggingFace');
       dispatchAuthEvent(false);
     } catch {
-      toast.error('Failed to disconnect. Please try again.');
+      toast.error('Could not disconnect. The account is still linked.');
     } finally {
       setIsLoading(false);
     }

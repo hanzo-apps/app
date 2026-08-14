@@ -46,7 +46,7 @@ function ProviderCard({ provider, onValidate, onRemove, isValidating }: Provider
 
   const handleSave = () => {
     if (!apiKey.trim()) {
-      toast.error('Please enter an API key');
+      toast.error('Paste an API key first.');
       return;
     }
 
@@ -54,7 +54,7 @@ function ProviderCard({ provider, onValidate, onRemove, isValidating }: Provider
       toast.success(`API key saved for ${provider.name}`);
       onValidate(provider.id);
     } else {
-      toast.error('Failed to save API key');
+      toast.error('The key was not saved.');
     }
   };
 
@@ -64,7 +64,7 @@ function ProviderCard({ provider, onValidate, onRemove, isValidating }: Provider
       toast.success(`API key removed for ${provider.name}`);
       onRemove(provider.id);
     } else {
-      toast.error('Failed to remove API key');
+      toast.error('The key was not removed. It is still stored.');
     }
   };
 
@@ -202,7 +202,7 @@ export function ProviderSettings() {
       } else {
         const apiKey = getApiKey(providerId);
         if (!apiKey) {
-          toast.error('No API key configured');
+          toast.error('No API key saved for this provider yet.');
           return;
         }
 
@@ -210,13 +210,13 @@ export function ProviderSettings() {
         setValidationResults(prev => ({ ...prev, [providerId]: result.valid }));
 
         if (result.valid) {
-          toast.success(`API key validated for ${provider.name}`);
+          toast.success(`API key works for ${provider.name}`);
         } else {
-          toast.error(`Invalid API key: ${result.error}`);
+          toast.error(`${provider.name} rejected that key: ${result.error}`);
         }
       }
     } catch (error) {
-      toast.error(`Validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(`Could not check that key: ${error instanceof Error ? error.message : 'the provider did not say why'}`);
       setValidationResults(prev => ({ ...prev, [providerId]: false }));
     } finally {
       setValidatingProvider(null);

@@ -67,7 +67,7 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
       await loadFunctions();
     } catch (err) {
       console.error('Failed to toggle server function:', err);
-      toast.error('Failed to update server function');
+      toast.error('Could not change that helper. It is still as it was.');
     }
   };
 
@@ -88,7 +88,7 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
       await loadFunctions();
     } catch (err) {
       console.error('Failed to delete server function:', err);
-      toast.error('Failed to delete server function');
+      toast.error('Could not delete that helper. Nothing changed.');
     }
   };
 
@@ -142,7 +142,7 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
         <AlertCircle size={32} />
         <Paragraph fontSize="$3" color="$color11">{error}</Paragraph>
         <Button variant="outline" onClick={loadFunctions}>
-          Retry
+          Load helpers again
         </Button>
       </YStack>
     );
@@ -151,10 +151,10 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
   return (
     <YStack height="100%">
       <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
-        <H3 fontSize="$3" fontWeight="500">Server Functions (Helpers)</H3>
+        <H3 fontSize="$3" fontWeight="500">Helpers</H3>
         <Button size="sm" onClick={() => setIsCreating(true)}>
           <Plus size={16} />
-          New Helper
+          New helper
         </Button>
       </XStack>
 
@@ -162,13 +162,13 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
         {functions.length === 0 ? (
           <YStack alignItems="center" justifyContent="center" height="100%" padding="$6" borderWidth={1} borderRadius="$5">
             <Wrench size={32} />
-            <Paragraph fontSize="$3" color="$color11" textAlign="center">No server functions yet</Paragraph>
+            <Paragraph fontSize="$3" color="$color11" textAlign="center">No helpers yet</Paragraph>
             <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$4" textAlign="center">
-              Create reusable helpers for your edge functions
+              A helper is code your edge functions share, so the same logic is written once and called from several of them.
             </Paragraph>
             <Button size="sm" onClick={() => setIsCreating(true)}>
               <Plus size={16} />
-              Create Helper
+              Write a helper
             </Button>
           </YStack>
         ) : (

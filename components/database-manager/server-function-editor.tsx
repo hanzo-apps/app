@@ -95,7 +95,7 @@ export function ServerFunctionEditor({
         enabled: fn?.enabled ?? true,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save server function');
+      setError(err instanceof Error ? err.message : 'The helper was not saved. Your edits are still here.');
     } finally {
       setSaving(false);
     }
@@ -118,7 +118,7 @@ export function ServerFunctionEditor({
         <YStack flex={1} overflow="scroll" rowGap="$4">
           {/* Name */}
           <YStack rowGap="$2">
-            <Label htmlFor="name">Function Name</Label>
+            <Label htmlFor="name">Function name</Label>
             <Input
               id="name"
               value={name}
@@ -144,7 +144,7 @@ export function ServerFunctionEditor({
 
           {/* Code Editor */}
           <YStack rowGap="$2">
-            <Label>Function Code</Label>
+            <Label>Function code</Label>
             <YStack height={256} borderWidth={1} borderRadius="$5" overflow="hidden">
               <CodeEditor
                 language="javascript"

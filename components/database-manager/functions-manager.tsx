@@ -69,7 +69,7 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
       await loadFunctions();
     } catch (err) {
       console.error('Failed to toggle function:', err);
-      toast.error('Failed to update function');
+      toast.error('Could not change that function. It is still as it was.');
     }
   };
 
@@ -90,7 +90,7 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
       await loadFunctions();
     } catch (err) {
       console.error('Failed to delete function:', err);
-      toast.error('Failed to delete function');
+      toast.error('Could not delete that function. Nothing changed.');
     }
   };
 
@@ -152,7 +152,7 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
         <AlertCircle size={32} />
         <Paragraph fontSize="$3" color="$color11">{error}</Paragraph>
         <Button variant="outline" onClick={loadFunctions}>
-          Retry
+          Load functions again
         </Button>
       </YStack>
     );
@@ -161,10 +161,10 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
   return (
     <YStack height="100%">
       <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
-        <H3 fontSize="$3" fontWeight="500">Edge Functions</H3>
+        <H3 fontSize="$3" fontWeight="500">Edge functions</H3>
         <Button size="sm" onClick={() => setIsCreating(true)}>
           <Plus size={16} />
-          New Function
+          New function
         </Button>
       </XStack>
 
@@ -174,11 +174,11 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
             <Code2 size={32} />
             <Paragraph fontSize="$3" color="$color11" textAlign="center">No edge functions yet</Paragraph>
             <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$4" textAlign="center">
-              Create your first API endpoint
+              An edge function is a piece of server code at its own URL. Write one here and your app can call it.
             </Paragraph>
             <Button size="sm" onClick={() => setIsCreating(true)}>
               <Plus size={16} />
-              Create Function
+              Write a function
             </Button>
           </YStack>
         ) : (
@@ -222,7 +222,7 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
                               <Copy size={12} />
                             )}
                             <SizableText fontSize="$1" color="$color11" $group-hover={{ color: "$color" }}>
-                              {copiedUrl === fn.id ? 'Copied!' : 'Copy URL'}
+                              {copiedUrl === fn.id ? 'Copied' : 'Copy URL'}
                             </SizableText>
                           </XStack>
                         </Button>
@@ -259,7 +259,7 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
                           onClick={() => window.open(`/v1/deployments/${deploymentId}/functions/${fn.name}`, '_blank')}
                         >
                           <ExternalLink size={16} />
-                          Open in Browser
+                          Open in browser
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuItem

@@ -64,7 +64,7 @@ export function ScriptsTab({ settings, onChange }: ScriptsTabProps) {
 
   const handleSaveScript = () => {
     if (!editingScript || !editingScript.name.trim()) {
-      alert('Please provide a name for the script');
+      alert('Give the script a name so you can find it again.');
       return;
     }
 
@@ -119,20 +119,20 @@ export function ScriptsTab({ settings, onChange }: ScriptsTabProps) {
         </div>
         <Button onClick={handleAddScript} size="sm">
           <Plus size={16} />
-          Add Script
+          Add a script
         </Button>
       </XStack>
 
       {allScripts.length === 0 ? (
         <YStack padding="$6" borderWidth={2} borderStyle="dashed" borderRadius="$5">
           <Code size={48} />
-          <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">No Scripts Added</H3>
+          <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">No scripts yet</H3>
           <Paragraph fontSize="$3" color="$color11" marginBottom="$4" textAlign="center">
-            Add tracking scripts, analytics, or custom code to your deployment
+            A script here is injected into every page of the deployment — analytics, a chat widget, or code of your own.
           </Paragraph>
           <Button onClick={handleAddScript} variant="outline">
             <Plus size={16} />
-            Add Your First Script
+            Add the first one
           </Button>
         </YStack>
       ) : (

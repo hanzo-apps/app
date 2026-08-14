@@ -91,7 +91,7 @@ export function DeploysSection({ project }: { project: Project }) {
             {state.message}
           </SizableText>
           <Button type="button" onClick={() => { setState({ kind: "loading" }); load(); }}>
-            Retry
+            Load deploys again
           </Button>
         </XStack>
       ) : state.deploys.length === 0 ? (

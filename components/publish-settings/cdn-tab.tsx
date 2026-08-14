@@ -52,7 +52,7 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
 
   const handleSaveCdn = () => {
     if (!editingCdn || !editingCdn.name.trim() || !editingCdn.url.trim()) {
-      alert('Please provide both a name and URL for the CDN resource');
+      alert('Give the resource a name and a URL.');
       return;
     }
 
@@ -60,7 +60,7 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
     try {
       new URL(editingCdn.url);
     } catch {
-      alert('Please provide a valid URL');
+      alert('That URL is not valid. It should start with https://');
       return;
     }
 
@@ -104,20 +104,20 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
         </div>
         <Button onClick={handleAddCdn} size="sm">
           <Plus size={16} />
-          Add CDN Resource
+          Add a CDN link
         </Button>
       </XStack>
 
       {settings.cdnLinks.length === 0 ? (
         <YStack alignItems="center" padding="$6" borderWidth={2} borderStyle="dashed" borderRadius="$5">
           <Link2 size={48} />
-          <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">No CDN Resources</H3>
+          <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">No CDN links yet</H3>
           <Paragraph fontSize="$3" color="$color11" marginBottom="$4" textAlign="center">
-            Add libraries like Bootstrap, Tailwind, or custom stylesheets
+            Point at a stylesheet or script hosted elsewhere — a CSS framework, an icon set, a library — and every page of the deployment loads it.
           </Paragraph>
           <Button onClick={handleAddCdn} variant="outline">
             <Plus size={16} />
-            Add Your First Resource
+            Add the first one
           </Button>
         </YStack>
       ) : (

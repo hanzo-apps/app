@@ -96,7 +96,7 @@ export function FunctionEditor({
         enabled: fn?.enabled ?? true,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save function');
+      setError(err instanceof Error ? err.message : 'The function was not saved. Your edits are still here.');
     } finally {
       setSaving(false);
     }
@@ -120,7 +120,7 @@ export function FunctionEditor({
           {/* Name & Method */}
           <YStack gap="$4">
             <YStack rowGap="$2">
-              <Label htmlFor="name">Function Name</Label>
+              <Label htmlFor="name">Function name</Label>
               <Input
                 id="name"
                 value={name}
@@ -135,7 +135,7 @@ export function FunctionEditor({
               )}
             </YStack>
             <YStack rowGap="$2">
-              <Label htmlFor="method">HTTP Method</Label>
+              <Label htmlFor="method">HTTP method</Label>
               <Select value={method} onValueChange={v => setMethod(v as EdgeFunction['method'])}>
                 <SelectTrigger>
                   <SelectValue />
@@ -181,7 +181,7 @@ export function FunctionEditor({
 
           {/* Code Editor */}
           <YStack rowGap="$2">
-            <Label>Function Code</Label>
+            <Label>Function code</Label>
             <YStack height={256} borderWidth={1} borderRadius="$5" overflow="hidden">
               <CodeEditor
                 language="javascript"

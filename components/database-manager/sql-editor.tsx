@@ -176,7 +176,7 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
       <YStack flex={1} overflow="hidden" borderWidth={1} borderRadius="$5">
         {result === null ? (
           <XStack height="100%" alignItems="center" justifyContent="center">
-            <SizableText color="$color11" fontSize="$3">Execute a query to see results</SizableText>
+            <SizableText color="$color11" fontSize="$3">Write a query above and run it. Rows show up here.</SizableText>
           </XStack>
         ) : result.success ? (
           <YStack height="100%">
@@ -188,7 +188,7 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
               ) : result.rowsAffected !== undefined && result.rowsAffected > 0 ? (
                 <SizableText fontSize="$3">{result.rowsAffected} row{result.rowsAffected !== 1 ? 's' : ''} affected</SizableText>
               ) : (
-                <SizableText fontSize="$3">Query executed successfully</SizableText>
+                <SizableText fontSize="$3">Ran. No rows came back.</SizableText>
               )}
               <SizableText color="$color11" fontSize="$3">({result.executionTime}ms)</SizableText>
             </XStack>

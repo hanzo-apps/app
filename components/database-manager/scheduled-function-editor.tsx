@@ -90,7 +90,7 @@ export function ScheduledFunctionEditor({
         enabled: fn?.enabled ?? true,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save scheduled function');
+      setError(err instanceof Error ? err.message : 'The schedule was not saved. Your edits are still here.');
     } finally {
       setSaving(false);
     }
@@ -123,7 +123,7 @@ export function ScheduledFunctionEditor({
 
           {/* Edge Function */}
           <YStack rowGap="$2">
-            <Label htmlFor="sched-function">Edge Function</Label>
+            <Label htmlFor="sched-function">Edge function</Label>
             <Select value={functionId} onValueChange={setFunctionId}>
               <SelectTrigger>
                 <SelectValue placeholder="Select a function..." />
@@ -145,7 +145,7 @@ export function ScheduledFunctionEditor({
 
           {/* Cron Expression */}
           <YStack rowGap="$2">
-            <Label htmlFor="sched-cron">Cron Expression</Label>
+            <Label htmlFor="sched-cron">Cron expression</Label>
             <Input
               id="sched-cron"
               value={cronExpression}

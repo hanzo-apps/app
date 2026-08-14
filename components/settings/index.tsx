@@ -57,9 +57,9 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
     try {
       setIsExporting(true);
       await BackupService.exportAllData();
-      toast.success('Data exported successfully!');
+      toast.success('Data exported to your downloads');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Export failed');
+      toast.error(error instanceof Error ? error.message : 'Nothing was exported.');
     } finally {
       setIsExporting(false);
     }
@@ -99,10 +99,10 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
           }
         });
 
-        toast.success('Data imported successfully!');
+        toast.success('Data imported');
         setTimeout(() => window.location.reload(), 1000);
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Import failed');
+        toast.error(error instanceof Error ? error.message : 'Nothing was imported. Your existing data is untouched.');
       } finally {
         setIsImporting(false);
         setImportProgress(0);

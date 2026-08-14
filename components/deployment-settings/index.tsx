@@ -105,7 +105,7 @@ export function DeploymentSettingsModal({
       onClose();
     } catch (error) {
       console.error('[DeploymentSettingsModal] Failed to save settings:', error);
-      alert('Failed to save settings. Please try again.');
+      alert('The settings were not saved. Your changes are still on screen.');
     } finally {
       setIsSaving(false);
     }
@@ -207,7 +207,7 @@ export function DeploymentSettingsModal({
                 Cancel
               </Button>
               <Button onClick={handleSave} disabled={!isDirty || isSaving}>
-                {isSaving ? 'Saving...' : 'Save Changes'}
+                {isSaving ? 'Saving…' : 'Save changes'}
               </Button>
             </XStack>
           </XStack>

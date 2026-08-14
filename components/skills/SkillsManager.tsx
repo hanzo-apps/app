@@ -45,7 +45,7 @@ export function SkillsManager() {
       setSkills(allSkills);
     } catch (error) {
       logger.error('[SkillsManager] Failed to load skills', error);
-      toast.error('Failed to load skills');
+      toast.error('Could not load your skills. Reload the page to try again.');
     } finally {
       setLoading(false);
     }
@@ -81,7 +81,7 @@ export function SkillsManager() {
       setGlobalEnabled(enabled);
       toast.success(enabled ? 'Skills enabled' : 'Skills disabled');
     } catch (error) {
-      toast.error('Failed to update skills state');
+      toast.error('That switch did not save. Skills are still as they were.');
     }
   };
 
@@ -91,7 +91,7 @@ export function SkillsManager() {
       setEvaluationEnabled(enabled);
       toast.success(enabled ? 'Skill evaluation enabled' : 'Skill evaluation disabled');
     } catch {
-      toast.error('Failed to update evaluation state');
+      toast.error('That switch did not save. Evaluation is still as it was.');
     }
   };
 
@@ -109,7 +109,7 @@ export function SkillsManager() {
         });
       }
     } catch (error) {
-      toast.error('Failed to toggle skill');
+      toast.error('That skill did not change. It is still as it was.');
     }
   };
 
@@ -178,7 +178,7 @@ export function SkillsManager() {
     try {
       const customSkills = skills.filter(s => !s.isBuiltIn);
       if (customSkills.length === 0) {
-        toast.error('No custom skills to export');
+        toast.error('You have no custom skills yet, so there is nothing to export.');
         return;
       }
 
@@ -191,7 +191,7 @@ export function SkillsManager() {
       URL.revokeObjectURL(url);
       toast.success(`Exported ${customSkills.length} skill(s)`);
     } catch (error) {
-      toast.error('Failed to export skills');
+      toast.error('Nothing was exported.');
     }
   };
 
@@ -304,14 +304,14 @@ export function SkillsManager() {
             {filteredSkills.length === 0 ? (
               <YStack paddingVertical="$8" alignItems="center">
                 <Sparkles size={48} />
-                <H3 fontSize="$6" fontWeight="500" marginBottom="$2">No skills found</H3>
+                <H3 fontSize="$6" fontWeight="500" marginBottom="$2">No skills yet</H3>
                 <Paragraph color="$color11" marginBottom="$4" textAlign="center">
-                  {searchQuery ? 'Try a different search query' : 'Create your first custom skill'}
+                  {searchQuery ? 'Nothing matches that search. Clear it to see every skill.' : 'A skill is an instruction set the agent loads when the work calls for it. Write one and it shows up here.'}
                 </Paragraph>
                 {!searchQuery && (
                   <Button onClick={handleCreateNew}>
                     <Plus size={16} />
-                    Create Skill
+                    Write a skill
                   </Button>
                 )}
               </YStack>

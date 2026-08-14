@@ -74,7 +74,7 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
         <AlertCircle size={32} />
         <Paragraph fontSize="$3" color="$color11">{error}</Paragraph>
         <Button variant="outline" onClick={loadSchema}>
-          Retry
+          Load the schema again
         </Button>
       </YStack>
     );
@@ -83,7 +83,7 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
   return (
     <YStack height="100%">
       <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
-        <H3 fontSize="$3" fontWeight="500">Database Tables</H3>
+        <H3 fontSize="$3" fontWeight="500">Tables</H3>
         {showSystemTablesToggle && (
           <Button
             variant="ghost"
@@ -93,12 +93,12 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
             {showSystemTables ? (
               <>
                 <EyeOff size={14} />
-                <SizableText fontSize="$1">Hide System Tables</SizableText>
+                <SizableText fontSize="$1">Hide system tables</SizableText>
               </>
             ) : (
               <>
                 <Eye size={14} />
-                <SizableText fontSize="$1">Show System Tables</SizableText>
+                <SizableText fontSize="$1">Show system tables</SizableText>
               </>
             )}
           </Button>
@@ -109,9 +109,9 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
         {filteredTables.length === 0 ? (
           <YStack alignItems="center" justifyContent="center" height="100%" padding="$6">
             <Table2 size={32} />
-            <Paragraph fontSize="$3" color="$color11" textAlign="center">No user tables found</Paragraph>
+            <Paragraph fontSize="$3" color="$color11" textAlign="center">No tables yet</Paragraph>
             <Paragraph fontSize="$1" color="$color11" marginTop="$1" textAlign="center">
-              Create tables using the SQL editor
+              Your app&apos;s data lives in tables. Write a CREATE TABLE in the SQL tab and its columns and indexes show up here.
             </Paragraph>
           </YStack>
         ) : (

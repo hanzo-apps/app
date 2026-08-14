@@ -80,7 +80,7 @@ export function CodexAuthPanel({ onAuthChange }: CodexAuthPanelProps) {
       configManager.setCodexAuth(serverResult);
       setIsAuthenticated(true);
       setPasteValue('');
-      toast.success('Token saved! Tokens will refresh automatically.');
+      toast.success('Token saved. It refreshes on its own from here.');
       dispatchAuthEvent(true);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Invalid JSON';
@@ -99,7 +99,7 @@ export function CodexAuthPanel({ onAuthChange }: CodexAuthPanelProps) {
       toast.success('Disconnected from ChatGPT');
       dispatchAuthEvent(false);
     } catch {
-      toast.error('Failed to disconnect. Please try again.');
+      toast.error('Could not disconnect. The account is still linked.');
     } finally {
       setIsLoading(false);
     }

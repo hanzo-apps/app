@@ -82,7 +82,7 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
       await loadFunctions();
     } catch (err) {
       console.error('Failed to toggle scheduled function:', err);
-      toast.error('Failed to update scheduled function');
+      toast.error('Could not change that schedule. It is still as it was.');
     }
   };
 
@@ -103,7 +103,7 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
       await loadFunctions();
     } catch (err) {
       console.error('Failed to delete scheduled function:', err);
-      toast.error('Failed to delete scheduled function');
+      toast.error('Could not delete that schedule. Nothing changed.');
     }
   };
 
@@ -171,7 +171,7 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
         <AlertCircle size={32} />
         <Paragraph fontSize="$3" color="$color11">{error}</Paragraph>
         <Button variant="outline" onClick={loadFunctions}>
-          Retry
+          Load schedules again
         </Button>
       </YStack>
     );
@@ -180,10 +180,10 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
   return (
     <YStack height="100%">
       <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
-        <H3 fontSize="$3" fontWeight="500">Scheduled Functions</H3>
+        <H3 fontSize="$3" fontWeight="500">Schedules</H3>
         <Button size="sm" onClick={() => setIsCreating(true)}>
           <Plus size={16} />
-          New Schedule
+          New schedule
         </Button>
       </XStack>
 
@@ -191,13 +191,13 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
         {scheduledFunctions.length === 0 ? (
           <YStack alignItems="center" justifyContent="center" height="100%" padding="$6" borderWidth={1} borderRadius="$5">
             <Clock size={32} />
-            <Paragraph fontSize="$3" color="$color11" textAlign="center">No scheduled functions yet</Paragraph>
+            <Paragraph fontSize="$3" color="$color11" textAlign="center">Nothing runs on a schedule yet</Paragraph>
             <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$4" textAlign="center">
-              Run edge functions on a cron schedule
+              Pick one of your edge functions and a cron expression, and it runs on its own — nightly reports, cleanups, anything that should not wait for a visitor.
             </Paragraph>
             <Button size="sm" onClick={() => setIsCreating(true)}>
               <Plus size={16} />
-              Create Schedule
+              Schedule a function
             </Button>
           </YStack>
         ) : (

@@ -70,7 +70,7 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
       await loadSecrets();
     } catch (err) {
       console.error('Failed to delete secret:', err);
-      toast.error('Failed to delete secret');
+      toast.error('Could not delete that secret. Nothing changed.');
     }
   };
 
@@ -132,7 +132,7 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
         <AlertCircle size={32} />
         <Paragraph fontSize="$3" color="$color11">{error}</Paragraph>
         <Button variant="outline" onClick={loadSecrets}>
-          Retry
+          Load secrets again
         </Button>
       </YStack>
     );
@@ -148,7 +148,7 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
           disabled={!encryptionConfigured}
         >
           <Plus size={16} />
-          New Secret
+          New secret
         </Button>
       </XStack>
 
@@ -157,9 +157,9 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
         <XStack alignItems="center" gap="$2" backgroundColor="$yellow9" borderWidth={1} borderColor="$yellow9" padding="$3" borderRadius="$5" marginBottom="$4">
           <SizableText color="$yellow10" $theme-dark={{ color: "$yellow8" }}><AlertTriangle size={16} /></SizableText>
           <div>
-            <Paragraph fontWeight="500" fontSize="$3" color="$yellow10" $theme-dark={{ color: "$yellow8" }}>Encryption not configured</Paragraph>
+            <Paragraph fontWeight="500" fontSize="$3" color="$yellow10" $theme-dark={{ color: "$yellow8" }}>Secrets are off until an encryption key is set</Paragraph>
             <Paragraph fontSize="$1" opacity={0.8} color="$yellow10" $theme-dark={{ color: "$yellow8" }}>
-              Set the SECRETS_ENCRYPTION_KEY environment variable to enable secrets.
+              Set the SECRETS_ENCRYPTION_KEY environment variable. Until it is set, secrets cannot be created or read.
             </Paragraph>
           </div>
         </XStack>
@@ -171,7 +171,7 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
             <Key size={32} />
             <Paragraph fontSize="$3" color="$color11" textAlign="center">No secrets yet</Paragraph>
             <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$4" textAlign="center">
-              Store API keys and tokens securely for your edge functions
+              A secret is an API key or token that stays out of your code. Store one here and your functions read it by name with secrets.get(&apos;NAME&apos;).
             </Paragraph>
             <Button
               size="sm"
@@ -179,7 +179,7 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
               disabled={!encryptionConfigured}
             >
               <Plus size={16} />
-              Create Secret
+              Create a secret
             </Button>
           </YStack>
         ) : (

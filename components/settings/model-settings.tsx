@@ -126,7 +126,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
 
   const validateApiKey = async () => {
     if (!currentApiKey) {
-      toast.error('Please enter an API key');
+      toast.error('Paste an API key first.');
       return;
     }
 
@@ -136,13 +136,13 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
       setKeyValid(isValid);
       
       if (isValid) {
-        toast.success('API key is valid!');
+        toast.success('API key works');
       } else {
-        toast.error('Invalid API key');
+        toast.error('That key was rejected.');
       }
     } catch {
       setKeyValid(false);
-      toast.error('Failed to validate API key');
+      toast.error('Could not reach the provider to check that key. Nothing was saved.');
     } finally {
       setValidatingKey(false);
     }
@@ -151,7 +151,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
   const handleConnect = async () => {
     const key = currentApiKey.trim();
     if (!key) {
-      toast.error('Please enter an API key');
+      toast.error('Paste an API key first.');
       return;
     }
     setValidatingKey(true);
@@ -163,15 +163,15 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
         setApiKeyStored(true);
         setCurrentApiKey('');
         setKeyValid(null);
-        toast.success('API key connected!');
+        toast.success('API key saved and working');
         window.dispatchEvent(new CustomEvent('apiKeyUpdated', {
           detail: { provider: selectedProvider, hasKey: true }
         }));
       } else {
-        toast.error('Invalid API key. Please check and try again.');
+        toast.error('That key was rejected. Check you copied all of it.');
       }
     } catch {
-      toast.error('Failed to validate API key');
+      toast.error('Could not reach the provider to check that key. Nothing was saved.');
     } finally {
       setValidatingKey(false);
     }
@@ -489,7 +489,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
       {onClose && (
         <XStack flexShrink={0} justifyContent="flex-end" paddingTop="$4" borderTopWidth={1} marginTop="$4">
           <Button onClick={onClose} size="sm">
-            Done
+            Close
           </Button>
         </XStack>
       )}
