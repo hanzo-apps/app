@@ -514,6 +514,28 @@ The `!important` on that rule is load-bearing and is the reason it is pinned:
 property whatever the specificity (the collision `.t_group_true` needs it for).
 Without it the rule is a silent no-op on exactly the controls it exists for.
 
+**A TAB is not on that list, and `@hanzo/ui` renders one as a `div`.** The floor
+names `button`, `[role="button"]`, `a[href]` and `.hz-tap`; `TabsTrigger` is
+gui's `Tabs.Tab` and comes out `div[role="tab"]`, so it matches none of them.
+Measured on a phone (`hasTouch`, which is what actually drives `pointer: coarse`
+— a 390px viewport alone does not): 30px painted, 38px reachable, because
+`@hanzo/ui`'s own `data-touch-y` adds only 4px a side. **Mark the component
+`.hz-tap`** — that class means "a standalone tap target" and is already the one
+way to say it. Do NOT widen the rule to `[role="tab"]`: the same shortcut on
+`[role="tablist"]` seized the builder's two hand-rolled segmented controls and
+turned five panes into a 96px three-row block (see components/landing/CLAUDE.md,
+"a role is not a component"). Desktop is untouched either way — the query is the
+input device, so these stay 30 under a mouse and become 44 under a thumb.
+
+**jsdom has no `ResizeObserver`, and `@hanzogui/tabs` observes its own strip.**
+So `render()` of anything holding `@hanzo/ui` Tabs threw from inside a passive
+effect, which React reports as an `AggregateError` with **no message** — it names
+neither the API nor the component and reads like a broken test. The stub is in
+`jest.setup.jsdom.js` with the other jsdom gaps; it observes and never fires,
+which is the honest behaviour, since jsdom performs no layout and nothing ever
+changes size. A stub that invented a box would hand every measurement-driven
+component the same fiction.
+
 Corollary for the composer: its two action controls are ONE box at 36. The mic
 comes from `@hanzo/voice` at 28 and the send from the icon floor at 36, so they
 sat 8px apart in one row. 36 is this app's icon box — Lovable's 32 is

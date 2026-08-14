@@ -87,19 +87,6 @@ a {
   display: none;
 }
 
-/* A hidden scrollbar hides the fact that there is more. `.fade-end` dissolves
-   the trailing 24px so the cut reads as "swipe on" instead of as damage — the
-   chip row on /resources was sliced mid-glyph at the right edge ("Portfolio"
-   down to a bare "P") with no scrollbar, no fade and no half-chip to hint at
-   it. Phones only: above `$sm` these rows WRAP, nothing overflows, and a fade
-   there would just dim whichever chip ended near the edge. */
-@media (max-width: 639px) {
-  .fade-end {
-    -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
-    mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
-  }
-}
-
 /* Centre a row's contents WITHOUT stranding them when they overflow.
    `safe center` centres while everything fits and falls back to start
    alignment the moment it does not — plain `center` overflows equally in both
@@ -1171,15 +1158,7 @@ kbd {
      (cloud-integration's six, /templates') the two are identical. */
   grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
   gap: 18px;
-  /* Cards in a row are ONE height — grid's own default, and what every
-     consumer here wants. `align-items: start` used to sit on this line, so a
-     card sized to its own content and one wrapped title made it 32px taller
-     than its neighbours: measured on /resources, 11 of 25 rows ragged at 1440
-     (worst 64px, heights 325/357/389) and 12 of 34 at 1024. It also quietly
-     defeated `height="100%"` on cloud-integration's cards and `marginTop:auto`
-     on the card foot — both of which need a row height to push against. The
-     one section that had noticed patched it back with an inline
-     `alignItems: "stretch"`; that patch is gone with this line. */
+  align-items: start;
 }
 
 /* The recent-projects grid — vertical cards, the thumbnail on top at its own
@@ -1557,17 +1536,11 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   scroll-snap-align: start;
 }
 
-/* Partner logo wall. ONE row and ONE behaviour at every width: a seamless
-   rightward marquee under a fade — the set is rendered twice, and translating
-   the track by exactly one copy's width lands the second where the first was,
-   so the seam never shows. Motion lives here because it is motion.
-
-   It used to go static and centred from 768 up, on the claim that nine marks
-   fit under 1152. They never did: the row is 1987px (the marks step to 52px at
-   $md), so `overflow: hidden` with the mask switched off cut the sixth mark in
-   half at 1440 and the fifth at 1024, and the last four never painted. A count
-   that grows is the normal case for a partner wall, so the width is not a thing
-   to special-case — it scrolls everywhere instead. */
+/* Partner logo wall. ONE row: on desktop the nine marks fit under 1152 and
+   center, static; on a phone the row overflows, so it AUTO-scrolls a seamless
+   marquee — the set is rendered twice, and translating the track by exactly one
+   copy's width lands the second where the first was, so the seam never shows.
+   Rightward per the ask. Motion lives here because it is motion. */
 .hz-logo-marquee {
   overflow: hidden;
   -webkit-mask-image: linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent);
@@ -1587,10 +1560,16 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
      distance from the first mark of the next as any two neighbours: no seam. */
   padding-right: 40px;
 }
-.hz-logo-track { animation: hz-logo-scroll 42s linear infinite; }
-/* A mark a pointer is aiming at stops sliding, same rule the crawl next door
-   keeps: hover pauses, so a logo stays catchable. */
-.hz-logo-marquee:hover .hz-logo-track { animation-play-state: paused; }
+@media (max-width: 767px) {
+  .hz-logo-track { animation: hz-logo-scroll 32s linear infinite; }
+}
+@media (min-width: 768px) {
+  /* Fits centred; the duplicate and its trailing gap are marquee-only. */
+  .hz-logo-marquee { display: flex; justify-content: center; -webkit-mask-image: none; mask-image: none; }
+  .hz-logo-track { width: auto; max-width: 100%; }
+  .hz-logo-group { padding-right: 0; }
+  .hz-logo-group[aria-hidden="true"] { display: none; }
+}
 @keyframes hz-logo-scroll {
   from { transform: translateX(-50%); }
   to { transform: translateX(0); }
@@ -1707,22 +1686,16 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   background: var(--background);
 }
 /* The dissolve sits ABOVE the box rather than inside its padding: the padding
-   is the CTA band's rhythm and the fade is its own number, and braiding them
-   made one value answer two questions.
-
-   That number is a LINE HEIGHT, not a decoration. The ground under the dock is
-   opaque, so whatever the ramp does not reach is cut mid-glyph — at 40px the
-   landing's 2.75rem section headings (44px line) still lost their bottom half
-   to a straight edge, and "Explore Zen →" sat in the band as its own top 40%.
-   96px clears the tallest line on the page with room to spare, so a line
-   dissolves instead of ending. */
+   is the CTA band's rhythm and the fade is a fixed 40px, and braiding them made
+   one number answer two questions. A hard edge here would cut a heading in half
+   as it scrolled under. */
 .hz-dock::before {
   content: "";
   position: absolute;
   right: 0;
   bottom: 100%;
   left: 0;
-  height: 96px;
+  height: 40px;
   background: linear-gradient(to top, var(--background), transparent);
   pointer-events: none;
 }
