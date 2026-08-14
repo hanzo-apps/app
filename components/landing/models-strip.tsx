@@ -48,14 +48,21 @@ export default function ModelsStrip() {
           widths, was the only thing holding it open, so moving them out
           collapsed the card with them. */}
       <YStack alignSelf="center" width="100%" maxWidth={1152} alignItems="center" gap="$8" $lg={{ gap: "$10" }} className="shrink-cells">
-        <Reveal>
-          <Paragraph fontFamily="$mono" fontSize="$1" color="$color11">
+        {/* Centred, like the seven other section headings on this page. It was
+            the one left-aligned block, and left-aligned text inside a
+            shrink-to-fit box that its parent then centres gives a section TWO
+            left edges: measured at 1440, this heading began at x=497 while the
+            code panel and "Routed providers" under it began at x=145, with 350
+            empty pixels beside the headline. On a phone it split the other way
+            — copy at the left margin, the link still centred under it. */}
+        <Reveal alignSelf="center" width="100%" maxWidth={672}>
+          <Paragraph textAlign="center" fontFamily="$mono" fontSize="$1" color="$color11">
             Hanzo AI
           </Paragraph>
-          <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }} lineHeight="1.1">
+          <H2 textAlign="center" marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }} lineHeight="1.1">
             One API. 400+ models.
           </H2>
-          <Paragraph marginTop="$4" maxWidth={448} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
+          <Paragraph textAlign="center" marginTop="$4" maxWidth={448} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
             Your app calls any frontier model — the Zen family from{" "}
             <Anchor
               href="https://zoo.industries"
@@ -76,7 +83,7 @@ export default function ModelsStrip() {
             href="https://hanzo.ai/llm"
             target="_blank"
             rel="noopener noreferrer"
-            marginTop="$5" alignItems="center" gap="$1.5" fontSize="$3" fontWeight="500" color="$color11" hoverStyle={{ color: "$color" }}
+            alignSelf="center" marginTop="$5" alignItems="center" gap="$1.5" fontSize="$3" fontWeight="500" color="$color11" hoverStyle={{ color: "$color" }}
           >
             Explore the gateway
             <span aria-hidden>→</span>
