@@ -117,6 +117,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     const result = await provisionBaseFromDDL(client, ddl);
+    // A refusal is not a partial result: nothing was provisioned and retrying
+    // with this credential never will. Answering 200 {ok:false, failed:[]} said
+    // "we tried and nothing went wrong", which is how this read as working.
+    if (result.refused) {
+      return NextResponse.json({ ok: false, error: result.refused, ...result }, { status: 403 });
+    }
     return NextResponse.json({ ok: result.failed.length === 0, ...result });
   } catch (err) {
     logger.error("[Project Base] provision error:", err);

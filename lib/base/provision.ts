@@ -14,6 +14,46 @@ export interface ProvisionBaseResult {
   created: string[];
   existing: string[];
   failed: Array<{ collection: string; error: string }>;
+  /**
+   * Set when the credential may not write schema AT ALL. That is ONE fact about
+   * the request, so it is reported once — not copied into `failed` per table,
+   * where N identical permission errors read like N flaky tables and invite a
+   * retry that cannot ever succeed.
+   */
+  refused?: string;
+}
+
+/**
+ * The HTTP status an upstream error carries, or 0. Read structurally rather
+ * than by class identity: the same shape reaches here from `BaseClientError`
+ * and from a plain fetch rejection, and only the number is being asked for.
+ */
+function statusOf(err: unknown): number {
+  const s = (err as { status?: unknown } | null)?.status;
+  return typeof s === 'number' ? s : 0;
+}
+
+/**
+ * Whether a status means "this credential may not do this", as opposed to
+ * "this particular table did not take".
+ *
+ * Base binds its whole `/v1/collections` group with `RequireSuperuserAuth`, and
+ * an IAM identity resolves to the `_superusers` collection only for a Hanzo
+ * platform SuperAdmin — so for every customer credential this refusal is
+ * structural and permanent, not transient. Naming it is the difference between
+ * "your backend could not be created, here is why" and a pile of per-table
+ * errors that look like an outage.
+ */
+function refusalOf(err: unknown): string | undefined {
+  switch (statusOf(err)) {
+    case 401:
+      return 'Base did not accept this session. Sign in again, then retry.';
+    case 403:
+      return 'This account may not create Base collections: schema is declared state, ' +
+        'applied by the cloud on the project\'s behalf, not writable with a user credential.';
+    default:
+      return undefined;
+  }
 }
 
 interface BaseField {
@@ -129,8 +169,12 @@ export async function provisionBaseFromDDL(client: BaseClient, ddl: string): Pro
       query: { perPage: '200' },
     });
     for (const c of list.items ?? []) existing.add(c.name);
-  } catch {
-    // If listing fails we still attempt creates; duplicate-name errors are caught per-table.
+  } catch (err) {
+    // A REFUSED list is the same refusal every create is about to hit, so stop
+    // here and say so once. Any other listing failure is not decisive — the
+    // creates still run and duplicate-name errors are caught per table.
+    const refused = refusalOf(err);
+    if (refused) return { ...result, refused };
   }
 
   // Team-shared, tenant-isolated: any member of the caller's IAM org can read/
@@ -164,6 +208,11 @@ export async function provisionBaseFromDDL(client: BaseClient, ddl: string): Pro
       });
       result.created.push(table.name);
     } catch (err) {
+      // Same rule as the listing: a permission refusal is about the credential,
+      // not about this table, so it stops the loop instead of being repeated
+      // once per remaining table.
+      const refused = refusalOf(err);
+      if (refused) return { ...result, refused };
       result.failed.push({ collection: table.name, error: err instanceof Error ? err.message : String(err) });
     }
   }
