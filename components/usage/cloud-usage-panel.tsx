@@ -97,7 +97,7 @@ function Panels({ token }: { token: string }) {
     <YStack gap="$6">
       <UsagePanel
         title="Usage"
-        subtitle="Requests, tokens, spend, and per-model usage — native Hanzo usage (GET /v1/get-cloud-usages)."
+        subtitle="What you have run through Hanzo: requests, tokens, spend, and a breakdown by model."
         range={range}
         onRangeChange={setRange}
         data={native.phase === 'ready' ? native.data : null}
@@ -106,7 +106,7 @@ function Panels({ token }: { token: string }) {
         onRetry={() => loadNative(range)}
       />
       <ConnectedUsage
-        subtitle="Imported spend and usage from your connected OpenAI, Anthropic, and Google accounts — beside your native Hanzo usage."
+        subtitle="Spend and usage pulled in from the OpenAI, Anthropic and Google accounts you have connected, shown beside your Hanzo usage."
         items={conn.phase === 'ready' ? conn.items : null}
         loading={conn.phase === 'loading'}
         error={conn.phase === 'error' ? conn.message : null}

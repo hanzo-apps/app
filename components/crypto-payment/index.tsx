@@ -158,12 +158,12 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
               </Anchor>
             )}
             <Button onClick={handleClose} marginTop="$5">
-              Done
+              Close
             </Button>
           </YStack>
         ) : !isConnected ? (
           <YStack paddingVertical="$5" rowGap="$3">
-            <Paragraph fontSize="$3" color="$color11" textAlign="center" marginBottom="$4">Connect your wallet to continue</Paragraph>
+            <Paragraph fontSize="$3" color="$color11" textAlign="center" marginBottom="$4">Connect a wallet to pay with USDC</Paragraph>
             {connectors.map((connector) => (
               <Button
                 key={connector.uid}
@@ -244,7 +244,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
               disabled={!selectedAmount}
               width="100%"
             >
-              Continue
+              Review the payment
             </Button>
           </YStack>
         ) : step === 'confirm' ? (

@@ -105,7 +105,7 @@ export default function OrganizationSettingsPage() {
 
   if (loading || !user) {
     return (
-      <LoadingScreen>{loading ? "Loading settings..." : "Redirecting to login..."}</LoadingScreen>
+      <LoadingScreen>{loading ? "Loading settings…" : "Taking you to sign in…"}</LoadingScreen>
     );
   }
 

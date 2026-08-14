@@ -1550,7 +1550,7 @@ const RAW: RawEntry[] = [
     name: "Folio — Contact Page",
     tagline: "A clean contact page with a form, ready to receive messages.",
     description:
-      "Folio Contact is a dedicated contact page from the Folio system — a clean layout with a form and the details visitors need to reach you. It is the conversion step of a portfolio, designed to make getting in touch effortless. Built with an HTML/Gulp workflow for a fast static site.",
+      "Folio Contact is a dedicated contact page from the Folio system — a clean layout with a form and the details visitors need to reach you. It is the step where someone decides to write to you, so it asks for as little as it can. Built with an HTML/Gulp workflow for a fast static site.",
     category: "Portfolio",
     tags: ["Websites"],
     keyHighlights: [

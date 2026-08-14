@@ -226,7 +226,7 @@ export default function BillingPage() {
       actions={
         <Button {...accent} onClick={() => setActiveTab('add-credits')}>
           <Plus size={16} />
-          Add Credits
+          Add credit
         </Button>
       }
     >
@@ -235,7 +235,7 @@ export default function BillingPage() {
           {/* Current Plan */}
           <Card {...panel} hoverStyle={{ borderColor: "$color6" }}>
             <CardHeader paddingBottom="$3">
-              <CardTitle fontSize="$3" fontWeight="500" color="$color11">Current Plan</CardTitle>
+              <CardTitle fontSize="$3" fontWeight="500" color="$color11">Current plan</CardTitle>
             </CardHeader>
             <CardContent>
               <YStack rowGap="$3">
@@ -262,7 +262,7 @@ export default function BillingPage() {
                       width="100%" borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}
                       size="sm"
                     >
-                      Manage Subscription
+                      Manage subscription
                     </Button>
                   )}
                 </XStack>
@@ -273,6 +273,9 @@ export default function BillingPage() {
           {/* Credits */}
           <Card {...panel} hoverStyle={{ borderColor: "$color6" }}>
             <CardHeader paddingBottom="$3">
+              {/* Title Case here on purpose: tests/unit/no-unbacked-credit-claim.test.ts
+                  greps this file for the literal "Credit Balance" to prove the
+                  readout survived the retired-credit rip. */}
               <CardTitle fontSize="$3" fontWeight="500" color="$color11">Credit Balance</CardTitle>
             </CardHeader>
             <CardContent>
@@ -302,7 +305,7 @@ export default function BillingPage() {
                   width="100%" borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}
                 >
                   <Plus size={16} />
-                  Add Credit
+                  Add credit
                 </Button>
               </YStack>
             </CardContent>
@@ -311,16 +314,16 @@ export default function BillingPage() {
           {/* Usage Summary */}
           <Card {...panel} hoverStyle={{ borderColor: "$color6" }}>
             <CardHeader paddingBottom="$3">
-              <CardTitle fontSize="$3" fontWeight="500" color="$color11">This Month</CardTitle>
+              <CardTitle fontSize="$3" fontWeight="500" color="$color11">This month</CardTitle>
             </CardHeader>
             <CardContent>
               <YStack rowGap="$2">
                 <XStack justifyContent="space-between">
-                  <SizableText fontSize="$3" color="$color11">API Calls</SizableText>
+                  <SizableText fontSize="$3" color="$color11">API calls</SizableText>
                   <SizableText fontSize="$3">{(usage.api_calls?.used ?? 0).toLocaleString()}</SizableText>
                 </XStack>
                 <XStack justifyContent="space-between">
-                  <SizableText fontSize="$3" color="$color11">AI Responses</SizableText>
+                  <SizableText fontSize="$3" color="$color11">AI responses</SizableText>
                   <SizableText fontSize="$3">{(usage.ai_responses?.used ?? 0).toLocaleString()}</SizableText>
                 </XStack>
                 <XStack justifyContent="space-between">
@@ -337,7 +340,7 @@ export default function BillingPage() {
           <XStack marginBottom="$5" flexWrap="wrap" alignItems="center" gap="$3" borderBottomWidth={1} borderColor="$borderColor" paddingBottom="$3">
           <TabsList backgroundColor="transparent" padding="$0">
             <TabsTrigger value="overview" {...selected(activeTab === "overview")}>Overview</TabsTrigger>
-            <TabsTrigger value="add-credits" {...selected(activeTab === "add-credits")}>Add Credits</TabsTrigger>
+            <TabsTrigger value="add-credits" {...selected(activeTab === "add-credits")}>Add credit</TabsTrigger>
             <TabsTrigger value="history" {...selected(activeTab === "history")}>History</TabsTrigger>
             <TabsTrigger value="usage" {...selected(activeTab === "usage")}>Usage</TabsTrigger>
           </TabsList>
@@ -365,7 +368,7 @@ export default function BillingPage() {
                   onClick={() => setActiveTab('add-credits')}
                 >
                   <CreditCard size={16} />
-                  Pay with Card
+                  Pay with card
                 </Button>
                 <Button
                   variant="outline"
@@ -389,14 +392,14 @@ export default function BillingPage() {
             {/* Recent transactions in overview */}
             <Card {...panel}>
               <CardHeader flexDirection="row" alignItems="center" justifyContent="space-between">
-                <CardTitle>Recent Transactions</CardTitle>
+                <CardTitle>Recent payments</CardTitle>
                 {invoices.length > 0 && (
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setActiveTab('history')}
                   >
-                    View All <ArrowRight size={16} />
+                    View all <ArrowRight size={16} />
                   </Button>
                 )}
               </CardHeader>
@@ -404,8 +407,8 @@ export default function BillingPage() {
                 {invoices.length === 0 ? (
                   <YStack alignItems="center" paddingVertical="$8">
                     <FileText size={48} />
-                    <Paragraph color="$color11" marginBottom="$1" textAlign="center">No transactions yet</Paragraph>
-                    <Paragraph fontSize="$3" color="$color11" textAlign="center">Purchase credits to see your transaction history</Paragraph>
+                    <Paragraph color="$color11" marginBottom="$1" textAlign="center">No payments yet</Paragraph>
+                    <Paragraph fontSize="$3" color="$color11" textAlign="center">Subscription charges and credit top-ups land here, newest first. Add credit and the first one appears.</Paragraph>
                   </YStack>
                 ) : (
                   <YStack rowGap="$3">
@@ -430,7 +433,7 @@ export default function BillingPage() {
                 paddingHorizontal="$4" paddingVertical="$2" borderRadius="$3"
               >
                 <CreditCard size={16} />
-                Credit Card
+                Card
               </Button>
               <Button
                 onClick={() => setPaymentMethod('crypto')}
@@ -454,15 +457,15 @@ export default function BillingPage() {
           <TabsContent value="history" marginTop="$5">
             <Card {...panel}>
               <CardHeader>
-                <CardTitle>Transaction History</CardTitle>
-                <CardDescription>All payments, invoices, and crypto transactions</CardDescription>
+                <CardTitle>Payment history</CardTitle>
+                <CardDescription>Every payment, invoice and credit top-up on this account</CardDescription>
               </CardHeader>
               <CardContent>
                 {invoices.length === 0 ? (
                   <YStack alignItems="center" paddingVertical="$8">
                     <FileText size={48} />
-                    <Paragraph color="$color11" marginBottom="$1" textAlign="center">No transactions yet</Paragraph>
-                    <Paragraph fontSize="$3" color="$color11" textAlign="center">Purchase credits to see your transaction history</Paragraph>
+                    <Paragraph color="$color11" marginBottom="$1" textAlign="center">Nothing has been billed yet</Paragraph>
+                    <Paragraph fontSize="$3" color="$color11" textAlign="center">This is the full record for the account. It fills in as you subscribe or add credit.</Paragraph>
                   </YStack>
                 ) : (
                   <YStack rowGap="$3">
@@ -479,8 +482,8 @@ export default function BillingPage() {
           <TabsContent value="usage" marginTop="$5" rowGap="$5">
             <Card {...panel}>
               <CardHeader>
-                <CardTitle>Usage Details</CardTitle>
-                <CardDescription>Current billing period usage across all services</CardDescription>
+                <CardTitle>Usage this period</CardTitle>
+                <CardDescription>What you have used so far in the current billing period, across every Hanzo service</CardDescription>
               </CardHeader>
               <CardContent rowGap="$5">
                 {/* API Calls */}
@@ -488,7 +491,7 @@ export default function BillingPage() {
                   <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
                     <XStack alignItems="center">
                       <Activity size={16} />
-                      <span>API Calls</span>
+                      <span>API calls</span>
                     </XStack>
                     <SizableText fontSize="$3" color="$color11">
                       {(usage.api_calls?.used ?? 0).toLocaleString()} / {(usage.api_calls?.limit ?? 0).toLocaleString()}
@@ -506,7 +509,7 @@ export default function BillingPage() {
                   <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
                     <XStack alignItems="center">
                       <Brain size={16} />
-                      <span>AI Responses</span>
+                      <span>AI responses</span>
                     </XStack>
                     <SizableText fontSize="$3" color="$color11">
                       {(usage.ai_responses?.used ?? 0).toLocaleString()} / {(usage.ai_responses?.limit ?? 0).toLocaleString()}
@@ -539,7 +542,7 @@ export default function BillingPage() {
 
                 {/* Credit consumption */}
                 <YStack paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
-                  <H4 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$3">Credit Consumption</H4>
+                  <H4 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$3">Credit used</H4>
                   <YStack gap="$4">
                     <YStack padding="$3" borderRadius="$5" backgroundColor="$background" borderWidth={1} borderColor="$borderColor">
                       <SizableText fontSize="$6" fontWeight="500" textAlign="center">{usage.ai_responses?.used ?? 0}</SizableText>

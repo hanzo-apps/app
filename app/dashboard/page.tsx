@@ -193,8 +193,8 @@ export default function DashboardPage() {
                   ) : recentlyViewed.length === 0 ? (
                     <EmptyState
                       icon={Recent}
-                      title="No recently viewed projects"
-                      description="Projects you open will show up here, most recent first."
+                      title="Nothing opened yet"
+                      description="Projects you open show up here, most recent first. Open one from All projects and it moves to the top of this list."
                     />
                   ) : (
                     <ProjectGrid projects={recentlyViewed} onOpen={openProject} />
@@ -206,8 +206,8 @@ export default function DashboardPage() {
                 <TabsContent value="visitors">
                   <EmptyState
                     icon={Traffic}
-                    title="Visitor analytics coming to your dashboard"
-                    description="Once your apps are published and receiving traffic, your busiest projects today will rank here. Live traffic is captured per deployment."
+                    title="No traffic to rank yet"
+                    description="This tab puts your busiest apps of the day in order. Traffic is counted per deployment, so it fills in once an app is published and someone visits it."
                     secondary={{ label: "View analytics", href: "https://analytics.hanzo.ai" }}
                   />
                 </TabsContent>
@@ -318,7 +318,7 @@ function EmptyProjects() {
     <EmptyState
       icon={Folder}
       title="No projects yet"
-      description="Describe what you want to build in the composer above and Hanzo will generate it. Your projects appear here."
+      description="A project is the set of files Hanzo writes, previews and publishes for you. Describe one in the composer above and it lands here."
     />
   );
 }

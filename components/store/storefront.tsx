@@ -149,10 +149,10 @@ export function Storefront() {
       if (res.ok && body?.checkoutUrl) {
         window.location.href = body.checkoutUrl; // real Square-hosted page
       } else {
-        setError(body?.message || "Checkout is not available yet.");
+        setError(body?.message || "Checkout is not open for this store yet. Nothing was charged.");
       }
     } catch {
-      setError("Checkout failed to start.");
+      setError("Could not reach checkout. Nothing was charged — check your connection and try again.");
     } finally {
       setCheckingOut(false);
     }
@@ -201,7 +201,7 @@ export function Storefront() {
         <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5">
           {loading && (
             <XStack alignItems="center" justifyContent="center" paddingVertical="$12">
-              <Spinner size={24} /> <SizableText color="$color11">Loading catalog…</SizableText>
+              <Spinner size={24} /> <SizableText color="$color11">Loading the catalog…</SizableText>
             </XStack>
           )}
 
@@ -283,7 +283,7 @@ export function Storefront() {
                         {product.available
                           ? (cart[product.key] || 0) > 0
                             ? `In cart (${cart[product.key]})`
-                            : "Add to Cart"
+                            : "Add to cart"
                           : "Unavailable"}
                       </Button>
                     </CardFooter>

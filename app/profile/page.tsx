@@ -120,9 +120,9 @@ export default function ProfilePage() {
       const dataUrl = await avatarDataUrl(file, AVATAR_LIMIT, region);
       set("avatar", dataUrl);
       setImgFailed(false);
-      toast.success("Photo ready — press Save Changes to keep it");
+      toast.success("Photo ready. Press Save changes to keep it.");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "That photo could not be used");
+      toast.error(e instanceof Error ? e.message : "That photo could not be used. Try a JPEG or PNG.");
     } finally {
       setBusy(false);
     }
@@ -178,7 +178,7 @@ export default function ProfilePage() {
       if (!res.ok || !body?.ok) {
         // Say what the server said. "Profile updated successfully" on a failed
         // write is the bug this page shipped with.
-        toast.error(body?.message || `Could not save your profile (${res.status})`);
+        toast.error(body?.message || `Your profile was not saved (${res.status}). Your changes are still on screen — press Save changes to try again.`);
         return;
       }
       const p: Draft = { ...EMPTY, ...body.profile };
@@ -187,7 +187,7 @@ export default function ProfilePage() {
       setIsEditing(false);
       toast.success("Profile saved");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Could not reach the server");
+      toast.error(e instanceof Error ? e.message : "Could not reach the server. Your changes are still on screen — check your connection and press Save changes again.");
     } finally {
       setBusy(false);
     }
@@ -209,7 +209,7 @@ export default function ProfilePage() {
   // Show loading state while checking auth
   if (loading) {
     return (
-      <LoadingScreen>Loading profile...</LoadingScreen>
+      <LoadingScreen>Loading your profile…</LoadingScreen>
     );
   }
 
@@ -256,12 +256,12 @@ export default function ProfilePage() {
             </Button>
             <Button {...accent} onClick={handleSave} gap="$2" disabled={busy}>
               <Save size={16} />
-              {busy ? "Saving…" : "Save Changes"}
+              {busy ? "Saving…" : "Save changes"}
             </Button>
           </>
         ) : (
           <Button {...accent} onClick={() => setIsEditing(true)}>
-            Edit Profile
+            Edit profile
           </Button>
         )
       }
@@ -437,12 +437,12 @@ export default function ProfilePage() {
                       rows={4}
                       value={draft.bio}
                       onChange={(e) => set("bio", e.target.value)}
-                      placeholder="Tell us about yourself..."
+                      placeholder="What you work on, and what you are building here"
                       width="100%" backgroundColor="$color3" color="$color" borderWidth={1} borderColor="$borderColor" borderRadius="$5" paddingHorizontal="$3" paddingVertical="$2"
   />
                   ) : (
                     <Paragraph color="$color11" whiteSpace="pre-wrap">
-                      {saved.bio || "No bio added yet"}
+                      {saved.bio || "Nothing here yet. Press Edit profile and say what you work on."}
                     </Paragraph>
                   )}
                 </div>

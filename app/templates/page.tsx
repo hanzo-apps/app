@@ -199,7 +199,7 @@ function ResourcesBrowser() {
                 <Spinner size={24} />
               ) : (
                 <>
-                  <Paragraph fontSize="$6" color="$color11">Nothing matches your search.</Paragraph>
+                  <Paragraph fontSize="$6" color="$color11">No template matches that search and category.</Paragraph>
                   <Button
                     onClick={() => {
                       setCategory('All');

@@ -29,14 +29,14 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || 'Login failed');
+        setError(data.error || 'That password was not accepted.');
         return;
       }
 
       // Login successful - redirect to admin area
       router.push('/admin');
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      setError('Could not reach the server. Check your connection and try again.');
       console.error('Login error:', err);
     } finally {
       setIsLoading(false);
@@ -118,7 +118,7 @@ export default function LoginPage() {
             disabled={isLoading}
             width="100%" backgroundColor="$orange10" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$orange11" }} disabledStyle={{ backgroundColor: "$color3", cursor: "not-allowed" }}
           >
-            <SizableText color={isLoading ? "$color11" : "white"} fontWeight="500">{isLoading ? 'Logging in...' : 'Login'}</SizableText>
+            <SizableText color={isLoading ? "$color11" : "white"} fontWeight="500">{isLoading ? 'Signing in…' : 'Sign in'}</SizableText>
           </Button>
           </YStack>
         </form>

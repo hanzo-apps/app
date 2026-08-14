@@ -132,7 +132,7 @@ function ConnectorsInner() {
     const error = sp.get("error");
     if (!connected && !error) return;
     if (connected) toast.success(`Connected ${connected}`);
-    else toast.error(`Couldn't connect ${error}${sp.get("reason") ? `: ${sp.get("reason")}` : ""}`);
+    else toast.error(`Could not connect ${error}${sp.get("reason") ? `: ${sp.get("reason")}` : ""}`);
     window.history.replaceState({}, "", window.location.pathname);
     void load();
   }, [load]);
@@ -145,7 +145,7 @@ function ConnectorsInner() {
       window.location.href = r.authorizeUrl;
       return;
     }
-    toast.error(r.error || `Couldn't start connecting ${p.name}`);
+    toast.error(r.error || `Could not start connecting ${p.name}. Try again in a moment.`);
     setBusyId(null);
   };
 
@@ -158,7 +158,7 @@ function ConnectorsInner() {
       );
       toast.success(`Disconnected ${p.name}`);
     } else {
-      toast.error(r.error || `Couldn't disconnect ${p.name}`);
+      toast.error(r.error || `${p.name} is still connected — the server refused the change. Try again.`);
     }
     setBusyId(null);
   };
@@ -266,10 +266,11 @@ function ConnectorsInner() {
           /* Empty — honest about the org-scoped surface being unpopulated. */
           <YStack borderRadius="$6" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" paddingHorizontal="$5" paddingVertical="$10">
             <Plug size={32} />
-            <H2 textAlign="center" fontSize="$3" fontWeight="500">No connectors available yet</H2>
+            <H2 textAlign="center" fontSize="$3" fontWeight="500">No connectors for this workspace</H2>
             <Paragraph textAlign="center" alignSelf="center" marginTop="$1" maxWidth={384} fontSize="$3" color="$color11">
-              Connectors for this workspace will appear here once they're enabled. Nothing to set
-              up in the meantime.
+              A connector lets your apps read from an outside service you already
+              use. An owner of this organization turns them on; until one does,
+              there is nothing here to set up.
             </Paragraph>
           </YStack>
         ) : filtered.length === 0 ? (

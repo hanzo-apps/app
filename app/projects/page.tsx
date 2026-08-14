@@ -28,7 +28,7 @@ export default function ProjectsPage() {
 
   if (loading || !user) {
     return (
-      <LoadingScreen>{loading ? "Loading your projects…" : "Redirecting to login…"}</LoadingScreen>
+      <LoadingScreen>{loading ? "Loading your projects…" : "Taking you to sign in…"}</LoadingScreen>
     );
   }
 

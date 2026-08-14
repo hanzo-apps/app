@@ -118,7 +118,7 @@ export default function AgentsPage() {
       if (!res.ok || !data?.ok) {
         setState({
           kind: "error",
-          message: data?.message || `Failed to load agents (${res.status}).`,
+          message: data?.message || `The agents list did not load (${res.status}). Press Try again.`,
         });
         return;
       }
@@ -126,7 +126,7 @@ export default function AgentsPage() {
     } catch {
       setState({
         kind: "error",
-        message: "Unable to reach the agents service.",
+        message: "Could not reach the agents service. Check your connection and press Try again.",
       });
     }
   }, []);
@@ -161,11 +161,11 @@ export default function AgentsPage() {
         } else {
           const message =
             (run as { message?: string } | null)?.message ||
-            `Run failed (${res.status}).`;
+            `The run failed (${res.status}).`;
           toast.error(message);
         }
       } catch {
-        toast.error("Unable to reach the agents service.");
+        toast.error("Could not reach the agents service. Check your connection and run it again.");
       } finally {
         setRunning((r) => ({ ...r, [name]: false }));
       }
@@ -198,10 +198,10 @@ export default function AgentsPage() {
         setForm({ name: "", model: "", instructions: "" });
         load();
       } else {
-        toast.error(data?.message || `Failed to create agent (${res.status}).`);
+        toast.error(data?.message || `${name} was not created (${res.status}). Your details are still in the form.`);
       }
     } catch {
-      toast.error("Unable to reach the agents service.");
+      toast.error("Could not reach the agents service. Check your connection and submit again.");
     } finally {
       setSubmitting(false);
     }
@@ -589,11 +589,11 @@ export default function AgentsPage() {
                               <YStack marginTop="$2" borderRadius="$2" backgroundColor="$background" padding="$3">
                                 {result.status === "ok" ? (
                                   <SizableText whiteSpace="pre" fontSize="$1" color="$color11" maxHeight={256} overflow="scroll" fontFamily="$mono">
-                                    {result.output || "(empty response)"}
+                                    {result.output || "The run finished and returned nothing."}
                                   </SizableText>
                                 ) : (
                                   <SizableText whiteSpace="pre" fontSize="$1" color="$red8" maxHeight={256} overflow="scroll" fontFamily="$mono">
-                                    {result.error || "Run failed"}
+                                    {result.error || "The run failed and gave no reason."}
                                   </SizableText>
                                 )}
                               </YStack>

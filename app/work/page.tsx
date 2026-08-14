@@ -4,7 +4,7 @@ import { AppShell } from '@/components/app-shell';
 
 export const metadata: Metadata = {
   title: 'Work — Hanzo',
-  description: 'Work mode is coming to hanzo.app.',
+  description: 'Tasks, inbox and handoffs, in the same window as chat and dev. Not built yet.',
 };
 
 /**
@@ -24,11 +24,12 @@ export default function WorkPage() {
       <main style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
         <div style={{ maxWidth: '28rem', textAlign: 'center' }}>
           <h1 style={{ fontSize: '1.5rem', lineHeight: '2rem', fontWeight: 500, color: 'var(--foreground)' }}>
-            Work mode is coming soon
+            Work mode is not built yet
           </h1>
           <p style={{ marginTop: '0.75rem', fontSize: '0.875rem', lineHeight: '1.25rem', color: 'var(--muted-foreground)' }}>
-            Chat and dev are live today. Work — tasks, inbox and team flow in the same
-            shell — is being built and will land here.
+            It will hold the tasks, the inbox and the handoffs between people, in the
+            same window as chat and dev. Those two work today; this one does nothing
+            yet.
           </p>
         </div>
       </main>

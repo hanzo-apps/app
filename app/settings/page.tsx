@@ -59,14 +59,14 @@ export default function SettingsPage() {
   // Show loading state while checking auth
   if (loading) {
     return (
-      <LoadingScreen>Loading settings...</LoadingScreen>
+      <LoadingScreen>Loading settings…</LoadingScreen>
     );
   }
 
   // Show loading state while redirecting
   if (!user) {
     return (
-      <LoadingScreen>Redirecting to login...</LoadingScreen>
+      <LoadingScreen>Taking you to sign in…</LoadingScreen>
     );
   }
 
