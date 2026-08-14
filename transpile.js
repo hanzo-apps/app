@@ -43,16 +43,44 @@ function guiClosure() {
     try {
       manifest = require.resolve(`${name}/package.json`, { paths: [from] });
     } catch {
-      return; // optional/unresolvable edge — nothing to transform
+      // An exports map that does not publish `./package.json` throws
+      // ERR_PACKAGE_PATH_NOT_EXPORTED here, and treating that as "nothing to
+      // transform" is how a package DISAPPEARS from this set while still being
+      // imported at runtime. @hanzo/appearance is exactly that: a declared
+      // dependency of @hanzo/ui whose exports are `.` and `./state` only. It
+      // went missing, jest handed its ESM to a CJS runtime, and TWENTY suites
+      // died at import with "Cannot use import statement outside a module" —
+      // which reads as the suites being broken rather than the closure being
+      // short.
+      // So resolve the ENTRY instead and walk up to the directory that holds
+      // the manifest. An exports map cannot hide the package itself.
+      try {
+        const entry = require.resolve(name, { paths: [from] });
+        const parts = entry.split(path.sep);
+        const at = parts.lastIndexOf('node_modules');
+        if (at < 0) return;
+        const scoped = parts[at + 1].startsWith('@') ? 3 : 2;
+        manifest = path.join(parts.slice(0, at + scoped).join(path.sep), 'package.json');
+        require(manifest); // it must really be one
+      } catch {
+        return; // genuinely unresolvable — optional peer, or not installed
+      }
     }
     if (seen.has(name)) return;
     seen.add(name);
     for (const dep of Object.keys(require(manifest).dependencies || {})) {
-      if (dep.startsWith('@hanzogui/')) walk(dep, manifest);
+      // BOTH namespaces. Following `@hanzogui/*` alone made this a closure over
+      // the Tamagui packages only, so a new `@hanzo/*` ESM sibling arriving
+      // through @hanzo/ui was invisible to it and had to be remembered by hand
+      // in `transpiled()` below — which is precisely the thing nobody remembers.
+      if (dep.startsWith('@hanzogui/') || dep.startsWith('@hanzo/')) walk(dep, manifest);
     }
   };
   for (const root of guiRoots()) walk(root, APP_MANIFEST);
-  return [...seen].filter((name) => name.startsWith('@hanzogui/'));
+  // Every @hanzo* package the graph reaches, not just the @hanzogui half — the
+  // hand-written group below stays for the ones this app declares directly and
+  // for non-@hanzo ESM, but a transitive sibling no longer depends on memory.
+  return [...seen].filter((name) => name.startsWith('@hanzogui/') || name.startsWith('@hanzo/'));
 }
 
 // Everything Next and jest must transform before this app can use it.
@@ -67,7 +95,11 @@ function guiClosure() {
 // moduleNameMapper is its resolution half, because its exports map offers no
 // `require` condition for Jest's CJS resolver to take.
 function transpiled() {
-  return [
+  // Deduped: the closure now reaches the @hanzo/* packages this app also names
+  // by hand below. The hand entries stay because each carries the REASON it is
+  // there — a reason a walk cannot record — but a name must appear once in
+  // transpilePackages and once in the transformIgnorePatterns regex.
+  return [...new Set([
     '@hanzo/gui',
     '@hanzo/ui',
     '@hanzo/usage',
@@ -98,7 +130,7 @@ function transpiled() {
     // ESM-only
     'jose',
     'uuid',
-  ];
+  ])];
 }
 
 module.exports = { transpiled, guiClosure };
