@@ -136,7 +136,7 @@ export default function ChatPage() {
     setNotice(null);
     api<{ messages: Message[] }>(`/v1/chat/conversations/${encodeURIComponent(id)}`)
       .then((b) => setMessages(b.messages))
-      .catch(() => setNotice('Could not load this conversation.'));
+      .catch(() => setNotice('That conversation would not load. Pick it again, or start a new chat.'));
     if (typeof window !== 'undefined' && !window.matchMedia('(min-width:1024px)').matches) {
       setRailOpen(false);
     }
@@ -195,8 +195,8 @@ export default function ChatPage() {
             text = '';
             setNotice(
               res.status === 402
-                ? body.message || "You're out of credits."
-                : body.message || 'The model is unavailable right now.',
+                ? body.message || "You have used this month's allowance. Change plan from Billing to keep going."
+                : body.message || 'The model did not answer. Send the message again.',
             );
             setMessages(history);
           }
@@ -315,7 +315,7 @@ export default function ChatPage() {
                 </Button>
               ))}
               {!filtered.length && !signedOut && (
-                <Paragraph paddingHorizontal="$3" paddingVertical="$2" fontSize="$1" color="$color11">No conversations yet.</Paragraph>
+                <Paragraph paddingHorizontal="$3" paddingVertical="$2" fontSize="$1" color="$color11">No conversations yet. Every chat you start is saved here.</Paragraph>
               )}
             </YStack>
           </ScrollArea>
@@ -386,8 +386,8 @@ export default function ChatPage() {
                 <YStack alignItems="center" justifyContent="center" paddingVertical={96}>
                   <H1 fontSize="$8" fontWeight="500" color="$color" textAlign="center">What can I help with?</H1>
                   <Paragraph marginTop="$2" maxWidth={384} fontSize="$3" color="$color11" textAlign="center">
-                    Ask anything — answers stream from your Zen models and every chat is saved
-                    to your account.
+                    Answers stream in as they are written, and every chat is kept
+                    in your account so you can come back to it.
                   </Paragraph>
                 </YStack>
               )}

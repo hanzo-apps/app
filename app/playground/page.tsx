@@ -91,7 +91,7 @@ export default function PlaygroundPage() {
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
-      toast.error("Please enter a prompt");
+      toast.error("Write a prompt first — there is nothing to send.");
       return;
     }
 
@@ -421,7 +421,7 @@ export default function PlaygroundPage() {
                       <ScrollArea height={400}>
                         <YStack maxWidth="none">
                           <Paragraph whiteSpace="pre-wrap" fontSize="$3" color="$color11">
-                            {activeResult.models[0]?.response || "No response"}
+                            {activeResult.models[0]?.response || "The model returned nothing."}
                           </Paragraph>
                         </YStack>
                       </ScrollArea>
@@ -468,7 +468,7 @@ export default function PlaygroundPage() {
                     <XStack height={400} alignItems="center" justifyContent="center">
                       <YStack>
                         <Sparkles size={48} />
-                        <Paragraph color="$color11">Generate a response to see output</Paragraph>
+                        <Paragraph color="$color11">Write a prompt above and run it. The reply lands here.</Paragraph>
                       </YStack>
                     </XStack>
                   )}
@@ -551,7 +551,7 @@ export default function PlaygroundPage() {
                       <XStack height={400} alignItems="center" justifyContent="center">
                         <YStack>
                           <Sparkles size={48} />
-                          <Paragraph color="$color11">Generate a response to see output</Paragraph>
+                          <Paragraph color="$color11">Write a prompt above and run it. The reply lands here.</Paragraph>
                         </YStack>
                       </XStack>
                     )}
