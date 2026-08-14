@@ -493,7 +493,7 @@ export function AskAI({
       case "pro_required":
         return "Upgrade to continue.";
       case "need_credits":
-        return "You're out of credits.";
+        return r.message || "You're out of credits.";
       case "provider_required":
         return r.message || "Choose a provider to continue.";
       default:
@@ -959,7 +959,7 @@ export function AskAI({
         setOpenProModal(true);
         break;
       case "need_credits":
-        raiseUsageLimit();
+        raiseUsageLimit(message);
         break;
       case "api_error":
         toast.error(message || "An error occurred");

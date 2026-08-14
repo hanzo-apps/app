@@ -78,7 +78,8 @@ const CREDENTIAL =
   "Your API credential was rejected. Mint a new key at https://cloud.hanzo.ai/keys";
 const FORBIDDEN =
   "Your account doesn't have access to this model.";
-const CREDIT = "You're out of credits.";
+/** Exported so the client's fallback and the server's are one string. */
+export const CREDIT = "You're out of credits.";
 
 /**
  * The one sentence that promises the user waiting will help — so it is the one
@@ -111,4 +112,31 @@ export function refusal(
   // one sentence, because the client cannot act on the difference between a
   // gateway 500 and a gateway 504.
   return { body: { ok: false, message: stated || UNAVAILABLE }, status: 502 };
+}
+
+/**
+ * What a refused RESPONSE says, read at the CLIENT.
+ *
+ * `refusal()` is the write half: it puts the gateway's own sentence in
+ * `message` and sends it. This is the read half, and its absence is what undid
+ * the whole file. Every 402 site did
+ *
+ *     return { error: "need_credits", message: "You're out of credits." };
+ *
+ * with `request.body` still unread — so the one sentence that says WHICH limit
+ * was hit, for WHICH account, was fetched and discarded, and a funded org read
+ * a flat "out of credits" over a balance in the six figures. The care taken on
+ * the server side is worth nothing if the last consumer substitutes a generic;
+ * that is where this class always dies.
+ *
+ * `reason()` does the parsing, so both sides read the same shapes, redact the
+ * same key prefix and cap at the same length. This adds only the await and the
+ * fallback — and a body that says nothing still yields the honest default.
+ */
+export async function said(r: Response, fallback: string): Promise<string> {
+  try {
+    return reason(await r.text()) || fallback;
+  } catch {
+    return fallback;
+  }
 }

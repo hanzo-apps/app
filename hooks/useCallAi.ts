@@ -16,7 +16,7 @@ import { baseEnabled } from "@/lib/base/flag";
 // what the user needs; telling them to wait a minute for a revoked key is how an
 // afternoon gets lost. Retry advice belongs only where retrying can work — which
 // is why this sentence and the server's are literally the same string.
-import { UNAVAILABLE } from "@/lib/gateway";
+import { CREDIT, UNAVAILABLE, said } from "@/lib/gateway";
 
 // Guarded JSON parse: the stream-done handler only treats the response as a
 // JSON error envelope when it actually parses, so a malformed `{…}` never
@@ -152,7 +152,7 @@ export const useCallAi = ({
       // handleError, never a silent failure.
       if (request.status === 402) {
         setisAiWorking(false);
-        return { error: "need_credits", message: "You're out of credits." };
+        return { error: "need_credits", message: await said(request, CREDIT) };
       }
       if (!request.ok && request.status >= 500) {
         setisAiWorking(false);
@@ -388,7 +388,7 @@ export const useCallAi = ({
       // handleError, never a silent failure.
       if (request.status === 402) {
         setisAiWorking(false);
-        return { error: "need_credits", message: "You're out of credits." };
+        return { error: "need_credits", message: await said(request, CREDIT) };
       }
       if (!request.ok && request.status >= 500) {
         setisAiWorking(false);
@@ -518,7 +518,7 @@ export const useCallAi = ({
       // handleError, never a silent failure.
       if (request.status === 402) {
         setisAiWorking(false);
-        return { error: "need_credits", message: "You're out of credits." };
+        return { error: "need_credits", message: await said(request, CREDIT) };
       }
       if (!request.ok && request.status >= 500) {
         setisAiWorking(false);
@@ -615,7 +615,7 @@ export const useCallAi = ({
       // handleError, never a silent failure.
       if (request.status === 402) {
         setisAiWorking(false);
-        return { error: "need_credits", message: "You're out of credits." };
+        return { error: "need_credits", message: await said(request, CREDIT) };
       }
       if (!request.ok && request.status >= 500) {
         setisAiWorking(false);

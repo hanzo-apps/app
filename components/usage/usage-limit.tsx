@@ -23,15 +23,25 @@ import {
 import { UsageLimitDialog } from './UsageLimitDialog';
 
 interface UsageLimitApi {
-  /** Open the "Need more usage?" modal. */
-  raise: () => void;
+  /**
+   * Open the "Need more usage?" modal, carrying the sentence the refusal
+   * stated. The reason is the whole point of raising it — "you're out of
+   * credits" and "this org's monthly cap is spent" are different facts with
+   * different remedies, and a modal that flattens them sends a funded customer
+   * to a top-up page that will not help.
+   */
+  raise: (reason?: string) => void;
 }
 
 const UsageLimitContext = createContext<UsageLimitApi | null>(null);
 
 export function UsageLimitProvider({ children }: { children: ReactNode }) {
+  const [reason, setReason] = useState<string | undefined>(undefined);
   const [open, setOpen] = useState(false);
-  const raise = useCallback(() => setOpen(true), []);
+  const raise = useCallback((said?: string) => {
+    setReason(said);
+    setOpen(true);
+  }, []);
   const api = useMemo<UsageLimitApi>(() => ({ raise }), [raise]);
 
   return (
@@ -44,7 +54,7 @@ export function UsageLimitProvider({ children }: { children: ReactNode }) {
           non-object as target or handler"). That took down pages that import
           nothing themselves, which is what made it hard to find. A closed modal
           has nothing to render, so gating the mount costs nothing. */}
-      {open && <UsageLimitDialog open={open} onOpenChange={setOpen} />}
+      {open && <UsageLimitDialog open={open} onOpenChange={setOpen} reason={reason} />}
     </UsageLimitContext.Provider>
   );
 }

@@ -5,7 +5,16 @@
  *
  * Shown when a metered action (an AI generation, a deploy) comes back with an
  * out-of-credit / limit signal — a 402 from the gateway/cloud — instead of
- * failing silently. Two honest paths forward, no fabricated numbers:
+ * failing silently.
+ *
+ * It says what the REFUSAL said. The description used to read "You've reached
+ * your limit" no matter what came back, which is a claim about the reader's
+ * money made by a component that has read none of it — and it was shown, in
+ * production, above a balance line reading six figures. `reason` carries the
+ * gateway's own sentence here (see lib/gateway.ts `said`); absent one, the
+ * modal states no cause at all rather than inventing the likeliest.
+ *
+ * Two honest paths forward, no fabricated numbers:
  *   • Add credits  → the existing in-app wallet / top-up surface (/billing).
  *   • Upgrade plan → the plans page (/pricing).
  *
@@ -26,9 +35,16 @@ const fmtUsd = (cents: number): string => `$${(cents / 100).toFixed(2)}`;
 export function UsageLimitDialog({
   open,
   onOpenChange,
+  reason,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /**
+   * The sentence the refusal actually stated, when it stated one. It replaces
+   * the generic below rather than joining it: a reader shown both reads the
+   * vague one first and the true one as a footnote.
+   */
+  reason?: string;
 }) {
   const router = useRouter();
   const go = (href: string) => {
@@ -42,7 +58,7 @@ export function UsageLimitDialog({
         <DialogHeader>
           <DialogTitle fontSize="$7" fontWeight="500" letterSpacing={-0.4}>Need more usage?</DialogTitle>
           <DialogDescription color="$color11">
-            You&apos;ve reached your limit. To keep going:
+            {reason ? `${reason} To keep going:` : 'To keep going:'}
           </DialogDescription>
         </DialogHeader>
 
