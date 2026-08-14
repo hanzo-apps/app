@@ -270,27 +270,6 @@ export default function LandingPage() {
                 </Paragraph>
               </Reveal>
 
-              {/* THE composer — one on the page, and it belongs to the sentence
-                  it answers. It sat in a sticky dock across the foot of the
-                  page before, which pinned it to the viewport and left the hero
-                  reading as copy, a picture, and an unrelated bar at the bottom.
-                  In the column it reads as one thought: here is what this does,
-                  here is where you say it. On a phone that also puts it where
-                  the stack wants it — headline, composer, then the product —
-                  instead of under the fold behind everything else.
-
-                  OUTSIDE the Reveal above it: that fade-up is a transform, and
-                  a transformed ancestor becomes the containing block for
-                  anything positioned inside it, which is what the composer's
-                  own popovers hang from. */}
-              <YStack id="build" marginTop="$6" width="100%" maxWidth={576}>
-                <BuildComposer
-                  showPill={false}
-                  subline={false}
-                  typewriter={TYPED}
-                  onSubmit={startBuild}
-                />
-              </YStack>
             </YStack>
 
             {/* RIGHT — the product, building something, in the real chrome.
@@ -510,6 +489,35 @@ export default function LandingPage() {
               Start with a sentence. Deploy to Hanzo Cloud in one click.
             </Paragraph>
           </Reveal>
+        </YStack>
+
+        {/* THE composer — one on the page, and this is its flow slot.
+            It rides the BOTTOM OF THE VIEWPORT the whole way down and comes to
+            rest here. It briefly moved up into the left column; pinned is what
+            it is meant to be, and what it was.
+
+            Two placement rules the sticky depends on, both easy to undo by
+            accident. It must be the LAST child of the stack it rides — a sticky
+            box is held inside its containing block and pins only while its own
+            flow position is below the viewport — and it must sit OUTSIDE the
+            Reveal above it, whose fade-up is a transform, and a transformed
+            ancestor becomes the containing block for everything positioned
+            inside it (the composer's own popovers included).
+
+            `.hz-dock` in assets/globals.css is the whole pinning rule. */}
+        <YStack
+          className="hz-dock"
+          paddingHorizontal="$4"
+          $md={{ paddingHorizontal: "$6" }}
+        >
+          <YStack id="build" alignSelf="center" width="100%" maxWidth={672}>
+            <BuildComposer
+              showPill={false}
+              subline={false}
+              typewriter={TYPED}
+              onSubmit={startBuild}
+            />
+          </YStack>
         </YStack>
 
       </YStack>
