@@ -16,7 +16,7 @@
  */
 import { YStack, XStack, SizableText } from '@hanzo/ui';
 import { useRouter } from 'next/navigation';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button } from '@hanzo/ui';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@hanzo/ui';
 import { Wallet, Sparkles, ArrowRight, type LucideIcon } from 'lucide-react';
 
 import { useCloudBalance, spendableCents } from '@/lib/billing/live-balance';
@@ -79,23 +79,40 @@ function OptionCard({
   desc: string;
   onClick: () => void;
 }) {
+  // A pressable XStack, not a Button. Button sizes itself for a single-line
+  // label — it takes its height from the token, so a second line of wrapping
+  // description cannot grow the box. The text rendered OUTSIDE the card and
+  // the next card overlapped it. A card that wraps has to own its own height.
   return (
-    <Button
+    <button
       type="button"
       onClick={onClick}
-      group width="100%" alignItems="flex-start" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4" outlineWidth={0} hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}
+      style={{ all: 'unset', display: 'block', width: '100%', cursor: 'pointer' }}
     >
-      <XStack height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color3">
-        <SizableText color="$color"><Icon size={20} /></SizableText>
-      </XStack>
-      <YStack minWidth={0} flex={1}>
-        <XStack alignItems="center" justifyContent="space-between" gap="$2">
-          <SizableText fontSize="$3" fontWeight="500" color="$color">{title}</SizableText>
-          <ArrowRight size={16} />
+      <XStack
+        width="100%"
+        alignItems="flex-start"
+        gap="$3"
+        borderRadius="$6"
+        borderWidth={1}
+        borderColor="$borderColor"
+        backgroundColor="$background"
+        padding="$4"
+        hoverStyle={{ borderColor: '$color', backgroundColor: '$color3' }}
+        pressStyle={{ backgroundColor: '$color3' }}
+      >
+        <XStack height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color3">
+          <SizableText color="$color"><Icon size={20} /></SizableText>
         </XStack>
-        <SizableText marginTop="$0.5" fontSize="$1" lineHeight="1.625" color="$color11">{desc}</SizableText>
-      </YStack>
-    </Button>
+        <YStack minWidth={0} flex={1} gap="$1">
+          <XStack alignItems="center" justifyContent="space-between" gap="$2">
+            <SizableText fontSize="$3" fontWeight="500" color="$color">{title}</SizableText>
+            <SizableText color="$color11" flexShrink={0}><ArrowRight size={16} /></SizableText>
+          </XStack>
+          <SizableText fontSize="$1" lineHeight={18} color="$color11">{desc}</SizableText>
+        </YStack>
+      </XStack>
+    </button>
   );
 }
 
