@@ -59,7 +59,7 @@ export const DeployButtonContent = ({
    */
   const publish = async () => {
     if (!config.title.trim()) {
-      toast.error("Please enter a title for your project.");
+      toast.error("Name the project before publishing it.");
       return;
     }
     setLoading(true);
@@ -104,11 +104,11 @@ export const DeployButtonContent = ({
           reason: data?.needsOnboarding ? "needs_onboarding" : "error",
         });
         if (res.status === 409 && data?.needsOnboarding) {
-          toast.error("Set up your organization first.");
+          toast.error("Create an organization first. Everything you publish belongs to one.");
           router.push("/new");
           return;
         }
-        toast.error(data?.error || "Failed to publish project");
+        toast.error(data?.error || "Could not publish the project. Try again in a moment.");
         return;
       }
 
@@ -168,16 +168,16 @@ export const DeployButtonContent = ({
           // event across every product; `action` names the product's moment.
           analytics.capture(EVENTS.FIRST_ACTION, { action: "app_live" });
         }
-        toast.success("Your project is live! 🎉");
+        toast.success("Your app is live. Copy the link below to share it.");
         return;
       }
       if (data?.deployError && !liveUrl) {
-        toast.success("Project saved to your organization.", {
-          description: "The live deploy is finishing — open it from Projects.",
+        toast.success("Saved to your organization.", {
+          description: "The deploy is still finishing. Open it from Projects in a moment.",
         });
       } else {
-        toast.success("Your project is published! 🎉", {
-          description: liveUrl ? "Your site is live." : undefined,
+        toast.success("Your app is published.", {
+          description: liveUrl ? "It is live now." : undefined,
         });
       }
 
@@ -191,7 +191,7 @@ export const DeployButtonContent = ({
         reason: "exception",
       });
       analytics.captureError(err, { properties: { where: "publish" } });
-      toast.error(err instanceof Error ? err.message : "Failed to publish project");
+      toast.error(err instanceof Error ? err.message : "Could not publish the project. Try again in a moment.");
     } finally {
       setLoading(false);
     }
@@ -259,7 +259,7 @@ export const DeployButtonContent = ({
           <Label marginBottom="$1.5" fontSize="$1" fontWeight="500" color="$color11">Project title</Label>
           <Input
             type="text"
-            placeholder="My Awesome Website"
+            placeholder="Team dashboard"
             value={config.title}
             onChangeText={(v: string) => setConfig({ ...config, title: v })}
             borderColor="$borderColor" backgroundColor="$color2" color="$color" placeholderTextColor="$color11"

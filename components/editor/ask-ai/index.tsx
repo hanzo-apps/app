@@ -274,7 +274,7 @@ export function AskAI({
     setIsUploading(true);
     const urls = await uploadProjectImages(space(project?.space_id), imgs);
     if (urls.length) attachRefs(urls);
-    else toast.error("Couldn't upload image(s). Please try again.");
+    else toast.error("None of those images uploaded. Drop them again, or pick smaller files.");
     setIsUploading(false);
   };
 
@@ -389,11 +389,11 @@ export function AskAI({
       case "pro_required":
         return "Upgrade to continue.";
       case "need_credits":
-        return "You're out of credits.";
+        return "You're out of credits. Add more at pay.hanzo.ai.";
       case "provider_required":
         return r.message || "Choose a provider to continue.";
       default:
-        return r.message || "Something went wrong — please try again.";
+        return r.message || "The build stopped for a reason Hanzo could not name. Send it again.";
     }
   };
 
@@ -531,7 +531,7 @@ export function AskAI({
           (result.text.trim() ||
             (result.changed.length
               ? `Changed ${result.changed.join(", ")}`
-              : "Nothing to change.")) +
+              : "The run finished without changing any files.")) +
           (result.durable ? "" : "\n\n(Not saved — this run edited memory only.)");
         finishTurn(codeId, result.ok ? "done" : "error", summary);
       } finally {
@@ -792,7 +792,7 @@ export function AskAI({
         raiseUsageLimit();
         break;
       case "api_error":
-        toast.error(message || "An error occurred");
+        toast.error(message || "Hanzo AI returned an error with no detail. Send it again.");
         break;
       case "empty_response":
         toast.error(
@@ -801,13 +801,13 @@ export function AskAI({
         );
         break;
       case "network_error":
-        toast.error(message || "Network error occurred");
+        toast.error(message || "Lost the connection. Check you are online and send it again.");
         break;
       case "aborted":
         // User pressed Stop — silent by design (no stuck spinner, no toast).
         break;
       default:
-        toast.error("An unexpected error occurred");
+        toast.error("The build stopped for a reason Hanzo could not name. Send it again.");
     }
   };
 

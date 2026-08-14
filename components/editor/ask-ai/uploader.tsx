@@ -55,7 +55,7 @@ export const Uploader = ({
     if (images.length === 0) return;
     const urls = await uploadProjectImages(target, images);
     if (urls.length) onFiles(urls);
-    else setErr("Couldn't upload image(s). Please try again.");
+    else setErr("None of those images uploaded. Try again, or pick smaller files.");
   };
 
   const uploadFiles = async (files: FileList | null) => {
@@ -133,16 +133,17 @@ export const Uploader = ({
                   </XStack>
                 </XStack>
                 <Paragraph fontSize="$7" fontWeight="500" color="$color" textAlign="center" lineHeight="1.4">
-                  Add Custom Images
+                  Add images
                 </Paragraph>
                 <Paragraph fontSize="$3" color="$color11" marginTop="$1.5" textAlign="center">
-                  Upload images to your project and use them with Hanzo AI!
+                  Images you add here live in the project. Point Hanzo at one
+                  when you ask for a change.
                 </Paragraph>
               </YStack>
               <YStack rowGap="$4" padding="$4.5">
                 <div>
                   <Paragraph fontSize="$1" textAlign="left" color="$color11" marginBottom="$2">
-                    Uploaded Images
+                    In this project
                   </Paragraph>
                   <YStack gap="$1" flexWrap="wrap" maxHeight="$17" overflow="scroll">
                     {files.map((file) => (
@@ -169,7 +170,7 @@ export const Uploader = ({
                 </div>
                 <div>
                   <Paragraph fontSize="$1" textAlign="left" color="$color11" marginBottom="$2">
-                    Generate an image with AI
+                    Generate an image
                   </Paragraph>
                   <XStack alignItems="center" gap="$2">
                     <Input
@@ -207,7 +208,7 @@ export const Uploader = ({
                 </div>
                 <div>
                   <Paragraph fontSize="$1" textAlign="left" color="$color11" marginBottom="$2">
-                    Or import images from your computer
+                    Or add files from your computer
                   </Paragraph>
                   <Button
                     position="relative" width="100%"
@@ -216,12 +217,12 @@ export const Uploader = ({
                     {isLoading ? (
                       <>
                         <Loading overlay={false} size={16} />
-                        Uploading image(s)...
+                        Uploading…
                       </>
                     ) : (
                       <>
                         <Upload size={16} />
-                        Upload Images
+                        Choose files
                       </>
                     )}
                   </Button>
@@ -265,8 +266,8 @@ export const Uploader = ({
         open={open}
         onClose={() => setOpen(false)}
         pages={pages}
-        title="Log In to add Custom Images"
-        description="Sign in with your Hanzo account to publish your project and increase your monthly limit."
+        title="Sign in to add images"
+        description="Images are stored with your project, so adding one needs an account."
   />
     </>
   );

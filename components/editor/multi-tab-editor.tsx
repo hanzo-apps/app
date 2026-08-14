@@ -391,7 +391,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                       ? 'No files in this project yet'
                       : 'No files match your search'}
                   </Paragraph>
-                  <Paragraph fontSize="$1" color="$color11" textAlign="center">Pick a file to open it in the editor.</Paragraph>
+                  <Paragraph fontSize="$1" color="$color11" textAlign="center">This list holds every file in the project.</Paragraph>
                 </YStack>
               </YStack>
             ) : (

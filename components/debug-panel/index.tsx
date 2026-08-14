@@ -245,7 +245,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
         {filteredEvents.length === 0 ? (
           <YStack padding="$4">
             <SizableText fontSize="$1" color="$color11" textAlign="center">
-              No events yet. Events will appear here as they occur.
+              No events yet. This is the raw stream from a build — start one and every step lands here.
             </SizableText>
           </YStack>
         ) : (

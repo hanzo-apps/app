@@ -93,7 +93,7 @@ export function ModelSelector({
     <Command backgroundColor="transparent" shouldFilter={models.length > SEARCH_AT}>
       {models.length > SEARCH_AT && <CommandInput placeholder="Search models…" />}
       <CommandList maxHeight={MAX_HEIGHT}>
-        <CommandEmpty>No models found.</CommandEmpty>
+        <CommandEmpty>No models match that search.</CommandEmpty>
         {groups.map((group) => (
           <CommandGroup key={group.key} heading={group.label}>
             {group.models.map((model) => {

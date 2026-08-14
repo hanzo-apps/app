@@ -209,9 +209,9 @@ export const AppEditor = ({
 
   useMount(() => {
     if (deploy && project?._id) {
-      toast.success("Your project is deployed! 🎉", {
+      toast.success("Your app is published.", {
         action: {
-          label: "See Project",
+          label: "Open the project",
           onClick: () => {
             window.open(
               `/projects/${project?.space_id}`,
@@ -224,7 +224,7 @@ export const AppEditor = ({
     }
     if (htmlStorage) {
       removeHtmlStorage();
-      toast.warning("Previous HTML content restored from local storage.");
+      toast.warning("Restored the work you had unsaved in this browser.");
     }
 
     // Load initial prompt from localStorage for new projects
@@ -446,7 +446,7 @@ export const AppEditor = ({
                   : Promise.resolve({ ok: false as const, reason: "no project id", unconfigured: true })
                 ).then((r) => {
                   if (!r.ok && !r.unconfigured) {
-                    toast.error(`Version not saved to git: ${r.reason}`);
+                    toast.error(`Saved here, but not committed to git: ${r.reason}`);
                   }
                 });
 
@@ -613,7 +613,7 @@ export const AppEditor = ({
                     size={16}
                     onClick={() => {
                       copyToClipboard(currentPageData.html);
-                      toast.success("HTML copied to clipboard!");
+                      toast.success("HTML copied.");
                     }}
   />
                   <YStack

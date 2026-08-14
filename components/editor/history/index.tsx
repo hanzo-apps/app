@@ -686,10 +686,10 @@ export function HistoryPanel({
                 ) : commitsShown.length === 0 ? (
                   <SizableText paddingHorizontal="$2" paddingVertical="$5" fontSize="$1" color="$color11" display="flex" flexDirection="column">
                     {showBookmarksOnly
-                      ? "No bookmarked commits."
+                      ? "No bookmarked commits. Bookmark one from the list and it stays here."
                       : logSupported
                         ? "No commits yet — push to create the first."
-                        : `Commit history isn't available for ${repo ? PROVIDER_LABEL[repo.provider] : "this"} git yet.`}
+                        : `Hanzo cannot read commit history from ${repo ? PROVIDER_LABEL[repo.provider] : "this"} git.`}
                   </SizableText>
                 ) : (
                   <YStack rowGap="$1">{commitsShown.map(renderCard)}</YStack>
@@ -943,7 +943,7 @@ function EmptyState({ bookmarks }: { bookmarks: boolean }) {
       <Paragraph fontSize={13} fontWeight="500" color="$color">{bookmarks ? "No bookmarks yet" : "No revisions yet"}</Paragraph>
       <Paragraph maxWidth={220} fontSize="$1" color="$color11">
         {bookmarks
-          ? "Bookmark any revision to pin it here for quick access."
+          ? "Bookmark a revision and it stays pinned here."
           : "Your edits and commits appear here — preview or restore any version."}
       </Paragraph>
     </SizableText>

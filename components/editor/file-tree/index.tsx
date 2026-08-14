@@ -129,7 +129,7 @@ export function FileTree({
         {pages.length === 0 && (
           <YStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$6">
             <X size={16} />
-            <Paragraph fontSize={11} color="$color11">No files yet.</Paragraph>
+            <Paragraph fontSize={11} color="$color11">No files yet. Add one with + above.</Paragraph>
           </YStack>
         )}
       </YStack>

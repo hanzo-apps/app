@@ -780,7 +780,7 @@ export function ChatPanel({
         {turns.length === 0 ? (
           <YStack padding="$4">
             <SizableText fontSize="$1" color="$color11" textAlign="center">
-              No messages yet. Start a conversation to see it here.
+              No messages yet. Ask for a change, and everything Hanzo does to your files shows up here.
             </SizableText>
           </YStack>
         ) : (

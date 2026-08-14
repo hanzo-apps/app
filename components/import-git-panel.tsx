@@ -186,7 +186,7 @@ export function ImportGitPanel() {
   const connectGitlab = useCallback(() => {
     if (!gitlabConnectable) {
       toast.info(
-        "GitLab sign-in is being set up. It’ll appear here once the GitLab connection is live.",
+        "GitLab is not connected on this deployment, so there is nothing to sign in to yet.",
       );
       return;
     }
@@ -398,7 +398,7 @@ export function ImportGitPanel() {
               <YStack paddingVertical="$6">
                 <SizableText textAlign="center" fontSize="$3" color="$color11">
                   {repos.length === 0
-                    ? `No repositories found for ${active}.`
+                    ? `Nothing to import from ${active}. Repositories the account can reach are listed here.`
                     : `No repositories match “${search}”.`}
                 </SizableText>
               </YStack>

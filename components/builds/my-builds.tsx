@@ -46,7 +46,7 @@ export function MyBuilds() {
         const body = (await r.json()) as { sessions?: SessionRow[] };
         setState({ kind: "ready", sessions: body.sessions ?? [] });
       } catch {
-        if (live) setState({ kind: "error", message: "Unable to reach the API" });
+        if (live) setState({ kind: "error", message: "no connection" });
       }
     })();
     return () => {
@@ -81,7 +81,8 @@ export function MyBuilds() {
       ) : state.sessions.length === 0 ? (
         <YStack marginTop="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$4">
           <Paragraph fontSize="$3" color="$color11">
-            No sessions yet. Publish the session that built a repo:
+            Nothing published yet. A session is the whole chat that built a
+            project — publish one and you can read it back here:
           </Paragraph>
           <SizableText marginTop="$3" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$2.5" fontFamily="$mono" fontSize={11} color="$color11" overflow="scroll" whiteSpace="pre">
             hanzo agent publish &lt;project&gt; --bind

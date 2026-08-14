@@ -28,11 +28,11 @@ export function ReImagine({
   const handleClick = async () => {
     if (isLoading) return; // Prevent multiple clicks while loading
     if (!url) {
-      toast.error("Please enter a URL.");
+      toast.error("Enter the URL of the site to start from.");
       return;
     }
     if (!checkIfUrlIsValid(url)) {
-      toast.error("Please enter a valid URL.");
+      toast.error("That is not a URL. It should look like https://example.com.");
       return;
     }
     setIsLoading(true);
@@ -43,9 +43,9 @@ export function ReImagine({
       setOpen(false);
       setUrl("");
       onRedesign(response.data.markdown);
-      toast.success("Hanzo AI is redesigning your site! Let it cook... 🔥");
+      toast.success("Read the site. Building the new version now.");
     } else {
-      toast.error(response?.data?.error || "Failed to redesign the site.");
+      toast.error(response?.data?.error || "Could not read that site. Check the URL is public.");
     }
     setIsLoading(false);
   };
@@ -82,16 +82,17 @@ export function ReImagine({
               </XStack>
             </XStack>
             <Paragraph fontSize="$7" fontWeight="500" color="$color" textAlign="center" lineHeight="1.4">
-              Redesign your Site!
+              Redesign from a URL
             </Paragraph>
             <Paragraph fontSize="$3" color="$color11" marginTop="$1.5" textAlign="center">
-              Try our new Redesign feature to give your site a fresh look.
+              Point it at a site you already have. Hanzo reads the page and
+              builds a new version from it.
             </Paragraph>
           </YStack>
           <YStack rowGap="$4" padding="$5">
             <div>
               <Paragraph fontSize="$3" color="$color11" marginBottom="$2" textAlign="center">
-                Enter your website URL to get started:
+                The URL of the site to read:
               </Paragraph>
               <Input
                 type="text"
@@ -115,7 +116,7 @@ export function ReImagine({
             </div>
             <div>
               <Paragraph fontSize="$3" color="$color11" marginBottom="$2" textAlign="center">
-                Then, let&apos;s redesign it!
+                It has to be reachable without signing in.
               </Paragraph>
               <Button
                 position="relative" width="100%"
@@ -124,7 +125,7 @@ export function ReImagine({
                 {isLoading ? (
                   <>
                     <Loading overlay={false} size={16} />
-                    Fetching your site...
+                    Reading the site…
                   </>
                 ) : (
                   <>

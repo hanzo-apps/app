@@ -89,7 +89,7 @@ export function CheckpointPanel({
         {checkpoints.length === 0 ? (
           <YStack alignItems="center" justifyContent="center" height="100%" gap="$2" padding="$4">
             <Inbox size={32} />
-            <SizableText fontSize="$1" textAlign="center" color="$color11">No checkpoints yet. Checkpoints are created automatically when the AI makes changes.</SizableText>
+            <SizableText fontSize="$1" textAlign="center" color="$color11">No checkpoints yet. Hanzo saves one every time it changes your files, so you can go back to any earlier version from here.</SizableText>
           </YStack>
         ) : (
           <YStack padding="$2" rowGap="$1.5">
