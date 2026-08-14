@@ -121,6 +121,22 @@ export function ProjectThumb({
             border: 0,
             background: "#fff",
             width: LOGICAL_W,
+            // `max-width` CONSTRAINS the used width no matter what `width` says —
+            // they are different properties, so an inline `width: 1280px` does
+            // not beat a stylesheet's `max-width: 100%`, and this iframe sits
+            // under exactly that rule: @hanzo/ui's theme.css carries the usual
+            // responsive-media reset, `:where(img,svg,video,canvas,iframe,…)
+            // { max-width: 100% }`. Right for every picture on the page and
+            // wrong for this one element, because here the width is not a layout
+            // size — it is the VIEWPORT the framed site lays itself out against.
+            //
+            // Capped, it became the card's own width: the site inside saw ~390px,
+            // rendered its PHONE layout, and the transform then shrank that to a
+            // ~114px strip in a 390px card. That is the whole of the "cropped
+            // mobile previews" — every thumbnail was a real screenshot of the
+            // mobile site, correctly scaled, of the wrong layout. Measured both
+            // ways in a browser: 390px capped, 1280px free.
+            maxWidth: 'none',
             height: box.h,
             transform: `scale(${box.scale})`,
             transformOrigin: 'top left',
