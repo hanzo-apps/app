@@ -83,7 +83,7 @@ export default function PricingPage() {
           <YStack position="relative" alignSelf="center" maxWidth={768}>
             <Reveal>
               <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$3" paddingVertical="$1.5">
-                <SizableText fontFamily="$mono" fontSize={11} color="$color11">
+                <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
                   One plan · every Hanzo app
                 </SizableText>
               </XStack>
@@ -155,7 +155,7 @@ export default function PricingPage() {
                           >
                             {highlighted && (
                               <YStack position="absolute" top="$-3" left={28}>
-                                <SizableText borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$3" paddingVertical="$1" fontSize={11} fontWeight="500" color="$color12">
+                                <SizableText borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$3" paddingVertical="$1" fontSize="$1" fontWeight="500" color="$color12">
                                   Recommended
                                 </SizableText>
                               </YStack>
@@ -219,8 +219,23 @@ export default function PricingPage() {
         {/* ── Start note ───────────────────────────────────────── */}
         <YStack paddingHorizontal="$4" $md={{ paddingHorizontal: "$6" }}>
           <Reveal alignSelf="center" width="100%" maxWidth={1152}>
-            <YStack alignItems="flex-start" justifyContent="space-between" gap="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$5" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: 28 }}>
-              <div>
+            {/* flexWrap, because this row turns to `row` at $sm and then has no
+                way to give: the copy and the button both want their full width
+                and neither yields, so between roughly 700 and 1000px the button
+                left the card and the arrow was cut off at the viewport edge
+                (iPad mini overflowed the document by 30px). Wrapping is the
+                honest answer at that width — two lines beat one line that does
+                not fit. */}
+            <YStack alignItems="flex-start" justifyContent="space-between" gap="$4" flexWrap="wrap" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$5" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: 28 }}>
+              {/* A YStack, not a bare <div>. Tamagui's H3 and Paragraph render
+                  inline here, so inside a plain div the heading and its body copy
+                  shared a line — "Start in minutesEvery plan includes…" — and the
+                  Paragraph's marginTop was silently dropped, because a margin-top
+                  does nothing to an inline box. A flex column gives them block
+                  layout, which is what the spacing was always written for.
+                  minWidth={0} lets this column shrink instead of forcing the row
+                  wider than the card. */}
+              <YStack flexShrink={1} minWidth={0}>
                 <H3 fontSize="$4" fontWeight="500" color="$color">
                   What every plan includes
                 </H3>
@@ -229,9 +244,16 @@ export default function PricingPage() {
                   allowance. Pick a plan, add a card, and start. Change or cancel
                   whenever you like.
                 </Paragraph>
-              </div>
+              </YStack>
+              {/* The anchor must not shrink. It was the one element that could:
+                  the <a> shrank to 90px while the XStack inside it stayed 181px
+                  and flex:0 0 auto, so the button rendered OUTSIDE its own link
+                  box and off the screen. Pinning the anchor makes the link and
+                  the thing you see the same shape. */}
               <Link
+                style={{ flexShrink: 0 }}
                 href="/dev"
+                className="hz-tap"
               ><XStack flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color4" }}>
                 <SizableText fontSize="$3" fontWeight="500" color="$color">Open the builder</SizableText>
                 <ArrowRight size={16} />
@@ -243,8 +265,23 @@ export default function PricingPage() {
         {/* ── Enterprise note ──────────────────────────────────── */}
         <YStack paddingHorizontal="$4" paddingTop="$6" $md={{ paddingHorizontal: "$6" }}>
           <Reveal alignSelf="center" width="100%" maxWidth={1152}>
-            <YStack alignItems="flex-start" justifyContent="space-between" gap="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$5" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: 28 }}>
-              <div>
+            {/* flexWrap, because this row turns to `row` at $sm and then has no
+                way to give: the copy and the button both want their full width
+                and neither yields, so between roughly 700 and 1000px the button
+                left the card and the arrow was cut off at the viewport edge
+                (iPad mini overflowed the document by 30px). Wrapping is the
+                honest answer at that width — two lines beat one line that does
+                not fit. */}
+            <YStack alignItems="flex-start" justifyContent="space-between" gap="$4" flexWrap="wrap" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$5" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: 28 }}>
+              {/* A YStack, not a bare <div>. Tamagui's H3 and Paragraph render
+                  inline here, so inside a plain div the heading and its body copy
+                  shared a line — "Start in minutesEvery plan includes…" — and the
+                  Paragraph's marginTop was silently dropped, because a margin-top
+                  does nothing to an inline box. A flex column gives them block
+                  layout, which is what the spacing was always written for.
+                  minWidth={0} lets this column shrink instead of forcing the row
+                  wider than the card. */}
+              <YStack flexShrink={1} minWidth={0}>
                 <H3 fontSize="$4" fontWeight="500" color="$color">
                   Need more than Max?
                 </H3>
@@ -252,9 +289,16 @@ export default function PricingPage() {
                   Volume usage, SSO, dedicated support, and custom terms for your
                   organization.
                 </Paragraph>
-              </div>
+              </YStack>
+              {/* The anchor must not shrink. It was the one element that could:
+                  the <a> shrank to 90px while the XStack inside it stayed 181px
+                  and flex:0 0 auto, so the button rendered OUTSIDE its own link
+                  box and off the screen. Pinning the anchor makes the link and
+                  the thing you see the same shape. */}
               <Link
+                style={{ flexShrink: 0 }}
                 href="/enterprise"
+                className="hz-tap"
               ><XStack flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color4" }}>
                 <SizableText fontSize="$3" fontWeight="500" color="$color">Talk to us</SizableText>
                 <ArrowRight size={16} />

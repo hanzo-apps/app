@@ -377,7 +377,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
               aria-label="Search files"
               width="100%" backgroundColor="transparent" paddingVertical="$0.5" fontSize="$3" color="$color" placeholderTextColor="$color11"
   />
-            <SizableText flexShrink={0} fontFamily="$mono" fontSize={10} color="$color11">
+            <SizableText flexShrink={0} fontFamily="$mono" fontSize="$1" color="$color11">
               {browseFiltered.length}
             </SizableText>
           </XStack>
@@ -400,7 +400,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                   {group.folder && (
                     <XStack alignItems="center" gap="$1.5" paddingHorizontal="$3" paddingVertical="$1">
                       <Folder size={12} />
-                      <SizableText numberOfLines={1} fontSize={10} fontWeight="500" letterSpacing={0.4} color="$color11">{group.folder}</SizableText>
+                      <SizableText numberOfLines={1} fontSize="$1" fontWeight="500" letterSpacing={0.4} color="$color11">{group.folder}</SizableText>
                     </XStack>
                   )}
                   {group.items.map((file) => (

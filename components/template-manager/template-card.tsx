@@ -115,10 +115,10 @@ export function TemplateCard({
             {/* Metadata */}
             <XStack flexWrap="wrap" alignItems="center" columnGap="$2" rowGap="$1">
               {runtimeBadge && (
-                <Badge className="text-xs px-1.5 py-0 h-auto" style={runtimeBadge.tone}>{runtimeBadge.label}</Badge>
+                <Badge style={runtimeBadge.tone}>{runtimeBadge.label}</Badge>
               )}
               {hasBackendFeatures && (
-                <Badge variant="outline" className="text-xs px-1.5 py-0 h-auto">
+                <Badge variant="outline">
                   <Server size={12} />
                   Backend
                 </Badge>
@@ -131,7 +131,7 @@ export function TemplateCard({
               {customTemplate?.metadata.license && (
                 <>
                   {customTemplate.metadata.author && <SizableText fontSize="$1" color="$color11">•</SizableText>}
-                  <Badge variant="secondary" className="text-xs px-1.5 py-0 h-auto">
+                  <Badge variant="secondary">
                     {getLicenseLabel(customTemplate.metadata.license)}
                   </Badge>
                 </>
@@ -146,12 +146,12 @@ export function TemplateCard({
                 <>
                   <SizableText fontSize="$1" color="$color11">•</SizableText>
                   {(customTemplate?.metadata.tags || template.metadata?.tags || []).slice(0, 2).map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-xs px-1.5 py-0 h-auto">
+                    <Badge key={tag} variant="outline">
                       {tag}
                     </Badge>
                   ))}
                   {(customTemplate?.metadata.tags || template.metadata?.tags || []).length > 2 && (
-                    <Badge variant="outline" className="text-xs px-1.5 py-0 h-auto">
+                    <Badge variant="outline">
                       +{(customTemplate?.metadata.tags || template.metadata?.tags || []).length - 2}
                     </Badge>
                   )}
@@ -347,21 +347,21 @@ export function TemplateCard({
           {((customTemplate?.metadata.tags || template.metadata?.tags || []).length > 0 || (isBuiltIn && 'runtime' in template) || hasBackendFeatures) && (
             <XStack flexWrap="wrap" gap="$1">
               {runtimeBadge && (
-                <Badge className="text-xs px-1.5 py-0.5" style={runtimeBadge.tone}>{runtimeBadge.label}</Badge>
+                <Badge style={runtimeBadge.tone}>{runtimeBadge.label}</Badge>
               )}
               {hasBackendFeatures && (
-                <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                <Badge variant="outline">
                   <Server size={12} />
                   Backend
                 </Badge>
               )}
               {(customTemplate?.metadata.tags || template.metadata?.tags || []).slice(0, 3).map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-xs px-1.5 py-0.5">
+                <Badge key={tag} variant="secondary">
                   {tag}
                 </Badge>
               ))}
               {(customTemplate?.metadata.tags || template.metadata?.tags || []).length > 3 && (
-                <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
+                <Badge variant="secondary">
                   +{(customTemplate?.metadata.tags || template.metadata?.tags || []).length - 3}
                 </Badge>
               )}
@@ -371,7 +371,7 @@ export function TemplateCard({
           {/* License and file count */}
           <XStack alignItems="center" gap="$2" flexWrap="wrap">
             {customTemplate?.metadata.license && (
-              <Badge variant="outline" className="text-xs px-1.5 py-0 h-auto">
+              <Badge variant="outline">
                 {getLicenseLabel(customTemplate.metadata.license)}
               </Badge>
             )}

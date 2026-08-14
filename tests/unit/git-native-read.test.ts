@@ -45,23 +45,46 @@ describe('listForgeCommits', () => {
     expect(commits[0]).toMatchObject({ sha: 'abc123', message: 'add quests', author: 'antje' });
   });
 
-  it('reconstructs a commit\'s html pages for fork/preview', async () => {
+  /**
+   * EVERY TEXT FILE, not only `.html`.
+   *
+   * The filter used to be `/\.html?$/i`, from when a project was a bag of
+   * generated pages. The coding agent pushes a real repo from its sandbox now, so
+   * a project's files are `.tsx`, `.ts`, `.json`, `.css` — and a filter that kept
+   * only HTML answered EMPTY for every one of them, which is a history panel and
+   * a fork that both silently show nothing while the commits sit in the timeline.
+   */
+  it("reads every text file of a commit, and no binaries", async () => {
+    const asked: string[] = [];
     server.use(
       http.get(`${FORGE}/v1/repos/:o/:n/git/trees/:sha`, () =>
         HttpResponse.json({ tree: [
-          { path: 'index.html', type: 'blob' },
-          { path: 'logo.png', type: 'blob' }, // non-html: skipped
+          { path: 'index.html', type: 'blob', size: 48 },
+          { path: 'src/App.tsx', type: 'blob', size: 120 },
+          { path: 'package.json', type: 'blob', size: 60 },
+          { path: 'logo.png', type: 'blob', size: 9000 },      // binary: skipped
+          { path: 'dump.sqlite', type: 'blob', size: 4096 },   // binary: skipped
+          { path: 'huge.ts', type: 'blob', size: 8 * 1024 * 1024 }, // oversized: skipped
+          { path: 'src', type: 'tree' },
         ] }),
       ),
-      http.get(`${FORGE}/v1/repos/:o/:n/raw/:sha/index.html`, () =>
-        HttpResponse.text('<!DOCTYPE html><html><body>LuxQuest</body></html>'),
+      ...['index.html', 'src/App.tsx', 'package.json', 'logo.png', 'dump.sqlite', 'huge.ts'].map(
+        (path) =>
+          http.get(`${FORGE}/v1/repos/:o/:n/raw/:sha/${path}`, () => {
+            asked.push(path);
+            return HttpResponse.text(`contents of ${path}`);
+          }),
       ),
     );
     const { forgeCommitPages } = await import('@/lib/git/forge');
     const pages = await forgeCommitPages('antje', 'luxquest', 'abc123');
 
-    expect(pages).toHaveLength(1); // only the html
-    expect(pages[0].path).toBe('index.html');
-    expect(pages[0].html).toContain('LuxQuest');
+    expect(pages.map((p) => p.path)).toEqual(['index.html', 'src/App.tsx', 'package.json']);
+    expect(pages[1].html).toBe('contents of src/App.tsx');
+    // A binary decoded as UTF-8 is a corrupt binary the moment a fork writes it
+    // back, so it is never even fetched.
+    expect(asked).not.toContain('logo.png');
+    expect(asked).not.toContain('dump.sqlite');
+    expect(asked).not.toContain('huge.ts');
   });
 });

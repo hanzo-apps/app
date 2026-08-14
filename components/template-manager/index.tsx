@@ -309,15 +309,14 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
     <YStack height="100%">
       {/* Toolbar */}
       <YStack paddingTop="$4" paddingHorizontal="$4" paddingBottom="$3" flexShrink={0} $sm={{ paddingTop: "$5", paddingHorizontal: "$5", paddingBottom: "$3" }}>
-        <YStack alignSelf="center" maxWidth={1280} gap="$3" $sm={{ flexDirection: "row" }}>
+        <YStack alignSelf="center" width="100%" maxWidth={1280} gap="$3" $sm={{ flexDirection: "row" }}>
         {/* Search */}
-        <YStack position="relative" flex={1}>
-          <Search size={16} />
+        <YStack flex={1}>
           <Input
             placeholder="Search templates…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            paddingLeft={36}
+            startAdornment={<Search size={16} />}
   />
         </YStack>
 
@@ -393,7 +392,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
 
       {/* Templates Grid/List */}
       <YStack flex={1} minHeight={0} paddingHorizontal="$4" paddingTop="$3" paddingBottom="$4" overflow="scroll" $sm={{ paddingHorizontal: "$5", paddingTop: "$3", paddingBottom: "$5" }}>
-        <YStack alignSelf="center" maxWidth={1280}>
+        <YStack alignSelf="center" width="100%" maxWidth={1280}>
         {sortedTemplates.length === 0 ? (
           <XStack alignItems="center" justifyContent="center" height="100%">
             <SizableText textAlign="center" maxWidth={448} display="flex" flexDirection="column">

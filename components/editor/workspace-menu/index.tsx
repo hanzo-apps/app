@@ -21,6 +21,7 @@
  *
  * Strictly monochrome: black / white / neutral, semantic green/red only.
  */
+import { sends } from '@hanzo/ui/chat';
 import { SizableText, XStack, YStack, Paragraph } from '@hanzo/ui';
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -183,9 +184,26 @@ export function WorkspaceMenu({
             minWidth={0} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$color02", backgroundColor: "$color3" }}
           >
             <OrgMark org={display({ name: orgId, logo: activeOrg?.logo })} size={20} />
-            <SizableText maxWidth="9rem" numberOfLines={1} fontWeight="500" color="$color">
-              {projectName}
-            </SizableText>
+            {/* On a phone the bar has ~220px to split between this name and
+                the editor's tools, and the name was taking all of it. It is a
+                LABEL; they are the controls you came for. Below $sm it steps
+                out entirely — the org mark and chevron still open the menu where
+                the full name lives — rather than truncating to a cut-off word
+                ("MEGA" out of "MEGA Shop"). Above $sm it shows in full. */}
+            {/* The cap and the show/hide live on a WRAPPER, and the text keeps
+                the display gui gives it. Both props used to sit on the text
+                beside `display: "inline"`, and an inline box takes neither:
+                `max-width` does not apply to a non-replaced inline element, and
+                a clamp needs a block to clamp inside. So the 9rem was inert, the
+                clamp never ran, and the name was cut mid-word by the button —
+                "MEGA S" — which is the exact outcome the note above says this
+                arrangement exists to avoid. `minWidth={0}` for the reason in
+                header/index.tsx: without it a flex item will not shrink at all. */}
+            <YStack display="none" $lg={{ display: "flex" }} minWidth={0} maxWidth="9rem">
+              <SizableText numberOfLines={1} fontWeight="500" color="$color">
+                {projectName}
+              </SizableText>
+            </YStack>
             <ChevronsUpDown size={14} />
           </Button>
         </DropdownMenuTrigger>
@@ -230,9 +248,9 @@ export function WorkspaceMenu({
                 <OrgMark org={display({ name: orgId, logo: activeOrg?.logo })} size={28} />
                 <YStack minWidth={0} flex={1}>
                   <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{orgName}</SizableText>
-                  <SizableText fontSize={11} color="$color11">Switch workspace</SizableText>
+                  <SizableText fontSize="$1" color="$color11">Switch workspace</SizableText>
                 </YStack>
-                <SizableText flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$color11">
+                <SizableText flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize="$1" fontWeight="500" color="$color11">
                   {orgKind}
                 </SizableText>
               </DropdownMenuSubTrigger>
@@ -258,9 +276,9 @@ export function WorkspaceMenu({
               <OrgMark org={display({ name: orgId, logo: activeOrg?.logo })} size={28} />
               <YStack minWidth={0} flex={1}>
                 <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{orgName}</SizableText>
-                <SizableText fontSize={11} color="$color11">Workspace</SizableText>
+                <SizableText fontSize="$1" color="$color11">Workspace</SizableText>
               </YStack>
-              <SizableText flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$color11">
+              <SizableText flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize="$1" fontWeight="500" color="$color11">
                 {orgKind}
               </SizableText>
             </XStack>
@@ -292,7 +310,7 @@ export function WorkspaceMenu({
                   style={{ width: `${pct}%` }}
   />
               </YStack>
-              <SizableText numberOfLines={1} fontSize={11} color="$color11">{creditHint}</SizableText>
+              <SizableText numberOfLines={1} fontSize="$1" color="$color11">{creditHint}</SizableText>
             </YStack></Link>
           </DropdownMenuItem>
 
@@ -353,7 +371,7 @@ export function WorkspaceMenu({
             placeholder="Project name"
             onChangeText={(v: string) => setRenameValue(v)}
             onKeyDown={(e: React.KeyboardEvent) => {
-              if (e.key === "Enter") {
+              if (sends(e.key, e.nativeEvent)) {
                 e.preventDefault();
                 if (!renaming) void submitRename();
               }

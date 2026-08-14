@@ -120,7 +120,7 @@ export default function BlogPlatform() {
                   placeholder="Search articles..."
                   value={searchQuery}
                   onChangeText={(v: string) => setSearchQuery(v)}
-                  paddingLeft={36} width={250}
+                  paddingLeft={36} width="100%" $lg={{ width: 250 }}
   />
               </YStack>
               {/* Same defect as the /enterprise CTA: a hand-painted near-black
@@ -146,7 +146,9 @@ export default function BlogPlatform() {
   />
             </AspectRatio>
             <YStack padding="$5" justifyContent="center">
-              <Badge variant="secondary" className="mb-4">{featuredArticle.category}</Badge>
+              <YStack marginBottom="$4">
+                <Badge variant="secondary">{featuredArticle.category}</Badge>
+              </YStack>
               <H2 fontSize="$10" fontWeight="500" marginBottom="$4">{featuredArticle.title}</H2>
               <Paragraph color="$color11" marginBottom="$5">{featuredArticle.excerpt}</Paragraph>
 
@@ -203,7 +205,7 @@ export default function BlogPlatform() {
                         <XStack alignItems="center" gap="$2" marginBottom="$2">
                           <Badge variant="outline">{article.category}</Badge>
                           {article.trending && (
-                            <Badge variant="secondary" className="gap-1">
+                            <Badge variant="secondary">
                               <TrendingUp size={12} />
                               Trending
                             </Badge>

@@ -10,90 +10,146 @@ import type { ProjectTemplate } from '../project-templates';
  * SDK) so it runs verbatim in the static runtime and on the deployed site.
  *
  * The `votes` collection is provisioned from the databaseSchema in
- * registry.ts (id: 'vibe-check'). Single self-contained file: Tailwind CDN + JS.
+ * registry.ts (id: 'vibe-check'). Single self-contained file: the Hanzo design sheet + JS.
  */
 
 const INDEX_HTML = `<!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Team Vibe Check · Hanzo Base</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    // Guarded so a slow/blocked CDN never throws — the app logic is CDN-independent.
-    if (window.tailwind) tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Inter', 'sans-serif'],
-            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Geist Mono', 'monospace'],
-          },
-        },
-      },
-    };
-  </script>
+  <link rel="stylesheet" href="https://hanzo.app/vendor/design/styles.css"/>
   <style>
-    @keyframes livepulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.82); } }
-    .live-dot { animation: livepulse 1.6s ease-in-out infinite; }
-    @keyframes pop { 0% { transform: scale(.9); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
-    .pop { animation: pop .28s ease-out; }
+    /* The sheet above brings the ground, the ink, Geist and the controls. What
+       is left is this page's own layout, written against its tokens. */
     body { -webkit-tap-highlight-color: transparent; }
+    .page { display: flex; flex-direction: column; min-height: 100dvh;
+            max-width: 42rem; margin-inline: auto; padding: var(--space-6) var(--gutter); }
+
+    header { display: flex; align-items: center; justify-content: space-between; }
+    .mark { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); }
+    .glyph { display: inline-flex; align-items: center; justify-content: center;
+             width: 24px; height: 24px; border-radius: var(--radius-sm);
+             background: var(--primary); color: var(--primary-foreground); font-weight: var(--weight-bold); }
+    .dim { color: var(--text-tertiary); }
+    .status { display: flex; align-items: center; gap: var(--space-2);
+              border: 1px solid var(--border); border-radius: var(--radius-full);
+              padding: var(--space-1) var(--space-3); font-size: var(--text-xs); }
+    #statusDot { width: 8px; height: 8px; border-radius: var(--radius-full); background: var(--text-tertiary); }
+    #statusDot.pulse { animation: hanzo-pulse-dot 1.6s ease-in-out infinite; }
+    #statusDot.live { background: var(--state-online); }
+
+    main { display: flex; flex: 1; flex-direction: column; justify-content: center; padding-block: var(--space-8); }
+    .eyebrow { font-size: var(--text-xs); font-weight: var(--weight-semibold);
+               letter-spacing: var(--tracking-widest); text-transform: uppercase; color: var(--text-tertiary); }
+    h1 { margin-top: var(--space-2); font-size: var(--text-3xl);
+         font-weight: var(--weight-semibold); letter-spacing: var(--tracking-tight); }
+    .lead { margin-top: var(--space-2); color: var(--text-secondary); }
+    @media (min-width: 640px) { h1 { font-size: var(--text-4xl); } }
+
+    #notice { margin-top: var(--space-5); border: 1px solid var(--border);
+              border-radius: var(--radius-lg); padding: var(--space-3) var(--space-4);
+              font-size: var(--text-sm); color: var(--text-secondary); }
+    #notice.signin { border-color: var(--state-error); color: var(--state-error-text); }
+    [hidden] { display: none !important; }
+
+    #vibes { display: grid; grid-template-columns: repeat(5, 1fr);
+             gap: var(--space-2); margin-top: var(--space-6); }
+    .vibe { display: flex; flex-direction: column; align-items: center; gap: var(--space-2);
+            border: 1px solid var(--border); border-radius: var(--radius-lg);
+            background: var(--surface-1); padding: var(--space-3) var(--space-2); cursor: pointer; }
+    .vibe:hover:not(:disabled) { background: var(--surface-2); border-color: var(--border-strong); }
+    .vibe:disabled { opacity: .4; cursor: not-allowed; }
+    .vibe[aria-pressed="true"] { border-color: var(--foreground); background: var(--surface-3); }
+    .vibe .emoji { font-size: var(--text-2xl); line-height: var(--leading-none); }
+    .vibe .name { font-size: var(--text-xs); font-weight: var(--weight-medium); color: var(--text-tertiary); }
+    .vibe:hover .name, .vibe[aria-pressed="true"] .name { color: var(--foreground); }
+    .vibe.pop { animation: pop .28s var(--ease-out); }
+    @keyframes pop { 0% { transform: scale(.9) } 60% { transform: scale(1.06) } 100% { transform: scale(1) } }
+
+    .results { margin-top: var(--space-8); border: 1px solid var(--border);
+               border-radius: var(--radius-xl); background: var(--surface-card); padding: var(--space-5); }
+    .results-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: var(--space-4); }
+    .results h2 { font-size: var(--text-xs); font-weight: var(--weight-semibold);
+                  letter-spacing: var(--tracking-widest); text-transform: uppercase; color: var(--text-tertiary); }
+    .tally { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--text-tertiary); }
+    .tally #total { color: var(--foreground); }
+    #bars { display: flex; flex-direction: column; gap: var(--space-3); }
+    .bar { display: grid; grid-template-columns: 5.5rem 1fr 3.5rem; align-items: center; gap: var(--space-3); }
+    @media (min-width: 640px) { .bar { grid-template-columns: 8rem 1fr 4rem; } }
+    .bar .who { display: flex; align-items: center; gap: var(--space-2);
+                font-size: var(--text-sm); color: var(--text-secondary); }
+    .track { height: 10px; overflow: hidden; border-radius: var(--radius-full); background: var(--white-06); }
+    /* Rank reads as OPACITY — the ink ladder is the palette. A five-colour
+       sentiment spectrum would be decoration, which this system does not spend
+       colour on; the emoji already carry the mood. */
+    .fill { height: 100%; border-radius: var(--radius-full); background: var(--foreground);
+            width: 0%; transition: width var(--duration-slow) var(--ease-out); }
+    .bar .num { text-align: right; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-tertiary); }
+    .bar .count { color: var(--text-primary); }
+    #empty { padding-block: var(--space-6); text-align: center;
+             font-size: var(--text-sm); color: var(--text-tertiary); }
+
+    footer { border-top: 1px solid var(--border); padding-top: var(--space-5);
+             font-size: var(--text-xs); line-height: var(--leading-relaxed); color: var(--text-tertiary); }
+    footer code { border-radius: var(--radius-sm); background: var(--white-08);
+                  padding: 1px var(--space-1); color: var(--text-secondary); }
+
+    #toast { position: fixed; inset-inline: 0; bottom: var(--space-6); display: flex; justify-content: center;
+             opacity: 0; pointer-events: none; transition: opacity var(--duration-base) var(--ease-out); }
+    #toast.on { opacity: 1; }
+    #toast div { display: flex; align-items: center; gap: var(--space-2);
+                 border: 1px solid var(--border); border-radius: var(--radius-full);
+                 background: var(--surface-overlay); box-shadow: var(--shadow-floating);
+                 padding: var(--space-2) var(--space-4); font-size: var(--text-sm); }
+    #toast .dot { width: 6px; height: 6px; border-radius: var(--radius-full); background: var(--state-online); }
   </style>
 </head>
-<body class="min-h-screen bg-black font-sans text-white antialiased selection:bg-white/20">
-  <div class="mx-auto flex min-h-screen max-w-2xl flex-col px-5 py-7">
+<body>
+  <div class="page">
 
-    <!-- Top bar -->
-    <header class="flex items-center justify-between">
-      <div class="flex items-center gap-2 text-sm">
-        <span class="inline-flex h-6 w-6 items-center justify-center rounded-md bg-white font-bold text-black">H</span>
-        <span class="font-medium tracking-tight">Hanzo Base</span>
-        <span class="text-white/25">·</span>
-        <span class="text-white/45">realtime</span>
+    <header>
+      <div class="mark">
+        <span class="glyph">H</span>
+        <span style="font-weight:var(--weight-medium);letter-spacing:var(--tracking-tight)">Hanzo Base</span>
+        <span class="dim">·</span>
+        <span class="dim">realtime</span>
       </div>
-      <div class="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs rounded-[10px]">
-        <span id="statusDot" class="h-2 w-2 rounded-full bg-amber-400 live-dot"></span>
-        <span id="statusText" class="text-white/70">Connecting…</span>
+      <div class="status">
+        <span id="statusDot" class="pulse"></span>
+        <span id="statusText" class="dim">Connecting…</span>
       </div>
     </header>
 
-    <!-- Hero -->
-    <main class="flex flex-1 flex-col justify-center py-9">
-      <div class="mb-2 text-[11px] font-semibold  text-white/40">Team vibe check</div>
-      <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">How's the team feeling today?</h1>
-      <p class="mt-2 text-white/50">One tap. Everyone on your team sees it update live — no refresh.</p>
+    <main>
+      <div class="eyebrow">Team vibe check</div>
+      <h1>How's the team feeling today?</h1>
+      <p class="lead">One tap. Everyone on your team sees it update live — no refresh.</p>
 
-      <!-- Notice banner (auth / backend states) -->
-      <div id="notice" class="mt-5 hidden rounded-xl border px-4 py-3 text-sm rounded-[10px]"></div>
+      <div id="notice" hidden></div>
 
-      <!-- Vote buttons -->
-      <div id="vibes" class="mt-7 grid grid-cols-5 gap-2 sm:gap-3"></div>
+      <div id="vibes"></div>
 
-      <!-- Results -->
-      <section class="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-5 rounded-[10px]">
-        <div class="mb-4 flex items-baseline justify-between">
-          <h2 class="text-xs font-semibold  text-white/45">Live results</h2>
-          <div class="font-mono text-sm text-white/50"><span id="total" class="text-white">0</span> votes</div>
+      <section class="results">
+        <div class="results-head">
+          <h2>Live results</h2>
+          <div class="tally"><span id="total">0</span> votes</div>
         </div>
-        <div id="bars" class="space-y-3"></div>
-        <div id="empty" class="py-6 text-center text-sm text-white/30">No check-ins yet — be the first.</div>
+        <div id="bars"></div>
+        <div id="empty">No check-ins yet — be the first.</div>
       </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-white/[0.06] pt-5 text-xs leading-relaxed text-white/35 rounded-[10px]">
-      Each tap writes to the org-scoped <code class="rounded bg-white/10 px-1 py-0.5 font-mono text-white/60">votes</code>
-      collection in Hanzo Base through <code class="rounded bg-white/10 px-1 py-0.5 font-mono text-white/60">/v1/base</code>,
+    <footer>
+      Each tap writes to the org-scoped <code>votes</code>
+      collection in Hanzo Base through <code>/v1/base</code>,
       and every change streams back over the Base realtime SSE subscription. Open this in two windows to watch them sync.
     </footer>
   </div>
 
-  <!-- realtime toast -->
-  <div id="toast" class="pointer-events-none fixed inset-x-0 bottom-6 flex justify-center opacity-0 transition-opacity duration-300">
-    <div class="flex items-center gap-2 rounded-full border border-white/10 bg-zinc-900/90 px-4 py-2 text-sm shadow-2xl backdrop-blur rounded-[10px]">
-      <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span><span id="toastText"></span>
-    </div>
+  <div id="toast">
+    <div><span class="dot"></span><span id="toastText"></span></div>
   </div>
 
   <script>
@@ -101,13 +157,14 @@ const INDEX_HTML = `<!DOCTYPE html>
     'use strict';
 
     // ── The five vibes (value → label, emoji, mood colour) ──────────────────
-    // The colour spectrum is semantic: it encodes sentiment, warm (good) → cool (spent).
+    // Rank is drawn as OPACITY, not as hue — the design system's ladder. The
+    // emoji carry the mood; the bar carries the count.
     const VIBES = [
-      { key: 'fired', label: 'Fired up',  emoji: '🔥', color: '#34d399' },
-      { key: 'good',  label: 'Good',      emoji: '😄', color: '#a3e635' },
-      { key: 'meh',   label: 'Meh',       emoji: '😐', color: '#fbbf24' },
-      { key: 'rough', label: 'Rough',     emoji: '😕', color: '#fb923c' },
-      { key: 'spent', label: 'Burnt out', emoji: '😴', color: '#fb7185' },
+      { key: 'fired', label: 'Fired up',  emoji: '🔥', ink: 'var(--white-80)' },
+      { key: 'good',  label: 'Good',      emoji: '😄', ink: 'var(--white-60)' },
+      { key: 'meh',   label: 'Meh',       emoji: '😐', ink: 'var(--white-40)' },
+      { key: 'rough', label: 'Rough',     emoji: '😕', ink: 'var(--white-30)' },
+      { key: 'spent', label: 'Burnt out', emoji: '😴', ink: 'var(--white-20)' },
     ];
     const LABEL = Object.fromEntries(VIBES.map(v => [v.key, v.label]));
     const COLLECTION = 'votes';
@@ -150,22 +207,21 @@ const INDEX_HTML = `<!DOCTYPE html>
       btn.type = 'button';
       btn.dataset.key = v.key;
       btn.setAttribute('aria-label', 'Vote ' + v.label);
-      btn.className = 'vibe group flex flex-col items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] px-2 py-3 outline-none transition hover:-translate-y-0.5 hover:bg-white/[0.07] focus-visible:ring-2 focus-visible:ring-white/40';
+      btn.setAttribute('aria-pressed', 'false');
+      btn.className = 'vibe';
       btn.innerHTML =
-        '<span class="text-2xl leading-none">' + v.emoji + '</span>' +
-        '<span class="text-[11px] font-medium text-white/55 group-hover:text-white/90">' + v.label + '</span>';
+        '<span class="emoji">' + v.emoji + '</span>' +
+        '<span class="name">' + v.label + '</span>';
       btn.addEventListener('click', () => vote(v.key));
       v.btn = btn;
       vibesEl.appendChild(btn);
 
       const row = document.createElement('div');
-      row.className = 'grid grid-cols-[5.5rem,1fr,3.5rem] items-center gap-3 sm:grid-cols-[8rem,1fr,4rem]';
+      row.className = 'bar';
       row.innerHTML =
-        '<div class="flex items-center gap-2 text-sm"><span>' + v.emoji + '</span>' +
-        '<span class="truncate text-white/70">' + v.label + '</span></div>' +
-        '<div class="h-2.5 overflow-hidden rounded-full bg-white/[0.06]">' +
-        '<div class="fill h-full rounded-full transition-[width] duration-500 ease-out" style="width:0%;background:' + v.color + '"></div></div>' +
-        '<div class="text-right font-mono text-xs text-white/45"><span class="count text-white/80">0</span></div>';
+        '<div class="who"><span>' + v.emoji + '</span><span>' + v.label + '</span></div>' +
+        '<div class="track"><div class="fill" style="background:' + v.ink + '"></div></div>' +
+        '<div class="num"><span class="count">0</span></div>';
       v.fill = row.querySelector('.fill');
       v.count = row.querySelector('.count');
       barsEl.appendChild(row);
@@ -178,20 +234,18 @@ const INDEX_HTML = `<!DOCTYPE html>
       const total = records.size;
 
       totalEl.textContent = total;
-      emptyEl.classList.toggle('hidden', total > 0);
-      barsEl.classList.toggle('hidden', total === 0);
+      emptyEl.hidden = total > 0;
+      barsEl.hidden = total === 0;
 
       for (const v of VIBES) {
         const c = counts[v.key];
         const pct = total ? Math.round((c / total) * 100) : 0;
         v.fill.style.width = pct + '%';
         v.count.textContent = c;
-        // Highlight the option this browser currently holds.
-        const mine = myChoice === v.key;
-        v.btn.style.boxShadow = mine ? ('inset 0 0 0 1.5px ' + v.color) : '';
-        v.btn.style.background = mine ? (v.color + '1f') : '';
-        v.btn.firstElementChild.nextElementSibling.className =
-          'text-[11px] font-medium ' + (mine ? 'text-white' : 'text-white/55 group-hover:text-white/90');
+        // Highlight the option this browser currently holds. aria-pressed is
+        // both the state a screen reader announces and the CSS hook, so the two
+        // cannot disagree.
+        v.btn.setAttribute('aria-pressed', String(myChoice === v.key));
       }
     }
 
@@ -317,42 +371,36 @@ const INDEX_HTML = `<!DOCTYPE html>
     }
 
     // ── Status pill + notices + toast ───────────────────────────────────────
-    const DOT = {
-      connecting: 'bg-amber-400 live-dot',
-      live: 'bg-emerald-400 live-dot',
-      offline: 'bg-zinc-500',
-      signin: 'bg-amber-400',
-    };
+    // connecting/signin pulse to say "waiting"; live is a steady --state-online
+    // dot; offline is the resting ink. One class each, the sheet draws them.
+    const DOT = { connecting: 'pulse', live: 'live', offline: '', signin: 'pulse' };
     function setStatus(kind, text) {
-      statusDot.className = 'h-2 w-2 rounded-full ' + (DOT[kind] || 'bg-zinc-500');
+      statusDot.className = DOT[kind] || '';
       statusText.textContent = text;
-      statusText.className = kind === 'live' ? 'text-white/80' : 'text-white/60';
+      statusText.className = kind === 'live' ? '' : 'dim';
     }
 
     function setAuth(ok) {
       authed = ok;
-      for (const v of VIBES) { v.btn.disabled = !ok; v.btn.classList.toggle('opacity-40', !ok); v.btn.classList.toggle('cursor-not-allowed', !ok); }
+      for (const v of VIBES) v.btn.disabled = !ok; // :disabled carries the look
       if (!ok) { setStatus('signin', 'Sign in'); flashNotice('signin'); }
-      else { noticeEl.classList.add('hidden'); }
+      else { noticeEl.hidden = true; }
     }
 
     function flashNotice(kind) {
-      if (kind === 'signin') {
-        noticeEl.className = 'mt-5 rounded-xl border border-amber-400/20 bg-amber-400/[0.06] px-4 py-3 text-sm text-amber-200/90';
-        noticeEl.textContent = 'Sign in with Hanzo to check in — your vote is scoped to your team.';
-      } else {
-        noticeEl.className = 'mt-5 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/60';
-        noticeEl.textContent = 'This backend has no Base data plane configured.';
-      }
-      noticeEl.classList.remove('hidden');
+      noticeEl.className = kind === 'signin' ? 'signin' : '';
+      noticeEl.textContent = kind === 'signin'
+        ? 'Sign in with Hanzo to check in — your vote is scoped to your team.'
+        : 'This backend has no Base data plane configured.';
+      noticeEl.hidden = false;
     }
 
     let toastTimer = null;
     function toast(msg) {
       toastText.textContent = msg;
-      toastEl.classList.remove('opacity-0');
+      toastEl.classList.add('on');
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toastEl.classList.add('opacity-0'), 2200);
+      toastTimer = setTimeout(() => toastEl.classList.remove('on'), 2200);
     }
 
     // ── Boot: pick the live proxy prefix, then load + connect ────────────────

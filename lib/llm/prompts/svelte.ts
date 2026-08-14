@@ -69,7 +69,10 @@ IMPORTING NPM PACKAGES:
 CSS STYLING:
 - Styles in <style> blocks are scoped to the component by default
 - For global styles, use :global() selector or a separate .css file
-- For Tailwind CSS, add to index.html <head>: <script src="https://cdn.tailwindcss.com"></script>
+- For the Hanzo design system, add to index.html <head>: <link rel="stylesheet" href="https://hanzo.app/vendor/design/styles.css"/>
+  It is a plain stylesheet: dark ground, Geist type, styled controls, and the whole token table
+  (--background --foreground --surface-card --border --primary --space-* --text-* --radius-* --container-*).
+  Write ordinary CSS against those tokens. Do NOT use Tailwind or any other utility-class framework.
 
 ROUTING (Single Page App):
 - Use hash-based routing: window.location.hash

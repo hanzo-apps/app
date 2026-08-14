@@ -15,6 +15,7 @@ import { ModelSelector } from "@/components/model-selector";
 import { accent, panel, rows, row, selected } from "@/lib/chrome";
 import { ExternalLink } from "lucide-react";
 import { configManager } from "@/lib/config/storage";
+import { Appearance } from "@hanzo/appearance";
 import { useModels } from "@/lib/hooks/use-models";
 import { usePlan, unpaid } from "@/lib/billing/entitlements";
 
@@ -86,6 +87,23 @@ export default function SettingsPage() {
             <TabsContent value="general">
               <YStack {...panel} padding="$5">
                 <YStack rowGap="$5">
+
+                  {/* APPEARANCE — the @hanzo/appearance panel (text size,
+                      density, accent), the SAME screen hanzo.chat and the
+                      console mount, so "the same product" keeps looking like
+                      it. It was built and documented as the shared panel and
+                      mounted NOWHERE on this route — the one page called
+                      Settings had no appearance settings. Every knob it shows
+                      is real: @hanzo/design publishes the ramps these multiply.
+                      Still no theme picker beside it: hanzo.app is dark-only,
+                      and a Light option would write a preference nothing can
+                      honor. */}
+                  <YStack rowGap="$2" maxWidth={448}>
+                    <Label fontSize="$3" fontWeight="500" color="$color">
+                      Appearance
+                    </Label>
+                    <Appearance />
+                  </YStack>
 
                   {/* No theme picker: hanzo.app is dark-only and the theme is
                       FORCED in app/providers.tsx. A select offering Light and

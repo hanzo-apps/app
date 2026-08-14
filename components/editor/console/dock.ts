@@ -11,8 +11,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * a toggled state can never disagree.
  */
 
-/** The bar alone — the dock collapsed. Also the drag handle's height. */
-export const BAR = 28;
+/**
+ * The dock collapsed: an invisible EDGE, not a bar.
+ *
+ * This was 28 — a permanent status strip across the workspace's bottom. The
+ * owner's call is that the console at rest is NOT SEEN: the workspace runs to
+ * the window edge, and what remains is a 10px hot strip you can grab (cursor
+ * says so, a grip pill fades in on hover). Everything the strip used to show
+ * (Live · Saved · branch · files · mic) appears when the dock is OPEN, where
+ * the bar becomes the console's header. The name BAR stays because the model
+ * is unchanged: open = height > BAR, whatever BAR measures.
+ */
+export const BAR = 10;
 /** The smallest body worth showing: the dock is never draggable into nothing. */
 export const MIN_BODY = 96;
 export const MIN_OPEN = BAR + MIN_BODY;

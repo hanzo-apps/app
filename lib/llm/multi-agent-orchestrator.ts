@@ -22,7 +22,7 @@ import { drainCompileErrors, formatCompileErrors } from '@/lib/preview/compile-e
 import { buildShellSystemPrompt, buildProjectContext } from './system-prompt';
 import { evaluateRelevantSkills } from './skill-evaluator';
 import { skillsService } from '@/lib/vfs/skills';
-import { track } from '@/lib/telemetry';
+import { track } from '@hanzogui/telemetry';
 import { extractToolAnalytics } from '@/lib/telemetry/tool-analytics';
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

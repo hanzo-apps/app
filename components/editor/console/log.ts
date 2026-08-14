@@ -12,8 +12,11 @@ import { useCallback, useEffect, useSyncExternalStore } from "react";
  *             we cannot reach into the frame any more, since untrusted HTML runs
  *             there without `allow-same-origin`.
  *   sandbox   the commands the agent runs in the project's sandbox, and their
- *             output. `POST /v1/sandboxes/:id/exec` is the only place a command
- *             in this product actually runs, and until now nobody could see it.
+ *             output. `POST /v1/sandboxes/run` is the only place a command in
+ *             this product actually runs, and its output arrives HERE while the
+ *             command is still running — the sandbox appends it to the run's
+ *             session log line by line, and the dock tails that log. A build
+ *             used to be a blank pause with a verdict at the end.
  *
  * They share one buffer rather than one-each because a dock with two scrollbacks
  * is two consoles, and the question a person actually asks — "what just
@@ -27,7 +30,13 @@ import { useCallback, useEffect, useSyncExternalStore } from "react";
  */
 
 export type Level = "log" | "info" | "warn" | "error" | "debug";
-export type Source = "preview" | "sandbox";
+/**
+ * Who spoke. `preview` is the page, `sandbox` is the pod, and `you` is a line
+ * TYPED at the prompt — authorship, not severity, which is why it belongs here
+ * and not on `Level`. Without it a transcript gives a command and its output the
+ * same weight and you cannot find where you were.
+ */
+export type Source = "preview" | "sandbox" | "you";
 
 export interface Entry {
   id: number;
@@ -71,6 +80,71 @@ export function pushBlock(source: Source, level: Level, block: string): void {
 export function clearLog(): void {
   entries = [];
   emit();
+}
+
+/**
+ * The run the dock is watching, while there is one.
+ *
+ * It lives here rather than in the composer for the same reason the buffer does:
+ * a run outlives the component that started it, and the dock is where a person
+ * reads it and therefore where they reach to stop it. `sandbox` is the whole
+ * point — it is the handle Stop acts on, and a run with no sandbox has nothing
+ * to interrupt, so the control simply is not offered.
+ */
+export interface Run {
+  /** The sandbox the commands are running in. Absent for a scratch run. */
+  sandbox?: string;
+  /** The session the sandbox narrates into, when anything is watching. */
+  session?: string;
+}
+
+let run: Run | null = null;
+
+/**
+ * The workspace's held sandbox — ONE pod for the shell, the agent, and the
+ * Files pane's artifact listing.
+ *
+ * It lives in this store for the same reason the run does: the pod outlives
+ * whichever component first opened it, and "one sandbox, one checkout" is only
+ * true if every consumer reads the same slot. The live run's pod wins wherever
+ * both exist, which is the precedence the shell already applied.
+ */
+let held = "";
+
+export function holdSandbox(id: string): void {
+  const clean = (id ?? "").trim();
+  if (!clean || clean === held) return;
+  held = clean;
+  emit();
+}
+
+/** The pod every consumer should address right now, or "". */
+export function currentSandbox(): string {
+  return run?.sandbox || held;
+}
+
+/** Reactive view of the same fact — re-renders when a pod appears or changes. */
+export function useSandbox(): string {
+  return useSyncExternalStore(subscribe, currentSandbox, () => "");
+}
+
+export function beginRun(r: Run): void {
+  run = r;
+  emit();
+}
+
+export function endRun(): void {
+  run = null;
+  emit();
+}
+
+/** The live run, or null. Shares the log's subscription — one dock, one render. */
+export function useRun(): Run | null {
+  return useSyncExternalStore(
+    subscribe,
+    () => run,
+    () => null
+  );
 }
 
 const subscribe = (fn: () => void) => {

@@ -72,9 +72,18 @@ describe("the signed-out flow names its emphasis", () => {
 
   it("gives each signed-out surface a control that is actually loud", () => {
     // Not a style preference: an unnamed variant is the QUIET one, so a surface
-    // whose whole job is a single call to action must say `accent` out loud.
+    // whose whole job is a single call to action must NAME its emphasis.
+    //
+    // Two recipes say it, and the rule is the naming, not the spelling. `accent`
+    // is the raised neutral (`$color5`). `PrimaryButton` is the white one — the
+    // package's own "one white, high-emphasis action … sign in, save, get
+    // started" — which flips the control to `theme="light"` so fill and label
+    // move together. Asserting the literal `{...accent}` made this test a
+    // MECHANISM check: it failed the header for reaching for the LOUDER of the
+    // two, which is the opposite of what the rule protects.
+    const LOUD = /\{\.\.\.accent\}|<PrimaryButton/;
     for (const file of SIGNED_OUT) {
-      expect({ file, loud: /\{\.\.\.accent\}/.test(read(file)) }).toEqual({ file, loud: true });
+      expect({ file, loud: LOUD.test(read(file)) }).toEqual({ file, loud: true });
     }
   });
 

@@ -118,20 +118,20 @@ export function AppShell({
             an off-canvas drawer there). Hidden at md+, where the sidebar is
             always visible in-flow. */}
         <XStack height="$8" alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" $md={{ display: "none" }}>
-          <Button
+          <Button size="icon"
             onClick={() => setMobileOpen(true)}
             aria-label="Open menu"
             variant="ghost"
-            height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$3"
+            height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$3"
           >
             <Menu size={20} />
           </Button>
           <HanzoLogo size={20} color="var(--foreground)" />
-          <Button
+          <Button size="icon"
             onClick={() => setPaletteOpen(true)}
             aria-label="Search"
             variant="ghost"
-            marginLeft="auto" height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$3"
+            marginLeft="auto" height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$3"
           >
             <Search size={20} />
           </Button>
@@ -168,9 +168,14 @@ export function AppShell({
                 zIndex={10}
                 borderBottomWidth={1}
               >
-                <XStack width="100%" maxWidth={RAIL} alignSelf="center" paddingHorizontal="$5" paddingVertical="$4" alignItems="center" justifyContent="space-between" gap="$4">
+                {/* Tighter on a phone: the title steps $8 → $7 and the band's
+                    vertical padding $4 → $3 below md, so the header doesn't eat a
+                    third of a small screen. `paddingHorizontal` stays $5 — it is
+                    the shared rail measure the content below aligns to, so it must
+                    NOT move with the shrink. Desktop keeps the designed sizes. */}
+                <XStack width="100%" maxWidth={RAIL} alignSelf="center" paddingHorizontal="$5" paddingVertical="$3" $md={{ paddingVertical: "$4" }} alignItems="center" justifyContent="space-between" gap="$4">
                   <YStack minWidth={0}>
-                    <H1 numberOfLines={1} fontSize="$8" fontWeight="500" letterSpacing={-0.4} color="$color">
+                    <H1 numberOfLines={1} fontSize="$7" $md={{ fontSize: "$8" }} fontWeight="500" letterSpacing={-0.4} color="$color">
                       {title}
                     </H1>
                     {subtitle ? (
@@ -188,7 +193,10 @@ export function AppShell({
               {/* `width="100%"` is load-bearing: `maxWidth` + `alignSelf` alone
                   shrink-wraps to the content and centers it, which is the bug
                   the screenshot caught on /profile. */}
-              <YStack width="100%" maxWidth={RAIL} alignSelf="center" paddingHorizontal="$5" paddingVertical="$6">
+              {/* Content breathes less on a phone: vertical padding $6 → $4
+                  below md, so pages don't open with a tall empty band. Only
+                  vertical — `paddingHorizontal` is the shared $5 rail measure. */}
+              <YStack width="100%" maxWidth={RAIL} alignSelf="center" paddingHorizontal="$5" paddingVertical="$4" $md={{ paddingVertical: "$6" }}>
                 {children}
               </YStack>
             </>

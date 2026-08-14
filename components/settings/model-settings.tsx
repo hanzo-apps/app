@@ -20,7 +20,7 @@ import { CodexAuthPanel } from '@/components/settings/codex-auth-panel';
 import { HFAuthPanel } from '@/components/settings/hf-auth-panel';
 import { ConnectionBadge } from '@/components/settings/connection-badge';
 import { checkHFCapabilities } from '@/lib/auth/hf-auth';
-import { track } from '@/lib/telemetry';
+import { track } from '@hanzogui/telemetry';
 
 interface ModelSettingsPanelProps {
   onClose?: () => void;

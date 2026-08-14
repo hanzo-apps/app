@@ -32,13 +32,7 @@ import { Button, Tabs, TabsContent, TabsList, TabsTrigger, Input, Label, Switch,
 import { cn } from "@/lib/utils";
 import type { CodeEditorHandle } from "@/components/code-editor";
 
-interface SourceLocation {
-  file: string;
-  line: number;
-  column: number;
-  endLine?: number;
-  endColumn?: number;
-}
+import { locate, type SourceLocation } from "@/lib/source-locate";
 
 /**
  * What the panel edits. The preview frame is isolated (no `allow-same-origin`),
@@ -52,6 +46,9 @@ type SelectedElementInfo = ElementInfo & { sourceLocation?: SourceLocation };
 interface VisualEditorProps {
   iframeRef: React.RefObject<HTMLIFrameElement | null>;
   editorRef: React.RefObject<CodeEditorHandle | null>;
+  /** Which file the editor currently holds. The panel rewrites lines in it, so
+   *  a wrong name here is a wrong answer reported confidently. */
+  pagePath: string;
   isEnabled: boolean;
   onToggle: (enabled: boolean) => void;
   onElementSelect?: (element: SelectedElementInfo) => void;
@@ -105,6 +102,7 @@ function usePersisted<T>(key: string, fallback: T): [T, (value: T) => void] {
 export function VisualEditor({
   iframeRef,
   editorRef,
+  pagePath,
   isEnabled,
   onToggle,
   onElementSelect,
@@ -194,46 +192,29 @@ export function VisualEditor({
     return path.join(" > ");
   };
 
-  // Find source location in Monaco editor
+  // WHERE the selected element is written, by the ONE locator (lib/source-locate).
+  //
+  // This used to be a private copy: it regex-matched `element.html.slice(0,100)`
+  // against the buffer and labelled every answer "index.html", a literal. Both
+  // halves were wrong in the same direction — the DOM rewrites attribute order
+  // and quoting on the way out, so that substring is frequently absent from the
+  // source, and the name was a guess. This path does not merely REPORT the line,
+  // it hands it to `editor.replaceLine`, so a confident wrong answer rewrites a
+  // line the user never selected.
   const findSourceLocation = useCallback((element: ElementInfo): SourceLocation | undefined => {
     const editor = editorRef.current;
     if (!editor) return undefined;
-
-    const htmlContent = editor.getValue();
-
-    // Try to find by ID first (most precise)
-    if (element.id) {
-      const idPattern = new RegExp(`id=["']${element.id}["']`, "g");
-      const match = idPattern.exec(htmlContent);
-      if (match) {
-        const position = editor.getPositionAt(match.index);
-        return {
-          file: "index.html",
-          line: position.lineNumber,
-          column: position.column,
-        };
-      }
-    }
-
-    // Try to find by outerHTML snippet
-    const outerHTML = element.html.substring(0, 100);
-    const escapedHTML = outerHTML.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const htmlPattern = new RegExp(escapedHTML);
-    const match = htmlPattern.exec(htmlContent);
-    if (match) {
-      const position = editor.getPositionAt(match.index);
-      return {
-        file: "index.html",
-        line: position.lineNumber,
-        column: position.column,
-      };
-    }
-
-    // A `data-source-line` marker used to be stamped on the node here. It wrote
-    // the literal '0' on the not-found path and nothing anywhere read it, so it
-    // was a write into another document that bought nothing.
-    return undefined;
-  }, [editorRef]);
+    return locate(
+      {
+        id: element.id,
+        className: element.className,
+        tagName: element.tagName,
+        html: element.html,
+        text: element.text,
+      },
+      [{ path: pagePath, html: editor.getValue() }],
+    );
+  }, [editorRef, pagePath]);
 
   // Handle element selection
   // Selection and hover ARRIVE now; they are not read off the frame's DOM.
@@ -469,7 +450,7 @@ export function VisualEditor({
                   <Icon size={16} />
                   <span>{label}</span>
                   {value === "bottom" && (
-                    <SizableText marginLeft="auto" fontSize={10} color="$color11">Default</SizableText>
+                    <SizableText marginLeft="auto" fontSize="$1" color="$color11">Default</SizableText>
                   )}
                 </DropdownMenuRadioItem>
               ))}
@@ -496,7 +477,7 @@ export function VisualEditor({
         </DropdownMenuCheckboxItem>
 
         <DropdownMenuSeparator backgroundColor="$borderColor" />
-        <DropdownMenuLabel fontSize={10} fontWeight="500" color="$color11">
+        <DropdownMenuLabel fontSize="$1" fontWeight="500" color="$color11">
           Theme
         </DropdownMenuLabel>
         <DropdownMenuRadioGroup
@@ -538,7 +519,7 @@ export function VisualEditor({
           card. Monochrome pill, hairline dividers between tool groups. */}
       {isHidden ? (
         // Always-present affordance so the toolbar is never unrecoverable.
-        <Button
+        <Button size="icon"
           type="button"
           onClick={() => setIsHidden(false)}
           title="Show visual editor"
@@ -551,7 +532,7 @@ export function VisualEditor({
       ) : isMinimized ? (
         // Collapsed to a single grip; click to restore the full dock.
         <YStack position="absolute" zIndex={50} {...anchorProps[position]} style={anchorStyle}>
-          <Button
+          <Button size="icon"
             type="button"
             onClick={() => setIsMinimized(false)}
             title="Expand visual editor"

@@ -25,6 +25,15 @@ const KEY = "hanzo.dev.workspace";
 const ID_KEY = "hanzo.dev.project-id";
 const VERSION = 1;
 
+/**
+ * What a build is called before it has a project record.
+ *
+ * `components/editor` restores under this name and `lib/dev/starter` seeds under
+ * it, so the two have to spell it the same way — it was a literal in two places
+ * and a third spelling would simply restore nothing.
+ */
+export const UNTITLED = "untitled-site";
+
 /** Bound: localStorage throws past a few MB, and a throw here loses the work. */
 const MAX_BYTES = 4 * 1024 * 1024;
 
@@ -155,7 +164,7 @@ export function startNewBuild(): void {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.removeItem(ID_KEY);
-    window.localStorage.removeItem(keyFor("untitled-site"));
+    window.localStorage.removeItem(keyFor(UNTITLED));
   } catch {
     /* nothing to do */
   }

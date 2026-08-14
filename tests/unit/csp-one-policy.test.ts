@@ -102,12 +102,49 @@ describe('CSP is one policy, not two', () => {
     expect(unreachable).toEqual([])
   })
 
+  it("lets a previewed project READ a blob it made, not only show one", () => {
+    // `blob:` was in img-src and media-src but not connect-src, so a generated
+    // app could display a Blob URL and not fetch one. Measured on
+    // /dev/hanzo/megashop: THREE.GLTFLoader fetches its texture, the console
+    // read "Connecting to 'blob:null/…' violates … connect-src", and the hero
+    // stayed black while the nav and footer painted — which reads as a broken
+    // app, not a refused request.
+    //
+    // No reach is granted: only a document's own origin can mint a blob: URL,
+    // so this permits reading bytes already in memory and never a request to
+    // anyone. The three directives agreeing is the point — a page that may
+    // SHOW a blob and not READ it is one nobody can reason about.
+    for (const [env, m] of [['production', prod], ['development', dev]] as const) {
+      for (const d of ['img-src', 'media-src', 'connect-src']) {
+        expect([env, d, [...(m.get(d) || [])].includes('blob:')]).toEqual([env, d, true])
+      }
+    }
+  })
+
   it('keeps the identity providers reachable', () => {
     // OIDC discovery + the PKCE token exchange are cross-origin POSTs. Lose
     // these and the SSO callback fails silently and no session ever persists.
     for (const m of [prod, dev]) {
       const connect = m.get('connect-src') || new Set()
       expect([...connect]).toContain('https://hanzo.id')
+    }
+  })
+
+  it('lets the analytics beacon report from wherever it loads', () => {
+    // The zone appends beacon.min.js after this app has finished responding, so
+    // the script arrives from one host (script-src) and posts what it measured
+    // to another (connect-src). Naming one without the other is the state that
+    // looks fine and measures nothing: a beacon that loads and can send
+    // nothing, or a report nobody will make. The refusal is a console line, not
+    // an exception, so nothing else will ever say so.
+    //
+    // This names no source and copies no list — it asserts the two halves
+    // agree, which stays true if the zone's Web Analytics is switched off and
+    // both are dropped.
+    const rum = (m: Map<string, Set<string>>, d: string) =>
+      [...(m.get(d) || [])].some((s) => s.includes('cloudflareinsights.com'))
+    for (const [env, m] of [['production', prod], ['development', dev]] as const) {
+      expect([env, rum(m, 'script-src')]).toEqual([env, rum(m, 'connect-src')])
     }
   })
 })

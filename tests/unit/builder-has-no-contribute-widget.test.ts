@@ -20,6 +20,7 @@
  * launcher may never be free to draw over the customer's app. Easy to undo by
  * accident, so it is pinned from both ends.
  */
+import { ENSO_MARK } from "@hanzo/logo/logos";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
@@ -41,6 +42,27 @@ describe("the builder Enso launcher never floats over the preview", () => {
     expect(read("app/layout.tsx")).toContain('"hanzo:repo": "hanzoai/app"');
   });
 
+  it("a phone gets no corner launcher at all", () => {
+    // The dock only exists where the console is laid out. A phone collapses it,
+    // so `place()` finds no slot and edit.js keeps its fallback — 44px pinned at
+    // right/bottom 12px — which on the builder is the composer's send button and
+    // on the marketing pages is whatever CTA the corner happens to land on. The
+    // anchor fixes PLACEMENT where there is a dock; this is the other half, for
+    // where there cannot be one.
+    //
+    // Measured on a production build: at 375x667 the host computes
+    // `display: none`, the fab is 0x0, and a tap at the corner reaches the page
+    // beneath; at 1280x800 the same build draws it 44x44 at 1220,740 and the
+    // corner tap reaches the widget. Both, or this is either a tool nobody can
+    // use or a tool eating someone's tap.
+    const rule = read("assets/globals.css").match(
+      /@media \(max-width: *(\d+)px\) \{\s*\[data-hanzo-edit\]:not\(\[data-hanzo-anchored\]\) \{([^}]*)\}/,
+    );
+    expect(rule).not.toBeNull();
+    expect(Number(rule![1])).toBeGreaterThanOrEqual(640);
+    expect(rule![2]).toMatch(/display: *none/);
+  });
+
   it("edit.js honours an anchor and unpins itself when anchored", () => {
     const src = read("public/edit.js");
     expect(src).toMatch(/meta\('hanzo:anchor'\)/);
@@ -57,15 +79,31 @@ describe("the builder Enso launcher never floats over the preview", () => {
     expect(src).toMatch(/document\.body\.appendChild\(host\)/);
   });
 
-  it("the mark stays a hairline at both of its sizes", () => {
-    const src = read("public/edit.js");
-    // The ensō draws at 34px in the corner and 18px in the dock from ONE svg, so
-    // a viewBox-relative stroke is two different weights — it was 14/100, which
-    // came out 4.8px and 2.5px, a donut at either size. `vector-effect` measures
-    // the stroke in screen pixels instead, which is the whole reason the mark
-    // can be small and still look drawn rather than blobbed.
-    expect(src).toMatch(/vector-effect="non-scaling-stroke"/);
-    expect(src).toMatch(/stroke-width="1\.25"/);
+  it("the launcher draws the app's OWN ensō, not a second one", () => {
+    // One thick weight everywhere. The launcher used to draw a 1.25px
+    // `vector-effect` hairline while `components/model-icon.tsx` — the mark
+    // @hanzo/logo and the hanzo.ai models page carry — drew r 8.88 / stroke
+    // 2.64 with round caps, so the same glyph had two weights depending on
+    // where you met it.
+    //
+    // Assert AGREEMENT rather than either literal: a test that pins only
+    // edit.js is satisfied by changing edit.js alone, which is exactly the
+    // drift being prevented. The circle is byte-identical in both files, so
+    // compare it.
+    // Read the mark from @hanzo/logo, which is where it lives now — asserting a
+    // literal, or comparing against components/model-icon.tsx, both stop meaning
+    // anything the moment the canonical source moves (it just did: model-icon
+    // stopped inlining the circle and now re-exports ENSO_MARK).
+    //
+    // edit.js cannot import it: it is a standalone widget served to third-party
+    // pages, so it MUST carry the path data inline. That is exactly why this
+    // check exists — an inline copy is the one thing that can silently drift.
+    const widget = read("public/edit.js");
+    expect(widget).toContain(ENSO_MARK);
+    // The hairline is gone on purpose; `vector-effect` would re-split the weight.
+    // Match the ATTRIBUTE, not the word: edit.js names it in a comment saying it
+    // deliberately has none, and a bare /vector-effect/ fails on that sentence.
+    expect(widget).not.toMatch(/vector-effect\s*=/);
   });
 
   it("/dev anchors the launcher by NAMING the key", () => {

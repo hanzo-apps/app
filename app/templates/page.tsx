@@ -21,6 +21,7 @@ import { Search, Star, Sparkles, Gamepad2 } from 'lucide-react';
 import Header from '@/components/layout/header';
 import SiteFooter from '@/components/landing/site-footer';
 import { snapshotCatalog } from '@/lib/gallery-catalog';
+import { fetchPublishedSlugs } from '@/lib/api/templates';
 import {
   mergeResources,
   resourceCategories,
@@ -55,6 +56,11 @@ function ResourcesBrowser() {
   const [progressOpen, setProgressOpen] = useState(false);
   const [remixName, setRemixName] = useState('');
 
+  // Which templates the platform publishes SOURCE for. Empty until it answers,
+  // and empty forever if it does not — see fetchPublishedSlugs: an unreachable
+  // warehouse must not accuse every card of having no source.
+  const [published, setPublished] = useState<Set<string>>(() => new Set());
+
   // Refresh templates from the live gallery (games are static, local).
   useEffect(() => {
     let alive = true;
@@ -67,6 +73,9 @@ function ResourcesBrowser() {
       })
       .catch(() => {})
       .finally(() => alive && setLoading(false));
+    // Independent of the gallery: the two catalogs disagree, which is the whole
+    // reason both are asked. One request for all 63, never one per card.
+    fetchPublishedSlugs().then((s) => alive && setPublished(s));
     return () => {
       alive = false;
     };
@@ -121,14 +130,26 @@ function ResourcesBrowser() {
         {/* Hero */}
         <YStack borderBottomWidth={1} borderColor="$borderColor">
           <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$7">
-            <XStack marginBottom="$2" alignItems="center" gap="$3">
+            {/* The badge carries shrink-0 and this row did not wrap, so at 375px
+                the count was pushed past the right edge and clipped mid-word —
+                the document overflowed by 14px, and by 69px at 320. Neither the
+                title nor the badge can give, so the row has to.
+
+                Via `style`, not the `flexWrap` prop: measured in a production
+                build, the prop does not reach the DOM here (the row still
+                computed `flex-wrap: nowrap` and the overflow was unchanged to
+                the pixel). A raw style is the one form that survives. */}
+            <XStack marginBottom="$2" alignItems="center" gap="$3" style={{ flexWrap: 'wrap' }}>
               <XStack height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color3">
                 <Sparkles size={24} />
               </XStack>
-              <H1 fontSize="$10" fontWeight="500">Resources</H1>
-              <Badge variant="secondary">
-                {items.length} resources
-              </Badge>
+              <H1 fontSize="$8" $md={{ fontSize: "$10" }} fontWeight="500">Resources</H1>
+              {/* ONE child, not two. A Badge lays its children out as a COLUMN, so
+                  `{n} resources` — which JSX hands over as two children — stacks the
+                  count above the word and the pill, sized for one line, crops the
+                  second. Measured on /templates: clientHeight 24, scrollHeight 34,
+                  two block spans of 16px. One interpolated string is one child. */}
+              <Badge variant="secondary">{`${items.length} resources`}</Badge>
             </XStack>
             <Paragraph maxWidth={672} color="$color11">
               Start from a template to build your next project. Every template forks into the
@@ -141,13 +162,18 @@ function ResourcesBrowser() {
         {/* Filters */}
         <YStack {...glass(2)} position="sticky" top="$0" zIndex={30} borderBottomWidth={1}>
           <XStack width="100%" maxWidth={1280} alignSelf="center" flexWrap="wrap" alignItems="flex-start" gap="$3" paddingHorizontal="$5" paddingVertical="$3">
-            <YStack position="relative" width="100%" $sm={{ width: "auto" }}>
-              <Search size={16} />
+            {/* The glyph goes IN the field, which is what `startAdornment` is
+                for. As a plain sibling it was never positioned, so it stacked
+                above the box and the 36px gutter held a space nothing sat in —
+                measured on prod, icon bottom 291 against field top 291 at both
+                widths. */}
+            <YStack width="100%" $sm={{ width: "auto" }}>
               <Input
                 placeholder="Search resources…"
                 value={query}
                 onChangeText={(v: string) => setQuery(v)}
-                width="100%" borderColor="$borderColor" backgroundColor="$background" paddingLeft={36} color="$color" $sm={{ width: 256 }}
+                startAdornment={<Search size={16} />}
+                width="100%" borderColor="$borderColor" backgroundColor="$background" color="$color" $sm={{ width: 256 }}
   />
             </YStack>
             {/* `flexShrink={1}` is load-bearing. gui's base rule gives every
@@ -163,9 +189,22 @@ function ResourcesBrowser() {
                 <Button
                   key={cat}
                   onClick={() => setCategory(cat)}
-                  borderRadius="$10" paddingHorizontal="$3" paddingVertical="$2" flexShrink={0} $sm={{ paddingVertical: "$1.5" }} {...{ backgroundColor: category === cat ? "$color12" : "$background", hoverStyle: category === cat ? undefined : { backgroundColor: "$color3" } }}
+                  /* Selected is a RAISED surface, not an inversion. `$color12`
+                     is the lightest step in the ramp, so the active chip painted
+                     a white slab with black text on a true-black page — the one
+                     bright rectangle in a monochrome column, and louder than the
+                     header's own primary. Selection reads from a lifted ground
+                     plus full-strength text instead.
+
+                     `$color5` and not `$color4`: the ramp mixes solid steps with
+                     ALPHA ones, and `$color4` is `rgb(255 255 255 / .10)` — over
+                     black that composites to ~rgb(26,26,26), DARKER than these
+                     chips' own rgb(36,36,36) rest state, so the selected one
+                     receded. `$color5` is hsl 20% = rgb(51,51,51), which is the
+                     exact ground the header's primary already uses. */
+                  borderRadius="$10" paddingHorizontal="$3" paddingVertical="$2" flexShrink={0} $sm={{ paddingVertical: "$1.5" }} {...{ backgroundColor: category === cat ? "$color5" : "$background", borderWidth: 1, borderColor: category === cat ? "$color7" : "$borderColor", hoverStyle: category === cat ? undefined : { backgroundColor: "$color3" } }}
                 >
-                  <SizableText fontSize="$1" fontWeight="500" whiteSpace="nowrap" color={category === cat ? "$background" : "$color11"}>{cat}</SizableText>
+                  <SizableText fontSize="$1" fontWeight="500" whiteSpace="nowrap" color={category === cat ? "$color" : "$color11"}>{cat}</SizableText>
                 </Button>
               ))}
             </XStack>
@@ -175,7 +214,7 @@ function ResourcesBrowser() {
                 margin belongs to a stack around it. */}
             <YStack marginLeft="auto">
               <Badge variant="secondary">
-                {filtered.length} shown{loading ? ' · syncing…' : ''}
+                {`${filtered.length} shown${loading ? ' · syncing…' : ''}`}
               </Badge>
             </YStack>
           </XStack>
@@ -189,7 +228,19 @@ function ResourcesBrowser() {
               down to sheet order. The grid owns its own box. */}
           <div className="card-grid">
             {filtered.map((item) => (
-              <ResourceCard key={item.id} item={item} onOpen={openPreview} />
+              <ResourceCard
+                key={item.id}
+                item={item}
+                onOpen={openPreview}
+                // Only templates make the promise, and only once the warehouse
+                // has answered — an empty set marks nothing.
+                rebuilt={
+                  item.kind === 'template' &&
+                  published.size > 0 &&
+                  !!item.templateSlug &&
+                  !published.has(item.templateSlug)
+                }
+              />
             ))}
           </div>
 
@@ -259,9 +310,12 @@ export default function ResourcesPage() {
 function ResourceCard({
   item,
   onOpen,
+  rebuilt,
 }: {
   item: ResourceItem;
   onOpen: (item: ResourceItem) => void;
+  /** This template publishes no source, so opening it recreates it. */
+  rebuilt?: boolean;
 }) {
   // The card's hairline carries the shot's own colour at low alpha — enough to
   // make the spectrum order legible as you scan, not enough to be chrome. Cards
@@ -315,26 +369,42 @@ function ResourceCard({
             <SizableText fontSize="$1" color="$color11">{item.framework}</SizableText>
           </YStack>
         )}
-        {item.kind === 'game' ? (
-          <Badge variant="outline" className="absolute right-2 top-2">
-            Game
-          </Badge>
-        ) : (
-          <Badge variant="outline" className="absolute right-2 top-2">
-            {item.category}
-          </Badge>
-        )}
+        {/* POSITIONED WITH STYLE PROPS, because `absolute right-2 top-2` was
+            Tailwind and Tailwind is gone from this app — the same death the count
+            badge above already carries a note about. The class named nothing, so
+            the badge stayed in flow as the second child of a frame whose height
+            is pinned by aspectRatio 16/10: it landed exactly one image-height
+            down, past the bottom edge, and overflow:hidden cropped it. Measured
+            on /templates: frame 485→668, badge top 668. */}
+        <Badge variant="outline" style={{ position: 'absolute', right: 8, top: 8 }}>
+          {item.kind === 'game' ? 'Game' : item.category}
+        </Badge>
         {typeof item.rating === 'number' && (
           <XStack position="absolute" left="$2" top="$2" alignItems="center" gap="$1" borderRadius="$10" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$0.5">
             <Star size={12} />
-            <SizableText fontSize={11} color="$color">{item.rating}</SizableText>
+            <SizableText fontSize="$1" color="$color">{item.rating}</SizableText>
           </XStack>
         )}
       </YStack>
-      <YStack flex={1} padding="$4">
+      {/* `flex={1}` is `flex: 1 1 0` — a ZERO basis. A gui stack also carries
+          `min-height: 0`, so a zero-basis block contributes nothing to the
+          card's intrinsic height, the card sizes to its picture alone, and
+          `overflow="hidden"` slices the title off. Measured on prod: all 100
+          cards cropped, the worst by 154px. Grow into a stretched row, but
+          never below the words. */}
+      <YStack flexGrow={1} flexBasis="auto" flexShrink={0} padding="$4">
         <H3 fontWeight="500" color="$color">{item.title}</H3>
         <Paragraph marginTop="$1" numberOfLines={2} minHeight="2.5rem" fontSize="$1" color="$color11">{item.description}</Paragraph>
-        <Paragraph marginTop="auto" paddingTop="$3" fontSize={11} color="$color11">{item.meta || item.framework}</Paragraph>
+        {/* The picture is a promise, and for 43 of the 72 on this page the
+            platform cannot keep it: it publishes no source for them, so opening
+            one gets a fresh build from the description rather than the design in
+            the shot. Said HERE because this is where the choice is made — the
+            builder already says it, but only after the remix is committed. */}
+        <Paragraph marginTop="auto" paddingTop="$3" numberOfLines={1} fontSize="$1" color="$color11">
+          {[item.meta || item.framework, rebuilt ? "rebuilt from its description" : ""]
+            .filter(Boolean)
+            .join(" · ")}
+        </Paragraph>
       </YStack>
     </YStack>
   );

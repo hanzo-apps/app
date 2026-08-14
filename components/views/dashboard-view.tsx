@@ -671,13 +671,13 @@ function TrafficLists({ data }: { data: DashboardData }) {
               >
                 <XStack alignItems="center" gap="$2" minWidth={0}>
                   <SizableText
-                    fontFamily="$mono" paddingHorizontal="$1" paddingVertical="$0.5" borderRadius="$2" fontSize={10} {...{ backgroundColor: error.statusCode >= 500 ? "$red9" : "$yellow9", color: error.statusCode >= 500 ? "$red8" : "$yellow8" }}
+                    fontFamily="$mono" paddingHorizontal="$1" paddingVertical="$0.5" borderRadius="$2" fontSize="$1" {...{ backgroundColor: error.statusCode >= 500 ? "$red9" : "$yellow9", color: error.statusCode >= 500 ? "$red8" : "$yellow8" }}
                   >
                     {error.statusCode}
                   </SizableText>
                   <SizableText color="$color11" numberOfLines={1} maxWidth={140} fontSize="$1">{error.path}</SizableText>
                 </XStack>
-                <SizableText color="$color11" flexShrink={0} fontSize={10}>
+                <SizableText color="$color11" flexShrink={0} fontSize="$1">
                   {new Date(error.timestamp).toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit',

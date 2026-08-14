@@ -1,26 +1,42 @@
-// GENERATED — real self-hosted template preview shots.
+// Which gallery slugs the app can show a preview for, and which of those have a
+// real photograph behind them.
 //
-// Set of gallery template slugs that have a captured, hand-QC'd preview image at
-// `public/templates/<slug>.webp`. TemplateThumb renders that image first and
-// falls back to its generated tile when a slug is absent here (or the image
-// fails to load). Regenerate after adding/removing files in public/templates:
+// Two different questions, kept apart:
+//
+//   TEMPLATE_SHOTS  — the slug is previewable at all. The landing strip and the
+//                     gallery gate on this, so a slug leaving it leaves those
+//                     surfaces.
+//   hasTemplateShot — there is a captured picture at public/templates/<slug>.webp.
+//                     TemplateThumb asks this one; a false answer means the card
+//                     is DRAWN instead (lib/template-schematic).
+//
+// SHOTS is the file listing, and regenerates from it:
 //   ls public/templates/*.webp | xargs -n1 basename | sed 's/\.webp$//'
 //
 // Shots are self-hosted (never gallery.hanzo.ai/screenshots — those included
 // watermarked UI-kit mockups + raw link-index pages, deliberately excluded).
-// De-duplicated by image content: every slug here maps to a DISTINCT picture, so
-// no two gallery cards ever show the same thumbnail (82 unique shots, sha256-verified
-// byte-distinct — no slug falls back to its generated tile for being a dupe).
 //
-export const TEMPLATE_SHOTS: ReadonlySet<string> = new Set([
+// DRAWN is what that exclusion missed. Five slugs shipped ONE recycled bento
+// UI-kit mockup between them: the same near-black canvas, the same
+// "Default / Square / Horizontal / Background" widget in the top-left corner,
+// the same grid of "Discover" cards. They passed the de-duplication because it
+// compared sha256 of the FILES, which is not a question about what a picture
+// looks like — a 16×16 hash of that corner puts matrix, mosaic, blocks and
+// cipher-html 0–1 bits apart. `template-hues.json` measures all five at
+// saturation ~0, and bySpectrum sorts neutrals last, so they rendered adjacent
+// at the tail of the strip: five cards in a row that read as one placeholder.
+//
+// They also described the wrong template — the jobfinder shot is "Smart Wallet /
+// Secure Payment / Shopping Cart", the mosaic one "Manage Components". Their
+// files are deleted; each is drawn from its slug instead, so Job Finder is a
+// jobs list, Mosaic an image grid and Matrix a dashboard, each in its own hue.
+const SHOTS: ReadonlySet<string> = new Set([
   "agenda-grid",
   "artist-epk",
   "band-setlist",
   "bistro-site",
-  "blocks",
   "booking-timeslot",
   "changelog-ship",
-  "cipher-html",
   "cipher-react",
   "circle",
   "construct",
@@ -63,17 +79,14 @@ export const TEMPLATE_SHOTS: ReadonlySet<string> = new Set([
   "hygge-html",
   "inventory-stockroom",
   "issue-press",
-  "jobfinder",
   "kanban-lane",
   "kinetic",
   "launch",
   "link-onepage",
   "longform-essays",
   "loop",
-  "matrix",
   "meetup-gather",
   "mint",
-  "mosaic",
   "oasis",
   "photo-essay",
   "pixel",
@@ -97,7 +110,19 @@ export const TEMPLATE_SHOTS: ReadonlySet<string> = new Set([
   "waitlist-launchpad",
 ]);
 
-/** True when `public/templates/<slug>.webp` exists (a real preview to show). */
+/** Previewable, but by drawing — the recycled-mockup slugs described above. */
+const DRAWN: ReadonlySet<string> = new Set([
+  "blocks",
+  "cipher-html",
+  "jobfinder",
+  "matrix",
+  "mosaic",
+]);
+
+/** Every slug the gallery and the landing strip can show a preview for. */
+export const TEMPLATE_SHOTS: ReadonlySet<string> = new Set([...SHOTS, ...DRAWN]);
+
+/** True when `public/templates/<slug>.webp` exists (a real picture to show). */
 export function hasTemplateShot(slug: string | undefined | null): boolean {
-  return !!slug && TEMPLATE_SHOTS.has(slug);
+  return !!slug && SHOTS.has(slug);
 }

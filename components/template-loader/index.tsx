@@ -106,11 +106,11 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
 
   return (
     <XStack minHeight="100dvh" backgroundColor="$background" alignItems="center" justifyContent="center" padding="$4" $lg={{ padding: "$5" }}>
-      <YStack {...glass(3)} width="100%" maxWidth={1024} overflow="hidden" borderRadius="$8" borderWidth={1} $lg={{ maxHeight: "calc(100dvh-3rem)" }}>
+      <YStack {...glass(3)} width="100%" maxWidth={1024} overflow="hidden" borderRadius="$8" borderWidth={1} $lg={{ maxHeight: "calc(100dvh - 3rem)" }}>
         {/* LEFT — template identity + live preview thumbnail. */}
         <YStack borderBottomWidth={1} borderColor="$borderColor" padding="$5" $lg={{ borderBottomWidth: 0, borderRightWidth: 1, padding: "$6" }}>
           <XStack marginBottom="$4" width="max-content" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1">
-            <SizableText fontFamily="$mono" fontSize={10} color="$color11">Start from this template</SizableText>
+            <SizableText fontFamily="$mono" fontSize="$1" color="$color11">Start from this template</SizableText>
           </XStack>
           {meta?.screenshotUrl ? (
             <YStack marginBottom="$4.5" width="100%" aspectRatio={16 / 10} overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
@@ -129,8 +129,8 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
               <Sparkles size={32} />
             </XStack>
           )}
-          <H1 fontSize="$10" fontWeight="500" letterSpacing={-0.4}>{templateTitle}</H1>
-          <Paragraph marginTop="$2" fontSize={15} lineHeight="1.625" color="$color11">{templateDescription}</Paragraph>
+          <H1 fontSize="$8" $md={{ fontSize: "$10" }} fontWeight="500" letterSpacing={-0.4}>{templateTitle}</H1>
+          <Paragraph marginTop="$2" fontSize="$4" lineHeight="1.625" color="$color11">{templateDescription}</Paragraph>
           <Paragraph marginTop="$3" fontSize="$3" lineHeight="1.625" color="$color11">
             A polished, production-quality starting point — edit it live in the
             preview panel, fork it to your account, or ship straight to Hanzo Cloud.
@@ -151,7 +151,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
         {/* RIGHT — how to start + first message. The chat input and primary CTA
             are pinned (shrink-0) so they stay visible without scrolling; only the
             option list scrolls if the viewport is short. */}
-        <YStack minHeight={0} padding="$5" $lg={{ maxHeight: "calc(100dvh-3rem)", padding: "$6" }}>
+        <YStack minHeight={0} padding="$5" $lg={{ maxHeight: "calc(100dvh - 3rem)", padding: "$6" }}>
           <H3 marginBottom="$2.5" flexShrink={0} fontSize="$1" fontWeight="500" color="$color11">
             Choose how to start
           </H3>
@@ -184,7 +184,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                         {active && <SizableText color="$background" display="flex"><Check size={12} strokeWidth={3} /></SizableText>}
                       </XStack>
                     </XStack>
-                    <Paragraph marginTop="$0.5" fontSize={13} lineHeight="1.375" color="$color11">{opt.desc}</Paragraph>
+                    <Paragraph marginTop="$0.5" fontSize="$2" lineHeight="1.375" color="$color11">{opt.desc}</Paragraph>
                   </YStack>
                 </Button>
               );

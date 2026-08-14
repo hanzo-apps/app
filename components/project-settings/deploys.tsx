@@ -128,14 +128,14 @@ function Row({ d, slug }: { d: Deployment; slug: string }) {
           <SizableText fontSize="$1" color={s.color ?? "$color11"}>{s.label}</SizableText>
         </XStack>
         {d.version > 0 && (
-          <SizableText fontFamily="$mono" fontSize={11} color="$color11">v{d.version}</SizableText>
+          <SizableText fontFamily="$mono" fontSize="$1" color="$color11">v{d.version}</SizableText>
         )}
         {commit && (
-          <SizableText fontFamily="$mono" fontSize={11} color="$color11">{commit}</SizableText>
+          <SizableText fontFamily="$mono" fontSize="$1" color="$color11">{commit}</SizableText>
         )}
-        {when && <SizableText fontSize={11} color="$color11">{when}</SizableText>}
+        {when && <SizableText fontSize="$1" color="$color11">{when}</SizableText>}
         {s.kind === "failed" && d.message && (
-          <SizableText minWidth={0} numberOfLines={1} fontSize={11} color="$color11">
+          <SizableText minWidth={0} numberOfLines={1} fontSize="$1" color="$color11">
             {d.message}
           </SizableText>
         )}

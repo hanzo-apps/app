@@ -47,7 +47,7 @@ export default defineConfig({
     {
       name: 'authenticated',
       testMatch: '**/authed/**/*.spec.ts',
-      use: { ...devices['Desktop Chrome'], storageState: authFile },
+      use: { ...devices['Desktop Chrome'], colorScheme: 'dark', storageState: authFile },
       dependencies: ['setup'],
     },
   ],

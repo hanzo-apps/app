@@ -39,12 +39,12 @@ export function GameCard({ game }: { game: GameEntry }) {
           <SizableText color="$color11">{game.engineVersion}</SizableText>
         </SizableText>
         {playable ? (
-          <SizableText display="inline-flex" alignItems="center" gap="$1" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$2" paddingVertical="$0.5" fontSize={11} fontWeight="500" color="$color12">
+          <SizableText display="inline-flex" alignItems="center" gap="$1" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$2" paddingVertical="$0.5" fontSize="$1" fontWeight="500" color="$color12">
             <Play size={12} aria-hidden />
             Play
           </SizableText>
         ) : (
-          <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$0.5" fontSize={11} color="$color11">
+          <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$0.5" fontSize="$1" color="$color11">
             {game.targets.includes('webgl') ? 'WebGL-ready' : 'Desktop'}
           </SizableText>
         )}
@@ -67,7 +67,7 @@ export function GameCard({ game }: { game: GameEntry }) {
               return <Icon key={f} size={14} aria-label={f} />;
             })}
           </SizableText>
-          <SizableText fontFamily="$mono" fontSize={10} letterSpacing={0.4} color="$color11">
+          <SizableText fontFamily="$mono" fontSize="$1" letterSpacing={0.4} color="$color11">
             {game.license}
           </SizableText>
         </XStack>

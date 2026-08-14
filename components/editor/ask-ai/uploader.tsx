@@ -1,5 +1,6 @@
 'use client';
 
+import { sends } from '@hanzo/ui/chat';
 import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
 import { useEffect, useRef, useState } from "react";
 import { CircleCheck, Plus, Sparkles, Upload } from "lucide-react";
@@ -105,15 +106,19 @@ export const Uploader = ({
     <Popover open={open} onOpenChange={setOpen} placement="top-start">
       <form>
         <PopoverTrigger asChild>
+          {/* An ANCHOR, not a control. The composer's one [+] menu is the way
+              in ("Attach images" clicks this); the popover still needs a
+              positioned trigger to anchor to, so it stays — 1px, invisible,
+              programmatically clickable. */}
           <Button
-            size="icon"
+            id="composer-attach"
+            size="icon-sm"
             variant="ghost"
-            aria-label="Add images"
-            group borderRadius="$10" hoverStyle={{ backgroundColor: "$color3" }}
+            aria-hidden
+            tabIndex={-1}
+            style={{ position: "absolute", width: 1, height: 1, minWidth: 1, minHeight: 1, opacity: 0, pointerEvents: "none" }}
           >
-            <SizableText color="$color11" $group-hover={{ color: "$color" }}>
-              <Plus size={16} />
-            </SizableText>
+            <Plus size={16} />
           </Button>
         </PopoverTrigger>
         <PopoverContent
@@ -178,7 +183,7 @@ export const Uploader = ({
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
                       onKeyDown={(e) => {
-                        if (e.key === "Enter" && !generating) {
+                        if (sends(e.key, e.nativeEvent) && !generating) {
                           e.preventDefault();
                           void generateImage();
                         }
@@ -188,6 +193,7 @@ export const Uploader = ({
                       flex={1} minWidth={0} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color8" }}
   />
                     <Button
+                      variant="primary"
                       flexShrink={0}
                       onClick={() => void generateImage()}
                       disabled={generating || !prompt.trim()}
@@ -211,6 +217,7 @@ export const Uploader = ({
                     Or add files from your computer
                   </Paragraph>
                   <Button
+                    variant="primary"
                     position="relative" width="100%"
                     onClick={() => fileInputRef.current?.click()}
                   >
@@ -252,15 +259,15 @@ export const Uploader = ({
   ) : (
     <>
       <Button
-        size="icon"
+        id="composer-attach"
+        size="icon-sm"
         variant="ghost"
-        aria-label="Add images"
-        group borderRadius="$10" hoverStyle={{ backgroundColor: "$color3" }}
+        aria-hidden
+        tabIndex={-1}
+        style={{ position: "absolute", width: 1, height: 1, minWidth: 1, minHeight: 1, opacity: 0, pointerEvents: "none" }}
         onClick={() => setOpen(true)}
       >
-        <SizableText color="$color11" $group-hover={{ color: "$color" }}>
-          <Plus size={16} />
-        </SizableText>
+        <Plus size={16} />
       </Button>
       <LoginModal
         open={open}

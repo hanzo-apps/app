@@ -1,5 +1,6 @@
 'use client';
 
+import { sends } from '@hanzo/ui/chat';
 import { YStack, H3, Paragraph, H4, SizableText, XStack, Image } from '@hanzo/ui';
 import { useState } from 'react';
 import { PublishSettings, SeoConfig } from '@/lib/vfs/types';
@@ -110,7 +111,7 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
               value={keywords}
               onChange={(e) => setKeywords(e.target.value)}
               onKeyPress={(e) => {
-                if (e.key === 'Enter') {
+                if (sends(e.key, e.nativeEvent)) {
                   e.preventDefault();
                   handleAddKeyword();
                 }
@@ -123,7 +124,7 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
           {settings.seo.keywords && settings.seo.keywords.length > 0 && (
             <XStack flexWrap="wrap" gap="$2" marginTop="$2">
               {settings.seo.keywords.map((keyword) => (
-                <Badge key={keyword} variant="secondary" className="gap-1">
+                <Badge key={keyword} variant="secondary">
                   {keyword}
                   <Button
                     onClick={() => handleRemoveKeyword(keyword)}

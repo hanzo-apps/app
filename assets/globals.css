@@ -87,6 +87,17 @@ a {
   display: none;
 }
 
+/* Centre a row's contents WITHOUT stranding them when they overflow.
+   `safe center` centres while everything fits and falls back to start
+   alignment the moment it does not — plain `center` overflows equally in both
+   directions, and the half that goes past the scroll origin cannot be scrolled
+   back to. The builder header's tool cluster is exactly that case: measured at
+   390px it holds 254px of controls in 128px, so plain centring would put the
+   Preview/Code tabs permanently out of reach. */
+.center-safe {
+  justify-content: safe center;
+}
+
 /* Scroll-reveal (components/landing/reveal): hidden + risen until observed.
    Reduced-motion users get content instantly — content must NEVER stay hidden. */
 [data-reveal] {
@@ -190,8 +201,21 @@ a {
      monochrome ninja-stealth, and the composer ring is the ONE deliberate
      spectrum — the Apple-Intelligence iridescence (blue → violet → pink →
      amber and home again), moderated so it glows instead of shouting. */
-  --hz-spectrum: rgba(8, 148, 255, 0.45), rgba(201, 89, 221, 0.48),
-    rgba(255, 46, 84, 0.4), rgba(255, 144, 4, 0.4), rgba(8, 148, 255, 0.45);
+  /* LUMINANCE, NOT HUE — and the same stops hanzo.chat declares, because the
+     note above is right that these two must not drift.
+
+     Four saturated stops at 0.40-0.48 alpha, swept around a rounded RECTANGLE,
+     do not distribute evenly: the long top and bottom edges each take a wide
+     angular slice and the short sides take almost none, so one edge wore a
+     bright pink while the opposite wore a dim blue. That reads as a ring that
+     highlights half the box and sits slightly off — and no amount of nudging
+     the geometry fixes it, because an uneven ring cannot look aligned.
+
+     White at two close alphas removes the bright arc entirely, drops the peak
+     from 0.48 to 0.18, and keeps the slow drift as a sheen. */
+  --hz-spectrum: rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.18),
+    rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.18),
+    rgba(255, 255, 255, 0.1);
 
 }
 
@@ -215,6 +239,250 @@ a {
   position: relative;
   isolation: isolate;
   padding: 1.5px;
+}
+
+/* The composer's + and send are circles, not the library's rounded squares.
+ * @hanzo/ui gives every Button `[data-variant][data-size]{ border-radius:
+ * var(--control-radius) !important }` — specificity (0,3,0), so a Tamagui prop
+ * or an inline style loses to it. This clears (0,3,0) by scoping the class under
+ * `.hz-composer` → (0,3,1), the same `html:root`-for-weight trick the `.hz-dense`
+ * block below uses, and carries the whole shape here rather than inline: a 36px
+ * square (so width matches the row's height) with a radius past half of it. */
+html:root .hz-composer .hz-round {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  padding: 0 !important;
+  border-radius: 9999px !important;
+}
+
+/* The composer grows with what you type; it is never dragged.
+ *
+ * A `<textarea>` defaults to `resize: vertical`, which paints a grab handle in
+ * the bottom-right corner — inside the ring, on top of the gradient, on both
+ * desktop and mobile. Nobody chose it, and no builder worth the name asks you
+ * to size your own prompt box. Height is set from `scrollHeight` in the
+ * component; this is the half that has to be CSS, because the handle is the
+ * browser's and only a style can take it away.
+ *
+ * Past `--hz-composer-max` the box stops and scrolls: an unbounded field walks
+ * the send button off the bottom of a phone. */
+/* A finger needs 44px; a mouse does not.
+ *
+ * The starter chips render 34px tall, which is fine to click and small to tap —
+ * iOS asks for 44 and Android for 48dp. The query is `pointer: coarse` rather
+ * than a width breakpoint on purpose: the constraint is the INPUT DEVICE, not
+ * the viewport. A narrow desktop window is still a mouse, and a large tablet is
+ * still a thumb; sizing off width gets both of those backwards.
+ *
+ * `min-height` rather than `height`, so a chip whose label wraps still grows.
+ *
+ * A CLASS, not a `data-` attribute. `SizableText` is a gui primitive, not a DOM
+ * element: it forwards `className` (as `.thread-shimmer-text` and `.hz-composer`
+ * already prove in production) and DROPS an unrecognised `data-` prop. The dev
+ * server kept it and the production build did not, so the first version of this
+ * rule matched four elements locally and zero on hanzo.app — green everywhere a
+ * human would have looked.
+ *
+ * `.hz-tap` and not `.hz-starter`: the rule was named for the composer chips
+ * that first needed it, but it is not about chips. It says "this is a standalone
+ * tap target" — which is equally true of the landing's three centred CTA links
+ * (`Browse all templates`, `or import an existing GitHub repo`, `Explore the
+ * gateway`), each measured at 20-21px on a phone, each its own block with its
+ * own `marginTop`, none of them a word inside a sentence.
+ *
+ * Verified rather than assumed: Playwright's `hasTouch: true` DOES drive this
+ * media feature in Chromium — `(pointer: coarse)` true, `(hover: hover)` false,
+ * `maxTouchPoints` 1 — while a bare 390px viewport does not. So the rule can be
+ * measured, and a phone run without `hasTouch` silently tests the desktop
+ * branch. */
+@media (pointer: coarse) {
+  /* A target is a BOX, so both sides carry the floor — a thumb is about as wide
+     as it is tall. This said `min-height` alone, which passes a 28x44 icon
+     button: tall enough to measure, too narrow to hit. The deploy gate read
+     height alone for the same reason and so reported six clean routes over four
+     controls that were 22, 28, 36 and 39 wide. Rule and check now state the same
+     thing, on the same predicate, and neither can drift without the other.
+
+     `min-width` needs a box to act on — it does nothing to a non-replaced inline
+     element — so a link that is a word inside a sentence is untouched by
+     construction, and prose is excluded again below for the ones that are not.
+
+     `!important` because `size="icon"` sets the floor INLINE, and an inline
+     declaration beats any stylesheet rule on the same property whatever its
+     specificity — the same reason `.t_group_true` needs it. Without it this rule
+     is silently a no-op on exactly the controls it exists for.
+
+     `.hz-dense` IS THE EXEMPTION, and it exists because this floor sets the
+     PAINTED box, not the reachable one. @hanzo/ui already gives every Button a
+     44px hit area without touching layout (`touch()` emits data-touch-y and
+     theme.css expands the box with a transparent ::after), so inside a dense
+     cluster this rule inflates a second time what is already reachable: the
+     composer's five controls all measured 44x44 on a phone against 32 on a
+     desktop, and a toolbar of 44px slabs under a text field reads as the
+     product's biggest buttons. A dense cluster is a SECONDARY row inside one
+     large primary target — the composer's action row under a 62px field — so it
+     keeps the library's own sizes and the field takes the thumb. It is opt-in
+     per row, never a global relaxation, and it does not reach the starter chips
+     or any standalone control, which are targets in their own right and stay 44.
+     Written `:not(:where(…))` on purpose: `:where()` is forgiving, so a browser
+     that cannot parse the descendant selector drops the exemption rather than
+     the floor, and it carries no specificity, so these selectors weigh exactly
+     what they weighed before. */
+  button:not(:where(.hz-dense *)),
+  [role='button']:not(:where(.hz-dense *)),
+  a[href],
+  .hz-tap {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+
+  /* A FIELD is a tap target too, and it was not covered. You tap an input to
+     focus it exactly as you tap a button to press it, but the rule above names
+     only things that look like buttons — so every text field in the product sat
+     under the floor unnoticed. Measured on a phone: the search field on
+     /agents and on /projects renders 36px.
+
+     HEIGHT only, deliberately. The box argument above is about an ICON button,
+     which can be narrow enough to miss; a field is sized by its container and
+     is never the 22-28px wide that argument was written for, so a `min-width`
+     here would constrain nothing real. Checkbox and radio are excluded because
+     for them min-width is NOT inert — it is the control's whole size, and
+     forcing 44 there inflates a checkbox into a box that breaks the row it sits
+     in. Their floor is a bigger hit area around the control, which is a
+     different fix and not this one. */
+  input:not([type='checkbox']):not([type='radio']):not([type='hidden']),
+  select,
+  textarea {
+    min-height: 44px !important;
+  }
+
+  p button,
+  p [role='button'],
+  p a[href] {
+    min-height: 0 !important;
+    min-width: 0 !important;
+  }
+
+  /* THE FLOOR ABOVE MAKES A BOX TALLER; THIS SAYS WHERE THE LABEL SITS IN IT.
+     Without it the two are half a rule: a chip whose content is 32px is forced
+     to 44 and, in block layout, the whole 12px lands UNDER the text — measured
+     on the composer starters, 10px above and 20px below, which is exactly the
+     lopsided pill a phone shows.
+
+     `html:root` is load-bearing and is why this sat inert. A bare `.hz-tap` is
+     (0,1,0) — a dead tie with every atomic class gui compiles — and ties go to
+     load order, where `gui.css` is imported last. So gui's `display` won, the
+     element stayed a block, and this rule changed nothing on any phone since
+     the day it was written. Same collision, same remedy, as the focus ring. */
+  html:root .hz-tap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* THE EXEMPTION ABOVE ASSUMES THE LIBRARY ALREADY MAKES THESE REACHABLE. On
+     the narrow axis it does not, and the deploy gate is what proved it.
+
+     `.hz-dense` keeps a control's PAINTED size on the reasoning that @hanzo/ui
+     hands every Button a 44px hit area anyway. It hands it a 44px TALL one:
+     `data-touch-y` emits `::after { top: -6px; bottom: -6px }` — top and bottom,
+     nothing on left or right, and the name says so. Measured on the composer at
+     390 with `hasTouch`, reachable boxes were Build 90x46, Base 71x46, mic 60x60
+     — and the two icon-only controls 32x44. So `+` and the send arrow are 32px
+     wide to a thumb, which is the miss this whole section exists to prevent, and
+     it was invisible because the exemption reads like it covers them.
+
+     Six each side takes a 32px control to exactly 44. It buys hit area, never
+     paint: `::after` is transparent and out of flow, so the row looks identical
+     and only the target grows. The neighbouring control is 8px away and its own
+     slop grows toward this one, so the two overlap by 4px — a strip where either
+     answer is the one the thumb was near, and far better than a gap neither
+     reaches. Scoped by `data-size^="icon"`, so it touches ONLY controls with no
+     label to widen them: Build and Base are already past the floor and are left
+     alone rather than grown into each other.
+
+     TWO handles, because there are two ways to spell an icon-only control here
+     and this rule must not care which. `size="icon"` emits `data-size`;
+     `.hz-round` (the circular composer controls) cannot use that size at all,
+     because the size variant pins a rounded-RECTANGLE with `!important`. Keying
+     on `data-size` alone is what broke this the first time — the circles change
+     dropped that attribute and the slop silently went with it, taking `+` and
+     send back to 36 wide with nothing to say so. The deploy gate caught it; the
+     lesson is that a rule anchored on ONE spelling of a thing is a rule that
+     stops applying the moment someone spells it the other way.
+
+     `html:root` for the reason stated just above — a bare class ties with gui's
+     atomic classes and loses on load order. */
+  html:root .hz-dense [data-size^='icon']::after,
+  html:root .hz-dense .hz-round::after,
+  html:root .hz-composer .hz-round::after {
+    left: -6px;
+    right: -6px;
+  }
+}
+
+/* A TEMPLATE PREVIEW NEEDS AN EDGE THAT WORKS ON A LIGHT SHOT TOO.
+ *
+ * The card frames its preview with a 1px `rgba(255,255,255,.1)` hairline — a
+ * light line, which is legible on a dark screenshot and INVISIBLE on a pale
+ * one. Measured across the 21 shipped shots: nine are light-themed, and the
+ * whitest (SaaS Landing at 89% near-white, Pixel at 85%, Mint 78%, Kinetic
+ * 76%) run edge to edge with no boundary at all, so the card reads as a white
+ * slab pasted onto the page rather than a picture of a website. The boundary
+ * was defined in one polarity and the content comes in both.
+ *
+ * An `outline` rather than a border or an inset shadow, and that is forced:
+ * this is an `<img>`, a replaced element, so an inset box-shadow paints BEHIND
+ * the image content and a border would change the box. An outline paints over
+ * the element and `outline-offset: -1px` pulls it inside the edge; the card's
+ * `overflow: hidden` clips it to the same 12px radius, so it follows the
+ * corners for free.
+ *
+ * Dark, so it reads against a pale shot — on a dark shot it disappears and the
+ * card's own light hairline is the edge. Between the two, every preview has a
+ * boundary whichever way its content leans. The shot is NOT toned or filtered:
+ * it is a picture of what the template actually looks like, and dimming it to
+ * match the page would misrepresent the product to sell a nicer thumbnail. */
+html:root .hz-shot {
+  outline: 1px solid rgba(0, 0, 0, 0.38);
+  outline-offset: -1px;
+}
+
+.hz-composer textarea {
+  resize: none;
+  max-height: var(--hz-composer-max, 40vh);
+  overflow-y: auto;
+}
+
+/* THE IDLE PLACEHOLDER IS TEXT THE BOX WAS NEVER SIZED FOR.
+ *
+ * `rows` is a two-line floor and the field's auto-grow lifts it from the typed
+ * VALUE (see components/build-composer) — a placeholder is not one, so the
+ * longest phrase the typewriter rests on, "Ask Hanzo to build a customer portal
+ * with login and a dashboard", simply drew its third line behind the action row
+ * and was sliced. Nothing errors; the sentence just ends early.
+ *
+ * Measured across all twelve phrases: that one is the worst at every width, and
+ * it needs three lines only at 322px and below — 323 up it is two, and 640 up
+ * it is one. So this is the narrow phones' rule alone (320, and the 280 of a
+ * folded phone), cut at 340 to leave a little room under the boundary without
+ * reaching 360, the narrowest width in common use.
+ *
+ * 84 = three 22px lines + the field's 12px top and 6px bottom padding.
+ *
+ * A FLOOR, never a height: `scrollHeight` cannot report less than the padding
+ * box, so the auto-grow reads 84 while the box is idle and keeps growing past
+ * it the moment a longer idea is typed.
+ *
+ * `!important` because the tap-target floor above states `textarea { min-height:
+ * 44px !important }`, and an important declaration is only outranked by another
+ * one. */
+@media (max-width: 340px) {
+  html:root .hz-ask {
+    min-height: 84px !important;
+  }
 }
 
 /* The ring DRAWS A RING. It used to draw a filled DISC and rely on the panel
@@ -528,6 +796,37 @@ a {
   --tint: 255 255 255;
 }
 
+/* LIQUID GLASS — the full-perimeter specular rim design does not ship.
+   ────────────────────────────────────────────────────────────────────────────
+   @hanzo/design's --edge-highlight is a TOP LIP alone (inset 0 1px 0 white/.10):
+   enough to say "lifted" on a dark canvas, not the lensed edge an iOS/macOS glass
+   panel wears. Liquid glass catches light the whole way round — brightest along
+   the top, a faint hairline down the sides, and a dark inner lip at the bottom
+   that reads as curvature. Every glass rung already composes this one token
+   (`box-shadow: var(--edge-highlight), var(--glass-shadow-N)` in @hanzo/ui/glass.css),
+   so upgrading the value lenses every card, panel, composer and dialog at once —
+   no per-surface change and no fork of the material: the ground, the blur and the
+   drop stay design's, only the lit edge grows. It stays a comma-list of `inset`
+   layers, never `none`, so it composes into the shadow list design built it for.
+
+   html:root.<theme> because design sets --edge-highlight at :root and its sheet
+   loads after this one; the id-of-html lifts these over it on both themes. A
+   box-shadow rim is free where the backdrop blur is not, so it is one material
+   on mobile and desktop with no coarse-pointer branch. */
+html:root.dark {
+  --edge-highlight:
+    inset 0 1px 0 0 rgb(255 255 255 / .20),
+    inset 0 0 0 1px rgb(255 255 255 / .07),
+    inset 0 -1px 0 0 rgb(0 0 0 / .20);
+}
+html:root.light,
+html:root.t_light {
+  --edge-highlight:
+    inset 0 1px 0 0 rgb(255 255 255 / .55),
+    inset 0 0 0 1px rgb(0 0 0 / .05),
+    inset 0 -1px 0 0 rgb(0 0 0 / .05);
+}
+
 /* The app is dark-only — `dark` is a literal class the server renders onto <html>
    (app/layout.tsx), so the block above is simply "what this app adds", and there
    is no light counterpart because there is no light theme to serve one.
@@ -558,9 +857,18 @@ html.dark {
      still resolved #8b5cf6 with the override sitting in :root). Outranking the
      selector makes the result independent of bundling order. */
   --hanzo-accent: #ffffff;
-  --hanzo-accent-hover: #d4d4d4;                 /* neutral-300 */
-  --hanzo-accent-muted: #a3a3a3;                 /* neutral-400 */
-  --hanzo-accent-soft: rgba(255, 255, 255, 0.12);
+  /* The three states DERIVE from the one base, so a chosen accent — AccentSync
+     mirrors @hanzo/appearance's pick onto --hanzo-accent inline on <html> —
+     tints the WHOLE family (the switch track, every hover, ::selection), not
+     just --brand-accent. Each is a step DOWN in lightness (mix toward black),
+     which is the monochrome law: "every state under the accent is a step down
+     in lightness, never a change in hue." srgb mixing is proportional, so the
+     hue is preserved AND the default (base #fff) reproduces the old literals
+     exactly — 83% → #d4d4d4, 64% → #a3a3a3, 12% → rgba(255,255,255,.12). One
+     input, one place; nothing to keep in sync by hand. */
+  --hanzo-accent-hover: color-mix(in srgb, var(--hanzo-accent, #fff) 83%, #000);
+  --hanzo-accent-muted: color-mix(in srgb, var(--hanzo-accent, #fff) 64%, #000);
+  --hanzo-accent-soft:  color-mix(in srgb, var(--hanzo-accent, #fff) 12%, transparent);
   --hanzo-accent-rgb: 255, 255, 255;
 
   /* The gui sheet ships `.is_Input::selection, .is_TextArea::selection {
@@ -658,6 +966,18 @@ html:root :is(a, button, summary, [role="button"], [tabindex]):focus-visible {
   outline-offset: 2px;
 }
 
+/* A menu/listbox popup is a CONTAINER, not a control. A dropdown opens by moving
+   focus onto its content, which carries `tabindex="-1"`, so the rule above catches
+   it and paints the 2px `--focus-ring` (72% white) 2px OUTSIDE the panel — the
+   garish white outline that rings a whole opened dropdown. The keyboard indicator
+   belongs on the ITEMS the arrow keys move between (they are buttons / [tabindex]
+   and ring by the rule above), never on the transient shell that holds them, so
+   the container itself draws nothing — the same "not a control" carve-out the
+   fields below take. */
+html:root :is([role="menu"], [role="listbox"], [data-hanzogui-menu-content]):focus-visible {
+  outline: none;
+}
+
 /* Text-entry controls take the SAME rule's intent in the form they already have.
    A link or a button has no resting shape, so it needs a ring drawn around it. A
    field does — its own edge — so focus brightens THAT EDGE, and draws nothing
@@ -713,20 +1033,6 @@ html:root :is(input, textarea, select):focus-visible {
 html:root [data-field-box]:focus-within {
   outline: 1px solid var(--focus-edge);
   outline-offset: -1px;
-}
-
-.background__noisy {
-  background-blend-mode: normal;
-  pointer-events: none;
-  opacity: 0.9;
-  background-size: 25ww auto;
-  background-image: url("/background_noisy.webp");
-  position: fixed;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-  top: 0;
-  left: 0;
 }
 
 .monaco-editor .margin {
@@ -844,9 +1150,32 @@ kbd {
    markup takes the component. */
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  /* `auto-fit`, not `auto-fill`: the two differ ONLY when a grid holds fewer
+     items than it has room for, and there auto-fill leaves the empty tracks
+     standing — the models section's two cards sat 372px wide against the left
+     edge with a third empty column beside them. auto-fit collapses the empty
+     track so the items share the row. With enough items to fill every column
+     (cloud-integration's six, /templates') the two are identical. */
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
   gap: 18px;
   align-items: start;
+}
+
+/* The recent-projects grid — vertical cards, the thumbnail on top at its own
+   aspect and the meta below, so the card is the SIZE of the image with nothing
+   stranded beside it. Deliberately NOT `.card-grid`: auto-fit/minmax(280px)
+   collapses to one column on a phone, and a one-up recent list is a stack of
+   full-bleed cards with the shot on the left and half the row empty black. A
+   fixed track count is what "two on a row" asks for — two on a phone, three
+   from md up. `minmax(0,1fr)` lets the framed iframe scale down to the track
+   instead of forcing it to the iframe's logical width. */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+@media (min-width: 768px) {
+  .project-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
 }
 
 /* Mobile-only chrome — hidden from md up. !important so the gate beats
@@ -971,6 +1300,23 @@ html:not(.dark) .preview-stage {
   height: var(--control-h);
   font-size: var(--control-fs);
 }
+/* …EXCEPT IN A DENSE ROW, WHERE A CONTROL IS ITS OWN SIZE.
+   `--control-h` is the touch register: 30 on a pointer, 44 below 767px. That is
+   right for a control a finger must find on its own, and wrong for the cluster
+   under a composer's field, where the FIELD is what a thumb aims at and these
+   five controls are its chrome — measured at 390, every one of them rendered a
+   44px slab under a 62px input. `height: auto` hands the box back to the size
+   variant the call site already asked for (`sm` / `icon-sm` = 32), so the row
+   states no size of its own and cannot drift from the library's.
+
+   Note this is the register that governs @hanzo/ui's Button — it renders a DIV,
+   so the `pointer: coarse` floor further up (which names `button`) never
+   reached it. Both need the same exemption for the same reason; neither is the
+   other's backstop. */
+html:root .hz-dense [data-variant][data-size] {
+  height: auto;
+}
+
 /* An icon button is SQUARE AT THE CONTROL SIZE — square was never the argument,
    36-vs-30 was. Width as well as height, because a size name CVA does not know
    leaves the box to size from its content (`iconXs` measured 40px wide, 18.8 tall
@@ -1068,7 +1414,9 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.25rem;
+  /* More room on the right than the left: the right cluster (the weak-area
+     count + its chevron) sat hard against the card edge. */
+  padding: 1rem 1.75rem 1rem 1.25rem;
   cursor: pointer;
   list-style: none;
 }
@@ -1141,7 +1489,11 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
   mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
 }
-.scroll-fade-r {
+/* The right fade means "there is more to the right", so it is drawn only when
+   there is — hence `[data-more]`, set by whoever owns the scroller. Unmasked
+   is the safe default: an always-on fade dims the last item for no reason
+   once the row fits, and CSS cannot ask an element whether it can scroll. */
+.scroll-fade-r[data-more] {
   -webkit-mask-image: linear-gradient(to right, #000 88%, transparent);
   mask-image: linear-gradient(to right, #000 88%, transparent);
 }
@@ -1182,6 +1534,124 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
 }
 .hz-strip-card {
   scroll-snap-align: start;
+}
+
+/* Partner logo wall. ONE row: on desktop the nine marks fit under 1152 and
+   center, static; on a phone the row overflows, so it AUTO-scrolls a seamless
+   marquee — the set is rendered twice, and translating the track by exactly one
+   copy's width lands the second where the first was, so the seam never shows.
+   Rightward per the ask. Motion lives here because it is motion. */
+.hz-logo-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent);
+  mask-image: linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent);
+}
+.hz-logo-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+.hz-logo-group {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 40px;
+  /* Trailing gap == internal gap, so the last mark of one copy sits the same
+     distance from the first mark of the next as any two neighbours: no seam. */
+  padding-right: 40px;
+}
+@media (max-width: 767px) {
+  .hz-logo-track { animation: hz-logo-scroll 32s linear infinite; }
+}
+@media (min-width: 768px) {
+  /* Fits centred; the duplicate and its trailing gap are marquee-only. */
+  .hz-logo-marquee { display: flex; justify-content: center; -webkit-mask-image: none; mask-image: none; }
+  .hz-logo-track { width: auto; max-width: 100%; }
+  .hz-logo-group { padding-right: 0; }
+  .hz-logo-group[aria-hidden="true"] { display: none; }
+}
+@keyframes hz-logo-scroll {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+/* Motion off → no animation, drop the duplicate, and let the single row be
+   swiped by hand instead (the pre-marquee behaviour). */
+@media (prefers-reduced-motion: reduce) {
+  .hz-logo-track { animation: none; transform: none; }
+  .hz-logo-marquee { overflow-x: auto; scrollbar-width: none; }
+  .hz-logo-marquee::-webkit-scrollbar { display: none; }
+  .hz-logo-group[aria-hidden="true"] { display: none; }
+  .hz-logo-group { padding-right: 0; }
+}
+
+/* Idea crawl — the composer's starter prompts as ONE continuous news-ticker
+   line (components/build-composer). Same seamless technique as the sibling
+   .hz-logo-marquee above (the set is rendered twice and the track translates
+   exactly one copy, so the seam never shows), but ALWAYS on and leftward —
+   here it is a deliberate motif, not a mobile-overflow fallback. The chips
+   stay clickable; hover/focus pauses the crawl so a moving chip can be caught,
+   and the second copy is decorative (aria-hidden). */
+.hz-crawl {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 28px, black calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to right, transparent, black 28px, black calc(100% - 28px), transparent);
+}
+.hz-crawl-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: hz-crawl-scroll var(--crawl-duration, 40s) linear infinite;
+}
+/* A CHIP YOU CANNOT CATCH IS A CHIP THAT DOES NOTHING.
+   Hover pauses the crawl for a pointer, and a touch has no hover — so on a
+   phone the chip a thumb aims at keeps sliding, the press lands on the track
+   between two chips, nothing fills the composer, and the send button stays
+   disabled: the whole starter row was unusable by tap. `:active` freezes the
+   track for the press itself (the element under the finger at pointerdown is
+   still under it at pointerup, which is what decides the click's target), and
+   `.hz-hold` — set on pointerdown by components/build-composer — keeps it
+   frozen a few seconds so a correction lands too. */
+.hz-crawl:hover .hz-crawl-track,
+.hz-crawl:focus-within .hz-crawl-track,
+.hz-crawl:active .hz-crawl-track,
+.hz-crawl.hz-hold .hz-crawl-track {
+  animation-play-state: paused;
+}
+.hz-crawl-group {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 10px;
+  /* Trailing gap == internal gap, so copy-2's first chip sits the same
+     distance from copy-1's last as any two neighbours: no seam at the wrap. */
+  padding-right: 10px;
+}
+@keyframes hz-crawl-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+/* Motion off → no animation, drop the duplicate, hand-scroll the single row. */
+@media (prefers-reduced-motion: reduce) {
+  .hz-crawl-track { animation: none; transform: none; }
+  .hz-crawl { overflow-x: auto; scrollbar-width: none; }
+  .hz-crawl::-webkit-scrollbar { display: none; }
+  .hz-crawl-group[aria-hidden="true"] { display: none; }
+  .hz-crawl-group { padding-right: 0; }
+}
+
+/* CLIP IS NOT HIDDEN, AND ONLY ONE OF THEM LETS THE COMPOSER PIN.
+   The landing clips horizontally — the hero's full-bleed template lane runs to
+   100vw, and the shell header's right-hand row is briefly wider than a phone
+   while it hydrates — and it used to do that with `overflow: hidden` on this
+   root. That makes the root the SCROLLPORT for everything inside it, so a
+   sticky descendant is measured against a box that never scrolls: measured in
+   both Chromium and WebKit, the dock below simply scrolled away with the page,
+   and the shell header's own stickiness had been dead the same way. `clip`
+   clips identically (scrollWidth stays at the viewport in both engines) without
+   becoming a scroll container. It is CSS rather than a prop because gui types
+   `overflow` as visible | hidden | scroll. */
+.landing-root {
+  overflow-x: clip;
 }
 
 /* The `group` prop exists in this app for STATE only ($group-hover/press/
@@ -1278,11 +1748,16 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
    styled by its PARENT's state — so neither can be a prop on the tile. */
 .ref-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
   margin: 0;
   padding: 0;
   list-style: none;
+}
+@media (min-width: 640px) {
+  .ref-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 .ref-grid li {
   position: relative;
@@ -1326,19 +1801,50 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
 
 /* @hanzo/voice styles itself through one className, so the mic's chrome is one
    rule. Listening and speaking are the same control in two moods: lit while the
-   conversation is live, breathing while it talks. */
+   conversation is live, breathing while it talks.
+
+   IT IS A TAP TARGET, so it is sized like one. At 20px it was the smallest
+   control on the landing page and the only one under the 24px floor WCAG 2.2
+   sets for a pointer target (2.5.8) — measured live, alongside a 44px send
+   button and a 44px mode picker sharing its row, so it also read as a
+   half-height dent in a row of full-height controls. 44px matches the row
+   rather than merely clearing the floor: a control's box belongs to the row it
+   sits in, and the 16px glyph inside is unchanged, so nothing looks bigger —
+   only the reachable area is. */
 .voice-control {
   display: flex;
-  width: 20px;
-  height: 20px;
+  /* NO CONTAINER. The mic is a bare glyph; only the send carries a filled
+     shape, which is what makes it read as the primary action rather than one
+     of a matched pair. This used to paint a neutral 6% circle so the two
+     matched in shape — they now differ on purpose, because they differ in
+     rank.
+     The 28px BOX stays and is deliberate: it is the hit area, not decoration.
+     Sizing the button to the 16px glyph would leave a pointer a 16px target,
+     and the coarse-pointer floor only raises this on touch. An invisible box
+     you can hit beats a visible one you do not need. */
+  width: 28px;
+  height: 28px;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-sm, 6px);
+  background-color: transparent;
   color: var(--muted-foreground);
-  transition: color 150ms, background-color 150ms;
+  transition: color 150ms;
+}
+/* The mic no longer needs a forced radius — with no fill, there is no shape to
+   round. The SEND does. It declares `borderRadius={999}` at its call site and
+   renders 10px: @hanzo/ui sets an icon Button's radius from an atomic class the
+   prop cannot outrank, exactly as it sets that size's padding (see the
+   `size="icon"` note in the app's CLAUDE.md). Measured beside the mic: 36x44 at
+   10px against the mic's 36x36 — mismatched in shape AND height, which is the
+   boxy container in the composer's action pair.
+   `!important` is load-bearing for the same reason it is on the tap floor: the
+   competing declaration carries it too, so specificity alone does not win. */
+html:root [aria-label="Start building"] {
+  border-radius: 999px !important;
 }
 .voice-control:hover:not(:disabled) {
-  background-color: color-mix(in oklab, var(--foreground) 8%, transparent);
+  /* Colour only. Painting a background here would hand back the container the
+     rest of this rule exists to remove, one pointer-enter later. */
   color: var(--foreground);
 }
 .voice-control:disabled {
@@ -1359,6 +1865,20 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
    the mic above is one rule. */
 #enso-dock [data-hanzo-edit] {
   display: flex;
+}
+
+/* The Enso contribute-launcher docks into #enso-dock (above) on desktop. On a
+   phone the console is collapsed, so #enso-dock is not laid out and edit.js
+   keeps the launcher in its fallback corner — `position: fixed; right/bottom
+   16px` — which lands squarely on the composer's send button. The launcher
+   opens a change against THIS page's own source (a desktop contributor tool),
+   so its floating corner has no place on the mobile builder. The DOCKED host
+   carries `data-hanzo-anchored`; the floating one does not, so this hides only
+   the corner fallback and never the anchored form. */
+@media (max-width: 640px) {
+  [data-hanzo-edit]:not([data-hanzo-anchored]) {
+    display: none !important;
+  }
 }
 @media (prefers-reduced-motion: no-preference) {
   .voice-control[data-state="speaking"] {
@@ -1424,4 +1944,376 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
 .crash-actions button:first-child {
   background-color: var(--primary);
   color: var(--primary-foreground);
+}
+
+/* ── Turn feedback reveals on attention ──────────────────────────────────────
+   Copy/thumbs under every settled assistant turn read as permanent chrome —
+   three always-lit controls per turn, noise the reference only shows when the
+   pointer is over the turn. Opacity, never display: the buttons keep their
+   box (no reflow) and stay focusable, and :focus-within is what reveals them
+   for a keyboard. A device with no hover shows them always — a control you
+   cannot summon is a control you do not have. */
+.turn .turn-feedback {
+  opacity: 0;
+  transition: opacity 120ms;
+}
+.turn:hover .turn-feedback,
+.turn:focus-within .turn-feedback {
+  opacity: 1;
+}
+@media (hover: none) {
+  .turn .turn-feedback {
+    opacity: 1;
+  }
+}
+
+/* ── Switch: an "on" state, not a white slab ─────────────────────────────────
+   The gui Switch compiles its checked track to $color12 — rgb(250,250,250),
+   a near-white pill that shouted on every skills toggle and read as a bright
+   rectangle rather than a control. A checked switch is an ACTIVE state, and
+   the app's law is one accent for active — so it wears the accent family
+   here. `--brand-accent-muted` (default #a3a3a3, and it TINTS to whatever hue
+   the person picks in Appearance) keeps it unmistakably on, customizable, and
+   never a harsh white. Anchored on html:root (0,3,0) so it outranks the atomic
+   class gui compiles (0,1,0) without !important — the same way every other
+   token override in this file wins. The OFF track keeps gui's dark surface,
+   so on/off still reads at a glance. */
+html:root [data-slot="switch"][data-state="checked"],
+html:root [role="switch"][data-state="checked"] {
+  background-color: var(--brand-accent-muted, #a3a3a3);
+  border-color: transparent;
+}
+
+/* The composer's two action controls are ONE box. The mic arrives from
+   @hanzo/voice at 28 and the send button from @hanzo/ui's `size="icon"` floor
+   at 36, so two controls in the same row sat 8px apart with no rule saying
+   which gets which — the same defect, in the same shape, that hanzo.chat's top
+   row had. 36 is this app's icon box (`size="icon"` is what every icon button
+   here declares, and `tests/unit/icon-button.test.ts` requires it), so the mic
+   joins that number rather than a third one being invented for both. */
+.hz-composer .voice-control {
+  width: 36px;
+  height: 36px;
+}
+/* A dense row states the same equality one rung down: the landing composer's
+   send is `size="icon-sm"` (32), so the mic beside it is 32 rather than the
+   builder's 36. One box per row, whichever row it is. `html:root` because the
+   rule above it is (0,2,0) too, and a tie is decided by whichever line a reader
+   happens to move first. */
+html:root .hz-dense .voice-control {
+  width: 32px;
+  height: 32px;
+  /* The mic is a real <button>, so it also meets @hanzo/ui's own coarse floor
+     (`:where(button, …) { min-height: var(--tap-target) }` in theme.css) — a
+     floor beats a height, and it is what made this 32x44 while the buttons
+     beside it were 32x32. */
+  min-height: 0;
+}
+
+/* The gateway's provider marks.
+   Most carry their own brand colour and render as-is. OpenAI, xAI and Groq are
+   monochrome brands authored as `currentColor` — and an <img> cannot inherit
+   that, so it resolves to the SVG's own default, black, which on this canvas is
+   nothing at all. Twelve marks rendered as twelve invisible holes for exactly
+   this reason. Force those to white, the way the partner wall already does. */
+.hz-mark-mono {
+  filter: brightness(0) invert(1);
+}
+
+/* A tab panel claims the height of its content.
+
+   `@hanzo/ui`'s `TabsContent` sets `flex: 1`, which in the react-native flex
+   model means `flex-basis: 0`. That is right inside a FIXED-height column (a
+   full-height app pane, where there is free space to grow into) and wrong in a
+   page that sizes to its content: with no free space the panel's base size of 0
+   IS its size, so it computes `height: 0` while its children overflow visibly.
+
+   Measured on production /settings: the panel reported `clientHeight: 0` around
+   716px of content and the Tabs around it 88px around 804px. Everything still
+   PAINTS — nothing looks broken — but every ancestor lays out as though the tab
+   were empty, so the scroll container is short by the difference. Restoring the
+   basis grew the settings pane's scroll range from 140px to 176px (scrollHeight
+   959 → 995): the last stretch of the tab simply could not be reached.
+
+   `flex-basis`, not `flex: none` — the panel must still GROW to fill a tall
+   pane, which is what the library's `flex: 1` is there for. Only the base size
+   was wrong. */
+html:root [data-slot="tabs-content"],
+html:root .is_TabsContent,
+html:root .is_Tabs {
+  flex-basis: auto;
+}
+
+/* A tab strip wraps rather than running off the edge.
+
+   `TabsList` is a flex ROW with `flex-wrap: nowrap` and `overflow: visible`, so
+   a strip wider than its holder is neither wrapped nor scrolled — the tabs past
+   the edge are simply painted outside it and cannot be reached. Measured on
+   /settings squeezed to 300px: the list stayed 456px wide and `Security` and
+   `Billing` ended at x 404 and 476 against a holder ending at 320.
+
+   It shows up on a phone, and sooner at a larger Text size — the same five
+   labels at 140% need ~640px, which no phone has.
+
+   BOTH declarations are load-bearing and wrapping alone does nothing: a flex
+   item defaults to `min-width: auto`, so the row refuses to shrink below its
+   content and never reaches a width it would wrap at. Measured — with
+   `flex-wrap` alone the list was still 456px on one row with the same two tabs
+   clipped. With both: 300px, two rows, nothing clipped, and unchanged at full
+   width (456px, one row). */
+/* Scoped to the `@hanzo/ui` Tabs COMPONENT, not to `[role="tablist"]`.
+
+   `role="tablist"` is a role, and three elements in this app wear it: the
+   settings strip this law was written for, and the builder's two segmented
+   controls (`Editor view`, `Preview device`), which are hand-rolled XStacks.
+   Wrapping is right for a strip of labelled destinations and wrong for a
+   segmented control — it turned the builder's five panes into a 96px
+   three-row block that shoved the bar down the page.
+
+   It was invisible while that group was `flexShrink: 0`: it could never get
+   narrow enough to wrap, so a rule that already governed it appeared not to.
+   Making the group yield is what surfaced it, and a prop on the group could
+   not argue back — `html:root [role="tablist"]` is (0,2,1) and every style
+   Tamagui compiles is a single atomic class at (0,1,0), so the component
+   loses to the sheet whatever it declares. Scope beats specificity here.
+
+   `data-slot="tabs-list"` is what @hanzo/ui stamps on its own TabsList
+   (verified on the live settings strip), so this reaches exactly the
+   component the measurements below were taken against and nothing else. */
+html:root [data-slot="tabs-list"] {
+  flex-wrap: wrap;
+  row-gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* On a phone, a long list stops hanging off its trigger.
+
+   The picker's panel is ~440px (a 380px list plus the search field) and it is
+   anchored under the control. On a phone the control is often near the bottom
+   of the pane — measured on production /settings, the trigger ended at y=961
+   with the pane scrolled as far as it goes — so the panel opens into ~100px of
+   room and runs off the screen. It is positioned, not in flow, so scrolling
+   cannot bring it back: measured with the pane at its maximum, the list
+   occupied y 965–1392 in a 903px viewport, 76 model rows, ZERO of them visible.
+   That is exactly "won't scroll further and can't pick Enso".
+
+   `stayInFrame` is on by default upstream and did not rescue it, and there is
+   no `size` middleware, so the panel never shrinks to the space that exists.
+   Rather than fight the popper, the panel stops being anchored at this width
+   and becomes what a phone wants anyway: a sheet at the bottom of the viewport,
+   full width, with the list scrolling inside it.
+
+   Scoped to `.hz-picker-panel` — a class the picker sets — NOT to every
+   popover, because most of them are short and correct where they are. */
+@media (max-width: 40em) {
+  html:root .hz-picker-panel {
+    position: fixed !important;
+    inset: auto 8px 8px 8px !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: 72dvh !important;
+    transform: none !important;
+  }
+  html:root .hz-picker-panel [cmdk-list],
+  html:root .hz-picker-panel [data-slot="command-list"] {
+    max-height: calc(72dvh - 56px) !important;
+  }
+}
+
+/* Even columns at every width, which flex-wrap could not give: the marks have
+   wildly different aspect ratios, so a wrapped row left ragged gaps and a short
+   final row.
+
+   Anchored on `html:root` for the reason stated at the top of this file: gui
+   writes `display` as an atomic class of its own, `gui.css` is imported LAST,
+   and equal specificity is decided by load order — so a bare `.hz-providers`
+   ties and loses. Measured before anchoring: the container stayed a flex
+   column, three tracks of 448px at 1440 and one 387px "column" at 390. Every
+   other rule here escapes this only by setting a property gui never writes. */
+html:root .hz-providers {
+  display: grid;
+  /* Explicit counts, not `auto-fill`: there are fifteen providers, and 5 and 3
+     both divide it exactly while auto-fill picked 7 and left one tile alone on
+     a row. Two on a phone still orphans one — fifteen is odd — but at that width
+     the grid reads as a list and the last row is just its end. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  width: 100%;
+}
+
+@media (min-width: 48em) {
+  html:root .hz-providers {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64em) {
+  html:root .hz-providers {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* No "+ New project" button in the marketing menu header (owner call).
+   The header is the shared @hanzogui/shell `HanzoHeader`, which REQUIRES
+   `surface.primaryCTA` and renders it through a `CTA` that reads `link.href`
+   UNGUARDED — so the app cannot drop the button by passing null, and the 8.x
+   shell is not locally shippable to add the guard. The header
+   (`[data-hanzo-shell]`) is the ONLY shell surface that links to /new (set in
+   `components/layout/header.tsx`), so this hides exactly that one CTA; /new is
+   still reached from the hero and the account menu. */
+[data-hanzo-shell] a[href="/new"] {
+  display: none !important;
+}
+
+/* "Meet Hanzo" sat 10px right of every row under it. The shell gives the mobile
+   sheet's disclosure `padding: 0 22px` while the nav links below it get 12px, so
+   the label started at 35px against their 25px and the one BOLD row in the menu
+   was also the one that did not line up.
+
+   `div[data-hanzo-shell]`, by tag, and that is the whole point: opening the sheet
+   mounts a SECOND shell root beside the header's, and the two are distinguishable
+   only by element — HEADER is the desktop chrome, whose own Meet Hanzo is already
+   at 12px and must not move. `> button` is the disclosure itself; measured, the
+   selector matches exactly one element with the sheet open.
+
+   `!important` because the shell writes its entire style INLINE (`padding: 0px
+   22px` on the element), and an inline declaration beats any stylesheet rule on
+   the same property whatever its specificity — the same reason the coarse-pointer
+   floor above needs it. Without it this rule is a silent no-op.
+
+   Both sides, not just the left: the row is `space-between` with a chevron at its
+   end, so trimming one inset alone would align the label and leave the chevron
+   10px further out than everything else in the sheet. */
+div[data-hanzo-shell] > button {
+  padding-inline: 12px !important;
+}
+
+/* The header flashes its DESKTOP nav on a phone before hydration.
+   @hanzogui/shell chooses hamburger-vs-nav in JS, so the server always renders
+   the desktop branch and the swap happens only once React runs. Reproduced by
+   loading production with JavaScript disabled at 390 — which IS the
+   pre-hydration frame: `Meet Hanzo ⌄ Features Download Pricing Reso…` laid out
+   in a row at y=8, the items overlapping each other and running off the right
+   edge (Resources at x=347, Solutions 437, Help 521, on a 390px screen). That
+   is the "items at the upper margin" flash, and on a slow phone it is the first
+   thing a visitor sees.
+
+   A media query fixes it where JS cannot: it is authoritative at FIRST PAINT,
+   before a line of script has run, so the server frame and the hydrated frame
+   agree. Below 900 the shell hides these three anyway — this only stops them
+   being painted in the gap, and changes nothing after hydration.
+
+   900 is measured, not guessed: the nav is absent at 899 and shown at 900.
+   Matching it exactly matters in both directions — hide too wide and a desktop
+   header loses its nav to CSS the JS still thinks it should have.
+
+   `button:not([aria-label])` is load-bearing. The hamburger is ALSO a
+   direct-child button, so a bare `> button` would hide the only way into the
+   menu on the very screens this rule is for. The disclosure carries no
+   aria-label; the hamburger is labelled "Open menu". The logo and the identity
+   slot are deliberately untouched — they are correct at every width. */
+@media (max-width: 899px) {
+  header[data-hanzo-shell] > button:not([aria-label]),
+  header[data-hanzo-shell] > nav,
+  header[data-hanzo-shell] > a[href$="/download"] {
+    display: none !important;
+  }
+}
+
+/* AN OVERLAY THAT CARRIES TEXT IS OPAQUE. One law, every floating surface.
+   @hanzo/ui frosts its own `[data-slot="dropdown-menu-content"]` and even
+   carries the -webkit- prefix for it, but gui renders poppers and dialogs as
+   `.is_PopperContent` / `.is_DialogContent`, and @hanzogui/shell's mega-menu is
+   `#hanzo-meet-menu` — none of which that selector matches. All three got the
+   translucent ground (alpha .72) and no blur of their own.
+   Translucent without an applied blur is not frosted, it is see-through.
+   Measured in WEBKIT, which no one had ever run this app in: with a menu open
+   the page's own text reads straight through it — "Internal admin dashboard"
+   crossing "Generate and edit the app directly" on one line, and the ⌘K dialog
+   showing the hero behind its rows. Chromium hid all of it by happening to
+   composite over darker pixels.
+   Declaring the filter is NOT enough: WebKit accepts both spellings — computed
+   `backdropFilter` and `webkitBackdropFilter` both read the blur — and still
+   declines to composite it. Legibility cannot rest on a filter an engine may
+   ignore, so the ground is opaque and the blur is a bonus where it lands.
+   `--popover` is the token @hanzo/design already publishes for this surface.
+   `!important` because these backgrounds are written INLINE, which beats any
+   selector at any specificity — the same collision `.t_group_true` needs it
+   for. Without it the rule is a silent no-op; measured, the value stayed .72. */
+html:root .is_PopperContent,
+html:root .is_DialogContent,
+html:root #hanzo-meet-menu,
+html:root #hanzo-products-menu {
+  /* DENSE, not opaque. `var(--popover)` alone is #0f0f0f — flat paint, and the
+     drape read as a black slab with no depth at all.
+     The legibility problem above is real, so the answer is not "go back to
+     0.72": it is a ground dense enough that the page behind cannot be READ
+     without the blur, while still letting the light through. At 88% a white
+     heading behind resolves to 12% over black — a wash you sense rather than
+     read — so the surface stays legible in WebKit and becomes glass in the
+     engines that composite. */
+  background-color: color-mix(in srgb, var(--popover) 88%, transparent) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  backdrop-filter: blur(20px) saturate(1.8);
+}
+
+/* The drape is full-bleed; its CONTENTS are not.
+   The panel is edge-to-edge on purpose (it is the header's own surface
+   continuing down the page), but the rail + link columns were stretched across
+   the whole of it: at 1600 the columns box measured 1332px wide holding about
+   500px of links, so four short lists floated in a field of black with the
+   right two-thirds empty. Centre the CONTENT on the same 1152 column the page
+   itself uses, so the menu lines up with the page under it instead of with the
+   viewport edge. */
+html:root #hanzo-meet-menu > div,
+html:root #hanzo-products-menu > div {
+  max-width: 1152px;
+  margin-inline: auto;
+  width: 100%;
+}
+
+/* The composer rides the bottom of the viewport, and it is IN THE PAGE.
+   `position: fixed` put it over the landing from the first paint — a bar
+   floating above a hero it was never part of. Sticky keeps it in flow: it sits
+   where app/page.tsx writes it (the hero owns the first screen, so nothing
+   scrolls under it there), rides the bottom of the viewport through the page,
+   and comes to rest in the closing section, which is its one flow slot.
+
+   Two things a sticky box cannot survive, both measured in Chromium: an
+   ancestor with `overflow: hidden` (it becomes the scrollport, which never
+   scrolls, so the box just scrolls away) and an ancestor carrying a transform —
+   `translate` + `will-change` is the landing's Reveal fade-up exactly. So the
+   dock lives outside every Reveal and no ancestor between it and the viewport
+   clips. */
+.hz-dock {
+  position: sticky;
+  /* Flush with the bottom, and the inset lives INSIDE as padding: an inset
+     written as `bottom:` leaves a strip under the box where the page shows
+     through the ground below. As padding it does double duty — the composer's
+     breathing room when it is pinned, and its bottom margin at rest. */
+  bottom: 0;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  /* Sticky is positioned, so it already paints over its in-flow siblings; this
+     only settles it against sections that raise themselves. */
+  z-index: 20;
+  /* A ground, because the page passes BEHIND it: the bubble is opaque but the
+     idea crawl is chips with air between them, and a section heading read
+     straight through the gaps. In the composer's own flow slot this is
+     background over background, so one rule serves both states. */
+  background: var(--background);
+}
+/* The dissolve sits ABOVE the box rather than inside its padding: the padding
+   is the closing band's rhythm and the fade is a fixed 40px, and braiding them
+   made one number answer two questions. A hard edge here would cut a heading in
+   half as it scrolled under. */
+.hz-dock::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  left: 0;
+  height: 40px;
+  background: linear-gradient(to top, var(--background), transparent);
+  pointer-events: none;
 }

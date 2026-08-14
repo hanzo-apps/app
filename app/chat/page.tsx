@@ -287,15 +287,12 @@ export default function ChatPage() {
           </YStack>
 
           <YStack padding="$3">
-            <YStack position="relative">
-              <Search size={16} />
-              <Input
-                placeholder="Search chats"
-                value={search}
-                onChangeText={(v: string) => setSearch(v)}
-                paddingLeft={36} backgroundColor="$background" borderColor="$borderColor" color="$color" placeholderTextColor="$color11"
+            <Input
+              placeholder="Search chats"
+              value={search}
+              onChangeText={(v: string) => setSearch(v)}
+              startAdornment={<Search size={16} />} backgroundColor="$background" borderColor="$borderColor" color="$color" placeholderTextColor="$color11"
   />
-            </YStack>
           </YStack>
 
           <ScrollArea flex={1}>
@@ -329,9 +326,8 @@ export default function ChatPage() {
                 from the shell sidebar's own toggle, so while it swapped in
                 `PanelLeftClose` the two controls that mean "show/hide the column
                 on your left" were two different shapes on screen at once. */}
-            <Button
+            <Button size="icon"
               variant="ghost"
-              size="sm"
               group
               onClick={() => setRailOpen((o) => !o)}
               aria-label={railOpen ? 'Hide conversations' : 'Show conversations'}
@@ -456,10 +452,9 @@ export default function ChatPage() {
                   data-testid="composer"
   />
                 {streaming ? (
-                  <Button
+                  <Button size="icon"
                     {...accent}
                     onClick={stop}
-                    size="sm"
                     aria-label="Stop generating"
                     position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0"
                     data-testid="stop"
@@ -467,11 +462,10 @@ export default function ChatPage() {
                     <Square size={14} />
                   </Button>
                 ) : (
-                  <Button
+                  <Button size="icon"
                     {...accent}
                     onClick={() => void send()}
                     disabled={!input.trim()}
-                    size="sm"
                     aria-label="Send"
                     position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0" disabledStyle={{ opacity: 0.5 }}
                     data-testid="send"

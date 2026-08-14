@@ -602,27 +602,66 @@
     }
     return true;
   }
-  function mount() {
-    if (place()) return;
-    // Show it at the corner meanwhile, and WATCH for the anchor to appear — the
-    // corner is the fallback, never the destination when a slot is named. Stop
-    // watching the moment it lands, or after a grace period on a page that simply
-    // has no such slot, so this never observes the DOM forever.
-    document.body.appendChild(host);
+  // WATCH for the anchor slot to appear, then dock. The slot is rendered by the
+  // host app's framework AFTER this script runs, and on a single-page app the
+  // route that OWNS a slot is often reached by client navigation long after this
+  // one evaluation — so a one-shot query, OR a short-lived observer that gives
+  // up, both miss it and strand the mark at the corner, full size. (Measured on
+  // hanzo.app/dev: the `#enso-dock` slot and its meta were both present, yet the
+  // fab still floated 56px at the corner — the 10s observer had expired before
+  // the builder mounted its dock.) Watch until it lands; disconnect the instant
+  // it does. The slot node is stable once created, so there is nothing to
+  // re-observe after a successful dock.
+  var watching = false;
+  function watchForSlot() {
+    if (watching || place()) return;
+    // Nothing to wait for unless a slot is actually named: a page with no
+    // `hanzo:anchor` keeps the corner fallback and arms no observer.
     if (!meta('hanzo:anchor')) return;
+    watching = true;
     try {
-      var obs = new MutationObserver(function () { if (place()) obs.disconnect(); });
+      var obs = new MutationObserver(function () {
+        if (place()) { obs.disconnect(); watching = false; }
+      });
       obs.observe(document.documentElement, { childList: true, subtree: true });
-      setTimeout(function () { obs.disconnect(); }, 10000);
+      // A floor, not a deadline: SPA navigation re-arms this (below), so the
+      // timer only stops the watch on a page that renders no slot at all — it
+      // never observes the DOM forever, and never gives up on a slow route.
+      setTimeout(function () { obs.disconnect(); watching = false; }, 30000);
     } catch (e) {
-      /* no MutationObserver: the corner fallback stands */
+      watching = false; /* no MutationObserver: the corner fallback stands */
     }
+  }
+  function mount() {
+    if (!host.parentNode) document.body.appendChild(host); // corner, meanwhile
+    watchForSlot();
   }
   if (document.body) {
     mount();
   } else {
     document.addEventListener('DOMContentLoaded', mount, { once: true });
   }
+
+  // Single-page apps swap the DOM under one script evaluation: the slot (and its
+  // `hanzo:anchor` meta) belong to a route reached by pushState, AFTER mount()
+  // already ran. Re-run placement on every route change so the launcher docks
+  // the moment you arrive at the route that owns a slot, and falls back to the
+  // corner on one that does not.
+  function onRoute() {
+    if (place()) return;
+    if (host.parentNode !== document.body) document.body.appendChild(host);
+    watchForSlot();
+  }
+  ['pushState', 'replaceState'].forEach(function (m) {
+    var orig = history[m];
+    if (typeof orig !== 'function') return;
+    history[m] = function () {
+      var r = orig.apply(this, arguments);
+      try { onRoute(); } catch (e) { /* placement is best-effort */ }
+      return r;
+    };
+  });
+  window.addEventListener('popstate', onRoute);
 
   // The widget's whole palette, declared ONCE, in terms of the host page's
   // design tokens. Everything below reads these — no literal colour, font or
@@ -654,14 +693,20 @@
     '--hz-dim:var(--muted-foreground,#9a9a9a);' +
     '--hz-line:var(--border,rgba(255,255,255,.14));' +
     '--hz-radius:var(--control-radius,8px);' +
-    // The ONE spectrum, shared with the composer ring (assets/globals.css
-    // declares --hz-spectrum). Inherited from the host page where there is one —
-    // custom properties cross the shadow boundary, and `all:initial` above does
-    // not reset them — so a palette change there reaches the mark for free. The
-    // fallback is the same sweep written out, for the third-party pages this
-    // script also runs on, which have no Hanzo tokens at all.
-    '--hz-prism:var(--hz-spectrum,rgba(8,148,255,.45),rgba(201,89,221,.48),' +
-    'rgba(255,46,84,.4),rgba(255,144,4,.4),rgba(8,148,255,.45));' +
+    // The ensō lights in WHITE. It used to borrow the composer's
+    // --hz-spectrum, which is prismatic BY DESIGN and owner-directed — but that
+    // is a decision about the composer, the one surface allowed colour, and the
+    // mark inherited it only because the token happened to be in scope. Two
+    // different things wearing one value is not sharing, it is coupling: a mark
+    // that is meant to be a monochrome circle cannot be, because someone else's
+    // ring is iridescent.
+    //
+    // So the glow is its own token and its own value. Three white stops rather
+    // than one, because the sweep still turns: a uniform ring would rotate
+    // invisibly. Closes on the stop it opens with — a conic whose ends differ
+    // shows a hard seam.
+    '--hz-glow:var(--hz-mark-glow,rgba(255,255,255,.62),rgba(255,255,255,.22),' +
+    'rgba(255,255,255,.62));' +
     '}';
 
   var css =
@@ -671,47 +716,56 @@
     // on the page (ask, edit, suggest). It lights rather than grows, so it never
     // reflows content or competes with the page's own controls.
     //
-    // The mark IS the button: no disc, no plate, no shadow. It is drawn as a
-    // HAIRLINE — one weight, 1.25px, at every size — and it is monochrome and
-    // quiet until touched, at which point the stroke hands its own ring over to
-    // the prism. That handover is why the two never overlap into a double line.
+    // The mark IS the button: no disc, no plate, no shadow. It is the canonical
+    // Enso brush ring (see ENSO below) — one thick weight, monochrome and quiet
+    // until touched, then the SAME ring lights white over a soft, slowly-turning
+    // halo. One ring, one weight, in both states — no hairline, no handover to a
+    // second ring.
     //
-    // --mark is the drawn diameter and the only size to change; the prism sizes
-    // itself from it, and matches by construction because the SVG circle is r=45
-    // of a 100 viewBox — exactly .9 of the box.
+    // --mark is the DRAWN diameter and the only size to change; the halo sizes
+    // itself from it.
+    //
+    // The drawn ring and the hit box are two different numbers, deliberately.
+    // The mark is 22px so the corner stays quiet on someone else's page — this
+    // script is embedded on pages it does not own, and a 34px ring in a 56px box
+    // read as a second product's button parked over theirs. The BOX stays 44,
+    // the touch floor: a thumb is about as wide as it is tall, and shrinking the
+    // target with the glyph is how an affordance becomes decorative. Nothing
+    // catches that regression either — the fab lives in a shadow root, so the
+    // deploy gate's querySelectorAll cannot see it.
     ':host([data-hanzo-anchored]) .fab{--mark:18px;position:relative;right:auto;bottom:auto;' +
     'width:20px;height:20px}' +
-    '.fab{--mark:34px;position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;' +
-    'align-items:center;justify-content:center;width:56px;height:56px;padding:0;' +
+    '.fab{--mark:22px;position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;' +
+    'align-items:center;justify-content:center;width:44px;height:44px;padding:0;' +
     'border-radius:999px;border:0;background:transparent;color:var(--hz-text);' +
     'cursor:pointer;line-height:0;-webkit-tap-highlight-color:transparent;' +
     'transition:transform .2s ease}' +
-    // `position:relative` puts the stroke in the same paint phase as the prism,
-    // so tree order alone stacks them: ::before (halo) under it, ::after (ring)
-    // over it. Without it the SVG paints below every positioned box and the halo
-    // covers the mark.
+    // `position:relative` puts the ring in the same paint phase as the halo, so
+    // tree order stacks the ::before halo UNDER the SVG ring. Without it the SVG
+    // paints below every positioned box and the halo covers the mark.
     '.fab svg{width:var(--mark);height:var(--mark);display:block;overflow:visible;position:relative;' +
     'color:var(--hz-dim);transition:color .25s ease}' +
-    '.fab:hover svg,.fab:focus-visible svg{color:transparent}' +
-    // One conic sweep, used twice: blurred into a halo, and masked down to a
-    // hairline ring on the ensō's own radius. Both are absent at rest — the
-    // chrome is monochrome and this is the one accent.
-    '.fab::before,.fab::after{content:"";position:absolute;left:50%;top:50%;' +
+    // The ring stays drawn on hover and lights white; it is never hidden, so the
+    // thick ensō is what you see in both states.
+    '.fab:hover svg,.fab:focus-visible svg{color:var(--hz-text)}' +
+    // One conic sweep, blurred into a soft halo BEHIND the ring — absent at
+    // rest, lit on touch and slowly turning. The ring itself is the SVG ensō
+    // above; the halo only glows around it.
+    '.fab::before{content:"";position:absolute;left:50%;top:50%;' +
     'width:calc(var(--mark) * .9);height:calc(var(--mark) * .9);border-radius:999px;' +
-    'background:conic-gradient(var(--hz-prism));transform:translate(-50%,-50%);' +
-    'opacity:0;transition:opacity .25s ease;pointer-events:none}' +
-    '.fab::before{filter:blur(calc(var(--mark) * .22)) saturate(1.5)}' +
-    '.fab::after{-webkit-mask:radial-gradient(closest-side,transparent calc(100% - 1.25px),#000 0);' +
-    'mask:radial-gradient(closest-side,transparent calc(100% - 1.25px),#000 0)}' +
+    'background:conic-gradient(var(--hz-glow));transform:translate(-50%,-50%);' +
+    'opacity:0;transition:opacity .25s ease;pointer-events:none;' +
+    // No `saturate()` — there is no hue left to saturate, and pushing it only
+    // hardened the blur's edge.
+    'filter:blur(calc(var(--mark) * .22))}' +
     '.fab:hover::before,.fab:focus-visible::before,.fab:active::before{opacity:.7}' +
-    '.fab:hover::after,.fab:focus-visible::after,.fab:active::after{opacity:1}' +
     '.fab:hover{transform:scale(1.05)}' +
     '.fab:focus-visible{outline:none}' +
     '.fab:active{transform:scale(.96)}' +
     // The sweep turns only while the mark is held, and only where motion is
     // welcome. Everywhere else it holds a still frame — lit, not moving.
     '@media (prefers-reduced-motion:no-preference){' +
-    '.fab:hover::before,.fab:hover::after,.fab:focus-visible::before,.fab:focus-visible::after' +
+    '.fab:hover::before,.fab:focus-visible::before' +
     '{animation:hzPrism 6s linear infinite}}' +
     '@keyframes hzPrism{from{transform:translate(-50%,-50%) rotate(0)}' +
     'to{transform:translate(-50%,-50%) rotate(360deg)}}' +
@@ -796,15 +850,16 @@
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
     '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
 
-  // The ensō — Hanzo's AI mark. `vector-effect` is what makes it a brush line
-  // instead of a donut: the stroke is measured in SCREEN pixels, so it stays
-  // 1.25px whether the mark draws at 34px in the corner or 18px in the dock. A
-  // viewBox-relative width cannot — the old stroke-width:14 came out 4.8px at
-  // one size and 2.5px at the other, both far too heavy for a 20px control.
-  // Radius 45 (up from 34) spends on the ring what the stroke gave back.
+  // The ensō — Hanzo's AI mark, the CANONICAL glyph: a closed brush ring, r=8.88
+  // on a 24 viewBox, stroke 2.64, round caps — byte-identical to the one
+  // @hanzo/logo carries and model-icon.tsx / the hanzo.ai models mark draw, so
+  // the ensō is one thick weight everywhere. The stroke scales with the mark
+  // (no `vector-effect`), like every other place this glyph is drawn: at the
+  // 18px dock size it lands ~2px, a bold little brush ring — the weight the mark
+  // is meant to have, not the thin hairline it briefly wore.
   var ENSO =
-    '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">' +
-    '<circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="1.25" vector-effect="non-scaling-stroke"/></svg>';
+    '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">' +
+    '<circle cx="12" cy="12" r="8.88" fill="none" stroke="currentColor" stroke-width="2.64" stroke-linecap="round"/></svg>';
 
   var fab = document.createElement('button');
   fab.className = 'fab';
@@ -817,7 +872,15 @@
   panel.className = 'panel';
   root.appendChild(panel);
 
-  var ME = { authenticated: false, isAdmin: false, hasCredits: false, balance: null };
+  var ME = {
+    authenticated: false,
+    isAdmin: false,
+    hasCredits: false,
+    balance: null,
+    // WHY the balance is what it is. `hasCredits:false` alone cannot tell a real
+    // zero from a balance we failed to read, and those need opposite remedies.
+    balanceState: 'anonymous',
+  };
 
   // Resolved-once-per-open view context.
   var CTX = { candidates: [], version: undefined, chosen: '' };
@@ -841,6 +904,16 @@
         note: 'Commits directly to ' + BRANCH + ' — goes live.',
       };
     if (ME.authenticated && ME.hasCredits) return { label: 'Submit fix', action: 'edit', note: 'Uses your credits.' };
+    // Not funded — but WHY decides the remedy, and only 'ok' is a real zero.
+    // `/v1/me` and `/v1/edit` both already keep these apart (a refused balance is
+    // a 401 there, an unreadable one a 503, and 402 is reserved for a balance we
+    // READ and found empty). Reading `hasCredits` alone put them back together
+    // and billed the customer for our failure: a funded account whose token had
+    // gone stale was told to top up.
+    if (ME.authenticated && ME.balanceState === 'noauth')
+      return { label: 'Suggest a fix', action: 'suggest', stale: true };
+    if (ME.authenticated && ME.balanceState === 'unavailable')
+      return { label: 'Suggest a fix', action: 'suggest', down: true };
     if (ME.authenticated) return { label: 'Suggest a fix', action: 'suggest', top: true };
     return { label: 'Suggest a fix', action: 'suggest', login: true };
   }
@@ -901,6 +974,14 @@
       (c.note ? '<div class="note">' + esc(c.note) + '</div>' : '') +
       (c.top
         ? '<div class="note"><a class="link" href="' + BASE + '/billing" target="_blank" rel="noopener">Top up</a> to open a PR directly.</div>'
+        : '') +
+      (c.stale
+        ? '<div class="note">We couldn’t read your balance — your session expired. <a class="link" href="' +
+          BASE +
+          '/login" target="_blank" rel="noopener">Sign in again</a> to open a PR.</div>'
+        : '') +
+      (c.down
+        ? '<div class="note">Billing is unreachable, which is on us — your credits are untouched. Try again shortly.</div>'
         : '') +
       (c.login
         ? '<div class="note"><a class="link" href="' + BASE + '/login" target="_blank" rel="noopener">Log in</a> to open a PR directly.</div>'
@@ -1374,6 +1455,9 @@
         ME.isAdmin = !!d.isAdmin;
         ME.hasCredits = !!d.hasCredits;
         ME.balance = typeof d.balance === 'number' ? d.balance : null;
+        // Absent state is NOT "you have no money" — an old server that does not
+        // send it is our unknown, so it reads as 'unavailable', never as a zero.
+        ME.balanceState = typeof d.balanceState === 'string' ? d.balanceState : 'unavailable';
       }
       if (ME.authenticated) registerProperty();
     })

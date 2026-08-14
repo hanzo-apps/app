@@ -79,16 +79,21 @@ const capabilities: Capability[] = [
 
 export default function CloudIntegration() {
   return (
-    <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
-      <YStack alignSelf="center" maxWidth={1152}>
+    <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
+      {/* `width="100%"`: centred in its parent, this column was shrink-to-fit
+          and `maxWidth` capped a width it never claimed — measured 808px on a
+          1152px row, which put the six cards two across instead of three.
+          Checked the other four landing columns the same way; they already fill
+          theirs from content, so this is the only one that needed it. */}
+      <YStack alignSelf="center" width="100%" maxWidth={1152}>
         <Reveal alignSelf="center" width="100%" maxWidth={672}>
-          <Paragraph textAlign="center" fontFamily="$mono" fontSize={11} color="$color11">
+          <Paragraph textAlign="center" fontFamily="$mono" fontSize="$1" color="$color11">
             What ships with it
           </Paragraph>
-          <H2 textAlign="center" marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "2.75rem", lineHeight: "1.1" }}>
+          <H2 textAlign="center" marginTop="$8" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "2.75rem", lineHeight: "1.1" }}>
             Every app comes with its backend.
           </H2>
-          <Paragraph textAlign="center" marginTop="$4" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
+          <Paragraph textAlign="center" marginTop="$8" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
             The database, the sign-in, the AI calls, the secrets and the file
             storage are connected the first time the app runs. You wire up none
             of it.
@@ -117,7 +122,7 @@ export default function CloudIntegration() {
                   <XStack height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                     <Icon size={20} color="var(--foreground)" strokeWidth={1.5} />
                   </XStack>
-                  <SizableText fontFamily="$mono" fontSize={10} color="$color11">
+                  <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
                     {c.product}
                   </SizableText>
                 </XStack>
@@ -129,7 +134,7 @@ export default function CloudIntegration() {
                   {c.desc}
                 </Paragraph>
 
-                <SizableText marginTop="$3" numberOfLines={1} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" fontFamily="$mono" fontSize={11} color="$color11" $group-hover={{ color: "$color" }}>
+                <SizableText marginTop="$3" numberOfLines={1} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" fontFamily="$mono" fontSize="$1" color="$color11" $group-hover={{ color: "$color" }}>
                   {c.snippet}
                 </SizableText>
               </Anchor>
@@ -139,7 +144,7 @@ export default function CloudIntegration() {
         </div>
 
         <Reveal delay={120} marginTop={40}>
-          <Paragraph fontFamily="$mono" fontSize={12} color="$color11" textAlign="center">
+          <Paragraph fontFamily="$mono" fontSize="$1" color="$color11" textAlign="center">
             The same infrastructure Hanzo runs on, in every app you build.
           </Paragraph>
         </Reveal>

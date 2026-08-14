@@ -146,7 +146,7 @@ export default function ProjectSettingsPage() {
         <>
           <XStack alignItems="center" gap="$1">
             <Circle size={6} color={st.text} />
-            <SizableText fontSize={11} letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
+            <SizableText fontSize="$1" letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
           </XStack>
           <Link href={issuesLink(slug, org)}>
             <Button variant="outline" gap="$2">
@@ -359,8 +359,8 @@ function DeploymentStatus({ slug }: { slug: string }) {
           <Circle size={8} color={c.text} />
           <SizableText fontSize="$1" color={c.text}>{c.label}</SizableText>
         </XStack>
-        {d.version > 0 && <SizableText fontFamily="$mono" fontSize={11} color="$color11">v{d.version}</SizableText>}
-        {when && <SizableText fontSize={11} color="$color11">{when}</SizableText>}
+        {d.version > 0 && <SizableText fontFamily="$mono" fontSize="$1" color="$color11">v{d.version}</SizableText>}
+        {when && <SizableText fontSize="$1" color="$color11">{when}</SizableText>}
       </XStack>
       <Anchor display="inline-flex"
         href="https://console.hanzo.ai"

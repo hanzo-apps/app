@@ -40,14 +40,14 @@ function PreviewOverlay({ building }: { building: boolean }) {
             <YStack height="$4" width="66.667%" borderRadius="$2" backgroundColor="$color4" className="skeleton" style={{ animationDelay: "440ms" }} />
             <YStack height="$4" width="50%" borderRadius="$2" backgroundColor="$color4" className="skeleton" style={{ animationDelay: "520ms" }} />
           </YStack>
-          <Paragraph marginTop="$5" textAlign="center" fontSize={13}>
+          <Paragraph marginTop="$5" textAlign="center" fontSize="$2">
             <SizableText className="thread-shimmer-text">Building your app…</SizableText>
           </Paragraph>
         </YStack>
       ) : (
         <YStack maxWidth={384} paddingHorizontal="$6">
-          <Paragraph fontSize={15} fontWeight="600" color="$color">Describe your idea.</Paragraph>
-          <Paragraph marginTop="$1.5" fontSize={13} color="$color11">
+          <Paragraph fontSize="$4" fontWeight="600" color="$color">Describe your idea.</Paragraph>
+          <Paragraph marginTop="$1.5" fontSize="$2" color="$color11">
             <SizableText aria-hidden marginRight="$1">↓</SizableText>Watch Hanzo build it live
             <SizableText marginLeft="$0.5" height="$4" width={2} y={3} backgroundColor="$color" verticalAlign="middle" />
           </Paragraph>
@@ -66,6 +66,7 @@ export const Preview = ({
   currentTab,
   iframeRef,
   pages,
+  siteUrl,
   setCurrentPage,
   isEditableModeEnabled,
   onClickElement,
@@ -74,6 +75,13 @@ export const Preview = ({
   isResizing: boolean;
   isAiWorking: boolean;
   pages: Page[];
+  /**
+   * The project's own public address. A `srcDoc` frame has no address, so every
+   * root-relative path the document names — its bundle, its stylesheet, its
+   * images — would otherwise resolve against the BUILDER and 404. Null while
+   * nothing is deployed, which is most of a build's life and needs no base.
+   */
+  siteUrl?: string | null;
   setCurrentPage: React.Dispatch<React.SetStateAction<string>>;
   ref: React.RefObject<HTMLDivElement | null>;
   iframeRef?: React.RefObject<HTMLIFrameElement | null>;
@@ -352,7 +360,7 @@ export const Preview = ({
             // `contentWindow` throws SecurityError, and the exfiltration script
             // from the report comes back DENIED instead of a token.
             sandbox="allow-scripts allow-forms"
-            srcDoc={withBridge(srcA)}
+            srcDoc={withBridge(srcA, siteUrl)}
             onLoad={() => handleFrameLoad("a")}
           />
         </YStack>
@@ -367,7 +375,7 @@ export const Preview = ({
             // Same sandbox as the frame above — the double buffer means both
             // frames show untrusted HTML, so both are isolated or neither is.
             sandbox="allow-scripts allow-forms"
-            srcDoc={withBridge(srcB)}
+            srcDoc={withBridge(srcB, siteUrl)}
             onLoad={() => handleFrameLoad("b")}
           />
         </YStack>

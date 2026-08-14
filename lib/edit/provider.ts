@@ -16,8 +16,21 @@ import { GitSyncError } from '@/lib/git/sync';
 
 import { GitHubProvider } from './github';
 
-/** The forges Hanzo Edit can open a PR against. */
-export type ProviderName = 'github' | 'gitlab' | 'gitea';
+/**
+ * The forges Hanzo Edit can open a PR against — the same set the rest of the app
+ * supports, sourced from its one declaration rather than restated here.
+ *
+ * `hanzo` is git.hanzo.ai: OUR git, named for us and not for the project it
+ * forked. That is not cosmetic — while this module called the same forge
+ * `gitea`, a translator had to sit between it and the IAM lookup. One name, no
+ * translator.
+ *
+ * It is aliased because the two words mean different things HERE: `GitProvider`
+ * below is the driver INTERFACE a forge implements, and this is merely the
+ * forge's NAME. One noun for both would make the file unreadable.
+ */
+export type { GitProvider as ProviderName } from '@/lib/api/git';
+import type { GitProvider as ProviderName } from '@/lib/api/git';
 
 /** An owner/repo pair (the unit every provider method addresses). */
 export interface RepoRef {
@@ -102,7 +115,7 @@ export interface GitProvider {
  * A provider that is declared but not yet implemented. Every method fails closed
  * with an honest 501 so the widget can say "PRs for <forge> are coming" rather
  * than a dead click. THE SLOT-IN SEAM: to add GitLab or Gitea, write
- * `lib/edit/gitlab.ts` / `lib/edit/gitea.ts` implementing `GitProvider` (mirror
+ * `lib/edit/gitlab.ts` / `lib/edit/hanzo.ts` implementing `GitProvider` (mirror
  * `lib/edit/github.ts`) and return it from `providerFor` in place of this stub.
  */
 function unimplementedProvider(name: ProviderName): GitProvider {
@@ -130,13 +143,22 @@ export function providerFor(name: ProviderName, token: string): GitProvider {
       // is the ONLY runtime dependency — no cycle.
       return new GitHubProvider(token);
     case 'gitlab':
-    case 'gitea':
+    case 'hanzo':
       // TODO(increment 2): real drivers — see unimplementedProvider's note.
       return unimplementedProvider(name);
   }
 }
 
-/** Coerce an arbitrary string to a known ProviderName (default github). */
+/**
+ * Coerce an arbitrary string to a known ProviderName (default github).
+ *
+ * This reads a `<meta name="hanzo:provider">` off a page we do not control, so
+ * it is tolerant at the BOUNDARY and strict everywhere inside: `gitea` is
+ * accepted as a spelling of `hanzo` because pages already carry it, and letting
+ * it fall through to the `github` default would silently aim a Hanzo Git page at
+ * GitHub. Tolerance belongs in the parser, not in a translator downstream.
+ */
 export function providerName(v: unknown): ProviderName {
-  return v === 'gitlab' || v === 'gitea' ? v : 'github';
+  if (v === 'gitlab' || v === 'hanzo') return v;
+  return v === 'gitea' ? 'hanzo' : 'github';
 }

@@ -9,8 +9,11 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files. `patches/` is one of them: package.json's
+# `pnpm.patchedDependencies` names a file in it and pnpm reads that during
+# resolution (see Dockerfile.production, where its absence broke the release).
 COPY package.json pnpm-lock.yaml* ./
+COPY patches/ ./patches/
 
 # Install all dependencies (including dev for build)
 RUN pnpm install --frozen-lockfile

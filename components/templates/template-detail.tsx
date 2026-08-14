@@ -80,7 +80,7 @@ export function TemplateDetail({
             <nav aria-label="Breadcrumb">
               <XStack flexWrap="wrap" alignItems="center" gap="$1.5">
                 <li>
-                  <Link href="/templates"><SizableText fontFamily="$mono" fontSize={11} color="$color11" hoverStyle={{ color: "$color" }}>
+                  <Link href="/templates"><SizableText fontFamily="$mono" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>
                     Templates
                   </SizableText></Link>
                 </li>
@@ -88,7 +88,7 @@ export function TemplateDetail({
                   <ChevronRight size={12} />
                 </li>
                 <li>
-                  <Link href={catHref}><SizableText fontFamily="$mono" fontSize={11} color="$color11" hoverStyle={{ color: "$color" }}>
+                  <Link href={catHref}><SizableText fontFamily="$mono" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>
                     {t.category}
                   </SizableText></Link>
                 </li>
@@ -99,13 +99,13 @@ export function TemplateDetail({
               {/* Left — identity + CTAs */}
               <Reveal>
                 <XStack marginBottom="$4.5" flexWrap="wrap" alignItems="center" gap="$2">
-                  <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1" fontFamily="$mono" fontSize={11} color="$color11">
+                  <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1" fontFamily="$mono" fontSize="$1" color="$color11">
                     {t.framework}
                   </SizableText>
                   {t.tags.map((tag) => (
                     <SizableText
                       key={tag}
-                      borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color11"
+                      borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize="$1" color="$color11"
                     >
                       {tag}
                     </SizableText>
@@ -143,7 +143,7 @@ export function TemplateDetail({
                 {build ? (
                   <Link
                     href={`/builds/${build.org}/${build.project}`}
-                  ><SizableText marginTop="$4.5" fontFamily="$mono" fontSize={11} color="$color11" hoverStyle={{ color: "$color" }}>
+                  ><SizableText marginTop="$4.5" fontFamily="$mono" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>
                     Read the build — {build.turns} turns, {build.agent}
                     <ArrowRight size={12} />
                   </SizableText></Link>
@@ -175,7 +175,7 @@ export function TemplateDetail({
                     {t.demo && (
                       <XStack position="absolute" left="$3" top="$3" alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingVertical="$1" backdropFilter="blur(8px)">
                         <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" />
-                        <SizableText fontFamily="$mono" fontSize={10} color="$color">Live demo</SizableText>
+                        <SizableText fontFamily="$mono" fontSize="$1" color="$color">Live demo</SizableText>
                       </XStack>
                     )}
                   </YStack>

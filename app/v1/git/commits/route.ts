@@ -22,7 +22,7 @@ import type { GitProvider } from '@/lib/api/git';
 import { resolveConnection } from '@/lib/git/server';
 import { session } from '@/lib/iam';
 import { parseOwnerRepo } from '@/lib/git/sync';
-import { forgeCommitPages, forgeConfigured, listForgeCommits } from '@/lib/git/forge';
+import { forgeCommitPages, forgeConfigured, getForgeCommit, listForgeCommits } from '@/lib/git/forge';
 import { GitSyncError } from '@/lib/git/sync';
 import { listCommits, getCommit, getCommitPages } from '@/lib/git/log';
 
@@ -78,6 +78,13 @@ export async function GET(req: NextRequest) {
       if (sha && wantPages) {
         const pages = await forgeCommitPages(owner, name, sha);
         return NextResponse.json({ pages, supported: true }, { headers: NO_STORE });
+      }
+      if (sha) {
+        // DETAIL. Without this the native branch fell through to the list and
+        // answered `{commits}` to a request that reads `{commit}`, so a History
+        // row on the default provider expanded onto nothing — no files, forever.
+        const commit = await getForgeCommit(owner, name, sha);
+        return NextResponse.json({ commit, supported: true }, { headers: NO_STORE });
       }
       const commits = await listForgeCommits(owner, name, branch);
       return NextResponse.json({ commits, supported: true, provider, branch }, { headers: NO_STORE });

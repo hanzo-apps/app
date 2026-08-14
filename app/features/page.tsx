@@ -135,10 +135,12 @@ export default function FeaturesPage() {
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
           <YStack maxWidth={1280} alignSelf="center">
             <YStack marginBottom="$10" alignItems="center">
-              <Badge variant="outline" className="mb-4 px-4 py-1.5">
-                <Settings size={16} />
-                What&apos;s included
-              </Badge>
+              <YStack marginBottom="$4">
+                <Badge variant="outline">
+                  <Settings size={16} />
+                  What&apos;s included
+                </Badge>
+              </YStack>
               <H2 fontSize="$10" fontWeight="500" marginBottom="$4" textAlign="center" $md={{ fontSize: "$11" }} lineHeight="1.1">The parts of an app you don&apos;t have to write</H2>
               <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center" textAlign="center">
                 Each one is a Hanzo product, connected before you ask for it.
@@ -177,10 +179,12 @@ export default function FeaturesPage() {
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
           <YStack maxWidth={1280} alignSelf="center">
             <YStack marginBottom="$10" alignItems="center">
-              <Badge variant="outline" className="mb-4 px-4 py-1.5">
-                <Brain size={16} />
-                How it works
-              </Badge>
+              <YStack marginBottom="$4">
+                <Badge variant="outline">
+                  <Brain size={16} />
+                  How it works
+                </Badge>
+              </YStack>
               <H2 fontSize="$10" fontWeight="500" marginBottom="$4" textAlign="center" $md={{ fontSize: "$11" }} lineHeight="1.1">What the AI actually does</H2>
               <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center" textAlign="center">
                 The parts worth knowing about before you type the first sentence.
@@ -209,10 +213,12 @@ export default function FeaturesPage() {
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
           <YStack maxWidth={1280} alignSelf="center">
             <YStack marginBottom="$10" alignItems="center">
-              <Badge variant="outline" className="mb-4 px-4 py-1.5">
-                <Layers size={16} />
-                Technology Stack
-              </Badge>
+              <YStack marginBottom="$4">
+                <Badge variant="outline">
+                  <Layers size={16} />
+                  Technology Stack
+                </Badge>
+              </YStack>
               <H2 fontSize="$10" fontWeight="500" marginBottom="$4" textAlign="center" $md={{ fontSize: "$11" }} lineHeight="1.1">What it runs on</H2>
               <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center" textAlign="center">
                 The same infrastructure Hanzo runs on.
@@ -256,9 +262,9 @@ export default function FeaturesPage() {
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
           <YStack maxWidth={896} alignSelf="center" alignItems="center">
             {/* A Badge is typed as span props — it carries no layout, so the
-                spacing lives on a stack around it. The sibling sections still
-                write `className="mb-4 px-4 py-1.5"` here, which has matched no
-                rule since Tailwind was removed. */}
+                spacing lives on a stack around it. Every section on this page
+                spells it this way; the three that reached for utility classes
+                instead were styling nothing at all. */}
             <YStack marginBottom="$4">
               <Badge variant="outline">
                 <BarChart size={16} />

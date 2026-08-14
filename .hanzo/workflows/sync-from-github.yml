@@ -2,13 +2,13 @@ name: Sync from GitHub
 # git.hanzo.ai is the build plane (release.yml cuts every image natively) but
 # development also lands on github.com/hanzoai/app. The old push-based mirror
 # (GitHub sync.yml nudge → /v1/.../mirror-sync) is DEAD: the repo is not a
-# Gitea mirror (mirror:false) and the external git.hanzo.ai HTTP surface routes
-# to cloud:8000, so the nudge "succeeds" against a SPA page while Gitea goes
+# Hanzo Git mirror (mirror:false) and the external git.hanzo.ai HTTP surface
+# routes to cloud:8000, so the nudge "succeeds" against a SPA page while this git goes
 # stale and NO images build (bit twice: 07-23 and 07-24, each time needing a
 # manual port-forward push).
 #
 # This is the ONE deterministic direction instead: an in-cluster PULL. The
-# runner reaches both ends — GitHub outbound and this Gitea via the instance
+# runner reaches both ends — GitHub outbound and this git via the instance
 # URL actions/checkout already uses — no ingress dependency. Fast-forward only:
 # a divergence fails LOUDLY here rather than force-pushing either side.
 on:
@@ -22,7 +22,7 @@ jobs:
   ff-main:
     runs-on: [hanzo-build-linux-amd64]
     steps:
-      - name: Checkout Gitea main (full history for the ancestry check)
+      - name: Checkout main (full history for the ancestry check)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -44,20 +44,27 @@ jobs:
             echo "fast-forwarding $LOCAL -> $REMOTE"
             git push origin "$REMOTE:refs/heads/main"
             # A push made with the workflow token does NOT trigger other
-            # workflows (loop prevention) — so synced commits would never cut
-            # an image. Dispatch the release explicitly; its own paths-ignore
-            # judgement is bypassed by dispatch, which is fine: a real ff
-            # means real commits arrived.
-            curl -fsS --max-time 20 -X POST \
-              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              -H "Content-Type: application/json" \
-              "${{ github.server_url }}/v1/repos/${{ github.repository }}/actions/workflows/release.yml/dispatches" \
-              -d '{"ref":"main"}' \
-              && echo "release dispatched" || echo "release dispatch failed (non-fatal — next direct push will build)"
+            # workflows (loop prevention), so BOTH lanes have to be asked for by
+            # name. release.yml cuts the image; cicd.yml is the only lane that
+            # runs the lint ratchet, and while it was left out a commit that
+            # arrived this way was never measured against the ceiling at all.
+            # That is how the two remotes drifted four commits apart with the
+            # ratchet four errors over: the ratchet was red on a direct push and
+            # simply absent on every synced one. Their own paths-ignore
+            # judgement is bypassed by dispatch, which is fine: a real
+            # fast-forward means real commits arrived.
+            for wf in release.yml cicd.yml; do
+              curl -fsS --max-time 20 -X POST \
+                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Content-Type: application/json" \
+                "${{ github.server_url }}/v1/repos/${{ github.repository }}/actions/workflows/$wf/dispatches" \
+                -d '{"ref":"main"}' \
+                && echo "$wf dispatched" || echo "$wf dispatch failed (non-fatal — next direct push will run it)"
+            done
           elif git merge-base --is-ancestor "$REMOTE" "$LOCAL"; then
-            echo "Gitea is AHEAD of GitHub ($REMOTE ancestor of $LOCAL) — nothing to pull."
+            echo "this git is AHEAD of GitHub ($REMOTE ancestor of $LOCAL) — nothing to pull."
             echo "(GitHub catch-up is a separate concern; never force from here.)"
           else
-            echo "::error::main DIVERGED between GitHub ($REMOTE) and Gitea ($LOCAL) — refusing to force. Reconcile manually."
+            echo "::error::main DIVERGED between GitHub ($REMOTE) and this git ($LOCAL) — refusing to force. Reconcile manually."
             exit 1
           fi

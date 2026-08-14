@@ -33,7 +33,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const t = getTemplate(slug);
-  if (!t) return { title: "Template not found | Hanzo" };
+  if (!t) return { title: "Template not found" };
 
   const url = `${SITE}/templates/${t.slug}`;
   // Only claim an OG image when a real self-hosted shot exists; otherwise let the

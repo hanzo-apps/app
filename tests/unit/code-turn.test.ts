@@ -85,15 +85,18 @@ describe("a run names the project it edits", () => {
     expect(first).not.toBe("untitled-site");
   });
 
-  it("reuses the sandbox a previous turn opened INSTEAD of asking for a second pod", async () => {
+  it("offers the warm sandbox as a HINT, and still names the project", async () => {
     (window as { __projectSlug?: string }).__projectSlug = "luxquest";
     stream(DONE);
 
     await codeTurn({ prompt: "and a header", sandbox: "m_abc123", ...sinks() });
 
     expect(sent().id).toBe("m_abc123");
-    // Both would be two claims on one RWO volume; `id` is the specific one.
-    expect(sent().project).toBeUndefined();
+    // The id alone was the second-message bug: the route releases its sandbox at
+    // the end of a run, so turn two quoted a 404 and fell back to memory for a
+    // project whose checkout was still on disk. Naming both makes it free to be
+    // stale — the route tries the pod and opens the project's if it is gone.
+    expect(sent().project).toBe("luxquest");
   });
 });
 

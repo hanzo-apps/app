@@ -117,7 +117,27 @@ export function GuidedTourOverlay({ location }: GuidedTourOverlayProps) {
             <YStack flex={1}>
               <XStack alignItems="center" justifyContent="space-between" gap="$4">
                 <H3 fontSize="$6" fontWeight="500" color="$color">{currentStep.title}</H3>
-                <SizableText fontSize="$3" color="$color11" fontWeight="500">{currentStepNumber}/{totalSteps}</SizableText>
+                {/* The counter IS the way back. It already says where you are,
+                    and a step count you can press needs no second control to
+                    mean "the one before this" — which is why the Back button
+                    that used to sit bottom-left is gone rather than moved.
+                    Pressed on step 1 it would go nowhere, so there it is plain
+                    text and not a control at all: an affordance that does
+                    nothing is worse than none. */}
+                {currentStepNumber > 1 ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={previous}
+                    disabled={isBusy}
+                    aria-label={`Back to step ${currentStepNumber - 1} of ${totalSteps}`}
+                    height="$5" paddingHorizontal="$2" borderRadius="$3"
+                  >
+                    <SizableText fontSize="$3" color="$color11" fontWeight="500">{currentStepNumber}/{totalSteps}</SizableText>
+                  </Button>
+                ) : (
+                  <SizableText fontSize="$3" color="$color11" fontWeight="500">{currentStepNumber}/{totalSteps}</SizableText>
+                )}
               </XStack>
               <YStack marginTop="$2">
                 <SizableText fontSize="$3" lineHeight="1.625" color="$color11">
@@ -130,22 +150,20 @@ export function GuidedTourOverlay({ location }: GuidedTourOverlayProps) {
             )}
           </XStack>
 
+          {/* Leaving on the left, continuing on the right, and nothing between
+              them. Skip used to sit beside Next — two controls a thumb's width
+              apart, one of which ends the tour — and Back held the left, so the
+              row read "go back or leave, then continue" when the only two
+              answers that matter are leave and continue. Going back is the
+              counter above, which is where you were already looking to know
+              which step you are on. */}
           <XStack marginTop="$5" alignItems="center" justifyContent="space-between">
-            {currentStep.showBack ? (
-              <Button variant="ghost" onClick={previous} disabled={isBusy}>
-                Back
-              </Button>
-            ) : (
-              <div />
-            )}
-            <XStack alignItems="center" gap="$2">
-              <Button variant="ghost" onClick={skip}>
-                {secondaryLabel}
-              </Button>
-              <Button onClick={next} disabled={disableNext}>
-                {primaryLabel}
-              </Button>
-            </XStack>
+            <Button variant="ghost" onClick={skip}>
+              {secondaryLabel}
+            </Button>
+            <Button onClick={next} disabled={disableNext}>
+              {primaryLabel}
+            </Button>
           </XStack>
         </YStack>
       </YStack>

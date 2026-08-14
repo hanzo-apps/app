@@ -1,5 +1,6 @@
 "use client";
 
+import { sends } from '@hanzo/ui/chat';
 import { Input, Button } from '@hanzo/ui';
 import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -95,7 +96,7 @@ export function PagePanel({
 
   // Enter opens the first match — fast keyboard navigation from the search box.
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (sends(e.key, e.nativeEvent)) {
       const first = groups[0]?.items[0]?.path;
       if (first) {
         e.preventDefault();
@@ -117,15 +118,26 @@ export function PagePanel({
           aria-label="Search pages"
           width="100%" backgroundColor="transparent" paddingVertical="$1" fontSize="$3" color="$color" placeholderTextColor="$color11"
   />
-        <SizableText flexShrink={0} fontFamily="$mono" fontSize={10} color="$color11">
+        <SizableText flexShrink={0} fontFamily="$mono" fontSize="$1" color="$color11">
           {filteredPaths.length}
         </SizableText>
       </XStack>
 
-      <YStack minHeight={0} flex={1} paddingVertical="$1" overflow="scroll">
+      {/* `flexGrow` + `flexBasis: auto`, never `flex={1}`. The shorthand compiles
+          to `flex-basis: 0`, and this list's parents are CONTENT-sized — the
+          popover sets a width and no height, and the panel above sets only a
+          maxHeight. So the list's hypothetical size was 0, the container sized
+          itself to the search row alone, there was no free space left for
+          `flex-grow` to hand out, and the list stayed 0 tall: the picker opened
+          as a search box with nothing under it, not even the page you were on.
+          Same collapse this app already hit on TabsContent and CardContent. */}
+      <YStack minHeight={0} flexGrow={1} flexBasis="auto" paddingVertical="$1" overflow="scroll">
         {groups.length === 0 ? (
+          // Two different facts, and they were told as one. A project with no
+          // pages is not a failed search, and saying `No pages match “”` for it
+          // blames the reader for a query they never typed.
           <Paragraph paddingHorizontal="$3" paddingVertical="$5" textAlign="center" fontSize="$1" color="$color11">
-            No pages match “{query}”.
+            {query.trim() ? `No pages match “${query}”.` : "This project has no pages yet."}
           </Paragraph>
         ) : (
           groups.map((group) => (
@@ -133,7 +145,7 @@ export function PagePanel({
               {group.folder && (
                 <XStack alignItems="center" gap="$1.5" paddingHorizontal="$2.5" paddingVertical="$1">
                   <SizableText color="$color11"><Folder size={12} /></SizableText>
-                  <SizableText numberOfLines={1} fontSize={10} fontWeight="500" letterSpacing={0.4} color="$color11">{group.folder}</SizableText>
+                  <SizableText numberOfLines={1} fontSize="$1" fontWeight="500" letterSpacing={0.4} color="$color11">{group.folder}</SizableText>
                 </XStack>
               )}
               {group.items.map((item) => {

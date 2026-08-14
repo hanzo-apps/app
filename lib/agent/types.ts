@@ -45,8 +45,30 @@ export type AgentEvent =
       id?: string;
       /** The project asked for, whether or not it got a sandbox. */
       project?: string;
+      /**
+       * The isolation boundary the sandbox GOT — never the one asked for.
+       *
+       * They can differ, and that difference is the only reason to carry this:
+       * a person timing gVisor against Firecracker needs the name of the thing
+       * that actually ran, or the measurement is labelled wrong and nobody can
+       * tell. Absent when there is no sandbox; `""` is the fleet's own runtime,
+       * which is an answer rather than a blank.
+       */
+      runtime?: string;
       /** Why it is not durable. Absent when it is. */
       reason?: string;
+      /**
+       * The run's session on the canonical registry — WHERE TO WATCH IT.
+       *
+       * Every command this run gives the sandbox narrates into that session's
+       * log as it produces output, and the log is served as a live feed. So this
+       * is the one identifier a surface needs to show a long command working;
+       * without it a build is a blank pause until it is over.
+       *
+       * Absent when the registry could not be reached. The run then still runs
+       * and still streams here — it simply cannot be watched from anywhere else.
+       */
+      session?: string;
     }
   /** Incremental chain-of-thought / thinking tokens. */
   | { type: "reasoning"; text: string }

@@ -386,6 +386,7 @@ export async function PUT(request: NextRequest) {
     prompt,
     previousPrompts,
     selectedElementHtml,
+    selectedElementAt,
     model,
     pages,
     files,
@@ -418,7 +419,18 @@ export async function PUT(request: NextRequest) {
       role: "assistant",
       content: `${
         selectedElementHtml
-          ? `\n\nYou have to update ONLY the following element, NOTHING ELSE: \n\n\`\`\`html\n${selectedElementHtml}\n\`\`\``
+          ? `\n\nYou have to update ONLY the following element, NOTHING ELSE: \n\n\`\`\`html\n${selectedElementHtml}\n\`\`\`${
+              // WHERE it is, when a unique anchor resolved one. The markup above
+              // is the BROWSER'S serialization — attribute order and quoting are
+              // rewritten on the way out of the DOM — so asking a model to find
+              // it by matching text is asking it to match something the source
+              // may not contain. A file and a line is not a hint, it is the
+              // answer, and it is absent rather than approximate when nothing
+              // anchored uniquely.
+              selectedElementAt
+                ? `\nThat element is written at ${selectedElementAt.file} line ${selectedElementAt.line} (matched on its ${selectedElementAt.via}). Edit that line in that file.`
+                : ""
+            }`
           : ""
       }. Current pages: ${pages
         ?.map((p: Page) => `- ${p.path} \n${p.html}`)

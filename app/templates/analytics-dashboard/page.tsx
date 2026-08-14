@@ -198,7 +198,10 @@ export default function AnalyticsDashboard() {
                   <YStack rowGap="$2">
                     <YStack><SizableText fontSize="$8" fontWeight="500">$89.42</SizableText></YStack>
                     <XStack alignItems="center" gap="$2">
-                      <Badge variant="outline" className="border-green-600 text-green-600">
+                      <Badge
+                        variant="outline"
+                        style={{ borderColor: "var(--state-success)", color: "var(--state-success)" }}
+                      >
                         <TrendingUp size={12} />
                         12%
                       </Badge>

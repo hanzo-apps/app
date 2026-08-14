@@ -53,7 +53,7 @@ function AppCell({ app }: { app: AppEntry }) {
           {app.name}
         </SizableText>
       </XStack>
-      <Paragraph marginTop="$4" maxWidth="30ch" fontSize={15} lineHeight="1.625" color="$color11">
+      <Paragraph marginTop="$4" maxWidth="30ch" fontSize="$4" lineHeight="1.625" color="$color11">
         {app.blurb}
       </Paragraph>
       <SizableText marginTop="$4" fontSize="$3" fontWeight="500" color="$color11" $group-hover={{ color: "$color" }}>
@@ -175,10 +175,10 @@ export default function AppsPage() {
                 >
                   <YStack alignSelf="center" width="100%" maxWidth={1152}>
                     <XStack marginBottom="$2" alignItems="baseline" gap="$3">
-                      <SizableText fontFamily="$mono" fontSize={11} color="$color11">
+                      <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
                         {c.label}
                       </SizableText>
-                      <SizableText fontFamily="$mono" fontSize={11} color="$color11">
+                      <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
                         {String(i + 1).padStart(2, "0")} / {String(N).padStart(2, "0")}
                       </SizableText>
                     </XStack>
@@ -201,7 +201,7 @@ export default function AppsPage() {
                 style={{ width: `${(active / Math.max(N - 1, 1)) * 100}%` }}
   />
             </YStack>
-            <SizableText fontFamily="$mono" fontSize={11} color="$color11">
+            <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
               Scroll →
             </SizableText>
           </XStack>
@@ -214,7 +214,7 @@ export default function AppsPage() {
           <H2 fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }} lineHeight="1.1">
             Start with one key.
           </H2>
-          <Paragraph marginTop="$3" maxWidth={448} fontSize={15} lineHeight="1.625" color="$color11">
+          <Paragraph marginTop="$3" maxWidth={448} fontSize="$4" lineHeight="1.625" color="$color11">
             Sign in with Hanzo, mint one{" "}
             <SizableText borderRadius="$2" backgroundColor="$color3" paddingHorizontal="$1.5" paddingVertical="$0.5" fontFamily="$mono" fontSize="$3" color="$color">
               hk-

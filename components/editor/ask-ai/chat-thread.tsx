@@ -8,7 +8,9 @@ import { YStack, XStack, SizableText } from '@hanzo/ui';
 // the two-copies problem the rest of this migration exists to prevent.
 import type { GuiElement } from '@hanzo/gui';
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, Copy, ThumbsDown, ThumbsUp } from "lucide-react";
+import { useAnalytics } from "@hanzo/event/react";
+import { EVENTS } from "@hanzo/event";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 
 // ONE conversation turn as rendered in the builder chat thread. The thread is a
@@ -23,6 +25,8 @@ export interface ThreadMessage {
   kind?: "build" | "chat";
   /** User text, the assistant's settled summary / error line, or (chat) reply. */
   text?: string;
+  /** Reference images the user attached to this turn — echoed as thumbnails. */
+  images?: string[];
   /** Assistant reasoning/plan, streamed from the model's <think> block. */
   plan?: string;
   /** Assistant live activity labels while building (one per file / edit). */
@@ -59,12 +63,14 @@ export function ChatThread({
 
   return (
     <YStack ref={scrollRef} minHeight={0} flex={1} paddingHorizontal="$3" paddingTop="$2" overflow="scroll" className={`${className}`}>
-      <YStack
-        gap="$2" paddingBottom="$2" {...{ minHeight: messages.length <= 1 ? "100%" : undefined, justifyContent: messages.length <= 1 ? "center" : undefined }}
-      >
+      {/* Top-anchored ALWAYS. A lone message (the boot line) used to be
+          vertically centered, which floated it over ~200px of dead air and
+          read as a hero, not a transcript — the reference starts the
+          conversation under the header from the first message on. */}
+      <YStack gap="$2" paddingBottom="$2">
         {messages.map((m) =>
           m.role === "user" ? (
-            <UserBubble key={m.id} text={m.text ?? ""} />
+            <UserBubble key={m.id} text={m.text ?? ""} images={m.images} />
           ) : m.role === "system" ? (
             <SystemLine key={m.id} text={m.text ?? ""} />
           ) : (
@@ -76,21 +82,58 @@ export function ChatThread({
   );
 }
 
-function UserBubble({ text }: { text: string }) {
+/**
+ * What you asked for, as a pill.
+ *
+ * A tail (`borderBottomRightRadius: $1`) and a hairline made this a speech
+ * BUBBLE — the shape a messaging app uses because two people are talking and
+ * the tail says which one. Here only one side ever speaks in this shape, so the
+ * tail pointed at nothing and the border drew a box around a sentence that
+ * needs no box. Fully rounded, no border: the prompt reads as a thing you
+ * placed, and the assistant's cards below it are the only rectangles in the
+ * column, which is what makes them scannable.
+ *
+ * `borderRadius={999}` rather than a token: this is a pill, and a pill's radius
+ * is not a rung on a ramp — it is "half my own height", whatever that turns out
+ * to be. A `$` value would be a specific number that happens to look round at
+ * one line and stops looking round at three.
+ */
+function UserBubble({ text, images }: { text: string; images?: string[] }) {
   return (
-    <XStack justifyContent="flex-end">
-      <YStack maxWidth="85%" borderRadius="$5" borderBottomRightRadius="$1" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5">
-        <SizableText whiteSpace="pre-wrap" fontSize={13} color="$color">
-          {text}
-        </SizableText>
-      </YStack>
-    </XStack>
+    <YStack alignItems="flex-end" gap="$1.5">
+      {/* What the agent is READING, shown as what it is. The reference draws a
+          "Read <file>" card with the image inline; here the images are the
+          user's own attachments, so they belong on the user's turn — the same
+          fact from the honest side. Real thumbnails, never a filename alone. */}
+      {images && images.length > 0 && (
+        <XStack flexWrap="wrap" justifyContent="flex-end" gap="$1.5" maxWidth="85%">
+          {images.map((src) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={src}
+              src={src}
+              alt="Attached reference"
+              style={{ width: 88, height: 66, objectFit: "cover", borderRadius: 8, border: "1px solid var(--border, rgba(255,255,255,0.08))" }}
+  />
+          ))}
+        </XStack>
+      )}
+      {text ? (
+        <XStack justifyContent="flex-end" width="100%">
+          <YStack maxWidth="85%" borderRadius={999} backgroundColor="$color3" paddingHorizontal="$4" paddingVertical="$2">
+            <SizableText whiteSpace="pre-wrap" fontSize="$2" lineHeight="1.45" color="$color">
+              {text}
+            </SizableText>
+          </YStack>
+        </XStack>
+      ) : null}
+    </YStack>
   );
 }
 
 function SystemLine({ text }: { text: string }) {
   return (
-    <YStack paddingVertical="$0.5"><SizableText textAlign="center" fontSize={11.5} color="$color11">{text}</SizableText></YStack>
+    <YStack paddingVertical="$0.5"><SizableText textAlign="center" fontSize="$1" color="$color11">{text}</SizableText></YStack>
   );
 }
 
@@ -107,14 +150,14 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
     if (error) {
       return (
         <YStack>
-          <SizableText fontSize={12.5} color="$red8">
+          <SizableText fontSize="$2" color="$red8">
             {text || "Something went wrong — please try again."}
           </SizableText>
         </YStack>
       );
     }
     return (
-      <XStack width="100%" justifyContent="flex-start">
+      <XStack width="100%" justifyContent="flex-start" className="turn">
         <YStack maxWidth="95%" borderRadius="$5" paddingHorizontal="$3" paddingVertical="$1.5">
           {text ? (
             <XStack flexWrap="wrap" alignItems="flex-end">
@@ -127,8 +170,9 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
               )}
             </XStack>
           ) : (
-            <SizableText fontSize={13} className="thread-shimmer-text">Thinking…</SizableText>
+            <SizableText fontSize="$2" className="thread-shimmer-text">Thinking…</SizableText>
           )}
+          {done && text ? <Feedback text={text} /> : null}
         </YStack>
       </XStack>
     );
@@ -142,23 +186,23 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
   const files = activity ?? [];
 
   return (
-    <YStack width="100%" alignItems="flex-start" gap="$2">
+    <YStack width="100%" alignItems="flex-start" gap="$2" className="turn">
+      {/* While planning with NOTHING to show yet, this is a compact shimmer
+          line — not a full collapsible box for one word. A bulky "Designing…"
+          card wrapping "Analyzing your request…" was dead space at the top of
+          every build; the box appears only once there is a plan to collapse. */}
       {showPlanCard && (
-        <CollapsibleSection
-          title={planning ? "Designing…" : "Plan"}
-          defaultOpen={planning}
-          live={planning}
-        >
-          {hasPlanBody ? (
+        hasPlanBody ? (
+          <CollapsibleSection title="Plan" defaultOpen={planning} live={planning}>
             <YStack maxHeight={220} overflow="scroll">
-              <SizableText whiteSpace="pre-line" fontSize={12.5} lineHeight="1.625" color="$color11">
+              <SizableText whiteSpace="pre-line" fontSize="$2" lineHeight="1.625" color="$color11">
                 {plan}
               </SizableText>
             </YStack>
-          ) : (
-            <YStack><SizableText fontSize={12.5} color="$color11">Analyzing your request…</SizableText></YStack>
-          )}
-        </CollapsibleSection>
+          </CollapsibleSection>
+        ) : (
+          <SizableText className="thread-shimmer-text" fontSize="$2">Designing…</SizableText>
+        )
       )}
 
       {building && (
@@ -174,21 +218,88 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
               <ActivityItems labels={files} settled />
             </CollapsibleSection>
           )}
-          <XStack alignItems="center" gap="$1.5">
-            <Check size={14} color="var(--brand-accent-muted)" />
-            <SizableText fontSize={12} color="$color11">{text || "Done"}</SizableText>
-          </XStack>
+          {/* The settled summary is PROSE, at body weight. It rendered as a
+              $1 $color11 footnote beside a check — the one part of the turn
+              written for the person to READ was the most muted thing in the
+              column, while the reference sets it as plain paragraphs under
+              the card. The check survives only for a turn with no words. */}
+          {text ? (
+            <YStack width="100%">
+              <MarkdownRenderer content={text} compact />
+            </YStack>
+          ) : (
+            <XStack alignItems="center" gap="$1.5">
+              <Check size={14} color="var(--brand-accent-muted)" />
+              <SizableText fontSize="$1" color="$color11">Done</SizableText>
+            </XStack>
+          )}
+          <Feedback text={text} />
         </>
       )}
 
       {error && (
         <YStack>
-          <SizableText fontSize={12.5} color="$red8">
+          <SizableText fontSize="$2" color="$red8">
             {text || "Something went wrong — please try again."}
           </SizableText>
         </YStack>
       )}
     </YStack>
+  );
+}
+
+/**
+ * The row under a settled assistant turn: copy it, judge it.
+ *
+ * Three controls and every one DOES something, which is the bar for putting it
+ * on screen at all. Copy puts the turn's text on the clipboard. The thumbs are
+ * product telemetry through the ONE client (`@hanzo/event` — the same stream
+ * pageviews and errors ride), so "was this build any good" becomes a queryable
+ * series instead of a feeling. A row of decorative icons that swallow clicks
+ * would be worse than no row: it teaches that the quiet controls here do
+ * nothing.
+ *
+ * One verdict per turn. Voting again reverses it rather than stacking events —
+ * aria-pressed carries which way it stands.
+ */
+function Feedback({ text }: { text?: string }) {
+  const analytics = useAnalytics();
+  const [copied, setCopied] = useState(false);
+  const [verdict, setVerdict] = useState<"up" | "down" | null>(null);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(text ?? "");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Clipboard can be refused (permissions, insecure context); the button
+      // simply not confirming is the honest rendering of that.
+    }
+  };
+
+  const judge = (next: "up" | "down") => {
+    const settled = verdict === next ? null : next;
+    setVerdict(settled);
+    if (settled) {
+      analytics.capture(EVENTS.FEATURE_USED, { feature: "builder_turn_feedback", verdict: settled });
+    }
+  };
+
+  const dim = { color: "$color11", hoverStyle: { backgroundColor: "$color3", color: "$color" } } as const;
+
+  return (
+    <XStack alignItems="center" gap="$0.5" className="turn-feedback">
+      <Button type="button" variant="ghost" size="icon-sm" borderRadius="$4" title={copied ? "Copied" : "Copy"} aria-label="Copy reply" onClick={copy} {...dim}>
+        {copied ? <Check size={13} /> : <Copy size={13} />}
+      </Button>
+      <Button type="button" variant="ghost" size="icon-sm" borderRadius="$4" title="Good result" aria-label="Good result" aria-pressed={verdict === "up"} onClick={() => judge("up")} {...(verdict === "up" ? { color: "$color", backgroundColor: "$color3" } : dim)}>
+        <ThumbsUp size={13} />
+      </Button>
+      <Button type="button" variant="ghost" size="icon-sm" borderRadius="$4" title="Bad result" aria-label="Bad result" aria-pressed={verdict === "down"} onClick={() => judge("down")} {...(verdict === "down" ? { color: "$color", backgroundColor: "$color3" } : dim)}>
+        <ThumbsDown size={13} />
+      </Button>
+    </XStack>
   );
 }
 
@@ -212,15 +323,25 @@ function CollapsibleSection({
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  // A LIVE phase (Generating / Planning) is transient — it reads as an inline
+  // activity log, not a sealed capsule. The rounded box, and especially its
+  // rounded BOTTOM floating mid-thread, is for SETTLED disclosures (Plan ▼ once
+  // written, Generated files ▼) a reader may reopen. The header keeps its 12px
+  // inset either way, so a live title sits directly above where the settled
+  // box's title lands — the disclosure never jumps left when it settles.
+  const boxed = !live;
   return (
-    <YStack width="100%" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
+    <YStack
+      width="100%"
+      {...(boxed ? { overflow: "hidden", borderRadius: "$6", borderWidth: 1, borderColor: "$borderColor", backgroundColor: "$color2" } : {})}
+    >
       <Button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        width="100%" alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color4" }}
+        width="100%" alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingVertical="$2" hoverStyle={{ backgroundColor: "$color3" }}
       >
         <SizableText
-          fontSize={13} fontWeight="500" {...{ color: live ? undefined : "$color11" }} className="thread-shimmer-text"
+          fontSize="$2" fontWeight="500" {...{ color: live ? undefined : "$color11" }} className="thread-shimmer-text"
         >
           {title}
           {typeof count === "number" && !live ? (
@@ -231,7 +352,14 @@ function CollapsibleSection({
           size={14}
   />
       </Button>
-      {open && <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2">{children}</YStack>}
+      {open && (
+        <YStack
+          paddingHorizontal="$3" paddingVertical="$2"
+          {...(boxed ? { borderTopWidth: 1, borderColor: "$borderColor" } : {})}
+        >
+          {children}
+        </YStack>
+      )}
     </YStack>
   );
 }
@@ -247,14 +375,19 @@ function ActivityItems({ labels, settled = false }: { labels: string[]; settled?
         return (
           <XStack key={`${i}-${label}`} alignItems="center" gap="$2">
             {active ? (
-              <XStack position="relative" width="$2" height="$2" flexShrink={0} alignItems="center" justifyContent="center">
-                <SizableText position="absolute" width="$2" height="$2" borderRadius="$10" backgroundColor="var(--brand-accent)" opacity={0.6} />
-                <SizableText position="relative" width="$1.5" height="$1.5" borderRadius="$10" backgroundColor="var(--brand-accent)" />
+              // 12/6 in PX — the console's live-dot geometry, stated. The
+              // $-scale sized this ~2x (the $6=64 family of trap), and with
+              // --brand-accent resolving to white the "pulsing dot" painted as
+              // a fat white disc beside 12px text. A status dot is smaller
+              // than the words it decorates.
+              <XStack position="relative" width={12} height={12} flexShrink={0} alignItems="center" justifyContent="center">
+                <SizableText position="absolute" width={12} height={12} borderRadius="$10" backgroundColor="var(--brand-accent)" opacity={0.25} />
+                <SizableText position="relative" width={6} height={6} borderRadius="$10" backgroundColor="var(--brand-accent)" />
               </XStack>
             ) : (
               <Check size={12} />
             )}
-            <SizableText fontSize={12} {...{ color: active ? undefined : "$color11" }} className="thread-shimmer-text">
+            <SizableText fontSize="$1" {...{ color: active ? undefined : "$color11" }} className="thread-shimmer-text">
               {label}
             </SizableText>
           </XStack>

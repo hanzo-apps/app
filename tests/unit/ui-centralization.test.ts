@@ -79,41 +79,19 @@ describe("UI centralization — every component comes from @hanzo/ui", () => {
     // template className values.
     const UTIL =
       /className=(?:"[^"]*?|\{`[^`]*?)(?<![-\w])(?:flex|grid|hidden|inline-flex|items-(?:center|start|end)|justify-(?:center|between|start|end)|gap-[\d.]|space-[xy]-|p[xylrtb]?-[\d.]|m[xylrtb]?-[\d.]|w-(?:full|\d)|h-(?:full|\d)|size-\d|min-h-|max-w-|text-(?:xs|sm|base|lg|xl|\dxl|left|center|right|white|black|foreground|muted-foreground|primary|destructive|red-|green-|blue-|yellow-|orange-|amber-|emerald-|purple-|neutral-|gray-)|bg-(?:white|black|background|muted|card|accent|primary|transparent|red-|green-|blue-|yellow-|orange-|amber-|emerald-|purple-|neutral-|gray-|\[)|border-(?:border|primary|transparent|input|red-|green-|blue-|amber-|emerald-)|rounded(?:-\w+)?\b|shadow(?:-\w+)?\b|font-(?:mono|sans|medium|semibold|bold)|uppercase|lowercase|capitalize|tracking-|leading-|divide-[xy]|overflow-(?:hidden|auto|scroll)|absolute|relative|fixed|sticky|inset-|top-\d|left-\d|right-\d|bottom-\d|z-\d|opacity-\d|transition|duration-\d|cursor-pointer|pointer-events-|shrink-0|grow\b|truncate|(?:hover|focus|active|disabled|group-hover|max-lg|max-md|sm|md|lg|xl|2xl|dark):)/;
-    // lib/project-templates.ts is a permanent exemption: it is the SOURCE of the
-    // starter apps this product generates for users — tailwind there is product
-    // content shipped to user projects, not this app's UI.
+    // No exemption and no ratchet any more. `lib/project-templates.ts` used to
+    // be excused as "product content" — it was a stale duplicate of
+    // lib/vfs/project-templates that nothing imported, and it is deleted. The
+    // TAILWIND_DEBT list that stood here held fourteen files and thirty-four
+    // class strings; it is empty, so it is gone rather than kept at zero
+    // length, and the assertion below is the whole law.
     //
-    // TAILWIND_DEBT is the OPPOSITE of an exemption — it is a RATCHET. These UI
-    // files still carry Tailwind from before the 8.x @hanzo/gui convergence, whose
-    // de-Tailwind is explicitly multi-pass (components/editor/CLAUDE.md, "Phase 4").
-    // Listing a file here is tracked debt, not permission: the two assertions below
-    // let the set only SHRINK. A NEW file with Tailwind is not in the set, so it
-    // fails; and de-Tailwinding a listed file makes the ratchet fail until it is
-    // removed here. The test turns green for good only when this reaches [].
-    const TAILWIND_DEBT = [
-      "app/enterprise/page.tsx",
-      "app/features/page.tsx",
-      "app/learn/page.tsx",
-      "app/playground/page.tsx",
-      "app/templates/page.tsx",
-      "app/templates/analytics-dashboard/page.tsx",
-      "app/templates/blog-platform/page.tsx",
-      "app/templates/kanban-board/page.tsx",
-      "components/checkpoint-panel/index.tsx",
-      "components/database-manager/secrets-manager.tsx",
-      "components/import-git-panel.tsx",
-      "components/project-manager/project-card.tsx",
-      "components/publish-settings/general-tab.tsx",
-      "components/publish-settings/seo-tab.tsx",
-      "components/store/storefront.tsx",
-      "components/template-manager/template-card.tsx",
-    ];
-    const offenders = offendersOf(UTIL).filter((f) => f !== "lib/project-templates.ts");
-    // No NEW Tailwind: every offender must be a tracked-debt file.
-    expect(offenders.filter((f) => !TAILWIND_DEBT.includes(f))).toEqual([]);
-    // Ratchet: the debt list may not name a file that is already clean — so it can
-    // only shrink. Removing Tailwind from a file requires deleting it from the list.
-    expect(TAILWIND_DEBT.filter((f) => !offenders.includes(f))).toEqual([]);
+    // Every one of those thirty-four was ALREADY INERT: no rule existed to
+    // match them, so they styled nothing and merely described an intention.
+    // Two were worse than nothing — a "Sale" pill asking to be positioned over
+    // a product photo fell into flow beneath it, and a kanban page carried a
+    // palette of light-mode pastels for a page that is dark.
+    expect(offendersOf(UTIL)).toEqual([]);
   });
 
   it("exactly ONE TooltipProvider, at the app root", () => {

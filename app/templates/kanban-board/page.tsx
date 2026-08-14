@@ -131,21 +131,6 @@ const priorityColors = {
   low: "#22c55e"
 };
 
-const labelColors = {
-  feature: "bg-[#171717]/10 text-[#171717]",
-  auth: "bg-sky-100 text-sky-800",
-  design: "bg-pink-100 text-pink-800",
-  ui: "bg-[#171717]/10 text-[#171717]",
-  backend: "bg-amber-100 text-amber-800",
-  api: "bg-teal-100 text-teal-800",
-  docs: "bg-slate-100 text-slate-800",
-  performance: "bg-rose-100 text-rose-800",
-  optimization: "bg-yellow-100 text-yellow-800",
-  setup: "bg-emerald-100 text-emerald-800",
-  devops: "bg-[#404040]/10 text-[#404040]",
-  "ci/cd": "bg-cyan-100 text-cyan-800"
-};
-
 export default function KanbanBoard() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState("");
@@ -225,7 +210,7 @@ export default function KanbanBoard() {
                   <XStack alignItems="center" gap="$2">
                     <YStack width="$3" height="$3" borderRadius="$10" {...{ backgroundColor: column.color }} />
                     <CardTitle fontSize="$4">{column.title}</CardTitle>
-                    <Badge variant="secondary" className="ml-2">
+                    <Badge variant="secondary">
                       {column.tasks.length}
                     </Badge>
                   </XStack>
@@ -236,7 +221,7 @@ export default function KanbanBoard() {
               </CardHeader>
             </Card>
 
-            <ScrollArea height="calc(100vh-240px)">
+            <ScrollArea height="calc(100vh - 240px)">
               <YStack rowGap="$3">
                 {column.tasks.map(task => (
                   <Card
@@ -265,7 +250,6 @@ export default function KanbanBoard() {
                           <Badge
                             key={label}
                             variant="secondary"
-                            className={`text-xs px-2 py-0 ${labelColors[label as keyof typeof labelColors] || ""}`}
                           >
                             {label}
                           </Badge>

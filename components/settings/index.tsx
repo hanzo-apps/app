@@ -3,12 +3,14 @@
 import { YStack, H3, Paragraph, XStack, H4, SizableText } from '@hanzo/ui';
 import { useState, useEffect } from 'react';
 import { configManager, AppSettings, CostSettings } from '@/lib/config/storage';
-import { Button, Input, Label, Switch, toast, Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui';
-import { DollarSign, AlertTriangle, Info, Download, Upload, Database, ChevronDown, Palette } from 'lucide-react';
+import { Button, Label, Switch, toast, Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui';
+import { DollarSign, Info, Download, Upload, Database, ChevronDown, Palette } from 'lucide-react';
 import { CostCalculator } from '@/lib/llm/cost-calculator';
 import { AboutModal } from '@/components/about-modal';
 import { BackupService } from '@/lib/vfs/backup-service';
-import { setTelemetryOptIn } from '@/lib/telemetry';
+import { getConsent, setConsent } from '@hanzogui/telemetry';
+import { broadcastCostSettingsChange } from '@/lib/hooks/use-cost-settings';
+import { Appearance } from '@hanzo/appearance';
 
 interface SettingsPanelProps {
   onClose?: () => void;
@@ -22,8 +24,11 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
   const [isImporting, setIsImporting] = useState(false);
   const [importProgress, setImportProgress] = useState(0);
   const [importMessage, setImportMessage] = useState('');
+  // Reads the SAME stored consent the live telemetry provider honors
+  // (@hanzogui/telemetry, hz_consent). Enabled unless explicitly denied — an
+  // unset choice defers to the browser's DNT/GPC, exactly as the provider does.
   const [telemetryOptIn, setTelemetryOptInState] = useState(() =>
-    configManager.getSettings().telemetryOptIn !== false
+    getConsent() !== 'denied'
   );
   const [openSections, setOpenSections] = useState({
     application: true,
@@ -154,22 +159,36 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
             <YStack rowGap="$4">
               {/* No theme tabs: hanzo.app is dark-only and the theme is FORCED in
                   app/providers.tsx, so Light/System could only write a preference
-                  nothing reads. */}
+                  nothing reads.
+
+                  Text size, density and accent DO read: @hanzo/design publishes
+                  them as knobs every ramp multiplies by, and since @hanzo/ui
+                  8.0.69 the `$n` type ladder resolves through `var(--text-*)`,
+                  so one of these moves the whole product rather than the handful
+                  of places that happen to read a token directly.
+
+                  It is @hanzo/appearance, not a panel written here, because
+                  hanzo.chat and the console need the same screen and three
+                  near-identical ones is how "the same product" stops looking
+                  like it. */}
+              <Appearance />
 
               {/* Telemetry */}
               <XStack alignItems="center" justifyContent="space-between">
-                <div>
+                <YStack flex={1} paddingRight="$3">
                   <Label htmlFor="telemetry">Anonymous Usage Analytics</Label>
                   <Paragraph fontSize="$1" color="$color11" marginTop="$0.5">
                     Help improve Hanzo App by sharing anonymous usage data
                   </Paragraph>
-                </div>
+                </YStack>
                 <Switch
                   id="telemetry"
                   checked={telemetryOptIn}
                   onCheckedChange={(checked) => {
                     setTelemetryOptInState(checked);
-                    setTelemetryOptIn(checked);
+                    // Writes hz_consent, which the live provider reads — so the
+                    // toggle actually turns @hanzo/event on/off, not a dead tracker.
+                    setConsent(checked ? 'granted' : 'denied');
                   }}
   />
               </XStack>
@@ -193,14 +212,26 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
           </CollapsibleTrigger>
           <CollapsibleContent paddingHorizontal="$3" paddingTop="$2" paddingBottom="$3">
             <YStack rowGap="$4">
-              {/* Show Costs */}
+              {/* Display Costs — the ONE cost control that takes effect. The
+                  workspace reads it through useCostSettings and gates the cost
+                  readout on it, so the write has to REACH that hook: broadcasting
+                  is what makes the toggle land live instead of on the next mount
+                  (the panel renders inside the workspace's own popover, a
+                  sibling of the reader, not a remount of it).
+
+                  A "Daily Limit", "Project Limit" and "Warning Threshold" used to
+                  sit here. Nothing read them — no path metered spend against a
+                  limit or warned at the threshold — so they were controls that
+                  lied, worse than absent (a $5 cap that silently lets $50
+                  through). Removed until there is enforcement to reinstate them
+                  onto; the lifetime total below is the real, wired figure. */}
               <XStack alignItems="center" justifyContent="space-between">
-                <div>
+                <YStack flex={1} paddingRight="$3">
                   <Label htmlFor="show-costs">Display Costs</Label>
                   <Paragraph fontSize="$1" color="$color11" marginTop="$0.5">
                     Show cost information in messages
                   </Paragraph>
-                </div>
+                </YStack>
                 <Switch
                   id="show-costs"
                   checked={costSettings.showCosts !== false}
@@ -208,88 +239,19 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                     const newCostSettings = { ...costSettings, showCosts: checked };
                     configManager.setCostSettings(newCostSettings);
                     setCostSettings(newCostSettings);
+                    broadcastCostSettingsChange();
                   }}
   />
               </XStack>
 
-              {/* Daily + Project Limits — 2 column grid */}
-              <YStack gap="$3">
-                <div>
-                  <Label htmlFor="daily-limit" fontSize="$1">Daily Limit (USD)</Label>
-                  <Input
-                    id="daily-limit"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="No limit"
-                    marginTop="$1.5"
-                    value={costSettings.dailyLimit || ''}
-                    onChange={(e) => {
-                      const value = e.target.value ? parseFloat(e.target.value) : undefined;
-                      const newCostSettings = { ...costSettings, dailyLimit: value };
-                      configManager.setCostSettings(newCostSettings);
-                      setCostSettings(newCostSettings);
-                    }}
-  />
-                </div>
-                <div>
-                  <Label htmlFor="project-limit" fontSize="$1">Project Limit (USD)</Label>
-                  <Input
-                    id="project-limit"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="No limit"
-                    marginTop="$1.5"
-                    value={costSettings.projectLimit || ''}
-                    onChange={(e) => {
-                      const value = e.target.value ? parseFloat(e.target.value) : undefined;
-                      const newCostSettings = { ...costSettings, projectLimit: value };
-                      configManager.setCostSettings(newCostSettings);
-                      setCostSettings(newCostSettings);
-                    }}
-  />
-                </div>
-              </YStack>
-
-              {/* Warning Threshold */}
-              <div>
-                <Label htmlFor="warning-threshold" fontSize="$1">Warning Threshold</Label>
-                <XStack alignItems="center" gap="$3" marginTop="$1.5">
-                  <Input
-                    id="warning-threshold"
-                    type="number"
-                    min="50"
-                    max="100"
-                    step="5"
-                    flex={1}
-                    value={costSettings.warningThreshold || 80}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value);
-                      const newCostSettings = { ...costSettings, warningThreshold: value };
-                      configManager.setCostSettings(newCostSettings);
-                      setCostSettings(newCostSettings);
-                    }}
-  />
-                  <XStack alignItems="center" gap="$1">
-                    <AlertTriangle size={12} />
-                    <SizableText fontSize="$1" color="$color11" whiteSpace="nowrap" fontFamily="$mono">
-                      Warn at {costSettings.warningThreshold || 80}%
-                    </SizableText>
-                  </XStack>
-                </XStack>
-              </div>
-
               {/* Lifetime Costs */}
               <XStack alignItems="center" justifyContent="space-between" backgroundColor="$color3" borderWidth={1} borderRadius="$5" padding="$3">
-                <div>
-                  <YStack><SizableText fontSize="$1" color="$color11" fontWeight="500">Lifetime Total</SizableText></YStack>
-                  <YStack marginTop="$0.5">
-                    <SizableText fontSize="$6" fontWeight="700" fontFamily="$mono" letterSpacing={-0.4}>
-                      {CostCalculator.formatCost(configManager.getLifetimeCosts().total)}
-                    </SizableText>
-                  </YStack>
-                </div>
+                <YStack>
+                  <SizableText fontSize="$1" color="$color11" fontWeight="500">Lifetime Total</SizableText>
+                  <SizableText marginTop="$0.5" fontSize="$6" fontWeight="700" fontFamily="$mono" letterSpacing={-0.4}>
+                    {CostCalculator.formatCost(configManager.getLifetimeCosts().total)}
+                  </SizableText>
+                </YStack>
                 <Button
                   variant="outline"
                   size="sm"

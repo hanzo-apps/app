@@ -82,7 +82,13 @@ export interface ExecResult {
  * the model never sees an affordance that is not there.
  */
 export interface ProjectExec {
-  exec(command: string, timeoutSec?: number): Promise<ExecResult>;
+  /**
+   * `stdin` is what the command READS, and it is the only channel that carries a
+   * value nothing may see. A command line is public inside the pod — `sh -c` puts
+   * it in the process table, and git repeats the remote URL in every error it
+   * prints — so a credential or a person's prose goes here and never there.
+   */
+  exec(command: string, timeoutSec?: number, stdin?: string): Promise<ExecResult>;
 }
 
 /** Does this filesystem also run commands? */

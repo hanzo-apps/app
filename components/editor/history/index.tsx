@@ -606,7 +606,7 @@ export function HistoryPanel({
           switcher instead of sitting inset from it. */}
       <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingBottom="$2" paddingTop="$3" $lg={{ paddingHorizontal: "$4" }}>
         <RotateCcw size={16} />
-        <SizableText fontSize={13} fontWeight="500" color="$color">History</SizableText>
+        <SizableText fontSize="$2" fontWeight="500" color="$color">History</SizableText>
         <XStack marginLeft="auto" alignItems="center" gap="$1.5">
           <XStack alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color3" padding="$0.5">
             {(["all", "bookmarks"] as const).map((f) => (
@@ -616,7 +616,7 @@ export function HistoryPanel({
                 onClick={() => setFilter(f)}
                 group borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1" {...{ backgroundColor: filter === f ? "$color12" : "transparent", elevation: filter === f ? 1 : undefined, hoverStyle: filter === f ? undefined : { backgroundColor: "$color4" } }}
               >
-                <SizableText fontSize={11} fontWeight="500" color={filter === f ? "$background" : "$color11"} $group-hover={filter === f ? undefined : { color: "$color" }}>{f === "all" ? "All" : "Bookmarks"}</SizableText>
+                <SizableText fontSize="$1" fontWeight="500" color={filter === f ? "$background" : "$color11"} $group-hover={filter === f ? undefined : { color: "$color" }}>{f === "all" ? "All" : "Bookmarks"}</SizableText>
               </Button>
             ))}
           </XStack>
@@ -665,7 +665,7 @@ export function HistoryPanel({
                     backgroundColor="transparent" group alignItems="center" gap="$1" borderRadius="$3" paddingHorizontal="$1.5" paddingVertical="$1" hoverStyle={{ backgroundColor: "$color3" }}
                     title="Commit & push these changes"
                   >
-                    <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1" fontSize={11} fontWeight="500" color="$color11" $group-hover={{ color: "$color" }}>
+                    <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1" fontSize="$1" fontWeight="500" color="$color11" $group-hover={{ color: "$color" }}>
                       <UploadCloud size={12} />
                       Commit &amp; push
                     </SizableText>
@@ -701,7 +701,7 @@ export function HistoryPanel({
               repoResolved &&
               !showBookmarksOnly &&
               (projectError ? (
-                <SizableText paddingHorizontal="$2" paddingVertical="$6" fontSize={11} color="$color11">{projectError}</SizableText>
+                <SizableText paddingHorizontal="$2" paddingVertical="$6" fontSize="$1" color="$color11">{projectError}</SizableText>
               ) : (
                 <ConnectRepoCta />
               ))}
@@ -750,7 +750,7 @@ function RevCard({
   return (
     <YStack
       borderRadius="$6" borderWidth={1} paddingHorizontal="$3" paddingVertical="$2.5" {...(isPreviewing
-        ? { borderColor: "rgba(251,191,36,0.3)", backgroundColor: "rgba(251,191,36,0.04)" }
+        ? { borderColor: "$yellow6", backgroundColor: "$yellow2" }
         : isActive
           ? { borderColor: "$color02", backgroundColor: "$color005" }
           : { borderColor: "$borderColor", backgroundColor: "$color002", hoverStyle: { borderColor: "$color02", backgroundColor: "$color005" } })}
@@ -765,8 +765,8 @@ function RevCard({
   />
         )}
         <YStack minWidth={0} flex={1}>
-          <Paragraph numberOfLines={1} fontSize={13} lineHeight="1.375" color="$color">{rev.title}</Paragraph>
-          <SizableText marginTop="$0.5" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={10} color="$color11" display="flex" flexDirection="row">
+          <Paragraph numberOfLines={1} fontSize="$2" lineHeight="1.375" color="$color">{rev.title}</Paragraph>
+          <SizableText marginTop="$0.5" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize="$1" color="$color11" display="flex" flexDirection="row">
             <span>{rel(rev.at)}</span>
             {isCommit && (
               <>
@@ -884,7 +884,7 @@ function CardButton({
       disabled={disabled}
       group alignItems="center" gap="$1" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1" disabledStyle={{ opacity: 0.5 }} {...{ backgroundColor: active ? "$yellow8" : "$color3", hoverStyle: active ? undefined : { backgroundColor: "$color4" } }}
     >
-      <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1" fontSize={11} fontWeight="500" color={active ? "$yellow2" : "$color11"} $group-hover={active ? undefined : { color: "$color" }}>
+      <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1" fontSize="$1" fontWeight="500" color={active ? "$yellow2" : "$color11"} $group-hover={active ? undefined : { color: "$color" }}>
         {children}
       </SizableText>
     </Button>
@@ -894,8 +894,8 @@ function CardButton({
 function GroupHeader({ label, hint, children }: { label: string; hint?: string; children?: ReactNode }) {
   return (
     <XStack alignItems="center" gap="$2" paddingHorizontal="$1" paddingBottom="$1.5" paddingTop="$1">
-      <SizableText fontSize={10} fontWeight="500" letterSpacing={0.4} color="$color11">{label}</SizableText>
-      {hint && <SizableText fontFamily="$mono" fontSize={10} color="$color11">{hint}</SizableText>}
+      <SizableText fontSize="$1" fontWeight="500" letterSpacing={0.4} color="$color11">{label}</SizableText>
+      {hint && <SizableText fontFamily="$mono" fontSize="$1" color="$color11">{hint}</SizableText>}
       {children && <SizableText marginLeft="auto">{children}</SizableText>}
     </XStack>
   );
@@ -915,7 +915,7 @@ function MenuItem({ onSelect, children }: { onSelect: () => void; children: Reac
 function ConnectRepoCta() {
   return (
     <YStack marginTop="$2" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$3.5">
-      <SizableText marginBottom="$1" alignItems="center" gap="$1.5" fontSize={13} fontWeight="500" color="$color" display="flex" flexDirection="row">
+      <SizableText marginBottom="$1" alignItems="center" gap="$1.5" fontSize="$2" fontWeight="500" color="$color" display="flex" flexDirection="row">
         <GitBranch size={14} />
         Keep full version history
       </SizableText>
@@ -940,7 +940,7 @@ function EmptyState({ bookmarks }: { bookmarks: boolean }) {
   return (
     <SizableText flexDirection="column" alignItems="center" justifyContent="center" gap="$2" paddingHorizontal="$4" paddingVertical="$10" textAlign="center" display="flex">
       <Bookmark size={28} />
-      <Paragraph fontSize={13} fontWeight="500" color="$color">{bookmarks ? "No bookmarks yet" : "No revisions yet"}</Paragraph>
+      <Paragraph fontSize="$2" fontWeight="500" color="$color">{bookmarks ? "No bookmarks yet" : "No revisions yet"}</Paragraph>
       <Paragraph maxWidth={220} fontSize="$1" color="$color11">
         {bookmarks
           ? "Bookmark a revision and it stays pinned here."

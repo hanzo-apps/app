@@ -18,7 +18,6 @@ import {
   Folder,
   FolderPlus,
   Settings,
-  Info,
   BookOpen,
   Bot,
   Cloud,
@@ -55,10 +54,6 @@ import { useFolders } from '@/hooks/useFolders';
 import { markProjectOpened, orderByRecentlyOpened } from '@/lib/recent-projects';
 import { VERSION } from '@/lib/version';
 
-// Collapsed sidebar width (icon-only rail). Kept exported for callers that lay
-// out around the sidebar; the width itself is applied via a Tailwind class now.
-export const COLLAPSED_SIDEBAR_WIDTH = 56;
-
 interface SidebarItem {
   id: string;
   label: string;
@@ -81,7 +76,12 @@ const PRIMARY_ITEMS: SidebarItem[] = [
   { id: 'resources', label: 'Resources', icon: Sparkles, route: '/resources' },
   { id: 'connectors', label: 'Connectors', icon: Plug, route: '/connectors' },
   { id: 'agents', label: 'Agents', icon: Bot, route: '/agents' },
-  { id: 'sessions', label: 'Terminals', icon: TerminalSquare, route: 'https://tabs.hanzo.ai/app' },
+  // `href`, not `route`: tabs.hanzo.ai is another app. Through `route` this went
+  // to `router.push` with an absolute URL, which replaces hanzo.app in the tab —
+  // the reader loses their project to reach a terminal, and comes back by going
+  // back. `href` is the field that already means this and already opens a new
+  // tab; it was simply never used here.
+  { id: 'sessions', label: 'Terminals', icon: TerminalSquare, href: 'https://tabs.hanzo.ai/app' },
 ];
 
 // ── Projects group ──────────────────────────────────────────────────────────
@@ -99,8 +99,10 @@ const SECONDARY_ITEMS: SidebarItem[] = [
   { id: 'usage', label: 'Usage', icon: Activity, route: '/usage' },
   { id: 'docs', label: 'Docs', icon: BookOpen, route: '/docs' },
   { id: 'settings', label: 'Settings', icon: Settings, action: 'open-settings' },
-  { id: 'tour', label: 'Guided Tour', icon: Info, action: 'start-tour' },
-  { id: 'about', label: 'About', icon: Info, action: 'open-about' },
+  // Guided Tour + About are OUT of the nav: the tour does not work and About
+  // was a stub. A menu entry is a promise the click has to keep — a dead one
+  // is worse than an absent one. The handlers (onOpenAbout/start-tour) stay so
+  // nothing else that references them breaks; only the two nav rows are gone.
 ];
 
 const SYSTEM_ACTIONS: SidebarItem[] = [
@@ -351,13 +353,13 @@ function SidebarContent({
                 <HanzoLogo size={20} color="var(--foreground)" />
                 <YStack minWidth={0}>
                   <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" lineHeight="1">Hanzo&nbsp;App</SizableText>
-                  <SizableText marginTop="$0.5" fontSize={10} lineHeight={10} color="$color11">
+                  <SizableText marginTop="$0.5" fontSize="$1" lineHeight={10} color="$color11">
                     {isServerMode ? `Server · v${VERSION}` : `v${VERSION}`}
                   </SizableText>
                 </YStack>
               </Button>
 
-              <Button
+              <Button size="icon"
                 onClick={toggleCollapsed}
                 title="Collapse sidebar"
                 aria-label="Collapse sidebar"
@@ -368,7 +370,7 @@ function SidebarContent({
                 <PanelLeft size={16} />
               </Button>
 
-              <Button
+              <Button size="icon"
                 onClick={() => onMobileOpenChange?.(false)}
                 title="Close menu"
                 aria-label="Close menu"
@@ -399,12 +401,12 @@ function SidebarContent({
               <Divider />
             ) : (
               <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingBottom="$1" paddingTop="$3">
-                <SizableText fontSize={11} fontWeight="500" color="$color11">
+                <SizableText fontSize="$1" fontWeight="500" color="$color11">
                   Projects
                 </SizableText>
                 <DropdownMenu placement="bottom-end">
                   <DropdownMenuTrigger asChild>
-                    <Button
+                    <Button size="icon"
                       aria-label="Project actions"
                       variant="ghost"
                       borderRadius="$2" padding="$0.5" {...{ color: "$color11" }}
@@ -442,7 +444,7 @@ function SidebarContent({
                 }}
                 onBlur={submitNewFolder}
                 placeholder="Folder name…"
-                marginHorizontal="$1" width="calc(100%-0.5rem)" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$3" outlineWidth={0} focusStyle={{ borderColor: "$color8" }}
+                marginHorizontal="$1" width="calc(100% - 0.5rem)" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$3" outlineWidth={0} focusStyle={{ borderColor: "$color8" }}
   />
             )}
             {!collapsed &&
@@ -468,7 +470,7 @@ function SidebarContent({
               <>
                 {collapsed ? <Divider /> : (
                   <YStack paddingHorizontal="$3" paddingBottom="$1" paddingTop="$3">
-                    <SizableText fontSize={11} fontWeight="500" color="$color11">
+                    <SizableText fontSize="$1" fontWeight="500" color="$color11">
                       Recents
                     </SizableText>
                   </YStack>
@@ -494,7 +496,7 @@ function SidebarContent({
             {/* Secondary (kept reachable) */}
             {collapsed ? <Divider /> : (
               <YStack paddingHorizontal="$3" paddingBottom="$1" paddingTop="$3">
-                <SizableText fontSize={11} fontWeight="500" color="$color11">
+                <SizableText fontSize="$1" fontWeight="500" color="$color11">
                   More
                 </SizableText>
               </YStack>
@@ -626,7 +628,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
         {...glass(3)} position="relative" width="100%" maxWidth={448} borderRadius="$8" borderWidth={1} padding="$5"
         onClick={(e) => e.stopPropagation()}
       >
-        <Button
+        <Button size="icon"
           onClick={onClose}
           aria-label="Close"
           position="absolute" right="$4" top="$4" borderRadius="$3" padding="$1" {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }}
@@ -689,7 +691,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
           </Anchor>
         </XStack>
 
-        <Paragraph marginTop="$4" fontSize={11} lineHeight="1.625" color="$color11">
+        <Paragraph marginTop="$4" fontSize="$1" lineHeight="1.625" color="$color11">
           Free weeks are credited when a referred friend&apos;s paid subscription
           starts. Rewards cap at 52 weeks.
         </Paragraph>

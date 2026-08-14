@@ -172,13 +172,12 @@ export function Storefront() {
             <StoreIcon size={24} /> Store
           </H1>
           <XStack alignItems="center" gap="$4">
-            <YStack position="relative" display="none" $md={{ display: "flex" }}>
-              <Search size={16} />
+            <YStack display="none" $md={{ display: "flex" }}>
               <Input
                 placeholder="Search products..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                paddingLeft={36} width={200} $lg={{ width: 300 }}
+                startAdornment={<Search size={16} />} width={200} $lg={{ width: 300 }}
   />
             </YStack>
             <Button
@@ -248,7 +247,9 @@ export function Storefront() {
                       </AspectRatio>
                       {product.listPriceCents &&
                         product.listPriceCents > product.priceCents && (
-                          <Badge className="absolute top-2 left-2">Sale</Badge>
+                          <YStack position="absolute" top="$2" left="$2">
+                            <Badge>Sale</Badge>
+                          </YStack>
                         )}
                     </YStack>
                     <CardContent padding="$4">

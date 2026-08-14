@@ -1,12 +1,13 @@
 "use client";
 
-import { View, YStack, XStack, H2, Paragraph, Image, SizableText, H3 } from '@hanzo/ui';
+import { sends } from '@hanzo/ui/chat';
+import { YStack, XStack, H2, Paragraph, Image, SizableText, H3 } from '@hanzo/ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useIam } from "@hanzo/iam/react";
 import {
   ArrowRight,
   ChevronDown,
+  GitBranch,
   Github,
   GitlabIcon,
   Globe,
@@ -33,23 +34,24 @@ import {
   fetchGitAccounts,
   fetchGitRepos,
   relativeTime,
-  repoImportLink,
   type GitAccount,
   type GitProvider,
   type GitProviderStatus,
   type GitRepo,
 } from "@/lib/api/git";
 import { linkProvider } from "@/lib/hanzo/iam";
-import { isGitUrl, gitUrlGateMessage } from "@/lib/git/url";
+import { isGitUrl } from "@/lib/git/url";
+import { useRepoImport } from "@/lib/import/use-repo-import";
 import { Spinner } from "@/components/ui/spinner";
 
 /**
  * Provider display metadata — the ONE place icon/label per provider lives.
- * Partial: this panel only ever surfaces OAuth-linked accounts (github/gitlab);
- * `hanzo` is our own git and never appears as an importable account, so lookups
- * fall back to the GitHub mark (see call sites) rather than carrying dead rows.
+ * `hanzo` (git.hanzo.ai) is our own git and leads the list: a signed-in user's
+ * forge account is populated automatically, with no OAuth link. Its accounts
+ * carry the forge avatar, so the branch mark shows only as a fallback.
  */
-const PROVIDER_META: Partial<Record<GitProvider, { label: string; Icon: typeof Github }>> = {
+const PROVIDER_META: Record<GitProvider, { label: string; Icon: typeof Github }> = {
+  hanzo: { label: "Hanzo", Icon: GitBranch },
   github: { label: "GitHub", Icon: Github },
   gitlab: { label: "GitLab", Icon: GitlabIcon },
 };
@@ -57,16 +59,26 @@ const PROVIDER_META: Partial<Record<GitProvider, { label: string; Icon: typeof G
 /**
  * Import Git Repository — the real, connected-account import panel.
  *
- * Lists the signed-in user's IAM-linked GitHub accounts (self + orgs) and their
- * live repositories via the same-origin `/v1/git/*` BFF. Selecting an account
- * loads its repos; each row imports into the builder through the existing
- * `/dev?repo=<clone_url>` wire. When nothing is connected it shows an HONEST
- * "Connect GitHub" CTA (never fabricated rows), and a "paste a repository URL"
- * affordance is always available as the fallback.
+ * Lists the signed-in user's IAM-linked GitHub and GitLab accounts (self + orgs)
+ * and their live repositories via the same-origin `/v1/git/*` BFF. Selecting an
+ * account loads its repos; a row and the paste box perform the SAME import
+ * (`useRepoImport`) — the repo is cloned onto git.hanzo.ai with its history and
+ * opened as a project. When nothing is connected it shows an HONEST "Connect"
+ * CTA (never fabricated rows), and pasting a URL always works without one.
  */
 export function ImportGitPanel() {
-  const router = useRouter();
   const { sdk, isAuthenticated, login } = useIam();
+
+  // Sign in and come back here — the one path for every control on this panel
+  // that needs an account it does not have.
+  const signIn = useCallback(() => {
+    try {
+      localStorage.setItem("redirectAfterLogin", window.location.pathname);
+    } catch {
+      /* storage unavailable */
+    }
+    void login();
+  }, [login]);
 
   const [loadingAccounts, setLoadingAccounts] = useState(true);
   const [connected, setConnected] = useState(false);
@@ -78,9 +90,12 @@ export function ImportGitPanel() {
   const [repos, setRepos] = useState<GitRepo[]>([]);
   const [loadingRepos, setLoadingRepos] = useState(false);
   const [search, setSearch] = useState("");
-  const [importing, setImporting] = useState<string>("");
 
   const [pasteUrl, setPasteUrl] = useState("");
+
+  // A row's Import and the paste box are the SAME action — clone the repo onto
+  // git.hanzo.ai with its history, then open it in the builder.
+  const { importing, importRepo } = useRepoImport(signIn);
 
   // True while the user is off linking GitHub in the hanzo.id account tab, so a
   // return to this tab re-checks the connection (idle refocus stays a no-op).
@@ -168,13 +183,8 @@ export function ImportGitPanel() {
       })();
       return;
     }
-    try {
-      localStorage.setItem("redirectAfterLogin", window.location.pathname);
-    } catch {
-      /* storage unavailable */
-    }
-    void login();
-  }, [isAuthenticated, sdk, login, refreshAccounts]);
+    signIn();
+  }, [isAuthenticated, sdk, signIn, refreshAccounts]);
 
   const gitlabStatus = providers.find((p) => p.provider === "gitlab");
   const gitlabConnectable = gitlabStatus?.connectable ?? false;
@@ -202,33 +212,11 @@ export function ImportGitPanel() {
       })();
       return;
     }
-    try {
-      localStorage.setItem("redirectAfterLogin", window.location.pathname);
-    } catch {
-      /* storage unavailable */
-    }
-    void login();
-  }, [gitlabConnectable, isAuthenticated, sdk, login, refreshAccounts]);
-
-  const importRepo = useCallback(
-    (cloneUrl: string) => {
-      setImporting(cloneUrl);
-      router.push(repoImportLink(cloneUrl));
-    },
-    [router],
-  );
+    signIn();
+  }, [gitlabConnectable, isAuthenticated, sdk, signIn, refreshAccounts]);
 
   const submitPaste = useCallback(() => {
-    const url = pasteUrl.trim();
-    if (!isGitUrl(url)) return;
-    // Honest gate: SSH/private remotes can't be fetched — tell the user rather
-    // than routing to a dead end.
-    const gate = gitUrlGateMessage(url);
-    if (gate) {
-      toast.error(gate);
-      return;
-    }
-    importRepo(url);
+    void importRepo(pasteUrl);
   }, [pasteUrl, importRepo]);
 
   const activeAccount = accounts.find((a) => a.login === active);
@@ -243,8 +231,8 @@ export function ImportGitPanel() {
   return (
     <YStack borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4.5" $sm={{ padding: "$5" }}>
       <XStack marginBottom="$1" alignItems="center" gap="$2">
-        <Github size={18} />
-        <H2 fontSize={15} fontWeight="500">Import Git Repository</H2>
+        <GitBranch size={18} />
+        <H2 fontSize="$4" fontWeight="500">Import Git Repository</H2>
       </XStack>
       <Paragraph marginBottom="$4.5" fontSize="$3" color="$color11">
         Connect a repository and deploy it as a service, container, or site —
@@ -314,12 +302,14 @@ export function ImportGitPanel() {
                           <Icon size={16} />
                         )}
                         <SizableText numberOfLines={1}>{a.login}</SizableText>
-                        <SizableText marginLeft="auto" fontSize={11} color="$color11">
-                          {a.provider === "gitlab"
-                            ? "GitLab"
-                            : a.type === "org"
-                              ? "Org"
-                              : "Personal"}
+                        <SizableText marginLeft="auto" fontSize="$1" color="$color11">
+                          {a.provider === "hanzo"
+                            ? "Hanzo"
+                            : a.provider === "gitlab"
+                              ? "GitLab"
+                              : a.type === "org"
+                                ? "Org"
+                                : "Personal"}
                         </SizableText>
                       </DropdownMenuItem>
                     );
@@ -335,9 +325,9 @@ export function ImportGitPanel() {
                     <GitlabIcon size={16} />
                     Add GitLab Account
                     {!gitlabConnectable && (
-                      <Badge variant="outline" className="ml-auto">
-                        Needs setup
-                      </Badge>
+                      <XStack marginLeft="auto">
+                        <Badge variant="outline">Needs setup</Badge>
+                      </XStack>
                     )}
                   </DropdownMenuItem>
                   {/* Stays open: this row reveals the provider list in place, so
@@ -348,10 +338,10 @@ export function ImportGitPanel() {
                   </DropdownMenuItem>
                   {showProviders && (
                     <YStack gap="$1.5" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2">
-                      <SizableText paddingHorizontal="$1" fontSize={11} letterSpacing={0.4} color="$color11">
+                      <SizableText paddingHorizontal="$1" fontSize="$1" letterSpacing={0.4} color="$color11">
                         Providers
                       </SizableText>
-                      <Badge variant="outline" className="gap-1.5">
+                      <Badge variant="outline">
                         <Github size={14} /> GitHub
                       </Badge>
                       {gitlabConnectable ? (
@@ -359,11 +349,11 @@ export function ImportGitPanel() {
                           <GitlabIcon size={14} /> GitLab
                         </Button>
                       ) : (
-                        <Badge variant="outline" className="gap-1.5" title="GitLab connect is being set up">
+                        <Badge variant="outline" title="GitLab connect is being set up">
                           <GitlabIcon size={14} /> GitLab · Setup
                         </Badge>
                       )}
-                      <Badge variant="outline" className="gap-1.5">
+                      <Badge variant="outline">
                         <Globe size={14} /> Bitbucket · Soon
                       </Badge>
                     </YStack>
@@ -372,15 +362,12 @@ export function ImportGitPanel() {
               </DropdownMenu>
             </YStack>
 
-            <YStack position="relative" flex={1}>
-              <View position="absolute" left={12} top={0} bottom={0} zIndex={10} justifyContent="center" pointerEvents="none">
-                <Search size={16} />
-              </View>
+            <YStack flex={1}>
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search repositories…"
-                height="$7" paddingLeft={36}
+                height="$7" startAdornment={<Search size={16} />}
               />
             </YStack>
           </YStack>
@@ -432,7 +419,7 @@ export function ImportGitPanel() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => importRepo(r.cloneUrl)}
+                    onClick={() => void importRepo(r.cloneUrl)}
                     disabled={Boolean(importing)}
                   >
                     {importing === r.cloneUrl ? (
@@ -457,7 +444,7 @@ export function ImportGitPanel() {
           Paste any repository URL
         </Label>
         <Paragraph marginBottom="$2" fontSize="$1" color="$color11">
-          Your <SizableText fontWeight="500" color="$color">git.hanzo.ai</SizableText> repos, GitHub, GitLab, or any git remote — clone, edit, and Push to Git.
+          Your <SizableText fontWeight="500" color="$color">git.hanzo.ai</SizableText> repos, GitHub, GitLab, or any git remote — imported with their full history, then edit and Push to Git.
         </Paragraph>
         <XStack alignItems="center" gap="$2">
           <Input
@@ -465,9 +452,9 @@ export function ImportGitPanel() {
             value={pasteUrl}
             onChange={(e) => setPasteUrl(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") submitPaste();
+              if (sends(e.key, e.nativeEvent)) submitPaste();
             }}
-            placeholder="git.hanzo.ai/hanzoai/app  ·  github.com/org/repo  ·  git@…"
+            placeholder="github.com/org/repo  ·  gitlab.com/group/project  ·  git.hanzo.ai/you/site"
             height={36} flex={1}
           />
           <Button

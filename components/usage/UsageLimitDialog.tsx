@@ -5,7 +5,16 @@
  *
  * Shown when a metered action (an AI generation, a deploy) comes back with an
  * out-of-credit / limit signal — a 402 from the gateway/cloud — instead of
- * failing silently. Two honest paths forward, no fabricated numbers:
+ * failing silently.
+ *
+ * It says what the REFUSAL said. The description used to read "You've reached
+ * your limit" no matter what came back, which is a claim about the reader's
+ * money made by a component that has read none of it — and it was shown, in
+ * production, above a balance line reading six figures. `reason` carries the
+ * gateway's own sentence here (see lib/gateway.ts `said`); absent one, the
+ * modal states no cause at all rather than inventing the likeliest.
+ *
+ * Two honest paths forward, no fabricated numbers:
  *   • Add credits  → the existing in-app wallet / top-up surface (/billing).
  *   • Upgrade plan → the plans page (/pricing).
  *
@@ -16,7 +25,7 @@
  */
 import { YStack, XStack, SizableText } from '@hanzo/ui';
 import { useRouter } from 'next/navigation';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button } from '@hanzo/ui';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@hanzo/ui';
 import { Wallet, Sparkles, ArrowRight, type LucideIcon } from 'lucide-react';
 
 import { useCloudBalance, spendableCents } from '@/lib/billing/live-balance';
@@ -26,9 +35,16 @@ const fmtUsd = (cents: number): string => `$${(cents / 100).toFixed(2)}`;
 export function UsageLimitDialog({
   open,
   onOpenChange,
+  reason,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /**
+   * The sentence the refusal actually stated, when it stated one. It replaces
+   * the generic below rather than joining it: a reader shown both reads the
+   * vague one first and the true one as a footnote.
+   */
+  reason?: string;
 }) {
   const router = useRouter();
   const go = (href: string) => {
@@ -42,7 +58,7 @@ export function UsageLimitDialog({
         <DialogHeader>
           <DialogTitle fontSize="$7" fontWeight="500" letterSpacing={-0.4}>Need more usage?</DialogTitle>
           <DialogDescription color="$color11">
-            You&apos;ve reached your limit. To keep going:
+            {reason ? `${reason} To keep going:` : 'To keep going:'}
           </DialogDescription>
         </DialogHeader>
 
@@ -79,23 +95,49 @@ function OptionCard({
   desc: string;
   onClick: () => void;
 }) {
+  // A pressable XStack, not a Button. Button sizes itself for a single-line
+  // label — it takes its height from the token, so a second line of wrapping
+  // description cannot grow the box. The text rendered OUTSIDE the card and
+  // the next card overlapped it. A card that wraps has to own its own height.
   return (
-    <Button
+    <button
       type="button"
       onClick={onClick}
-      group width="100%" alignItems="flex-start" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4" outlineWidth={0} hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}
+      style={{ all: 'unset', display: 'block', width: '100%', cursor: 'pointer' }}
     >
-      <XStack height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color3">
-        <SizableText color="$color"><Icon size={20} /></SizableText>
-      </XStack>
-      <YStack minWidth={0} flex={1}>
-        <XStack alignItems="center" justifyContent="space-between" gap="$2">
-          <SizableText fontSize="$3" fontWeight="500" color="$color">{title}</SizableText>
-          <ArrowRight size={16} />
+      <XStack
+        width="100%"
+        alignItems="flex-start"
+        gap="$3"
+        borderRadius="$6"
+        borderWidth={1}
+        borderColor="$borderColor"
+        backgroundColor="$background"
+        padding="$4"
+        hoverStyle={{ borderColor: '$color', backgroundColor: '$color3' }}
+        pressStyle={{ backgroundColor: '$color3' }}
+      >
+        <XStack height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color3">
+          <SizableText color="$color"><Icon size={20} /></SizableText>
         </XStack>
-        <SizableText marginTop="$0.5" fontSize="$1" lineHeight="1.625" color="$color11">{desc}</SizableText>
-      </YStack>
-    </Button>
+        {/* flexGrow + an AUTO basis, never `flex={1}`.
+            `flex={1}` compiles to `flex-basis: 0` in gui's flex model, so in a
+            content-sized row the column's hypothetical height is 0 and it does
+            not reserve the space its own text needs. The wrapping description
+            then painted OUTSIDE the card and landed on the card below it — the
+            live modal showed "…for what you use." running through "Upgrade your
+            plan". Same collapse this app already fixed on TabsContent and
+            CardContent; the remedy is the same: keep the growing, restore the
+            basis. */}
+        <YStack minWidth={0} flexGrow={1} flexBasis="auto" gap="$1">
+          <XStack alignItems="center" justifyContent="space-between" gap="$2">
+            <SizableText fontSize="$3" fontWeight="500" color="$color">{title}</SizableText>
+            <SizableText color="$color11" flexShrink={0}><ArrowRight size={16} /></SizableText>
+          </XStack>
+          <SizableText fontSize="$1" lineHeight={18} color="$color11">{desc}</SizableText>
+        </YStack>
+      </XStack>
+    </button>
   );
 }
 

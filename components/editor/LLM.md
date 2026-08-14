@@ -305,10 +305,109 @@ pins its own viewport (the bar is breakpoint-gated) and asserts a coverage floor
 BEFORE any geometry: written without one, its assertions pass against the
 hanzo.id login page — measured, not hypothesised.
 
-**KNOWN, unfixed:** below ~1440px the centre cluster and the pinned
-Share/Publish actions OVERLAP (mobile 390px: 4 pairs, `Code ∩ Publish` by
-42x44px; tablet 834px: 2 pairs). A press lands on whichever paints last. Two
-candidate fixes — `flexShrink: 1` + `minWidth: 0` on the centre cluster, and the
-same on the left cluster — were MEASURED to change nothing, so neither is in the
-tree. Reproduce by comparing the bounding rects of every control in the top band
-at 390 / 834 / 1440; the rects overlap, which a desktop screenshot cannot show.
+**The sub-1440px overlap is FIXED** (re-measured 2026-08-09 at 390×844 against
+production: 5 controls in the top band, zero overlapping pairs). The fix was
+never the flexShrink attempts this note used to recommend against — the mobile
+header now COLLAPSES to a single icon row (pane trough + share + Publish) and
+the desktop-only clusters (device trough, Homepage pill, refresh, external)
+simply do not render at small widths. If an overlap ever reappears, measure the
+same way: bounding rects of every control in the top band at 390 / 834 / 1440 —
+a desktop screenshot cannot show it.
+
+### The visual-edit round trip: a click has to say WHERE, not just what
+
+Clicking an element in the preview must give the agent a file and a line. It did
+not. `ElementInfo` (`preview/bridge.ts`) carries selector, xpath, classes,
+styles and `outerHTML` — no location — and the composer forwarded only
+`selectedElementHtml`, so `/v1/generate` said "update ONLY the following
+element" and handed the model markup to find for itself across every page.
+
+**That markup is the BROWSER'S serialization, and it frequently appears nowhere
+in the source.** The DOM reorders attributes into insertion order, re-quotes
+values to double, closes void tags and resolves entities. Measured in jsdom
+against `<button id='buy'   class='btn primary'>`: the source does not contain
+the string `outerHTML` returns. So the old locator — regex-matching
+`element.html.substring(0, 100)` — missed by construction, and when it hit, hit
+by luck.
+
+It also labelled every answer `file: "index.html"`, a literal, while a project
+is `Page[]` with real paths. On a multi-page project it returned a line from
+whichever buffer was open under the name of a different file. **A wrong file
+with a plausible line is worse than no answer** — it aims an edit at the wrong
+document and reports success.
+
+`lib/source-locate.ts` is the one answer, a pure function over `(anchor,
+pages)`. The previous one lived inside a `useCallback` and could only be reached
+by rendering the builder, which is why nothing verified it. It is an anchor
+ladder, each rung a property that SURVIVES serialization — `id`, then a
+distinctive attribute (`data-testid`/`name`/`href`/…), then the full class list,
+then visible text matched between `>` and `<` rather than as a substring, so
+`"Buy"` cannot resolve to a hit inside `id="Buyer"`.
+
+**Every rung demands a UNIQUE match across all pages and returns `undefined`
+otherwise.** An ambiguous anchor is not a location; a caller handed a guess
+edits a coin-flip line. `undefined` leaves the prompt exactly as it was.
+
+The location travels: `ask-ai` computes it, `useCallAi` forwards it as
+`selectedElementAt`, and `app/v1/generate/route.ts` names the file, the line and
+the rung that matched. `applyEdit` (`lib/edit/apply.ts`) is the other half and
+already holds the same line — exact match, then a relaxed one ONLY when it names
+one place.
+
+Two things to check before trusting a change here. The ladder reads `id`,
+`className`, `text` and `html`, and `bridge.ts:162-166` is what fills them — a
+rung anchored on a field the bridge does not send passes every unit test and
+resolves nothing in the product. And `tests/unit/source-locate.test.ts` feeds
+the last four cases a REAL jsdom serialization rather than hand-written strings,
+because a hand-written fixture only encodes what the author believed a browser
+emits.
+
+**Still unproven: the live gesture.** No test drives a real click in `/dev` and
+asserts the request body carries `selectedElementAt`. Only a browser can tell a
+correct recipe from one that arrives — the same reason `editor-toolbar.spec.ts`
+exists rather than a unit test on `iconBox`.
+
+### The dock got a prompt: `cd` is the only state it claims
+
+The console was output-only — a log you could read and not talk to. It now has
+a prompt (`Prompt` in `components/editor/console/index.tsx` → `/v1/shell`), and
+the interesting part is what it does NOT pretend.
+
+**Cloud runs every command as its own process.** The `session` field on cloud's
+`/run` is a NARRATION channel — it copies output into a run's log as it is
+produced — not a PTY. So nothing survives between commands on its own, and a
+surface calling itself a shell while `cd` silently did nothing would be lying in
+the most ordinary way a person could find.
+
+So the working directory is carried by the CLIENT and re-applied per command
+(`lib/shell.ts`): `wrap()` prefixes `cd <cwd> || cd .` and appends a `printf` of
+`$PWD`; `unwrap()` splits that marker back off. Three details are load-bearing
+and each is pinned in `tests/unit/shell.test.ts`:
+
+- **`||`, never `&&`.** A command can delete the directory it ran in. `&&` would
+  refuse to run anything afterwards and strand the shell with no way to type its
+  way out.
+- **`__hz=$?` BEFORE the printf.** `printf` succeeds, so capturing the status
+  after it would report 0 for every failed command.
+- **`lastIndexOf`, not `indexOf`.** `cat lib/shell.ts` prints the marker;
+  anchoring on the first occurrence truncates the command's own output.
+
+The path is single-quoted with `'\''` escaping because it comes back FROM the
+sandbox and a directory may legally be named `'; rm -rf /`.
+
+Environment variables and background jobs do not survive, and the placeholder
+says so rather than leaving it to be discovered.
+
+**One sandbox, one checkout.** When an agent run is live the prompt borrows its
+`sandbox` id (`useRun()`), so what you `ls` is the checkout the agent is editing
+— not a second copy. Otherwise the first command opens the project's sandbox and
+the id is held for the rest of the session; without that every line would open a
+new pod and bill one per keystroke. Ownership is never asserted client-side: the
+route forwards the IAM session and cloud decides which sandbox that identity may
+open, so a sandbox id in the body is not a capability.
+
+**`Source` gained `you`.** Authorship, not severity — which is why it is a
+`Source` and not a `Level`. A typed line renders `$` in the foreground; the
+sandbox answers with `›` and the preview with `·`, both dimmed. Without it a
+transcript gives a command and its output the same weight and you cannot find
+where you were.

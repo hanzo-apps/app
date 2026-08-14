@@ -68,12 +68,19 @@ test.describe('/new — deploy hub', () => {
     await page.goto('/new');
     await composer(page).fill('a project management tool with a kanban board');
     // Plain text → BUILD.
-    await expect(page.getByRole('button', { name: 'Build' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Deploy' })).toHaveCount(0);
+    //
+    // `exact`, on all four, because the name match is a substring by default and
+    // the Clone-a-Template panel below the composer is FETCHED content: a
+    // template named "Deploy Next.js 14 · Bento Cards" renders as a card with
+    // role=button, so a loose "Deploy" found it and read the composer as stuck
+    // on Deploy while the composer was correct. Anyone may break this again by
+    // naming a template; matching the whole name is what makes that impossible.
+    await expect(page.getByRole('button', { name: 'Build', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Deploy', exact: true })).toHaveCount(0);
     // Paste a repo URL → flips to DEPLOY.
     await composer(page).fill('https://github.com/hanzoai/app');
-    await expect(page.getByRole('button', { name: 'Deploy' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Build' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Deploy', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Build', exact: true })).toHaveCount(0);
   });
 
   test('quick-start chip fills the composer and keeps Build', async ({ page }) => {

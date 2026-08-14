@@ -19,28 +19,21 @@
 'use client';
 
 import { XStack, SizableText } from '@hanzo/ui';
+import { ENSO_MARK } from '@hanzo/logo/logos';
 
 /** Mono `currentColor` bodies, keyed by their `hanzoai/icons` slug. */
 const MARKS: Record<string, string> = {
-  // THE TWO HOUSE MARKS ARE NOT THE SAME MARK, and the difference is the whole
-  // point. Zen is the ensō (円相): one brush arc left OPEN. Enso is the router
-  // that completes the circle by picking the right model, so its ring is
-  // CLOSED. Drawing one for both says the two families are one thing.
+  // Enso is the house mark, and the only one: it comes from @hanzo/logo, the ONE
+  // canonical source, as the CLOSED brush ring.
+  // VERIFIED: @hanzo/logo@1.0.17 DOES export ENSO_MARK (npm tarball +
+  // dist/logos.d.ts); the lockfile pins 1.0.17, so a fresh install resolves it
+  // and tsc is green — do not restore an inline copy on a stale node_modules.
   //
-  // Geometry is the canonical `EnsoLogoIcon`/`ZenLogoIcon` from hanzo.chat
-  // (itself zenlm/logo), scaled from their 100-unit viewBox onto this table's
-  // shared 24-unit one. ×0.24 is exact at every coordinate — r 37→8.88, stroke
-  // 11→2.64 — so this is the same mark, not a redrawing of it. Both keep round
-  // caps and one stroke width, so they sit at equal optical weight in a list
-  // where they appear directly above one another.
-
-  // Enso — closed ring.
-  enso:
-    '<circle cx="12" cy="12" r="8.88" fill="none" stroke="currentColor" stroke-width="2.64" stroke-linecap="round"/>',
-  // Zen — the ensō, open. The gap sits where a Q's tail would go: it runs from
-  // ~3.5 to ~5.1 o'clock, and the arc sweeps the long way round to leave it.
-  zen:
-    '<path d="M15.8928 19.9824 A8.88 8.88 0 1 1 20.5368 14.448" fill="none" stroke="currentColor" stroke-width="2.64" stroke-linecap="round"/>',
+  // Zen is NOT here and is not a house mark. Zoo Labs Foundation makes it, so it
+  // wears Zoo's mark like every other maker below — see `zoo`, and `zen: 'zoo'`
+  // in OF. It used to be @hanzo/logo's ZEN_MARK, the same brush ring left open,
+  // which drew Hanzo's house glyph on someone else's models.
+  enso: ENSO_MARK,
   ai21:
     '<path d="M6.47 17l-.367-1.189H2.718L2.35 17H0l3.398-9.789h2.026L8.864 17H6.47zm-2.052-6.993l-1.17 4.028H5.56l-1.142-4.028zm4.707-2.796h2.23V17h-2.23V7.211zM11.955 15c.1-.483.277-.946.524-1.37.214-.359.482-.68.795-.951.32-.273.658-.52 1.013-.741.28-.168.54-.33.781-.483.222-.14.433-.296.632-.468.172-.148.317-.325.428-.525.107-.199.16-.423.157-.65 0-.392-.104-.674-.313-.846a1.176 1.176 0 00-.775-.259 1.207 1.207 0 00-.863.329c-.231.219-.347.585-.347 1.098H11.8a3.387 3.387 0 01.224-1.245c.146-.377.371-.716.66-.993.306-.29.667-.514 1.06-.657A4.04 4.04 0 0115.183 7c.42-.002.84.057 1.244.175.376.107.73.287 1.04.531.305.246.55.562.714.923.185.419.275.875.265 1.335.005.39-.084.774-.259 1.12-.167.328-.38.63-.632.894-.246.259-.517.49-.808.693-.29.2-.554.37-.789.51-.326.224-.596.417-.809.58a3.872 3.872 0 00-.51.455 1.229 1.229 0 00-.265.434 1.633 1.633 0 00-.074.517h4.078V17h-6.606a9.24 9.24 0 01.183-2zM18.8 8.93a5.05 5.05 0 001.135-.105c.25-.049.484-.156.686-.314.163-.139.28-.324.34-.532.068-.25.1-.51.095-.77H23V17h-2.243v-6.475H18.8V8.93z"></path>',
   alibaba:
@@ -115,6 +108,23 @@ const MARKS: Record<string, string> = {
     '<path d="M18.62 13.927c.611 0 1.107.505 1.107 1.128v5.817c0 .623-.496 1.128-1.108 1.128a1.118 1.118 0 01-1.108-1.128v-5.817c0-.623.496-1.128 1.108-1.128zM16.59 3.052a1.094 1.094 0 011.562-.129c.466.404.522 1.116.126 1.59l-5.938 7.111v9.147c0 .624-.496 1.129-1.108 1.129a1.118 1.118 0 01-1.108-1.129v-9.477l.003-.088.01-.087c.015-.232.102-.462.261-.654l6.192-7.413zM2.906 2.256a1.094 1.094 0 011.559.157l4.387 5.45a1.142 1.142 0 01-.155 1.587 1.094 1.094 0 01-1.559-.157l-4.387-5.45a1.144 1.144 0 01.06-1.498l.095-.09z"></path><ellipse cx="20.146" cy="10.692" rx="1.354" ry="1.379"></ellipse>',
   zeroone:
     '<path clip-rule="evenodd" d="M18.62 13.927c.611 0 1.107.505 1.107 1.128v5.817c0 .623-.496 1.128-1.108 1.128a1.118 1.118 0 01-1.108-1.128v-5.817c0-.623.496-1.128 1.108-1.128h.001zM16.59 3.052a1.095 1.095 0 011.562-.13c.466.405.522 1.117.126 1.59l-5.938 7.112v9.147c0 .624-.496 1.129-1.108 1.129a1.119 1.119 0 01-1.108-1.13v-9.476l.003-.088.01-.087a1.14 1.14 0 01.261-.654l6.192-7.413zM2.906 2.256a1.094 1.094 0 011.559.157l4.387 5.45a1.142 1.142 0 01-.155 1.587 1.094 1.094 0 01-1.559-.157l-4.387-5.45a1.144 1.144 0 01.06-1.498l.095-.09z"></path><path d="M20.146 12.071c.748 0 1.354-.617 1.354-1.379s-.606-1.379-1.354-1.379c-.748 0-1.354.617-1.354 1.379s.606 1.379 1.354 1.379z"></path>',
+  // Zoo Labs Foundation, zoo.industries — the maker of the Zen family. Its mark
+  // is a venn: three circles, one per additive primary, held inside their own
+  // ring. Mapped here from the 1024-unit original (zooai/logo, LOGO_SETTINGS)
+  // onto this table's 24-unit box, and cut to the disc so the three circles stop
+  // at the ring instead of overrunning it.
+  //
+  // The cut is a real `<clipPath>`, the same idiom Zoo's own files use. A CSS
+  // `clip-path: circle(11.5px …)` was tried first and is WRONG here: CSS lengths
+  // resolve against the rendered box, not the 24-unit viewBox, so at an 18px icon
+  // the disc lands outside the art, nothing is cut, and the three circles square
+  // off against the viewport into a scribble.
+  //
+  // The id repeats when a list draws several Zen models. That is safe: every copy
+  // is identical, so `url(#zoo-cut)` resolves to the same shape whichever one wins,
+  // and browsers re-resolve if that one unmounts.
+  zoo:
+    '<defs><clipPath id="zoo-cut"><circle cx="12" cy="12" r="11.5"></circle></clipPath></defs><g clip-path="url(#zoo-cut)" fill="none" stroke="currentColor"><circle cx="12.203" cy="6.27" r="9.509" stroke-width="1.341"></circle><circle cx="6.189" cy="15.454" r="9.509" stroke-width="1.341"></circle><circle cx="17.486" cy="15.454" r="9.509" stroke-width="1.341"></circle><circle cx="12" cy="12" r="10.769" stroke-width="1.463"></circle></g>',
 };
 
 /**
@@ -140,6 +150,8 @@ const OF: Record<string, string> = {
   trinity: 'arcee',
   video: 'alibaba',
   xiaomi: 'xiaomimimo',
+  // Zen is Zoo Labs Foundation's, the same way gpt is OpenAI's.
+  zen: 'zoo',
   zhipu: 'chatglm',
 };
 

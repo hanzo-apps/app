@@ -22,14 +22,22 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { session } from "@/lib/iam";
+import { session, type Session } from "@/lib/iam";
 import { requireSameOrigin } from "@/lib/org/csrf";
+import { slugifyProject } from "@/lib/org/policy";
 import { resolveModelId } from "@/lib/providers";
 import { runAgent, type AgentEvent, type AgentFile, type ProjectFs } from "@/lib/agent";
 import { AgentSession } from "@/lib/agent/session";
-import { Sandbox, openSandbox, releaseSandbox } from "@/lib/agent/sandbox";
+import type { Repo } from "@/lib/agent/checkout";
+import { Sandbox, openSandbox, releaseSandbox, type Runtime } from "@/lib/agent/sandbox";
+import { runHarness } from "@/lib/agent/harness";
 
 const HANZO_AI_BASE_URL = process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai/v1";
+
+// How long ONE harness run may take inside the sandbox. Long, because this is a
+// coding agent editing a real checkout rather than a single completion, and the
+// caller is streaming: a turn still producing events is still working.
+const HARNESS_TIMEOUT_SEC = 900;
 
 const unauthorized = () =>
   NextResponse.json(
@@ -46,6 +54,28 @@ interface AgentRequestBody {
   id?: unknown;
   /** Run in a sandbox for this project, creating one if there is none. */
   project?: unknown;
+  /** Which isolation boundary to ask cloud for. See `runtimeAsked`. */
+  runtime?: unknown;
+}
+
+/**
+ * The runtime this request asks for, or none.
+ *
+ * Narrowed against the closed set for the same reason every other field here is
+ * narrowed: the body is `unknown` and this value is forwarded to cloud. An
+ * unknown name would be refused there anyway — the point of doing it here is
+ * that a person who typed nothing gets the fleet's runtime rather than a 400
+ * about a word this route invented.
+ *
+ * It is NOT a policy check. Cloud owns the policy and will refuse a choice this
+ * route happily forwards; that refusal is the thing the person needs to read,
+ * so nothing here tries to predict it.
+ */
+const RUNTIMES: readonly Runtime[] = ["runc", "gvisor", "kata-fc"];
+
+function runtimeAsked(raw: unknown): Runtime | undefined {
+  const v = typeof raw === "string" ? raw.trim() : "";
+  return RUNTIMES.includes(v as Runtime) ? (v as Runtime) : undefined;
 }
 
 /**
@@ -77,21 +107,38 @@ interface Where {
   fs?: ProjectFs;
   id?: string;
   project?: string;
+  /** The runtime cloud GRANTED, read off the sandbox it handed back. */
+  runtime?: string;
   opened?: boolean;
   durable: boolean;
   reason?: string;
+  /**
+   * The repo the pod is a working copy of — present only when it IS one, because
+   * that is exactly the condition under which the turn can be committed and
+   * pushed. The harness gets it or it gets nothing; there is no third state where
+   * it tries and hopes.
+   */
+  repo?: Repo;
+  /** Why it is not one, when it is not. */
+  stranded?: string;
 }
 
 /**
  * Can this sandbox actually be written to?
  *
  * "We got a sandbox" and "this run's edits will survive" are DIFFERENT FACTS, and
- * conflating them reproduces the exact defect this endpoint exists to end. Live,
- * today: `POST /v1/sandboxes {project}` answers 201 with a running pod whose
- * project volume is mounted root-owned into a container that runs as uid 1000,
- * so every write returns `Permission denied` — a sandbox that opens perfectly and
- * saves nothing. Reporting that as durable is the silent-fallback bug wearing a
- * pod.
+ * conflating them reproduces the exact defect this endpoint exists to end. The
+ * case that proved it: a pod whose project volume was mounted root-owned under a
+ * container running as uid 1000, so it opened perfectly and every write came back
+ * `Permission denied`. Reporting that as durable is the silent-fallback bug
+ * wearing a pod.
+ *
+ * That particular mount is FIXED — `/work` is now `root:sandbox` with the setgid
+ * bit and the container's uid 1000 is in that group, measured against the live
+ * service — so this check passes today and costs one exec (~0.3s warm). It stays
+ * because what it asserts is the invariant, not that one bug: the day a mount,
+ * a quota or a read-only volume takes writes away again, the run says so instead
+ * of discovering it one failed edit at a time.
  *
  * One `exec`, no litter: `test -w .` asks the directory the same question the run
  * is about to ask it, and writes nothing to answer it. A failure carries the
@@ -111,38 +158,94 @@ async function writable(fs: Sandbox): Promise<string> {
   }
 }
 
-async function resolveFs(token: string, body: AgentRequestBody): Promise<Where> {
-  const id = typeof body.id === "string" ? body.id.trim() : "";
-  const project = typeof body.project === "string" ? body.project.trim() : "";
+/**
+ * WHICH REPO this run's project is, on git.hanzo.ai.
+ *
+ * The owner is the caller's IAM username — `session.name` IS that username, and
+ * the forge auto-registered an account under it — and the name is the project
+ * slug. Both come from the verified session and the named project, never from
+ * anything the browser can choose, which is what makes it safe for the server to
+ * clone and push with an admin-scoped forge credential.
+ *
+ * It is derived HERE, once, and the same object is handed to `openSandbox` (which
+ * clones it) and to `runHarness` (which pushes to it). `/v1/git/native` derives
+ * the identical pair the identical way; a second spelling of it would be a
+ * sandbox editing one repo while the rest of the app committed to another.
+ */
+function repoOf(id: Session, project: string): Repo | undefined {
+  const name = slugifyProject(project);
+  return id.name && name ? { owner: id.name, name } : undefined;
+}
 
-  if (id) {
-    const fs = new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id, token });
+async function resolveFs(id: Session, body: AgentRequestBody): Promise<Where> {
+  const token = id.token;
+  const held = typeof body.id === "string" ? body.id.trim() : "";
+  const project = typeof body.project === "string" ? body.project.trim() : "";
+  const runtime = runtimeAsked(body.runtime);
+  const repo = project ? repoOf(id, project) : undefined;
+
+  if (held) {
+    const fs = new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id: held, token });
     const why = await writable(fs);
-    // A sandbox that cannot be written to is not a place to work: every edit the
-    // model made would fail one at a time and it would spend the run debugging
-    // the cluster. Memory does the work; the reason says it is not saved.
-    return why
-      ? { id, project, durable: false, reason: why }
-      : { fs, id, project, durable: true };
+    // A warm pod this caller already holds was made a working copy when it was
+    // opened, and it is the same pod — so it is still one, and `land` says so
+    // plainly if it is not.
+    if (!why) return { fs, id: held, project, durable: true, ...(repo ? { repo } : {}) };
+    // THE ID IS A HINT AND THE PROJECT IS THE FACT, and getting that backwards
+    // broke the second message of every conversation. This route RELEASES the
+    // sandbox it opened when the run ends — the pod goes, the disk stays — so the
+    // id a turn hands back is dead by the time the next turn quotes it, and
+    // measuring it gives 404 on the write check. Preferring the id and stopping
+    // there turned "your warm pod went away" into "nothing you do is saved", for
+    // a project whose checkout was sitting right there.
+    //
+    // So a dead id falls through to the project rather than to memory. Falling
+    // back to MEMORY is reserved for having nowhere to work at all.
+    if (!project) return { id: held, durable: false, reason: why };
   }
 
   if (project) {
-    const sandbox = await openSandbox({ baseUrl: HANZO_AI_BASE_URL, token, project });
-    if (sandbox) {
-      const fs = new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id: sandbox.id, token });
+    const opened = await openSandbox({
+      baseUrl: HANZO_AI_BASE_URL,
+      token,
+      project,
+      runtime,
+      // The pod comes back holding the project's checkout — or holding a sentence
+      // saying why it does not.
+      ...(repo ? { repo } : {}),
+    });
+    if ("sandbox" in opened) {
+      const fs = new Sandbox({ baseUrl: HANZO_AI_BASE_URL, id: opened.sandbox.id, token });
       const why = await writable(fs);
+      // THE GRANTED RUNTIME, off the sandbox — never the one asked for. Cloud may
+      // answer with a different boundary than the request named, and reporting
+      // the request back would make every comparison unfalsifiable.
+      const got = opened.sandbox.runtime ?? "";
       // `opened` either way: the pod exists and this run is the only thing that
       // knows about it, so it still has to be given back.
       return why
-        ? { id: sandbox.id, project, opened: true, durable: false, reason: why }
-        : { fs, id: sandbox.id, project, opened: true, durable: true };
+        ? { id: opened.sandbox.id, project, runtime: got, opened: true, durable: false, reason: why }
+        : {
+            fs,
+            id: opened.sandbox.id,
+            project,
+            runtime: got,
+            opened: true,
+            durable: true,
+            // One or the other, never both: a pod that is a working copy gets the
+            // repo to push to, and a pod that is not gets the sentence saying so.
+            ...(opened.stranded ? { stranded: opened.stranded } : repo ? { repo } : {}),
+          };
     }
     // A project WAS named and it did not get one. This is the case that used to
-    // disappear: the run continued against a map and reported success.
+    // disappear: the run continued against a map and reported success. It now
+    // carries the SERVICE's reason — a quota, a pod that would not start and an
+    // unreachable service each need a different thing done about them, and one
+    // sentence for all three told the person nothing they could act on.
     return {
       project,
       durable: false,
-      reason: `No sandbox for ${project} — the sandbox service did not give one out. This run edits a scratch copy in memory and nothing it writes is saved.`,
+      reason: `No sandbox for ${project}. ${opened.why} This run edits a scratch copy in memory and nothing it writes is saved.`,
     };
   }
 
@@ -177,8 +280,12 @@ export async function POST(request: NextRequest) {
   const csrf = requireSameOrigin(request);
   if (csrf) return csrf;
 
-  const token = (await session(request))?.token;
-  if (!token) return unauthorized();
+  // The whole session, not just its bearer: the forge account this run commits
+  // to is `session.name`, and taking it from anywhere else would let a caller
+  // name somebody else's repo.
+  const id = await session(request);
+  if (!id?.token) return unauthorized();
+  const token = id.token;
 
   let body: AgentRequestBody;
   try {
@@ -199,28 +306,15 @@ export async function POST(request: NextRequest) {
       ? body.maxTurns
       : undefined;
 
-  // Register the run on the canonical registry BEFORE streaming. This is what
-  // makes it a session rather than an anonymous stream: it shows up in the
-  // fleet views, and its control queue is what pause/resume/stop/message from
-  // any surface arrive through. Unreachable registry => `open()` returns null
-  // and the run proceeds exactly as it did before, private to this caller.
-  const where = await resolveFs(token, body);
-  const { fs, id, opened } = where;
-
-  const agentSession = new AgentSession({
-    baseUrl: HANZO_AI_BASE_URL,
-    token,
-    agent: "hanzo-app",
-    title: prompt.slice(0, 120),
-    // Where it runs, so the fleet views show a sandbox run as a sandbox run rather than
-    // as an anonymous stream from a browser tab.
-    ...(id ? { host: id, repo: where.project } : {}),
-  });
-  await agentSession.open();
-
   const encoder = new TextEncoder();
   const stream = new TransformStream<Uint8Array, Uint8Array>();
   const writer = stream.writable.getWriter();
+
+  // The run's handle on the agent registry, once there is one. `emit` works
+  // before it exists so that a frame always reaches the person watching, even if
+  // the registry never answers — the caller is the audience, the registry a copy.
+  // (Not `session`: that name is the IAM caller, and there is one of those.)
+  let registry: AgentSession | undefined;
 
   // Each AgentEvent is one SSE `data:` frame of JSON — the UI reads `type` to
   // pick a card (reasoning / tool_call / tool_result / text), same event shapes
@@ -229,7 +323,7 @@ export async function POST(request: NextRequest) {
     // Out to the caller first — they are watching — then to the registry, which
     // queues and never blocks this write.
     await writer.write(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
-    agentSession.publish(event);
+    registry?.publish(event);
   };
 
   const response = new NextResponse(stream.readable, {
@@ -240,33 +334,156 @@ export async function POST(request: NextRequest) {
     },
   });
 
+  // EVERYTHING SLOW HAPPENS AFTER THE RESPONSE IS HANDED BACK.
+  //
+  // Opening a sandbox BLOCKS until the pod is running — 11-15s warm, ~27s on a
+  // cold image pull. All of that used to run before this function returned, so
+  // the browser had no response at all, not even headers, for as long as it
+  // took: a run that was working perfectly was indistinguishable from a hung one
+  // for half a minute, and it is the FIRST thing a person sees of the feature.
+  //
+  // The stream now opens immediately and the sandbox is resolved on it, which is
+  // also where the `sandbox` frame belongs — it is a fact about the run, and the
+  // run has already started. Nothing that decides whether to serve at all moved:
+  // origin, session, body and prompt are all settled above, and still answer with
+  // a status a client can read.
   (async () => {
+    // Named out here because `finally` must give back a sandbox that a failure
+    // half way through opening still left running.
+    let give: string | undefined;
     try {
-      // WHERE, before anything else. The client marks the run from this frame,
-      // so it has to precede the first token the user could mistake for work
-      // being saved.
+      // The response head does not leave until the body's first chunk does — a
+      // streamed body sends nothing on its own, so moving the slow work off the
+      // request path bought nothing by itself: `fetch()` stayed pending for the
+      // whole sandbox create exactly as before (measured: 14.6s to first byte).
+      //
+      // An SSE COMMENT is the frame that costs nothing to send and nothing to
+      // receive: the spec ignores lines beginning with `:`, and our own reader
+      // skips every line that is not `data:`. It is not an event, so no UI has to
+      // learn it — but it flushes the head, which is what makes the connection
+      // observably alive while the pod comes up.
+      await writer.write(encoder.encode(": open\n\n"));
+
+      const where = await resolveFs(id, body);
+      if (where.opened) give = where.id;
+
+      // Register the run on the canonical registry. This is what makes it a
+      // session rather than an anonymous stream: it shows up in the fleet views,
+      // and its control queue is what pause/resume/stop/message from any surface
+      // arrive through. Unreachable registry => `open()` returns null and the run
+      // proceeds exactly as it did before, private to this caller.
+      registry = new AgentSession({
+        baseUrl: HANZO_AI_BASE_URL,
+        token,
+        agent: "hanzo-app",
+        title: prompt.slice(0, 120),
+        // Where it runs, so the fleet views show a sandbox run as a sandbox run
+        // rather than as an anonymous stream from a browser tab.
+        ...(where.id ? { host: where.id, repo: where.project } : {}),
+      });
+      const watching = await registry.open();
+
+      // NOW the sandbox knows where to narrate. Every command from here on
+      // appends its output to that session's log as the program produces it, so
+      // a person watching sees the build work rather than a blank pause — which
+      // is the whole difference between a 25-minute run that shows four lines
+      // and one you can read. It is set here rather than at construction because
+      // the sandbox has to exist before the session can say which sandbox it is
+      // running on; a run with no registry simply narrates to nobody.
+      if (watching && where.fs instanceof Sandbox) where.fs.watch(watching);
+
+      // WHERE, before any token. The client marks the run from this frame, so it
+      // has to precede the first thing a user could mistake for work being saved.
+      // It also names the session, because that is the address the client tails
+      // to see the commands run.
       await emit({
         type: "sandbox",
         durable: where.durable,
         ...(where.id ? { id: where.id } : {}),
         ...(where.project ? { project: where.project } : {}),
+        ...(where.runtime !== undefined ? { runtime: where.runtime } : {}),
         ...(where.reason ? { reason: where.reason } : {}),
+        ...(watching ? { session: watching } : {}),
       });
-      await runAgent(
-        {
-          token,
-          baseUrl: HANZO_AI_BASE_URL,
-          model,
-          prompt,
-          files,
-          fs,
-          maxTurns,
-          signal: request.signal,
-          session: agentSession,
-        },
-        emit
-      );
-      await agentSession.close("done");
+      // THE HARNESS DRIVES A RUN THAT HAS A REAL SANDBOX, and the loop drives
+      // the ones that do not.
+      //
+      // `dev` is the same binary that codes in a terminal, and running it here
+      // is what stops hanzo.app carrying a SECOND coding agent that has to be
+      // kept in step with the first by discipline. It needs the project to be on
+      // a disk it can see, which is exactly what `where.fs` being a Sandbox
+      // means — so the condition is the sandbox, not a flag.
+      //
+      // A run with no sandbox (no project named, or the service refused) still
+      // has to answer, and `loop.ts` answers it against an in-memory project.
+      // That path already tells the truth about itself: the `sandbox` frame
+      // above carries durable:false and the reason, emitted before either engine
+      // starts.
+      if (where.fs instanceof Sandbox) {
+        // A pod that is not a working copy of the project's repo can still be
+        // coded in, and the work still lands on its volume — but it will not
+        // become a revision, and that is the exact silence this endpoint keeps
+        // being caught in. Said before the work, not after it.
+        if (where.stranded) await emit({ type: "error", message: where.stranded });
+
+        const result = await runHarness(
+          where.fs,
+          {
+            task: prompt,
+            token,
+            model,
+            timeoutSec: HARNESS_TIMEOUT_SEC,
+            ...(where.repo ? { repo: where.repo } : {}),
+          },
+          emit
+        );
+        // The harness failing is not the task failing, and the two must not read
+        // the same. A non-zero exit with nothing relayed would otherwise close
+        // as a clean `done` with an empty transcript.
+        if (result.exitCode !== 0) {
+          await emit({
+            type: "error",
+            message: `the coding harness exited ${result.exitCode}`,
+          });
+        }
+        // A turn that ran but did not reach the forge. The work is on the volume
+        // and the next turn resumes from it; what is missing is the revision.
+        if (result.unpushed) await emit({ type: "error", message: result.unpushed });
+        // `done` CLOSES THE TURN, and for a harness run it carries NO CONTENTS.
+        //
+        // The pod committed and pushed this turn itself, to the repo it was
+        // cloned from, so the browser has nothing left to reconstruct — and
+        // reconstruction is what used to corrupt it: every changed file was read
+        // back and handed over as a `page`, which put `.tsx` and `.json` into the
+        // HTML page set and committed them a second time as pages.
+        //
+        // The path list stays, because a person watching wants to see what the
+        // turn touched. loop.ts still sends contents on its own path, and must:
+        // an in-memory run has no other copy anywhere.
+        await emit({
+          type: "done",
+          finishReason: result.exitCode === 0 ? "stop" : "error",
+          turns: 1,
+          files: [],
+          changed: result.changed,
+        });
+      } else {
+        await runAgent(
+          {
+            token,
+            baseUrl: HANZO_AI_BASE_URL,
+            model,
+            prompt,
+            files,
+            fs: where.fs,
+            maxTurns,
+            signal: request.signal,
+            session: registry,
+          },
+          emit
+        );
+      }
+      await registry.close("done");
     } catch (error) {
       try {
         await emit({
@@ -276,15 +493,16 @@ export async function POST(request: NextRequest) {
       } catch {
         // stream already broken
       }
-      await agentSession.close("error");
+      await registry?.close("error");
     } finally {
-      // Give back only what this run took out. Nothing else releases a sandbox:
-      // `apps/sandbox` has no reaper, so a sandbox leaked here holds a pod and an
-      // RWO volume until a human notices. Suspending frees the pod and keeps
-      // the checkout, which is also what clears the one-live-sandbox-per-project
-      // rule for the next run.
-      if (opened && id) {
-        await releaseSandbox({ baseUrl: HANZO_AI_BASE_URL, token, id });
+      // Give back only what this run took out. Cloud's reaper would collect it
+      // eventually — expired AND idle for an hour — but "eventually" is an hour
+      // of a pod and an RWO volume held for a run that ended, and the volume is
+      // what makes the next run on this project wait for a 409 it need not have.
+      // The checkout survives: the volume is named from org and project, so the
+      // next create re-attaches the same disk.
+      if (give) {
+        await releaseSandbox({ baseUrl: HANZO_AI_BASE_URL, token, id: give });
       }
       try {
         await writer.close();

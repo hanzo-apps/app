@@ -142,10 +142,10 @@ export function LogsViewer({ deploymentId }: LogsViewerProps) {
                     {log.functionName || log.functionId.slice(0, 8)}
                   </SizableText>
                   <SizableText padding="$3">
-                    <SizableText fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5" borderRadius="$2" {...(log.method === 'GET' ? { backgroundColor: "rgba(34,197,94,0.2)", color: "#16a34a" } : log.method === 'POST' ? { backgroundColor: "rgba(59,130,246,0.2)", color: "#2563eb" } :
-                      log.method === 'PUT' ? { backgroundColor: "rgba(234,179,8,0.2)", color: "#ca8a04" } :
-                      log.method === 'DELETE' ? { backgroundColor: "rgba(239,68,68,0.2)", color: "#dc2626" } :
-                      { backgroundColor: "var(--muted)", color: "var(--muted-foreground)" })}>
+                    <SizableText fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5" borderRadius="$2" {...(log.method === 'GET' ? { backgroundColor: "$green3", color: "$green11" } : log.method === 'POST' ? { backgroundColor: "$blue3", color: "$blue11" } :
+                      log.method === 'PUT' ? { backgroundColor: "$yellow3", color: "$yellow11" } :
+                      log.method === 'DELETE' ? { backgroundColor: "$red3", color: "$red11" } :
+                      { backgroundColor: "$color3", color: "$color11" })}>
                       {log.method}
                     </SizableText>
                   </SizableText>

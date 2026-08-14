@@ -23,7 +23,7 @@ export default function NotFound() {
   />
         </XStack>
 
-        <H1 fontSize="$11" fontWeight="500" marginBottom="$4" letterSpacing={-0.4} textAlign="center">This page doesn&apos;t exist</H1>
+        <H1 fontSize="$9" $md={{ fontSize: "$11" }} fontWeight="500" marginBottom="$4" letterSpacing={-0.4} textAlign="center">This page doesn&apos;t exist</H1>
         <Paragraph color="$color11" fontSize="$6" marginBottom="$7" textAlign="center">The link may be out of date, or the page may have moved. Everything you have built is in your dashboard.</Paragraph>
 
         <XStack alignItems="center" justifyContent="center" gap="$4">

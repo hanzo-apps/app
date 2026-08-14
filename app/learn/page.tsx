@@ -110,10 +110,12 @@ export default function LearnPage() {
       {/* Hero Section */}
       <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
         <YStack maxWidth={896} alignSelf="center">
-          <Badge variant="default" className="mb-4">
-            <BookOpen size={16} />
-            Hanzo Academy
-          </Badge>
+          <YStack marginBottom="$4">
+            <Badge variant="default">
+              <BookOpen size={16} />
+              Hanzo Academy
+            </Badge>
+          </YStack>
           <H1 fontSize="$11" fontWeight="500" marginBottom="$5" textAlign="center" $md={{ fontSize: "$13" }} lineHeight="1.1">
             Learn how to build on Hanzo
           </H1>

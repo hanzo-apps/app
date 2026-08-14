@@ -4,7 +4,7 @@ import { SizableText, YStack, XStack, H1, Paragraph, H2 } from '@hanzo/ui';
 import { glass } from "@/lib/chrome";
 import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button, toast, Textarea, Input } from '@hanzo/ui';
+import { Button, Textarea, Input } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
 import {
   ArrowRight,
@@ -22,16 +22,17 @@ import {
 import Link from "next/link";
 import Header from "@/components/layout/header";
 import {
-  fetchGalleryTemplates,
+  fetchTemplates,
   templateBuilderLink,
-  type GalleryTemplate,
+  type Template,
 } from "@/lib/api/templates";
 import { ImportGitPanel } from "@/components/import-git-panel";
 import { useUser } from "@/hooks/useUser";
 import { OrgProvider } from "@/lib/org/client";
 import { OrgGate } from "@/components/org-gate";
-import { isGitUrl, gitUrlGateMessage } from "@/lib/git/url";
+import { isGitUrl } from "@/lib/git/url";
 import { useProjectImport } from "@/lib/import/use-project-import";
+import { useRepoImport } from "@/lib/import/use-repo-import";
 import { Spinner } from "@/components/ui/spinner";
 
 function NewProject() {
@@ -99,6 +100,8 @@ function NewProjectInner() {
 
   // Drag & drop / pick a project folder or .zip → import into the builder.
   const { importing, importDrop, importFiles } = useProjectImport();
+  // A pasted repository URL → the same import the panel below performs.
+  const { importRepo } = useRepoImport();
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
@@ -131,13 +134,13 @@ function NewProjectInner() {
 
   // Real starter-kit gallery (hanzoai/gallery via the /v1/templates BFF). Always
   // resolves — an unreachable/empty gallery yields the honest local fallback.
-  const [templates, setTemplates] = useState<GalleryTemplate[]>([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
   const [galleryLive, setGalleryLive] = useState(true);
   const [galleryLoading, setGalleryLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
-    fetchGalleryTemplates().then(({ templates, live }) => {
+    fetchTemplates().then(({ templates, live }) => {
       if (!active) return;
       setTemplates(templates);
       setGalleryLive(live);
@@ -148,32 +151,22 @@ function NewProjectInner() {
     };
   }, []);
 
-  // One composer, two destinations: a git URL deploys the repo as a service;
-  // anything else is a natural-language brief the AI builder turns into an app.
+  // One composer, two destinations: a git URL is imported as a project with its
+  // history; anything else is a brief the AI builder turns into an app.
   const submit = useCallback(
     (raw?: string) => {
       const text = (raw ?? value).trim();
       if (!text || loading) return;
+      setLoading(true);
       if (isGitUrl(text)) {
-        // Honest gate: an SSH/private remote can't be imported (no credentials).
-        const gate = gitUrlGateMessage(text);
-        if (gate) {
-          toast.error(gate);
-          return;
-        }
-        setLoading(true);
-        const url = new URL("/dev", window.location.origin);
-        url.searchParams.set("repo", text);
-        url.searchParams.set("action", "edit");
-        router.push(url.toString());
+        void importRepo(text).finally(() => setLoading(false));
       } else {
-        setLoading(true);
         const url = new URL("/dev", window.location.origin);
         url.searchParams.set("prompt", text);
         router.push(url.toString());
       }
     },
-    [value, loading, router],
+    [value, loading, router, importRepo],
   );
 
   // Seed the builder from a real gallery template via the existing
@@ -245,7 +238,7 @@ function NewProjectInner() {
                   }
                 }}
                 placeholder="Describe the app you want, or paste a GitHub / GitLab repository URL…"
-                maxHeight="$17" minHeight={52} width="100%" backgroundColor="transparent" paddingHorizontal="$3" paddingTop="$2" fontSize={15} lineHeight="1.625" color="$color" placeholderTextColor="$color11" borderWidth={0}
+                maxHeight="$17" minHeight={52} width="100%" backgroundColor="transparent" paddingHorizontal="$3" paddingTop="$2" fontSize="$4" lineHeight="1.625" color="$color" placeholderTextColor="$color11" borderWidth={0}
   />
               <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$2" paddingBottom="$1" paddingTop="$1">
                 <XStack alignItems="center" gap="$1">
@@ -378,15 +371,20 @@ function NewProjectInner() {
             <XStack marginBottom="$4" alignItems="center" justifyContent="space-between" gap="$3">
               <XStack alignItems="center" gap="$2">
                 <Boxes size={18} />
-                <H2 fontSize={15} fontWeight="500">Clone a Template</H2>
+                <H2 fontSize="$4" fontWeight="500">Clone a Template</H2>
               </XStack>
-              <YStack position="relative" display="none" $sm={{ display: "flex" }} width="$17">
-                <Search size={14} />
+              {/* An unpositioned sibling icon does not sit in the field — it
+                  stacks above it, and the column then reads as one tall box
+                  with a glyph floating off its corner. `startAdornment` puts
+                  it where the `paddingLeft` gutter was always reserving room
+                  for it. */}
+              <YStack display="none" $sm={{ display: "flex" }} width="$17">
                 <Input
                   value={repoFilter}
                   onChange={(e) => setRepoFilter(e.target.value)}
                   placeholder="Filter"
-                  height="$6" width="100%" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingLeft="$6" paddingRight="$2" fontSize="$1" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color" }}
+                  startAdornment={<Search size={14} />}
+                  height="$6" width="100%" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingRight="$2" fontSize="$1" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color" }}
   />
               </YStack>
             </XStack>

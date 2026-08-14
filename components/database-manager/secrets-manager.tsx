@@ -195,7 +195,7 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
                       <Key size={16} />
                       <SizableText fontFamily="$mono" fontWeight="500" numberOfLines={1}>{secret.name}</SizableText>
                       {!secret.hasValue && (
-                        <Badge variant="outline" className="shrink-0 border-yellow-500 text-yellow-600">
+                        <Badge variant="outline" style={{ flexShrink: 0, borderColor: 'var(--yellow8)', color: 'var(--yellow11)' }}>
                           Value not set
                         </Badge>
                       )}

@@ -5,6 +5,7 @@ import { SizableText, YStack, XStack, Image } from '@hanzo/ui';
 // type-only re-export, so it is not on the barrel yet. A type is erased at
 // build and cannot create a second runtime, so this does not reintroduce
 // the two-copies problem the rest of this migration exists to prevent.
+import { sends } from '@hanzo/ui/chat';
 import type { GuiElement } from '@hanzo/gui';
 import { useState, useEffect, useRef, useMemo, useCallback, DragEvent, ClipboardEvent } from 'react';
 import { MessageSquare, CheckCircle, XCircle, ChevronRight, FileCode, ClipboardList, Bot, RotateCcw, RefreshCw, Send, ChevronUp, ChevronDown, Code, Trash2, X, Brain, Image as ImageIcon } from 'lucide-react';
@@ -266,62 +267,28 @@ export function ChatPanel({
     };
   }, []);
 
-  // Track state for incremental processing
-  const lastProcessedIndexRef = useRef(0);
-  const lastEventVersionsRef = useRef<Map<string, number>>(new Map());
-  const turnsStateRef = useRef<{
-    result: Turn[];
-    currentTurn: Turn;
-    currentIterationTools: ToolCall[];
-    itemIdCounter: number;
-  }>({
-    result: [],
-    currentTurn: { id: `turn-${Date.now()}`, items: [] },
-    currentIterationTools: [],
-    itemIdCounter: 0,
-  });
+  // Fold the event stream into turns — a PURE function of the events array.
+  //
+  // This used to be incremental: three refs carried fold state across renders
+  // (last index, per-event versions, the half-built turn), which is 139 counts
+  // of refs-mutated-during-render and a machine that existed only to avoid
+  // re-reading an array. It could avoid the re-read because of a property the
+  // stream already guarantees: a coalesced delta event carries ALL text
+  // accumulated so far (`data.all`), so folding from scratch produces the same
+  // turns — the cache saved work, never meaning. The fold is linear in events
+  // and runs inside useMemo, so the full re-fold costs less than the render it
+  // feeds. Ids are deterministic (positional), which also makes them STABLE
+  // React keys across recomputes — `turn-${Date.now()}` changed identity on
+  // every reset and remounted the DOM under the reader.
+  function turnsFrom(all: DebugEvent[]): Turn[] {
+    const state = {
+      result: [] as Turn[],
+      currentTurn: { id: 'turn-0', items: [] } as Turn,
+      currentIterationTools: [] as ToolCall[],
+      itemIdCounter: 0,
+    };
 
-  // Transform events into turns with chronologically ordered items (incremental)
-  const turns = useMemo(() => {
-    const state = turnsStateRef.current;
-    const newEventsCount = events.length - lastProcessedIndexRef.current;
-
-    // If events array was cleared/reset (new conversation), reset state
-    if (events.length === 0 || lastProcessedIndexRef.current > events.length) {
-      lastProcessedIndexRef.current = 0;
-      lastEventVersionsRef.current = new Map();
-      turnsStateRef.current = {
-        result: [],
-        currentTurn: { id: `turn-${Date.now()}`, items: [] },
-        currentIterationTools: [],
-        itemIdCounter: 0,
-      };
-      return [];
-    }
-
-    // Check if last event is a streaming event that was updated
-    const lastEvent = events[events.length - 1];
-    const isStreamingEvent = lastEvent && (lastEvent.event === 'assistant_delta' || lastEvent.event === 'tool_param_delta' || lastEvent.event === 'reasoning_delta');
-    const lastEventVersion = lastEventVersionsRef.current.get(lastEvent?.id || '');
-    const eventWasUpdated = isStreamingEvent && lastEvent.version && lastEventVersion !== lastEvent.version;
-
-    // Skip processing if no new events AND last event wasn't updated
-    if (newEventsCount === 0 && !eventWasUpdated) {
-      return [...state.result, ...(state.currentTurn.items.length > 0 ? [state.currentTurn] : [])];
-    }
-
-    // Determine which events to process
-    let eventsToProcess: typeof events;
-    if (eventWasUpdated) {
-      // Re-process the last event (it was updated/coalesced)
-      eventsToProcess = [lastEvent];
-      lastEventVersionsRef.current.set(lastEvent.id, lastEvent.version!);
-    } else {
-      // Process only new events
-      eventsToProcess = events.slice(lastProcessedIndexRef.current);
-    }
-
-    for (const event of eventsToProcess) {
+    for (const event of all) {
       switch (event.event) {
         case 'waiting':
           // Waiting for first token from LLM
@@ -611,7 +578,7 @@ export function ChatPanel({
           if (state.currentTurn.items.length > 0) {
             state.result.push(state.currentTurn);
             state.currentTurn = {
-              id: `turn-${Date.now()}-${state.result.length}`,
+              id: `turn-${state.result.length}`,
               items: [],
             };
           }
@@ -626,14 +593,11 @@ export function ChatPanel({
       }
     }
 
-    // Update last processed index (only when processing new events, not re-processing updated ones)
-    if (!eventWasUpdated) {
-      lastProcessedIndexRef.current = events.length;
-    }
-
-    // Return combined result (completed turns + current turn if it has items)
+    // Completed turns, plus the current one if anything is in it.
     return [...state.result, ...(state.currentTurn.items.length > 0 ? [state.currentTurn] : [])];
-  }, [events]);
+  }
+
+  const turns = useMemo(() => turnsFrom(events), [events]);
 
   // Auto-scroll when turns change (throttled with requestAnimationFrame)
   useEffect(() => {
@@ -701,7 +665,7 @@ export function ChatPanel({
       <XStack flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$2">
         <XStack alignItems="center" gap="$2">
           <SizableText fontWeight="500" fontSize="$1" letterSpacing={0.4} color="$color11">context</SizableText>
-          <SizableText fontSize={10} letterSpacing={0.4} color="$color11">included in next message</SizableText>
+          <SizableText fontSize="$1" letterSpacing={0.4} color="$color11">included in next message</SizableText>
         </XStack>
         <Button
           size="sm"
@@ -716,13 +680,13 @@ export function ChatPanel({
       <YStack marginTop="$2" rowGap="$2">
         {focusContext.domPath && (
           <YStack className="break-all">
-            <SizableText fontSize={11} fontFamily="$mono" color="$color11" lineHeight="1.375">
+            <SizableText fontSize="$1" fontFamily="$mono" color="$color11" lineHeight="1.375">
               {focusContext.domPath}
             </SizableText>
           </YStack>
         )}
         {trimmedSnippet && (
-          <SizableText maxHeight="$12" overflow="scroll" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$2" paddingVertical="$1" fontSize={11} color="$color" lineHeight="1.625" fontFamily="$mono" whiteSpace="pre">
+          <SizableText maxHeight="$12" overflow="scroll" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$2" paddingVertical="$1" fontSize="$1" color="$color" lineHeight="1.625" fontFamily="$mono" whiteSpace="pre">
             <code>{trimmedSnippet}</code>
           </SizableText>
         )}
@@ -852,7 +816,20 @@ export function ChatPanel({
                 if (isTourLockingInput) {
                   return;
                 }
-                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                // `sends` is asked ONLY about the IME here, not about the rule.
+                // It is the one function that knows a keystroke can be claimed
+                // three different ways — `isComposing`, `key === 'Process'`, and
+                // Safari's legacy keyCode 229, which it sets when isComposing is
+                // absent — so a composer that checks the flag alone still sends
+                // a half-typed word out from under a Japanese, Chinese or Korean
+                // writer mid-candidate. This panel was checking none of them.
+                //
+                // The modifier stays because this surface's rule is its own:
+                // bare Enter writes a newline here, which is what its users have
+                // learned, and `sends` alone would make Enter submit. Reading
+                // the shared predicate and then narrowing it keeps both — the
+                // IME logic has one home, and the send rule is still local.
+                if (sends(e.key, e.nativeEvent) && (e.ctrlKey || e.metaKey)) {
                   e.preventDefault();
                   handleSend();
                 }
@@ -904,7 +881,7 @@ export function ChatPanel({
                     )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent width={460} maxWidth="calc(100vw-2rem)" maxHeight="min(680px,calc(100vh-5rem))" overflow="hidden" flexDirection="column" align="start" data-tour-id="provider-settings-popup">
+                <PopoverContent width={460} maxWidth="calc(100vw - 2rem)" maxHeight="min(680px,calc(100vh - 5rem))" overflow="hidden" flexDirection="column" align="start" data-tour-id="provider-settings-popup">
                   <ModelSettingsPanel
                     onClose={() => setShowMobileSettings(false)}
                     onModelChange={(modelId) => setCurrentModel(modelId)}
@@ -1080,7 +1057,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                         <summary>
                           Stack trace
                         </summary>
-                        <SizableText fontSize={10} color="$red9" marginTop="$1" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
+                        <SizableText fontSize="$1" color="$red9" marginTop="$1" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
                           {item.data.stack}
                         </SizableText>
                       </details>
@@ -1191,7 +1168,7 @@ function ToolDisplay({ itemId, tool, isExpanded, onToggle }: ToolDisplayProps) {
           {tool.parameters && Object.keys(tool.parameters).length > 0 && (
             <YStack paddingHorizontal="$2">
               <YStack marginBottom="$1">
-                <SizableText fontSize={10} color="$color11">
+                <SizableText fontSize="$1" color="$color11">
                   Parameters
                 </SizableText>
               </YStack>
@@ -1205,7 +1182,7 @@ function ToolDisplay({ itemId, tool, isExpanded, onToggle }: ToolDisplayProps) {
           {tool.result && (
             <YStack paddingHorizontal="$2">
               <YStack marginBottom="$1">
-                <SizableText fontSize={10} color="$color11">
+                <SizableText fontSize="$1" color="$color11">
                   Result
                 </SizableText>
               </YStack>
@@ -1219,7 +1196,7 @@ function ToolDisplay({ itemId, tool, isExpanded, onToggle }: ToolDisplayProps) {
           {tool.error && (
             <YStack paddingHorizontal="$2">
               <YStack marginBottom="$1">
-                <SizableText fontSize={10} color="$red9">
+                <SizableText fontSize="$1" color="$red9">
                   Error
                 </SizableText>
               </YStack>

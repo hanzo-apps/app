@@ -1,5 +1,6 @@
 "use client";
 
+import { firstName } from "@/lib/greeting";
 import { LoadingScreen } from "@/components/ui/loading-screen";
 import { XStack, SizableText, Paragraph, YStack, Image, H3 } from '@hanzo/ui';
 // `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
@@ -107,7 +108,9 @@ export default function DashboardPage() {
     );
   }
 
-  const greetingName = user.fullname || user.name || "there";
+  // The name a person answers to, not their record: "Ready to build, Zach?" —
+  // never "Zach Kelling?", which is how a database addresses a row.
+  const greetingName = firstName(user.fullname || user.name) || "there";
 
   return (
     // No title: the dashboard is a canvas page, so it owns its own hero rather
@@ -137,7 +140,7 @@ export default function DashboardPage() {
             variant="ghost"
             group position="absolute" bottom="$5" left="50%" x="-50%" flexDirection="column" alignItems="center" gap="$1"
           >
-            <SizableText fontFamily="$mono" fontSize={10} color="$color11" $group-hover={{ color: "$color" }}>
+            <SizableText fontFamily="$mono" fontSize="$1" color="$color11" $group-hover={{ color: "$color" }}>
               Your projects
             </SizableText>
             <ChevronDown size={16} />
@@ -260,56 +263,74 @@ function ProjectGrid({
   onOpen: (p: DashProject) => void;
 }) {
   return (
-    <YStack gap="$4">
+    <div className="project-grid">
       {projects.map((p) => {
         // ONE four-state status map (live/building/error/draft) — a failed deploy
         // never looks like an untouched draft. See lib/project-status.
         const st = statusOf(p.status);
         return (
-          <Button
-            variant="ghost"
+          /* A CARD, not a control — @hanzo/ui pins a Button to its size
+             variant's height whatever the caller asks for, and `overflow="hidden"`
+             then crops the card to that band. A clickable stack sizes from its
+             content. Vertical: the thumbnail owns the full card width at its own
+             aspect and the meta sits below, so the container is the size of the
+             image — no full-bleed row with the shot stranded on the left. */
+          <YStack
+            role="button"
+            tabIndex={0}
+            aria-label={`Open ${p.name}`}
             key={p.id}
             onClick={() => onOpen(p)}
-            group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "$-0.5", borderColor: "$color", backgroundColor: "$color3" }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onOpen(p);
+              }
+            }}
+            cursor="pointer" group overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "$-0.5", borderColor: "$color", backgroundColor: "$color3" }}
           >
-            {/* Real thumbnail: the live site itself (inert); monogram otherwise. */}
+            {/* Real thumbnail: the live site itself (inert); monogram otherwise.
+                The open affordance rides the top-right corner, revealed on hover. */}
             <YStack position="relative">
               <ProjectThumb name={p.name} liveUrl={p.liveUrl} />
-              <ArrowUpRight size={16} />
+              <XStack position="absolute" top="$2" right="$2" width={22} height={22} borderRadius={999} alignItems="center" justifyContent="center" backgroundColor="$background" borderWidth={1} borderColor="$borderColor" opacity={0} $group-hover={{ opacity: 1 }}>
+                <ArrowUpRight size={13} />
+              </XStack>
             </YStack>
-            <YStack padding="$4">
+            <YStack padding="$3" gap="$1.5">
               <H3 numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{p.name}</H3>
-              <XStack marginTop="$1.5" alignItems="center" gap="$3">
+              <XStack alignItems="center" gap="$2.5" flexWrap="wrap">
                 <XStack alignItems="center" gap="$1">
-                  <Circle size={6} />
-                  <SizableText fontSize={11} letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
+                  <Circle size={6} color={st.dot} fill={st.dot} />
+                  <SizableText fontSize="$1" letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
                 </XStack>
                 <XStack alignItems="center" gap="$1">
                   <Clock size={12} />
-                  <SizableText fontSize={11} color="$color11">{relativeTime(p.updatedAtIso)}</SizableText>
+                  <SizableText fontSize="$1" color="$color11">{relativeTime(p.updatedAtIso)}</SizableText>
                 </XStack>
               </XStack>
             </YStack>
-          </Button>
+          </YStack>
         );
       })}
-    </YStack>
+    </div>
   );
 }
 
 function ProjectsSkeleton() {
   return (
-    <YStack gap="$4" aria-hidden>
-      {[0, 1, 2].map((i) => (
-        <YStack key={i} overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
-          <YStack backgroundColor="$color3" />
-          <YStack rowGap="$2" padding="$4">
-            <YStack height="$3.5" width="$14" borderRadius="$2" backgroundColor="$color3" />
-            <YStack height="$3" width="$12" borderRadius="$2" backgroundColor="$color3" />
+    <div className="project-grid" aria-hidden>
+      {[0, 1, 2, 3].map((i) => (
+        <YStack key={i} overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
+          {/* A definite thumb block — the old one set no height and collapsed. */}
+          <YStack aspectRatio={16 / 9} backgroundColor="$color3" />
+          <YStack rowGap="$2" padding="$3">
+            <YStack height="$2.5" width="65%" borderRadius="$2" backgroundColor="$color3" />
+            <YStack height="$2" width="40%" borderRadius="$2" backgroundColor="$color3" />
           </YStack>
         </YStack>
       ))}
-    </YStack>
+    </div>
   );
 }
 

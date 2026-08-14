@@ -5,33 +5,57 @@ import { YStack, Paragraph, H2, XStack, SizableText, H3 } from '@hanzo/ui';
 // same way it drops the GuiElement type. Tracked; everything else in this
 // file comes from @hanzo/ui.
 import { Anchor } from '@hanzo/gui';
-// Hanzo's own models — the flagship Enso (proprietary) and the open Zen family.
-// Complements ModelsStrip (the gateway / 400+ story); this section is
-// specifically about the models Hanzo builds. Real product links only:
+// The two families behind the endpoint: Enso, which Hanzo builds, and Zen, which
+// Zoo Labs Foundation builds. Complements ModelsStrip (the gateway / 400+ story);
+// this section is the two you get by default, not the two Hanzo builds — only one
+// of them is Hanzo's, and the section used to claim both. Real product links only:
 // hanzo.ai/enso (Enso overview) and hanzo.ai/zen (OSS family). There is no
 // published Enso technical report yet, so the CTA says "Learn more", not "report".
+//
+// The maker credit links from the intro, not from inside the Zen card: the card
+// is itself an <Anchor>, and an anchor cannot nest another one.
 
-import { Orbit, Boxes } from "lucide-react";
+import ModelIcon from "../model-icon";
 import Reveal from "./reveal";
 
 export default function HanzoModels() {
   return (
-    <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
+    <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
       <YStack alignSelf="center" maxWidth={1152}>
         <Reveal alignSelf="center" width="100%" maxWidth={672}>
-          <Paragraph fontFamily="$mono" fontSize={11} color="$color11" textAlign="center">
-            Hanzo models
+          <Paragraph fontFamily="$mono" fontSize="$1" color="$color11" textAlign="center">
+            Enso and Zen
           </Paragraph>
           <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "2.75rem", lineHeight: "1.1" }}>
             We build the models too.
           </H2>
           <Paragraph marginTop="$4" fontSize="$4" color="$color11" textAlign="center" $md={{ fontSize: "$6" }} lineHeight="1.5">
-            Enso is our frontier model. Zen is our open family — open weights
-            you can download, fine-tune and run on your own machines.
+            Two families behind one endpoint: Enso, the flagship we build, which
+            routes every request to the cheapest model that can do it well — and
+            Zen, the open family from{" "}
+            <Anchor
+              href="https://zoo.industries"
+              target="_blank"
+              rel="noopener noreferrer"
+              color="$color"
+              hoverStyle={{ color: "$color11" }}
+            >
+              Zoo Labs Foundation
+            </Anchor>{" "}
+            — open weights you can download, fine-tune and run on your own
+            machines.
           </Paragraph>
         </Reveal>
 
-        <YStack marginTop="$9" gap="$4">
+        {/* Side by side, not stacked. Two cards in a column left the section
+            2,000px tall for two paragraphs, and the pair reads as a comparison —
+            which a reader can only make when both are on screen at once.
+            `.card-grid` is the app's ONE card grid (cloud-integration and
+            /templates use it): auto-fill/minmax, so two columns above ~580px and
+            one on a phone, with no breakpoints to keep in sync. `align-items:
+            stretch` overrides its `start` for this pair only — with two cards of
+            unequal prose, `start` leaves one visibly shorter than the other. */}
+        <div className="card-grid" style={{ marginTop: 36, alignItems: "stretch" }}>
           {/* Enso — proprietary flagship */}
           <Reveal height="100%">
             <Anchor
@@ -42,9 +66,9 @@ export default function HanzoModels() {
              display="flex" textDecorationLine="none">
               <XStack alignItems="center" justifyContent="space-between">
                 <XStack height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
-                  <Orbit size={20} strokeWidth={1.5} />
+                  <ModelIcon family="enso" size={20} />
                 </XStack>
-                <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} color="$color11">
+                <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$0.5" fontFamily="$mono" fontSize="$1" color="$color11">
                   Proprietary
                 </SizableText>
               </XStack>
@@ -73,9 +97,9 @@ export default function HanzoModels() {
              display="flex" textDecorationLine="none">
               <XStack alignItems="center" justifyContent="space-between">
                 <XStack height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
-                  <Boxes size={20} strokeWidth={1.5} />
+                  <ModelIcon family="zen" size={20} />
                 </XStack>
-                <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} color="$color11">
+                <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$0.5" fontFamily="$mono" fontSize="$1" color="$color11">
                   Open source
                 </SizableText>
               </XStack>
@@ -83,15 +107,16 @@ export default function HanzoModels() {
                 Zen
               </H3>
               <Paragraph marginTop="$2" flex={1} fontSize="$3" lineHeight="1.625" color="$color11">
-                Open-weight models you can run, fine-tune and host yourself.
-                The same models Hanzo AI serves, yours to download and keep.
+                Made by Zoo Labs Foundation: open-weight models you can run,
+                fine-tune and host yourself. The same models Hanzo AI serves,
+                yours to download and keep.
               </Paragraph>
               <SizableText marginTop="$5" fontSize="$3" fontWeight="500" color="$color" $group-hover={{ color: "$color" }}>
                 Learn more about Zen <span aria-hidden>→</span>
               </SizableText>
             </Anchor>
           </Reveal>
-        </YStack>
+        </div>
       </YStack>
     </YStack>
   );

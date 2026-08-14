@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerAdapter } from '@/lib/vfs/adapters/server';
+import { requireSession } from '@/lib/iam';
 import { cleanStaticDeployment } from '@/lib/compiler/static-builder';
 
 export async function GET(
@@ -14,6 +15,13 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Every sibling that reaches this adapter requires a session — sync/projects
+    // and sync/files do. These did not, and the store answering "not found"
+    // rather than "not signed in" is what hid it: an existing id would have
+    // been returned to anyone. It reads empty in production today, and empty is
+    // not protected.
+    await requireSession(request);
+
     const { id } = await params;
 
     const adapter = await createServerAdapter();
@@ -32,6 +40,9 @@ export async function GET(
 
     return NextResponse.json(deployment);
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('[Deployments API] Error getting deployment:', error);
     return NextResponse.json(
       { error: 'Failed to get deployment' },
@@ -45,6 +56,13 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Every sibling that reaches this adapter requires a session — sync/projects
+    // and sync/files do. These did not, and the store answering "not found"
+    // rather than "not signed in" is what hid it: an existing id would have
+    // been returned to anyone. It reads empty in production today, and empty is
+    // not protected.
+    await requireSession(request);
+
     const { id } = await params;
     const body = await request.json();
 
@@ -76,6 +94,9 @@ export async function PUT(
 
     return NextResponse.json(updatedDeployment);
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('[Deployments API] Error updating deployment:', error);
     return NextResponse.json(
       { error: 'Failed to update deployment' },
@@ -89,6 +110,13 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Every sibling that reaches this adapter requires a session — sync/projects
+    // and sync/files do. These did not, and the store answering "not found"
+    // rather than "not signed in" is what hid it: an existing id would have
+    // been returned to anyone. It reads empty in production today, and empty is
+    // not protected.
+    await requireSession(request);
+
     const { id } = await params;
 
     const adapter = await createServerAdapter();
@@ -115,6 +143,9 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('[Deployments API] Error deleting deployment:', error);
     return NextResponse.json(
       { error: 'Failed to delete deployment' },

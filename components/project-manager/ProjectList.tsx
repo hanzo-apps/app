@@ -94,17 +94,21 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
   return (
     <YStack rowGap="$5">
       {/* Toolbar */}
-      <YStack gap="$3" alignItems="flex-start" justifyContent="space-between" $sm={{ flexDirection: "row", alignItems: "center" }}>
-        <YStack position="relative" flex={1} width="100%" $sm={{ maxWidth: 384 }}>
-          <Search size={16} />
-          <Input
-            placeholder="Search projects…"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            paddingLeft="$7" backgroundColor="$background"
+      {/* Toolbar — the search field grows to a sensible cap and the action
+          cluster sits to its right, wrapping beneath only when the row is too
+          narrow to hold both. The search glyph rides INSIDE the field via
+          `startAdornment` (the one canonical idiom); the old `<Search>`-sibling
+          + `paddingLeft` left it floating above the input and, on a phone, the
+          New Project button overlapping the field. */}
+      <XStack flexWrap="wrap" gap="$3" alignItems="center" justifyContent="space-between">
+        <Input
+          startAdornment={<Search size={16} />}
+          placeholder="Search projects…"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          flex={1} minWidth={200} maxWidth={384} backgroundColor="$background"
   />
-        </YStack>
-        <XStack alignItems="center" gap="$2">
+        <XStack alignItems="center" gap="$2" flexShrink={0}>
           {/* Org selector — suppressed when a parent shell already renders one
               (AppShell's sidebar) so the org control never appears twice. */}
           {showOrgSwitcher && <OrgSwitcher />}
@@ -113,7 +117,7 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
             New project
           </Button>
         </XStack>
-      </YStack>
+      </XStack>
 
       {/* Which org these projects belong to (billing transparency) */}
       {ctx?.currentOrg && (

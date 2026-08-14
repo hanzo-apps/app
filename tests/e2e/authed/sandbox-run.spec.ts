@@ -56,20 +56,7 @@
 
 import { test, expect, type Page } from '@playwright/test';
 
-import {
-  API,
-  CALL_TIMEOUT_MS,
-  type Sandbox,
-  bearer,
-  createSandbox,
-  destroy,
-  exec,
-  proofImage,
-  readFile,
-  running,
-  sandboxService,
-  uniq,
-} from './sandbox-api';
+import { API, CALL_TIMEOUT_MS, bearer, createSandbox, deleteProject, destroy, exec, proofImage, readFile, running, sandboxService, type Sandbox, uniq } from './sandbox-api';
 
 type AgentEvent = {
   type: string;
@@ -404,6 +391,11 @@ test.describe('hanzo.app agent runs edit a REAL sandbox', () => {
         const body = (await list.json()) as { sandboxes?: Sandbox[] };
         for (const b of body.sandboxes ?? []) await destroy(request, token, b.id);
       }
+      // And the PROJECT itself. Destroying the sandboxes left the git repository the
+      // run created, so every run leaked one permanently into the real system — 45 had
+      // accumulated, sitting in repository listings beside people's work. The sandbox
+      // was already cleaned up here; the project it lived on was not.
+      await deleteProject(request, token, project);
     }
   });
 

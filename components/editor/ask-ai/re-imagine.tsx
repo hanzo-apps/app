@@ -36,30 +36,37 @@ export function ReImagine({
       return;
     }
     setIsLoading(true);
-    const response = await api.put("/re-design", {
-      url: url.trim(),
-    });
-    if (response?.data?.ok) {
+    try {
+      const response = await api.put("/re-design", { url: url.trim() });
       setOpen(false);
       setUrl("");
       onRedesign(response.data.markdown);
       toast.success("Read the site. Building the new version now.");
-    } else {
-      toast.error(response?.data?.error || "Could not read that site. Check the URL is public.");
+    } catch (e) {
+      // The client rejects on a non-2xx, so the branch that read `data.ok` was
+      // never reached — the refusal arrived as a throw and left the button
+      // spinning with nothing on the way. The server states a reason; say it.
+      const said = (e as { response?: { data?: { error?: string } } })?.response?.data?.error;
+      toast.error(said || "Could not read that site. Check the URL is public.");
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
     <Popover open={open} onOpenChange={setOpen} placement="top-start">
       <form>
         <PopoverTrigger asChild>
+          {/* Anchor only — the composer's [+] menu owns the visible entry
+              ("Add reference") and clicks this. Same shape as the uploader and
+              settings anchors. */}
           <Button
-            size="icon"
+            id="composer-reimagine"
+            size="icon-sm"
             variant="ghost"
-            aria-label="Redesign from a URL"
-            title="Redesign: recreate an existing site's look from its URL"
-            borderRadius="$10"
+            aria-hidden
+            tabIndex={-1}
+            style={{ position: "absolute", width: 1, height: 1, minWidth: 1, minHeight: 1, opacity: 0, pointerEvents: "none" }}
           >
             <Paintbrush size={16} />
           </Button>
@@ -119,6 +126,7 @@ export function ReImagine({
                 It has to be reachable without signing in.
               </Paragraph>
               <Button
+                variant="primary"
                 position="relative" width="100%"
                 onClick={handleClick}
               >

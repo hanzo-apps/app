@@ -23,12 +23,37 @@ import 'server-only';
  * The second is why a turn is one commit rather than one commit per file.
  */
 
+import { subjectOf, type GitCommit, type GitCommitFile } from './log';
+
 const BASE = (process.env.GIT_FORGE_URL || 'https://git.hanzo.ai').replace(/\/+$/, '');
 const TOKEN = process.env.GIT_FORGE_TOKEN || '';
 
 /** True when the forge credential is wired, so routes can 501 honestly. */
 export function forgeConfigured(): boolean {
   return Boolean(TOKEN);
+}
+
+/**
+ * What a git client needs to speak to the forge as us: a repo URL with NO secret
+ * in it, and the one line `git credential-store` reads the secret out of.
+ *
+ * Two values rather than the obvious `https://user:token@host/owner/repo.git`,
+ * because a URL carrying a credential is a credential that leaks: it lands in the
+ * clone's `.git/config`, in the argv of every git process (so in `ps`), and in
+ * the text of every error git prints about the remote. The pair below keeps the
+ * secret off every command line — it travels on the command's STDIN and lands in
+ * a 0600 file — while the URL that appears in configs and logs is clean.
+ *
+ * The token is percent-encoded because git parses that line as a URL and decodes
+ * it; a `@` or `:` in a credential would otherwise re-cut the line in the wrong
+ * places.
+ */
+export function forgeRemote(owner: string, name: string): { url: string; credential: string } {
+  const origin = new URL(BASE);
+  return {
+    url: `${BASE}/${encodeURIComponent(owner)}/${encodeURIComponent(name)}.git`,
+    credential: `${origin.protocol}//x-access-token:${encodeURIComponent(TOKEN)}@${origin.host}`,
+  };
 }
 
 export class ForgeError extends Error {
@@ -98,14 +123,60 @@ export async function getRepo(owner: string, name: string): Promise<ForgeRepo | 
  *
  * `auto_init` matters: an EMPTY repo has no default branch, and committing into
  * one fails in a way that reads as a permissions problem. Initialising at
- * creation means the first turn commits onto a branch that already exists.
+ * creation means the first turn commits onto a branch that already exists — and
+ * that a clone of it lands on a branch rather than in a detached void.
+ *
+ * `created` comes back because the lookup that answers it already happened here.
+ * A caller that wants to say "repository created" would otherwise have to ask the
+ * forge the same question a second time, and could get a different answer.
  */
-export async function ensureRepo(owner: string, name: string): Promise<ForgeRepo> {
+export async function ensureRepo(
+  owner: string,
+  name: string,
+): Promise<{ repo: ForgeRepo; created: boolean }> {
   const existing = await getRepo(owner, name);
-  if (existing) return existing;
-  return forge<ForgeRepo>(`/admin/users/${encodeURIComponent(owner)}/repos`, {
+  if (existing) return { repo: existing, created: false };
+  const repo = await forge<ForgeRepo>(`/admin/users/${encodeURIComponent(owner)}/repos`, {
     method: 'POST',
     body: JSON.stringify({ name, private: true, auto_init: true, default_branch: 'main' }),
+  });
+  return { repo, created: true };
+}
+
+/**
+ * Clone an external repository into `owner`'s account, WITH ITS HISTORY.
+ *
+ * The forge's migration clones the source as a mirror and keeps every commit
+ * (`services/repository/migrate.go` sets no depth), which is the difference
+ * between importing a repository and importing a snapshot of its tip. It also
+ * decides for itself which remotes are reachable, so a clone address pointing at
+ * a private network is refused there rather than trusted here.
+ *
+ * `mirror: false`: this becomes the project's OWN repo, the one the builder
+ * autosaves to and the sandbox pushes to. A mirror is read-only and would refuse
+ * the first turn.
+ *
+ * No `service`, so the forge takes its plain-git path — the code and its history,
+ * without reaching for the source's issues and pull requests. Credentials are
+ * sent only for a source that needs them (the user's own linked provider token,
+ * resolved server-side by the caller) and travel in the body, never in the URL.
+ */
+export async function migrateRepo(
+  owner: string,
+  name: string,
+  source: { url: string; username?: string; password?: string },
+): Promise<ForgeRepo> {
+  return forge<ForgeRepo>('/repos/migrate', {
+    method: 'POST',
+    body: JSON.stringify({
+      clone_addr: source.url,
+      repo_owner: owner,
+      repo_name: name,
+      auth_username: source.username || '',
+      auth_password: source.password || '',
+      mirror: false,
+      private: true,
+    }),
   });
 }
 
@@ -170,12 +241,38 @@ export async function commitFiles(
  * so an admin-scoped token cannot be turned into a read of someone else's repo.
  * --------------------------------------------------------------------------- */
 
-export interface ForgeCommit {
+/** The forge's commit row — only the fields the timeline reads. */
+interface ForgeCommitRow {
   sha: string;
-  message: string;
-  author: string;
-  at: string;
-  url: string;
+  html_url?: string;
+  commit?: { message?: string; author?: { name?: string; date?: string } };
+  files?: { filename?: string; status?: string }[];
+}
+
+/**
+ * The forge's commit → the ONE normalized shape (`lib/git/log.ts`) the history
+ * panel and the client read.
+ *
+ * This used to answer `{sha, message, author, at, url}`, four fields short of
+ * that shape and one of them differently named. Nothing failed: the route hands
+ * the array to `NextResponse.json`, so no type ever compared the two. The panel
+ * read `authoredAt` (undefined ⇒ `new Date(undefined)` ⇒ NaN ⇒ every native
+ * commit sorted at epoch 0), `shortSha` (blank in the row and in the details
+ * pane) and `rawMessage` (undefined ⇒ the summarizer had nothing to clean),
+ * while `message` carried the whole message, trailer included, where a subject
+ * belongs. Native git is the DEFAULT home, so that was every project built here.
+ */
+function normalizeForgeCommit(c: ForgeCommitRow): GitCommit {
+  const rawMessage = c.commit?.message || '';
+  return {
+    sha: c.sha,
+    shortSha: (c.sha || '').slice(0, 7),
+    message: subjectOf(rawMessage) || '(no message)',
+    rawMessage,
+    author: c.commit?.author?.name || 'unknown',
+    authoredAt: c.commit?.author?.date || '',
+    url: c.html_url || '',
+  };
 }
 
 /** Newest-first commit history for a branch. */
@@ -184,27 +281,77 @@ export async function listForgeCommits(
   name: string,
   branch: string,
   limit = 50,
-): Promise<ForgeCommit[]> {
+): Promise<GitCommit[]> {
   const o = encodeURIComponent(owner);
   const n = encodeURIComponent(name);
-  const raw = await forge<
-    { sha: string; html_url?: string; commit?: { message?: string; author?: { name?: string; date?: string } } }[]
-  >(`/repos/${o}/${n}/commits?sha=${encodeURIComponent(branch)}&limit=${limit}&page=1`);
-  return (raw ?? []).map((c) => ({
-    sha: c.sha,
-    message: c.commit?.message ?? '',
-    author: c.commit?.author?.name ?? '',
-    at: c.commit?.author?.date ?? '',
-    url: c.html_url ?? '',
-  }));
+  const raw = await forge<ForgeCommitRow[]>(
+    `/repos/${o}/${n}/commits?sha=${encodeURIComponent(branch)}&limit=${limit}&page=1`,
+  );
+  return (raw ?? []).map(normalizeForgeCommit);
 }
+
+/**
+ * ONE commit, with the files it touched — what a History row expands into.
+ *
+ * The forge names each affected file and how it changed but ships no hunks, so
+ * `patch` is absent rather than empty: the details view already renders a file
+ * list without one, and inventing a diff to fill the field would be worse than
+ * the honest absence.
+ */
+export async function getForgeCommit(owner: string, name: string, sha: string): Promise<GitCommit> {
+  const o = encodeURIComponent(owner);
+  const n = encodeURIComponent(name);
+  const raw = await forge<ForgeCommitRow>(
+    `/repos/${o}/${n}/git/commits/${encodeURIComponent(sha)}?files=true&stat=false`,
+  );
+  return {
+    ...normalizeForgeCommit(raw ?? { sha }),
+    filesChanged: (raw?.files ?? []).map((f) => ({
+      path: f.filename || '',
+      status: forgeFileStatus(f.status),
+    })),
+  };
+}
+
+/** The forge's affected-file status → the normalized one. */
+function forgeFileStatus(s?: string): GitCommitFile['status'] {
+  return s === 'added' || s === 'removed' || s === 'renamed' ? s : 'modified';
+}
+
+/**
+ * Binary by extension, so it is never decoded as text.
+ *
+ * A revision is read in order to be PREVIEWED and FORKED, and a fork writes every
+ * file back as UTF-8 — which turns a PNG into a corrupt PNG. Extension rather than
+ * sniffing because the tree already names every path and nothing else about a blob
+ * is known before it is fetched; a wrong guess here costs one skipped asset, and
+ * the alternative costs a broken file with no sign that anything happened.
+ */
+const BINARY =
+  /\.(png|jpe?g|gif|webp|avif|ico|bmp|tiff?|svgz|mp[34]|m4a|wav|ogg|opus|webm|mov|avi|mkv|woff2?|ttf|otf|eot|zip|gz|tgz|bz2|xz|7z|rar|pdf|wasm|so|dylib|dll|exe|bin|class|jar|db|sqlite3?|node|psd)$/i;
+
+/** A blob past this is not source, and a revision is not a file server. */
+const MAX_BLOB_BYTES = 1024 * 1024;
+
+/** And a revision is not a whole dependency tree either. */
+const MAX_BLOBS = 500;
 
 /**
  * A commit's files as { path, html } — for previewing and FORKING a revision.
  *
- * The tree at the sha names the blobs; each text blob is fetched raw. Binary
- * files are skipped rather than decoded as text, exactly as the checkpoint
- * reader does, because a fork writes these into a new project as UTF-8.
+ * EVERY TEXT BLOB, not just `.html`. The filter used to be `/\.html?$/i`, from
+ * when a project was a bag of generated pages and nothing else. A project is now
+ * a repo the coding agent pushes to from its sandbox, so its files are `.tsx`,
+ * `.ts`, `.json`, `.css` — and every one of them was dropped here, which made a
+ * native repo's history preview and its fork both come back EMPTY while the
+ * commits sat right there in the timeline.
+ *
+ * `html` is the field name the whole builder speaks for "the contents of a file
+ * at a path"; it is the transport, not a claim about the language.
+ *
+ * Bounded twice, because a real repo is not a bag of pages: binaries are skipped
+ * by extension and anything oversized or past `MAX_BLOBS` is left out rather than
+ * fetched one round trip at a time.
  */
 export async function forgeCommitPages(
   owner: string,
@@ -213,10 +360,15 @@ export async function forgeCommitPages(
 ): Promise<{ path: string; html: string }[]> {
   const o = encodeURIComponent(owner);
   const n = encodeURIComponent(name);
-  const tree = await forge<{ tree?: { path: string; type: string }[] }>(
+  const tree = await forge<{ tree?: { path: string; type: string; size?: number }[] }>(
     `/repos/${o}/${n}/git/trees/${encodeURIComponent(sha)}?recursive=true`,
   );
-  const blobs = (tree?.tree ?? []).filter((e) => e.type === 'blob' && /\.html?$/i.test(e.path));
+  const blobs = (tree?.tree ?? [])
+    .filter(
+      (e) =>
+        e.type === 'blob' && !BINARY.test(e.path) && (e.size ?? 0) <= MAX_BLOB_BYTES,
+    )
+    .slice(0, MAX_BLOBS);
   const pages: { path: string; html: string }[] = [];
   for (const b of blobs) {
     try {
@@ -230,4 +382,69 @@ export async function forgeCommitPages(
     }
   }
   return pages;
+}
+
+/* --------------------------------------------------------------------------- *
+ * LISTING — the signed-in user's own repos and orgs, for the import surface.
+ *
+ * git.hanzo.ai is the DEFAULT home, so the import panel offers it FIRST — with no
+ * OAuth link, because the user's forge account already exists (auto-registered
+ * against IAM under their username). The admin token reads it; the account name
+ * is the verified session's username, bound by the CALLER exactly as the write
+ * path binds its owner, so an admin-scoped read can never be turned against
+ * another account. Standard Gitea shapes; only the fields the import row uses.
+ * --------------------------------------------------------------------------- */
+
+export interface ForgeAccount {
+  login: string;
+  avatarUrl: string;
+}
+
+export interface ForgeRepoRow {
+  name: string;
+  full_name: string;
+  private: boolean;
+  description: string | null;
+  language?: string | null;
+  updated_at: string | null;
+  default_branch: string | null;
+  clone_url: string;
+  html_url: string;
+}
+
+/** The user's own forge account (its avatar seeds the account picker). */
+export async function forgeUser(username: string): Promise<ForgeAccount | null> {
+  try {
+    const u = await forge<{ login: string; avatar_url?: string }>(
+      `/users/${encodeURIComponent(username)}`,
+    );
+    return u ? { login: u.login, avatarUrl: u.avatar_url || '' } : null;
+  } catch (e) {
+    if (e instanceof ForgeError && e.status === 404) return null;
+    throw e;
+  }
+}
+
+/** Orgs the user belongs to — best-effort, since none is a legitimate answer. */
+export async function forgeUserOrgs(username: string): Promise<ForgeAccount[]> {
+  const raw = await forge<{ username: string; avatar_url?: string }[]>(
+    `/users/${encodeURIComponent(username)}/orgs?limit=100&page=1`,
+  );
+  return (raw ?? []).map((o) => ({ login: o.username, avatarUrl: o.avatar_url || '' }));
+}
+
+/** The user's own repos (the admin token sees private ones too). */
+export async function forgeUserRepos(username: string, limit = 100): Promise<ForgeRepoRow[]> {
+  const raw = await forge<ForgeRepoRow[]>(
+    `/users/${encodeURIComponent(username)}/repos?limit=${limit}&page=1`,
+  );
+  return raw ?? [];
+}
+
+/** One org's repos. */
+export async function forgeOrgRepos(org: string, limit = 100): Promise<ForgeRepoRow[]> {
+  const raw = await forge<ForgeRepoRow[]>(
+    `/orgs/${encodeURIComponent(org)}/repos?limit=${limit}&page=1`,
+  );
+  return raw ?? [];
 }

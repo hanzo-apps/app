@@ -165,8 +165,23 @@ describe("runAgent", () => {
     if (done?.type === "done") expect(done.finishReason).toBe("max_turns");
   });
 
-  it("emits an error event when the gateway fails", async () => {
-    global.fetch = jest.fn(async () => new Response("boom", { status: 502 })) as unknown as typeof fetch;
+  /**
+   * A gateway refusal reaches the person as the sentence the rest of the app
+   * would give them, not as `gateway 402: {"error":…}`.
+   *
+   * This loop was the one AI path that decided for itself what a status means.
+   * It mattered most for the one a person can actually act on: an agent run that
+   * stops because the credit ran out has to SAY that, and it was arriving at the
+   * screen as raw JSON indistinguishable from an internal fault.
+   */
+  it.each([
+    [502, /unavailable/i],
+    [402, /credit/i],
+    [401, /credential was rejected/i],
+  ])("turns a gateway %i into the sentence the rest of the app uses", async (status, expected) => {
+    global.fetch = jest.fn(
+      async () => new Response("boom", { status })
+    ) as unknown as typeof fetch;
     const events: AgentEvent[] = [];
     await runAgent(
       { token: "t", baseUrl: "https://api.test/v1", model: "zen", prompt: "x" },
@@ -176,6 +191,10 @@ describe("runAgent", () => {
     );
     const last = events.at(-1);
     expect(last?.type).toBe("error");
-    if (last?.type === "error") expect(last.message).toMatch(/gateway 502/);
+    if (last?.type === "error") {
+      expect(last.message).toMatch(expected);
+      // The status code is not a message. It leaked into one before.
+      expect(last.message).not.toMatch(/gateway \d/);
+    }
   });
 });

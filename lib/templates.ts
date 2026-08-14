@@ -28,7 +28,7 @@ export const templates: Template[] = [
       "Dark/light theme",
       "Export conversations"
     ],
-    techStack: ["Next.js 14", "React 18", "@hanzo/ui", "Tailwind CSS", "OpenAI API"],
+    techStack: ["Next.js 14", "React 18", "@hanzo/ui", "@hanzo/design", "OpenAI API"],
     difficulty: "intermediate",
     estimatedTime: "2-3 hours",
     popular: true
@@ -275,7 +275,7 @@ export function generatePlanFromTemplate(template: Template): string[] {
     "Phase 1: Setup & Configuration",
     "  → Initialize Next.js project",
     "  → Install @hanzo/ui components",
-    "  → Configure Tailwind CSS",
+    "  → Import the @hanzo/design token sheet",
     "  → Set up project structure",
     "",
     "Phase 2: Core Components",
@@ -311,7 +311,7 @@ export function generatePlanFromTemplate(template: Template): string[] {
 export function generateImplementationComments(template: Template): string[] {
   return [
     "📦 Installing dependencies...",
-    "  npm install @hanzo/ui tailwindcss framer-motion",
+    "  npm install @hanzo/ui @hanzo/design",
     "✅ Dependencies installed",
     "",
     "🏗️ Setting up project structure...",
@@ -323,7 +323,7 @@ export function generateImplementationComments(template: Template): string[] {
     "🎨 Configuring @hanzo/ui components...",
     "  Importing Button, Card, Input components",
     "  Setting up dark theme variables",
-    "  Configuring Tailwind CSS",
+    "  Resolving design tokens",
     "✅ UI components configured",
     "",
     "⚡ Building core features...",

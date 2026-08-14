@@ -17,6 +17,8 @@
  * with a relay of hanzo/dev app-server events; the `AgentEvent` contract holds.
  */
 
+import { refusal } from "@/lib/gateway";
+
 import type { AgentFile, EmitEvent } from "./types";
 import { InMemoryProjectFs, type ProjectFs } from "./fs";
 import type { AgentSession, ControlDecision } from "./session";
@@ -131,7 +133,13 @@ async function streamTurn(
 
   if (!res.ok || !res.body) {
     const detail = await res.text().catch(() => "");
-    const err = new Error(`gateway ${res.status}: ${detail.slice(0, 300) || res.statusText}`);
+    // What a gateway status MEANS to a person is decided in exactly one place for
+    // the whole app, and this loop used to be the one AI path that decided it
+    // again by itself. It threw `gateway 402: {"error":…}`, which reached the
+    // stream as an `error` frame and the screen as raw JSON — the single most
+    // actionable refusal there is (you are out of credits) delivered as though it
+    // were an internal fault.
+    const err = new Error(refusal(res.status, detail).body.message);
     (err as { status?: number }).status = res.status;
     throw err;
   }

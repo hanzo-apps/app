@@ -5,12 +5,19 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerAdapter } from '@/lib/vfs/adapters/server';
+import { requireSession } from '@/lib/iam';
 
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Reaches the server adapter, which carries no tenancy of its own — so this
+    // check is the only thing between a caller and the store. Its siblings had
+    // it; these did not, and answering "not found" instead of "not signed in"
+    // is what made that invisible.
+    await requireSession(request);
+
     const { id } = await params;
     const { previewImage } = await request.json();
 
@@ -62,6 +69,9 @@ export async function PUT(
       previewUpdatedAt: updatedDeployment.previewUpdatedAt ?? null,
     });
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('[Deployments API] Error updating deployment thumbnail:', error);
     return NextResponse.json(
       { error: 'Failed to update deployment thumbnail' },

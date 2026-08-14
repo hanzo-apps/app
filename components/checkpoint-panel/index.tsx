@@ -74,7 +74,7 @@ export function CheckpointPanel({
           <History size={14} style={{ color: 'var(--brand-accent)' }} />
           <SizableText fontSize="$1" fontWeight="500">Checkpoints</SizableText>
           {checkpoints.length > 0 && (
-            <SizableText fontSize={10} color="$color11">({checkpoints.length})</SizableText>
+            <SizableText fontSize="$1" color="$color11">({checkpoints.length})</SizableText>
           )}
         </XStack>
         {onClose && (
@@ -106,11 +106,11 @@ export function CheckpointPanel({
                   <XStack alignItems="center" gap="$1.5" marginBottom="$1">
                     <Badge
                       variant={cp.kind === 'manual' ? 'default' : 'secondary'}
-                      className="h-4 px-1.5 text-[9px] leading-none"
+                     
                     >
                       {cp.kind === 'manual' ? 'save' : cp.kind}
                     </Badge>
-                    <SizableText fontSize={10} color="$color11" marginLeft="auto" whiteSpace="nowrap">
+                    <SizableText fontSize="$1" color="$color11" marginLeft="auto" whiteSpace="nowrap">
                       {formatDistanceToNow(new Date(cp.timestamp), { addSuffix: true })}
                     </SizableText>
                   </XStack>
@@ -118,7 +118,7 @@ export function CheckpointPanel({
                   {/* Description */}
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Paragraph fontSize={11} color="$color" numberOfLines={1} lineHeight="1.375" marginBottom="$1.5">
+                      <Paragraph fontSize="$1" color="$color" numberOfLines={1} lineHeight="1.375" marginBottom="$1.5">
                         {cp.description}
                       </Paragraph>
                     </TooltipTrigger>
@@ -137,7 +137,7 @@ export function CheckpointPanel({
                         onClick={() => onScrollToTurn(cp.id)}
                       >
                         <ArrowRight size={12} />
-                        <SizableText fontSize={10} color="$color11">Jump</SizableText>
+                        <SizableText fontSize="$1" color="$color11">Jump</SizableText>
                       </Button>
                     )}
                     <Button
@@ -147,7 +147,7 @@ export function CheckpointPanel({
                       onClick={() => onRestore(cp.id, cp.description)}
                     >
                       <RotateCcw size={12} />
-                      <SizableText fontSize={10} color="$color11">Restore</SizableText>
+                      <SizableText fontSize="$1" color="$color11">Restore</SizableText>
                     </Button>
                   </XStack>
                 </YStack>

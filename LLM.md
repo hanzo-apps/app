@@ -51,11 +51,35 @@ that IS typed may not behave the way the DOM one does:
   on each other). Always the string form for multipliers: `lineHeight="1.5"`.
 - **`$color` is the foreground** (white in dark). Never a container background —
   surfaces are `$color2/3/4`, alphas `$color005…$color06` for outline chrome.
+- **`H2`, `H3` and `Paragraph` are TEXT primitives and render INLINE.** A plain
+  `<div>` around them does not stack them — it is a block box holding inline
+  content, so they run together on one line. Measured on the landing's
+  "Continue building" header: the heading occupied x 442-698 and its subtitle
+  began at x 698 on the heading's own baseline, with the "View all" link running
+  on after that. Wrap them in a `YStack`; only a flex column stacks them.
+- **A centred column must claim its width.** `alignSelf="center"` +
+  `maxWidth={1152}` with no `width="100%"` is shrink-to-fit, and `maxWidth` then
+  caps a width the column never takes — so it sizes to whatever its content
+  happens to be. Three sections were silently narrow this way (555px, 808px and
+  a composer at 448px on a 1152px row), each producing a different visible
+  symptom: one grid track instead of three, six cards two-across, a collapsed
+  card. Measure the column before blaming the grid, and measure the OTHERS
+  before sweeping — four more landing columns look identical in source and
+  already fill their width from content, so a blanket fix would have been four
+  changes nobody needed.
 
-- The field emits **text**, not a change event: `onChangeText={(t) => …}`, never
-  `onChange={(e) => e.target.value}`. The DOM spelling type-checked only while
-  the package was declared `any`, and it never fired — six handlers in this app
-  were dead code that way.
+- The field emits text as well as an event. Prefer `onChangeText={(t) => …}` —
+  it hands you the string instead of an event to dig through — but **`onChange`
+  fires too, so that is a preference, not a bug report.** This line used to say
+  the DOM spelling "never fired"; measured at `@hanzo/ui@8.0.69`, both fire on
+  `Input` and on `Textarea`, because gui renders a real `<input>` on web and
+  forwards the handler. **70 call sites here use `onChange`; they work. Do not
+  sweep them.** `tests/unit/field-change.test.tsx` pins it, because the failure
+  would be invisible: a gui bump that stopped forwarding breaks no build, raises
+  no type error and throws nothing — 70 fields would just quietly stop accepting
+  input. (Six handlers really were dead once, in a different since-fixed shape.
+  Trusting that sentence at face value nearly bought a pointless 70-file
+  refactor — measure the claim before acting on it.)
 - Toast placement belongs to the `Toaster` viewport. There is no per-toast
   `position`.
 - Web-only attributes (`title`, `type`, `indicatorClassName`) are declared on
@@ -191,6 +215,131 @@ Verify font work with CDP `CSS.getPlatformFontsForNode` (`familyName` +
 true even on a page with zero `@font-face` rules, so it proves nothing.
 
 
+
+### Painted is not reachable — three mobile laws, all measured
+
+Nothing in this class shows up as anything wrong: no error, no blank render, no
+red gate. The page simply ends before its content does, and only a measurement
+finds it. All three live in `assets/globals.css` and are pinned by
+`tests/unit/reachable.test.ts`.
+
+- **A tab panel claims the height of its content.** `@hanzo/ui`'s `TabsContent`
+  sets `flex: 1`, which in the react-native flex model means `flex-basis: 0` —
+  right in a fixed-height pane, wrong in a page that sizes to its content, where
+  a base size of 0 IS the size. Measured on /settings: `clientHeight: 0` around
+  716px of content, and the Tabs around it 88 around 804. Restoring the BASIS
+  (not `flex: none` — it must still grow to fill a tall pane) took the pane's
+  scroll range from 140px to 176px.
+- **A tab strip wraps.** `TabsList` is `flex-wrap: nowrap` + `overflow: visible`,
+  so tabs past the edge are painted outside it and cannot be reached — the
+  cropped "Bi…" where Billing should be. **Wrapping alone does nothing**: a flex
+  item defaults to `min-width: auto` and refuses to shrink below its content, so
+  it never reaches a width it would wrap at. Measured at 300px: `flex-wrap`
+  alone left it 456px on one row with two tabs still clipped; with `min-width: 0`
+  it became 300px over two rows with nothing clipped, and unchanged at full
+  width. It bites sooner at a larger Text size — five labels at 140% need ~640px.
+- **A long picker is a sheet on a phone.** The model panel is ~440px and hangs
+  off its trigger; on a phone the trigger sits near the bottom, so it opens into
+  ~100px and runs off screen. It is positioned, not in flow, so scrolling cannot
+  retrieve it: measured with the pane at its maximum, the list occupied y
+  965–1392 in a 903px viewport — **76 rows, zero visible**. `stayInFrame` is
+  upstream's default and did not rescue it, and there is no `size` middleware, so
+  it never shrinks to the room available. Every declaration needs `!important`
+  (gui writes the popper's position and width INLINE) and the height is `dvh`,
+  because a phone's URL bar moves the usable height.
+
+**Two method notes that cost a wrong answer each.** "The first scrollable div in
+the document" is not the scroller — it found the SIDEBAR, and three probes'
+numbers were meaningless until re-run against the trigger's own scrolling
+ancestor. And squeezing one container (`.is_Tabs`) while the shell around it
+stays wide is NOT a viewport change: inner cards keep sizing against the wider
+ancestor, which manufactured an 8px "overflow" that no fix moved. Resize the
+viewport or believe nothing.
+
+**The same `flex: 1` collapse recurred on `CardContent`, and the visible
+symptom was the wrong one.** `/agents` set `flex={1}` on a card that sizes to
+its contents, so every CardContent measured 0px tall while its children painted
+anyway, and `marginTop: auto` pushed the run row 68px BELOW the card, over the
+next card's title. What a reader notices is a misplaced Run button; what it
+actually cost was the "Message this agent…" INPUT, which painted behind the
+following card and could not be seen or typed into — the feature was unusable
+and nobody had reported it. Fixed the same way as the tab panel: `flexGrow` +
+`flexBasis: auto`, which keeps the growing and restores the basis.
+
+Swept for the class afterwards rather than guessing at its reach: a near-zero
+-height box whose children's bottoms clear it by >8px, run over `/`, `/agents`,
+`/settings`, `/connectors`, `/terminals`, `/resources`, `/projects`, `/usage`
+and `/skills`. It fired on `/agents` (7 boxes, 72px each) and NOWHERE else, so
+the class is contained to that one component — and firing on the known bug is
+what makes the silence elsewhere worth anything. Re-run that sweep rather than
+re-deriving it; the landing's "offscreen" controls are the template carousel
+and are not a defect.
+
+**A role is not a component, and the media are MIN-width.** Two laws the
+builder toolbar cost, neither visible without measuring at several widths.
+
+The wrap rule above was written for the settings strip and targeted
+`[role="tablist"]` — which also caught the builder's two hand-rolled segmented
+controls (`Editor view`, `Preview device`). Wrapping is right for a strip of
+labelled destinations and wrong for a segmented control: it turned five panes
+into a 96px three-row block. It stayed hidden because that group was
+`flexShrink: 0` and could never get narrow enough to wrap, so a rule that
+already governed it looked inert. A prop cannot argue back either —
+`html:root [role="tablist"]` is (0,2,1) and every style gui compiles is one
+atomic class at (0,1,0), so `flexWrap="nowrap"` loses to the sheet. **Scope the
+rule to the component (`[data-slot="tabs-list"]`), never to the role**;
+specificity is not the lever.
+
+And `$xs`/`$sm`/`$md` here mean **"and up"**, not "and below" — the same sense
+as this file's `$lg={{ display: "flex" }}` desktop-only clusters. A rule that
+should apply only to phones is therefore the BASE value with `$xs` switching it
+OFF, not `$xs` switching it on. Written the intuitive way round it measured as
+the exact inverse: shrink 0 at 390 and 1 at 1024, wrong at both ends. Read the
+COMPUTED value at several widths — the prop name reads correct in the broken
+case.
+
+Two things that made this expensive to see. **A DOM patch is not the change**:
+an inline `style.overflowX` on a gui element is not what `overflow="scroll"`
+compiles to, and patching it "proved" a fix that actually wrecked the group.
+Verify against a real build, and restart the dev server before believing a
+measurement — hot reload after many edits produced numbers no single build can
+produce (pre-fix at 390 beside post-fix at 1024). And `getBoundingClientRect`
+reports layout position **regardless of clipping**, so a control clipped inside
+an `overflow: scroll` parent reads as overlapping its neighbour. It cuts the
+other way too: the check that certified this bar counted pairwise overlap,
+found none, and the primary still hung 8.6px off a real iPhone 13. **Assert
+viewport containment, not overlap** — then confirm with a screenshot.
+
+### "No credits" is a claim about MONEY, and only a read balance may make it
+
+The same shape as the section below, one layer out. `lib/billing/server.ts`
+answers a REASON — `ok` | `noauth` | `unavailable` — and `/v1/edit` keeps the
+three apart: **401** for a refused balance, **503** for an unreadable one, and
+**402 only for a balance it READ and found empty**. That module exists in that
+shape because collapsing them once told a funded customer to pay.
+
+`public/edit.js` then put them back together: it read `hasCredits` alone — ONE
+boolean that is false for all three — and rendered "Top up" for every one. The
+server's care was undone by the last consumer, which is where this class always
+dies. Measured in production while it was live: `/v1/billing/balance` answers
+`401 "sign in to view billing"` interleaved with 200s, **14 of 64 reads in 24h**,
+so a funded account was told it had no money whenever its token went stale.
+
+Two things worth carrying:
+
+- **An ABSENT reason is our unknown, never the customer's debt.** A server that
+  predates the field must degrade to `unavailable`, not to a zero.
+- **A poll that never once succeeds is not a blip.** Reading the balance log by
+  TIME rather than by count split one 22%-failure number into two pollers: a
+  healthy one at 30s (all 200) and a second at exactly 60s (all 401, never a
+  single success). 60s is `BACKOFF_CAP_MS` in `console/src/lib/billing/live-balance.ts`
+  — a breaker that opened and stayed open. A rate hides that; a timeline shows it.
+  Console renders `noauth` honestly ("Sign in to view your balance"), so the
+  symptom there is a signed-in person told to sign in — not a fabricated $0.
+
+`tests/unit/credits-wall.test.ts` pins the branch ORDER, because moving the bare
+`top: true` fallback back in front restores the bug in one line and nothing else
+notices. Mutation-checked: that edit fails, and only that test.
 
 ### A refusal is not an outage — `lib/gateway.ts`
 
@@ -328,6 +477,72 @@ declare the button an icon button and the padding is `0` by design. Reach for
 prop moves it, check specificity against `@hanzo/ui`'s own sheet before assuming
 the prop is unsupported.
 
+**This rule was written here and then lost twenty times, so it is now checked**
+(`tests/unit/icon-button.test.ts`). The worst of the twenty was on the FIRST
+screen a visitor sees: the hero's replay control declared `width={22}`, kept the
+24px it could not refuse, and rendered its icon at **0×0** — a control with
+nothing in it. Nothing errored, nothing typed wrong, the build was green. The
+comparison arrows declared 36 and drew a 10px glyph in it.
+
+Two things the test had to get right, both of which cost a wrong answer first:
+
+- **The scanner is brace- and quote-aware.** `onClick={() => run()}` contains a
+  `>`, so a regex that takes the first `>` as the tag end stops mid-props. That
+  version missed a third of the call sites — including every one on the landing
+  page — and would have shipped a guard that certified the bug.
+- **`size="icon"` is a FLOOR (30), not a box**, like every `@hanzo/ui` size. The
+  hero's mock browser chrome is drawn at 22, so those three controls are 22×30
+  rather than square. The icon is visible, which is what was broken; the row's
+  ground is transparent at rest, so the extra 8px shows only under a pointer.
+
+Eleven call sites are deliberately exempt and the test names each with its
+reason: seven render two glyphs side by side (an icon plus a close ✕) and are
+tabs, not squares — `size="icon"` would squash them; three carry a text label;
+one is a switch track.
+
+**A tap target is a BOX, and the floor applies to the smaller side.** The
+`@media (pointer: coarse)` rule in `assets/globals.css` set `min-height` alone,
+and the deploy gate (universe `charts/app/templates/e2e-gate.yaml`) checked
+`r.height` alone — so rule and check agreed with each other and were both wrong.
+Six routes reported clean over four controls measuring 22, 28, 36 and 39 wide:
+the brand mark, the composer's mic and send, and a filter chip. Both assert
+`min(width, height)` now, `tests/unit/touch-target.test.ts` pins the CSS half,
+and the gate's failure line prints the box rather than one number.
+
+The `!important` on that rule is load-bearing and is the reason it is pinned:
+`size="icon"` writes its floor INLINE, which beats a stylesheet rule on the same
+property whatever the specificity (the collision `.t_group_true` needs it for).
+Without it the rule is a silent no-op on exactly the controls it exists for.
+
+**A TAB is not on that list, and `@hanzo/ui` renders one as a `div`.** The floor
+names `button`, `[role="button"]`, `a[href]` and `.hz-tap`; `TabsTrigger` is
+gui's `Tabs.Tab` and comes out `div[role="tab"]`, so it matches none of them.
+Measured on a phone (`hasTouch`, which is what actually drives `pointer: coarse`
+— a 390px viewport alone does not): 30px painted, 38px reachable, because
+`@hanzo/ui`'s own `data-touch-y` adds only 4px a side. **Mark the component
+`.hz-tap`** — that class means "a standalone tap target" and is already the one
+way to say it. Do NOT widen the rule to `[role="tab"]`: the same shortcut on
+`[role="tablist"]` seized the builder's two hand-rolled segmented controls and
+turned five panes into a 96px three-row block (see components/landing/CLAUDE.md,
+"a role is not a component"). Desktop is untouched either way — the query is the
+input device, so these stay 30 under a mouse and become 44 under a thumb.
+
+**jsdom has no `ResizeObserver`, and `@hanzogui/tabs` observes its own strip.**
+So `render()` of anything holding `@hanzo/ui` Tabs threw from inside a passive
+effect, which React reports as an `AggregateError` with **no message** — it names
+neither the API nor the component and reads like a broken test. The stub is in
+`jest.setup.jsdom.js` with the other jsdom gaps; it observes and never fires,
+which is the honest behaviour, since jsdom performs no layout and nothing ever
+changes size. A stub that invented a box would hand every measurement-driven
+component the same fiction.
+
+Corollary for the composer: its two action controls are ONE box at 36. The mic
+comes from `@hanzo/voice` at 28 and the send from the icon floor at 36, so they
+sat 8px apart in one row. 36 is this app's icon box — Lovable's 32 is
+unreachable without either dropping `size="icon"` (which the test above forbids)
+or overriding the library's floor, and inventing a third authority for one box
+is worse than a 4px delta.
+
 **A `<kbd>` is a hint, not a keycap** — one element rule in `assets/globals.css`,
 `var(--text-tertiary)` + `var(--text-xs)`, no box. Same shape hanzo.chat draws
 (`DropdownPopup.tsx`), and the colour and size come from `@hanzo/ui/theme.css`,
@@ -344,6 +559,61 @@ The icon library needs no decision: both surfaces are already lucide (this app
 `lucide-react` direct, chat the same package plus the gui-wrapped
 `@hanzogui/lucide-icons-2`), so parity here is a matter of picking the same
 NAMES, never of adding a dependency.
+
+### The release lane: two things that stop an image existing
+
+`.hanzo/workflows/release.yml` builds **`Dockerfile.production`** (not the root
+`Dockerfile`, which nothing references, nor `docker/Dockerfile`, which is
+compose's), then moves the universe pin through `charts/app/pin.sh`.
+
+- **`patches/` must be copied with the manifest.** `package.json`'s
+  `pnpm.patchedDependencies` names a file inside it and pnpm hashes that file
+  during RESOLUTION, not at a later patch step. From `167cb522` (when the first
+  patch landed) every build died at `pnpm install` with `ENOENT … open
+  '/app/patches/@hanzo__ui@8.0.70.patch'`, exit 254 — and the `test` job runs
+  separately and stayed GREEN, so each run showed a passing gate beside a red
+  build while main kept moving and no image was cut for a day.
+- **There is no version write-back, and no version-drift gate.** Both are
+  deleted. The number is DERIVED — `scripts/version.sh next` scans git tags union
+  the container tags and reads `package.json` as nothing — so main never held the
+  floor, only a copy of it. Keeping that copy honest needed a push to a protected
+  branch, which the forge refuses for the Actions token, so a release that had
+  already built, pushed, tagged and pinned its image still ended RED. One source
+  (the stream), no copy, nothing to keep in sync.
+  `release.yml` still STAMPS the derived number into the build context, because
+  `lib/version.ts` reads `pkg.version` for the sidebar and about modal. That is a
+  display string written downstream of the derivation, never an input to it.
+- **A red `build-amd64` beside a green `test` can be an INFRA break, not yours.**
+  The release fetches its ingest key from KMS and refuses to ship a bundle without
+  one (correct — a keyless bundle reports zero events and goes green, so a missing
+  image is the better failure). For hours that step died on
+  `KMS login failed at https://api.hanzo.ai/v1/kms/auth/login`, and nothing about
+  this repo was at fault: cloud's KMS brokers an IAM `client_credentials` exchange
+  and was still dialling `iam.hanzo.svc`, the Service of the RETIRED standalone IAM
+  — a ClusterIP kept at zero endpoints on purpose, so it answers `connection
+  refused` rather than a name error. Fixed in universe
+  (`CLOUD_KMS_IAM_TOKEN_URL` → loopback; KMS and IAM are one process now).
+  **The tell is 502 vs 401**: `cloud/clients/kms/login.go` reserves 401 for a
+  credential IAM rejected and 502 for IAM unreachable, so a 502 says the
+  credentials were never the problem — which is where the obvious investigation
+  goes first. Green again reads `ingest key resolved (40 chars)`.
+
+- **`[skip ci]` works, and a run on your sha is not proof it did not.** The
+  forge honours `[skip ci]` / `[ci skip]` / `[no ci]` / `[skip actions]` on
+  **push and pull_request only** — that is upstream's rule, and correctly so: a
+  `workflow_dispatch` or a `schedule` is someone asking on purpose, not your
+  commit. Both also fire against the branch tip, so they carry YOUR sha and read
+  exactly like a push you thought you had skipped.
+  Check the event, not the sha:
+
+      kubectl -n hanzo exec sql-0 -- psql -U hanzo -d git -tAc \
+        "SELECT substring(r.commit_sha,1,8), r.event, r.trigger_event
+           FROM action_run r JOIN repository p ON p.id=r.repo_id
+          WHERE p.owner_name='hanzo-apps' AND p.name='app'
+          ORDER BY r.id DESC LIMIT 10;"
+
+  Measured this way: two `[skip ci]` commits produced ZERO runs of any kind and
+  a third produced zero PUSH runs. `paths-ignore: ['**.md']` holds too.
 
 ### Work items live in the cloud tracker, and "task" is the wrong word
 
@@ -380,3 +650,139 @@ Two rules the types cannot state:
 Tenancy is never ours to assert: cloud `middleware_identity.go` STRIPS every
 client-supplied authority header and re-mints `X-Org-Id` from the validated
 bearer, so the BFF forwards the token and nothing else.
+
+### A generated site's libraries come from US — `lib/vendor.ts`, one origin
+
+Style, icons, animation and maps used to be fetched by every generated site
+from `cdn.tailwindcss.com`, `cdn.jsdelivr.net`, `unpkg.com` and
+`cdnjs.cloudflare.com`, with Google Fonts beside them, and this app's CSP was
+widened to permit all four. That is four parties in front of every visitor to
+every customer's site, each able to watch that traffic and to change what runs
+on the page — and the skills told the model to prefer it in as many words
+("Use CDN links for all external assets", "Don't use npm/build tools").
+
+They are npm dependencies now. `package.json` pins them, `scripts/vendor.mjs`
+copies them out of node_modules into `public/vendor/` on install and before
+build (the mechanism `esbuild.wasm` already used), and **`lib/vendor.ts` is the
+one place a URL is decided** — prompts, templates, preview and publisher all
+read it. Add a library there and nowhere else.
+
+Four things that are load-bearing and non-obvious:
+
+- **A generated page's style layer is `@hanzo/design`, and it is a SHEET.**
+  One `<link>` at `/vendor/design/styles.css` carries the tokens plus a base
+  layer that dresses bare HTML, so the page is dark, typeset in Geist and on
+  brand before it writes a rule. It replaced a 276 KB browser build of
+  Tailwind, and the byte count is the smaller half of why: a utility framework
+  in the page is a COMPILER, so with JavaScript blocked the page renders as
+  Times New Roman on white. Measured both ways at 390px and 1440px — same
+  markup, JS off: `#0a0a0a`, Geist loaded, controls styled.
+- **The sheet's two Geist faces are relative to the sheet.** It asks for
+  `url(./assets/fonts/…)`, so the faces are served BESIDE it at
+  `/vendor/design/assets/fonts/`. Get this wrong and nothing says so, and the
+  two obvious checks both lie: `getComputedStyle().fontFamily` is the DECLARED
+  value, and `document.fonts.check('16px Geist')` returns true whenever a
+  matching `@font-face` RULE exists — including for a face whose download
+  404'd. `FontFace.status` (`loaded` vs `error`) is the only one that answers,
+  and `tests/e2e/generated-page.spec.ts` asks that one.
+- **anime is held at 3.x deliberately.** 4.x replaced `anime({targets})` with
+  named exports; the sites already published here and the code a model writes
+  unprompted are both 3.x, so a version bump breaks them with no error anyone
+  would attribute to a version.
+- **`rewrite` runs at the FRAME, not at save.** Projects stored before this
+  name the old hosts literally and the preview inherits the app's CSP, so
+  `withBridge` rewrites on the way in — which heals what is already saved.
+  Tighten the policy without it and every site built earlier previews blank.
+- **A missing vendor file is invisible.** `scripts/vendor.mjs` throws rather
+  than skipping, because a silent skip 404s the stylesheet for every generated
+  page while the app itself stays perfectly healthy — a defect only customers
+  see. It resolves a source two ways (the subpath, then the package root)
+  because packages disagree about which their `exports` map leaves open:
+  `@hanzo/design` exposes `./styles.css` and not `./package.json`, and
+  `feather-icons` is the mirror image.
+- **`rewrite` turns the old Tailwind SCRIPT into the new LINK.** It is the one
+  entry that swaps a tag rather than a URL, because the style layer stopped
+  being a script. Both spellings a stored document can carry —
+  `cdn.tailwindcss.com` and our own `/vendor/tailwind.js` — are gone from disk,
+  so a URL-level rewrite would leave a 404 and a page of unstyled markup.
+
+`tests/unit/vendor.test.ts` fails if a third-party host returns to a prompt or
+to the policy; both mutations are checked, so this cannot quietly regress.
+
+### The ten dependabot alerts: transitive, and none reachable
+
+Every push prints "10 vulnerabilities (7 high, 3 moderate)". Triaged
+2026-08-08 — **not one is a direct dependency and not one is imported by this
+app.** `sharp`, `image-size`, `postcss`, `nanoid`, `brace-expansion` and
+`@hey-api/openapi-ts` appear nowhere in `app/`, `lib/` or `components/`; they
+arrive under `next@16` and build tooling.
+
+The only one with a runtime path is **`sharp` (libvips CVEs), reached through
+`next/image` — and `next.config.ts` sets `images: { unoptimized: true }`, so
+nothing passes through the optimizer.** That line is load-bearing for this
+triage: turning optimization on puts attacker-influenced bytes into a
+vulnerable `sharp 0.34.5`, so treat it as a security decision and not only a
+performance one. (The `remotePatterns` beside it are dead config — they are
+only consulted when optimization is on.)
+
+`postcss` runs at BUILD, over CSS from this repo. Generated sites never touch
+it: the builder renders one self-contained HTML document in an iframe and
+publish writes static bytes to S3, so no user CSS reaches the toolchain.
+
+So the alerts are real and the exposure is nil. Fixing them means pnpm
+`overrides` on packages we do not use, which risks the build for no gain —
+they clear when `next` bumps. **Re-check the reachability, not the count**: the
+number will keep climbing, and the question that matters is whether anything
+here imports one, or whether `unoptimized` ever flips.
+
+### The sandbox is a working copy, and git.hanzo.ai is the only git
+
+A Code turn is a `dev` process inside a gVisor pod, and for a long time that pod
+was a shadow of the forge rather than a clone of it. `openSandbox` never cloned,
+so the agent's first run on any project started in an EMPTY directory;
+`runHarness` never committed, so the work stayed on the released volume and
+reached git.hanzo.ai never. What the history panel drew was the browser
+rebuilding a checkout it could not see, out of the `done` event's file list.
+
+Three files carry the fix and nothing else needs to know:
+
+- **`lib/agent/checkout.ts`** — the two verbs that bracket a turn. `checkout()`
+  clones the project's repo into the pod (guarded by `[ -d .git ] ||`, because the
+  volume re-attaches and a re-clone would throw away `node_modules`); `land()`
+  adds, commits, fetches, rebases and pushes. Both answer with a SENTENCE, empty
+  when nothing is wrong.
+- **`openSandbox({ repo })`** does the first, so every door into a project's pod
+  — the agent and the terminal — gets the project. **`runHarness({ repo })`** does
+  the second, after `dev` exits 0.
+- **`lib/git/forge.ts`** owns the credential. `forgeRemote()` hands back a CLEAN
+  url plus the `git credential-store` line separately, and the line travels on the
+  command's **stdin** (`Sandbox.exec`'s third argument → cloud's `RunIn.Stdin`).
+  Cloud has no env field on `/run` and `sh -c` puts a command in the pod's process
+  table, so stdin is the only channel a secret may take. Nothing puts a token in a
+  URL: it would land in `.git/config` and in every error git prints.
+
+Consequences worth knowing before you touch any of it:
+
+- **The commit is the record; the `done` event is a display.** A harness run emits
+  `files: []` and only `changed`. The browser takes files up ONLY when the run was
+  not durable (`components/editor/ask-ai/index.tsx`) — an in-memory run is the one
+  case where the tab holds the only copy. Feeding a durable run's files back into
+  `pages` is what committed `.tsx` and `.json` as HTML pages.
+- **`land` rebases before pushing.** `/v1/git/native` (autosave) commits the
+  browser's pages to the SAME repo, so a project used in both modes has a branch
+  that moved under the pod's clone; a straight push is a non-fast-forward.
+- **`.git/info/exclude`** is written at checkout with `node_modules`, `.next`,
+  `dist`, … — `git add -A` takes everything, and a browser-built project's repo has
+  no `.gitignore` at all, because its pages went through the forge API and never
+  through a git client.
+- **One backend.** `lib/git/sync.ts` is the export path to somebody ELSE's forge:
+  `PushOptions.provider` is `Exclude<GitProvider, 'hanzo'>` and the type is what
+  keeps the second one from growing back. Publish (`/v1/git/sync` with
+  `provider: 'hanzo'`) goes through `forge.ts` to `git.hanzo.ai/<user>/<slug>` —
+  the same owner+slug the sandbox clones and `/v1/git/native` commits to. Owner is
+  always the session's IAM username, never anything the browser names.
+- **Still on `api.hanzo.ai/v1/git`:** the READ half in `lib/git/log.ts`
+  (`listCommitsHanzo` / `getCommitHanzo`). It is unreachable — `/v1/git/commits`
+  short-circuits `provider === 'hanzo'` to `forge.ts` before it — but it is still
+  compiled and still tested by `tests/unit/git-log.test.ts`. Delete it and its
+  tests together, or leave it alone; do not half-cut it.

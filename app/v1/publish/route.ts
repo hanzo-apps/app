@@ -21,6 +21,7 @@ import { session } from '@/lib/iam';
 import { requireSameOrigin } from '@/lib/org/csrf';
 import { slugifyProject } from '@/lib/org/policy';
 import { buildTarGz, type TarEntry } from '@/lib/org/targz';
+import { withTag } from '@/lib/publishing/tag';
 
 export const runtime = 'nodejs';
 
@@ -177,17 +178,26 @@ export async function POST(req: NextRequest) {
     const entries: TarEntry[] = [];
     const seen = new Set<string>();
     let hasIndex = false;
+    // The project's publishable ingest key travels on every HTML page as the
+    // hosted tag (lib/publishing/tag) — the ONE telemetry wire. No key (an
+    // older record minted before keys) publishes untagged rather than failing.
+    const ingest = typeof (project as { key?: unknown })?.key === 'string'
+      ? ((project as { key: string }).key)
+      : '';
+    const tagged = (rel: string, html: string) =>
+      rel.endsWith('.html') ? withTag(html, ingest) : html;
     for (const pg of pages) {
       const rel = safeRel(pg.path);
       if (!rel || seen.has(rel)) continue;
       seen.add(rel);
       if (rel === 'index.html') hasIndex = true;
-      entries.push({ name: rel, data: Buffer.from(typeof pg.html === 'string' ? pg.html : '', 'utf8') });
+      const html = typeof pg.html === 'string' ? pg.html : '';
+      entries.push({ name: rel, data: Buffer.from(tagged(rel, html), 'utf8') });
     }
     // projects service requires index.html at the artifact root.
     if (!hasIndex) {
       const first = pages.find((p) => safeRel(p.path));
-      if (first) entries.push({ name: 'index.html', data: Buffer.from(first.html || '', 'utf8') });
+      if (first) entries.push({ name: 'index.html', data: Buffer.from(tagged('index.html', first.html || ''), 'utf8') });
     }
 
     if (entries.length === 0) throw new Error('no valid pages');

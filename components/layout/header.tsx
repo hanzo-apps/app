@@ -12,7 +12,8 @@
 // Auth is the only app-owned piece: the signed-in account menu / sign-in CTAs
 // ride `identitySlot`, on the ONE IAM PKCE flow via useUser. "Get started" is
 // the SIGNUP funnel (IAM registration hint → builder, where OrgGate onboards
-// the new org); "Sign In" is plain login() for returning users.
+// the new org). There is no separate "Sign In": it called the same login()
+// and offered a choice that does not exist.
 
 import { HanzoHeader, resolveSurface } from "@hanzogui/shell";
 import { SizableText, YStack, Paragraph, XStack } from "@hanzo/ui";
@@ -30,9 +31,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@hanzo/ui";
+import { PrimaryButton } from "@hanzo/ui/product";
 import { HeaderSearch } from "@/components/layout/header-search";
 import { useUser } from "@/hooks/useUser";
-import { accent } from "@/lib/chrome";
 
 export default function Header() {
   const { user, isAuthenticated, login, logout } = useUser();
@@ -86,21 +87,30 @@ export default function Header() {
     </DropdownMenu>
   );
 
+  // ONE way in.
+  //
+  // There were two — a ghost "Sign In" beside "Get started" — and they are the
+  // same door: both call `login()`, so the header offered a choice that does
+  // not exist and spent its most valuable inches doing it. The pair also read
+  // as equals, which is the opposite of what a header should say: one action,
+  // one weight.
+  //
+  // It is WHITE, and `PrimaryButton` is what makes it white.
+  //
+  // `accent` is `$color5` — a raised neutral, right for a secondary action and
+  // too quiet for the one thing we want a visitor to do. hanzo.ai and
+  // cloud.hanzo.ai both put a white pill in this slot; this header was the odd
+  // one out. Spelling white here instead would break two rules the tests hold: a
+  // Button in this shell carries a variant or a recipe (ui-centralization), and
+  // re-spelling a foreground on a filled label is exactly how login-modal reached
+  // 1.07:1 and went invisible (signed-out-emphasis).
+  //
+  // `PrimaryButton` is that recipe, already published, and already described as
+  // "the one white, high-emphasis action … sign in, save, get started": it flips
+  // the control to `theme="light"`, so the fill and its label move TOGETHER —
+  // white ground, near-black label — with no colour named at this call site.
   const signedOutCTAs = (
-    <>
-      <Button onClick={() => login()} variant="ghost">
-        Sign in
-      </Button>
-      {/* This asked the library for its loud variant by name, which paints
-          identically today — measured rgb(51,51,51) on rgb(69,69,69), i.e.
-          `accent` exactly. Still the wrong spelling: a variant only reaches a
-          Button, and half this app's loud controls are an XStack or a Link.
-          One recipe that works on every element beats two names for one value.
-          (Old spelling described, not quoted — the ratchet greps source.) */}
-      <Button onClick={getStarted} {...accent}>
-        Get started
-      </Button>
-    </>
+    <PrimaryButton onClick={getStarted}>Get started</PrimaryButton>
   );
 
   // The registry surface with THIS surface's nav as DATA (never a fork). The
@@ -112,12 +122,14 @@ export default function Header() {
   // No `productsTaxonomy`: the ten-category cloud mega-menu belongs to the cloud
   // surfaces. This one gets the flat nav plus the universal Meet Hanzo menu.
   const surface = resolveSurface("hanzo.app");
+  // THREE, not five. Pricing and Help are gone from the bar: pricing is a row in
+  // the Meet Hanzo menu and a section of /features, and Help is a support link,
+  // not a peer of what the product does. Five flat words spent the bar's width on
+  // the two nobody arrives for.
   const nav = [
     { id: "features", label: "Features", href: "/features" },
-    { id: "pricing", label: "Pricing", href: "/pricing" },
     { id: "resources", label: "Templates", href: "/templates" },
     { id: "solutions", label: "Enterprise", href: "/enterprise" },
-    { id: "help", label: "Help", href: "/help" },
   ];
 
   // `primaryCTA` is overridden for the same reason `localNav` is: the shared
@@ -131,6 +143,11 @@ export default function Header() {
   // mounts OrgGate, so a first-time visitor with no organization is onboarded
   // instead of meeting that requirement later at deploy.
   const primaryCTA = { id: "newproject", label: "+ New project", href: "/new" };
+  // …and then HIDDEN in assets/globals.css (`[data-hanzo-shell] a[href="/new"]`):
+  // the owner removed the "+ New project" button from the menu header. This object
+  // stays only because HanzoHeader REQUIRES a primaryCTA and its CTA reads
+  // `link.href` unguarded, so it cannot be dropped from here; /new keeps it a
+  // valid, harmless target while the CSS takes it off the page.
 
   return (
     <HanzoHeader

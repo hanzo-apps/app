@@ -86,7 +86,8 @@ const customJestConfig = {
         '<rootDir>/tests/unit/**/*.test.{js,jsx,ts,tsx}',
         '<rootDir>/{lib,hooks,components}/**/__tests__/**/*.test.{js,jsx,ts,tsx}',
       ],
-      testEnvironment: 'jest-environment-jsdom',
+      // jsdom, plus the fetch classes jsdom omits — see jest.env.jsdom.js.
+      testEnvironment: '<rootDir>/jest.env.jsdom.js',
       // A project inherits NOTHING from the root config — it IS a config — so
       // the jsdom polyfills have to be named here or they run nowhere.
       setupFiles: ['<rootDir>/jest.setup.jsdom.js'],

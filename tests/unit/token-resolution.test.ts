@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { createRequire } from "node:module";
 
 /**
  * Every token this surface names must resolve.
@@ -19,9 +20,16 @@ import { join } from "node:path";
  * sweep is the thing that can: it reads every `var(--…)` the surface writes and
  * asserts each name is declared somewhere the browser will actually see.
  *
- * Scope is `app/`, `components/` and `hooks/` — the surface. `lib/vfs/templates`
- * and `lib/template-previews` are deliberately out: those are SOURCE for the apps
- * this app generates, and they carry their own stylesheets.
+ * Scope is `app/`, `components/` and `hooks/` — the surface. `lib/template-previews`
+ * is deliberately out: it is SOURCE for the apps this app generates, and it
+ * carries its own stylesheet.
+ *
+ * The GENERATED side gets its own sweep at the bottom of this file, against its
+ * own sheet. It used to be excluded for the same reason — "they carry their own
+ * stylesheets" — which was true while that stylesheet was Tailwind. It is now
+ * @hanzo/design, the same token layer, and the exclusion was exactly the gap a
+ * `var(--space-7)` walked through: the ramp has no 7, so a starter template's
+ * only vertical gap silently computed to zero. Nothing but a screenshot caught it.
  */
 
 const ROOT = process.cwd();
@@ -33,8 +41,6 @@ const SURFACE = ["app", "components", "hooks"];
  * to be declared for real.
  */
 const PROVIDED = [
-  /^--radix-/, // Radix positions its poppers by writing these on the element
-  /^--tw-/, // Tailwind's own internal registers
   /^--font-geist-(sans|mono)$/, // next/font, via `variable:` in app/layout.tsx
   /^--f-/, // Tamagui font registers, injected by its runtime CSS
 ];
@@ -47,6 +53,16 @@ const walk = (dir: string, out: string[] = []): string[] => {
     else if (/\.(tsx?|css)$/.test(name)) out.push(p);
   }
   return out;
+};
+
+/** Where `@hanzo/ui/theme.css` actually lives, via the package's exports map. */
+const themeSheet = (): string => {
+  const require_ = createRequire(join(ROOT, "package.json"));
+  const pkg = require_.resolve("@hanzo/ui/package.json");
+  const exp = (JSON.parse(readFileSync(pkg, "utf8")).exports ?? {})["./theme.css"];
+  const rel = typeof exp === "string" ? exp : (exp?.default ?? exp?.style);
+  if (!rel) throw new Error("@hanzo/ui no longer exports ./theme.css");
+  return join(dirname(pkg), rel);
 };
 
 const stripComments = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "");
@@ -65,6 +81,21 @@ const declared = (): Set<string> => {
     // here while `referenced()` walks it made the suite report ~740 of gui.css's
     // own tokens as undeclared — a self-inflicted red that hid real ones.
     readFileSync(join(ROOT, "app/gui.css"), "utf8"),
+    // THE TOKEN LAYER. `app/layout.tsx` imports `@hanzo/ui/theme.css`, which
+    // carries @hanzo/design's whole sheet — the colour ramp, the radius ramp,
+    // the `--text-*`/`--space-*` scales and, since design 0.4.12, the
+    // `--type-scale`/`--density` knobs those scales multiply by.
+    //
+    // It was missing here, and that stayed invisible until gui.css began
+    // REFERENCING the ramp: @hanzo/ui 8.0.69 resolves its `$n` type ladder
+    // through `var(--text-*)` so a person's text-size preference reaches the
+    // ~1600 `fontSize="$n"` call sites, and this sweep promptly reported
+    // thirteen design tokens as undeclared. They ARE declared — in the one
+    // sheet the sweep did not read.
+    //
+    // Resolved through the package's exports, not a literal path: pnpm nests
+    // the real file under .pnpm/<pkg>@<version+hash>/.
+    readFileSync(themeSheet(), "utf8"),
   ];
   const set = new Set<string>();
   for (const sheet of sheets) {
@@ -138,6 +169,44 @@ describe("token resolution", () => {
       m[1].trim(),
     );
     expect(decls).toEqual(["0 0 0", "255 255 255"]);
+  });
+
+  /**
+   * THE GENERATED SIDE. A page this product builds links one stylesheet —
+   * `@hanzo/design`, served from `/vendor/design/styles.css` — and everything
+   * these files write is resolved against it and nothing else. Its failure mode
+   * is worse than the surface's, because the person who sees it is a customer's
+   * visitor looking at a customer's site, and there is no console anyone reads.
+   */
+  it("declares every token the pipeline puts in a generated page", () => {
+    // By path, like @hanzo/brand above. `require.resolve` cannot reach it from
+    // here twice over: the package's "." export is ESM-only, and asking for the
+    // .css directly lands on jest's style MOCK (moduleNameMapper sends every
+    // stylesheet there), so the sweep would run against an empty string and
+    // pass against nothing. The `toBeGreaterThan` below is what would say so.
+    const sheet = readFileSync(
+      join(ROOT, "node_modules/@hanzo/design/styles.css"),
+      "utf8",
+    );
+    const tokens = new Set(
+      [...stripComments(sheet).matchAll(/(--[a-zA-Z0-9_-]+)\s*:/g)].map((m) => m[1]),
+    );
+    expect(tokens.size).toBeGreaterThan(100); // or everything below is vacuous
+
+    const PIPELINE = [
+      "lib/prompts.ts",
+      "lib/vfs/skills/built-in/one-shot.ts",
+      "lib/vfs/skills/built-in/planning.ts",
+      "lib/vfs/templates/vibe-check.ts",
+    ];
+    const missing: string[] = [];
+    for (const file of PIPELINE) {
+      const src = stripComments(readFileSync(join(ROOT, file), "utf8"));
+      for (const m of src.matchAll(/var\(\s*(--[a-zA-Z0-9_-]+)/g)) {
+        if (!tokens.has(m[1])) missing.push(`${m[1]}  ←  ${file}`);
+      }
+    }
+    expect([...new Set(missing)]).toEqual([]);
   });
 
   it("routes the accent through @hanzo/brand, never a literal", () => {

@@ -3,6 +3,7 @@
 import { XStack, SizableText, YStack, Paragraph, H3, H2 } from '@hanzo/ui';
 import { useState, useEffect } from 'react';
 import { Skill } from '@/lib/vfs/skills/types';
+import { CatalogSkill } from '@/lib/skills-catalog';
 import { skillsService } from '@/lib/vfs/skills';
 import { logger } from '@/lib/utils';
 import { Button, Input, Badge, Switch, Label, Collapsible, CollapsibleContent, CollapsibleTrigger, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, toast } from '@hanzo/ui';
@@ -32,11 +33,52 @@ export function SkillsManager() {
   const [globalEnabled, setGlobalEnabled] = useState(true);
   const [evaluationEnabled, setEvaluationEnabled] = useState(false);
   const [enabledSkills, setEnabledSkills] = useState<Set<string>>(new Set());
+  const [catalog, setCatalog] = useState<CatalogSkill[]>([]);
+  const [installing, setInstalling] = useState<string | null>(null);
 
   useEffect(() => {
     loadSkills();
     loadEnabledState();
   }, []);
+
+  // The catalog is the whole published set, not just what is installed here, and
+  // it loads on its own: an unreachable catalog leaves built-in and custom
+  // skills exactly as they were.
+  //
+  // Written inline rather than as a `const` the effect calls, because both
+  // shapes cost a lint error the ratchet counts — a hoisted callee trips
+  // react-hooks/immutability, and a visible one trips
+  // react-hooks/set-state-in-effect. Here the state lands after an await, which
+  // is neither, and the cancel flag keeps an unmount from setting state.
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res = await fetch('/v1/skills/catalog', { headers: { Accept: 'application/json' } });
+        if (!res.ok) return;
+        const body = (await res.json()) as { skills?: CatalogSkill[] };
+        if (!cancelled) setCatalog(Array.isArray(body.skills) ? body.skills : []);
+      } catch (error) {
+        logger.error('[SkillsManager] Failed to load skill catalog', error);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const handleInstall = async (entry: CatalogSkill) => {
+    try {
+      setInstalling(entry.name);
+      await skillsService.installFromCatalog(entry.path);
+      await loadSkills();
+      await loadEnabledState();
+      toast.success(`Added ${entry.name}`);
+    } catch (error) {
+      logger.error('[SkillsManager] Failed to install skill', error);
+      toast.error(error instanceof Error ? error.message : 'Could not add that skill');
+    } finally {
+      setInstalling(null);
+    }
+  };
 
   const loadSkills = async () => {
     try {
@@ -215,6 +257,15 @@ export function SkillsManager() {
   const builtInSkills = filteredSkills.filter(s => s.isBuiltIn);
   const customSkills = filteredSkills.filter(s => !s.isBuiltIn);
 
+  // A catalog entry's name IS the id it installs under (both come from the
+  // SKILL.md frontmatter), so this is the whole "already have it" test.
+  const installedIds = new Set(skills.map(s => s.id));
+  const filteredCatalog = catalog.filter(entry =>
+    entry.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    entry.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    entry.service.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" height="100%">
@@ -231,15 +282,12 @@ export function SkillsManager() {
           <YStack alignSelf="center" width="100%" maxWidth={896} gap="$3">
             <YStack gap="$3" $sm={{ flexDirection: "row" }}>
               {/* Search */}
-              <YStack position="relative" flex={1}>
-                <YStack position="absolute" left={12} top={0} bottom={0} justifyContent="center" pointerEvents="none">
-                  <Search size={16} />
-                </YStack>
+              <YStack flex={1}>
                 <Input
                   placeholder="Search skills..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  paddingLeft={36}
+                  startAdornment={<Search size={16} />}
   />
               </YStack>
 
@@ -301,7 +349,7 @@ export function SkillsManager() {
         {/* Skills List */}
         <YStack flex={1} paddingHorizontal="$4" paddingTop="$3" paddingBottom="$4" overflow="scroll" $sm={{ paddingHorizontal: "$5", paddingTop: "$3", paddingBottom: "$5" }}>
           <YStack alignSelf="center" width="100%" maxWidth={896}>
-            {filteredSkills.length === 0 ? (
+            {filteredSkills.length === 0 && filteredCatalog.length === 0 ? (
               <YStack paddingVertical="$8" alignItems="center">
                 <Sparkles size={48} />
                 <H3 fontSize="$6" fontWeight="500" marginBottom="$2">No skills yet</H3>
@@ -336,6 +384,53 @@ export function SkillsManager() {
                           onDelete={handleDelete}
   />
                       ))}
+                    </YStack>
+                  </YStack>
+                )}
+
+                {/* Catalog — everything published, whether or not it is installed */}
+                {filteredCatalog.length > 0 && (
+                  <YStack>
+                    <XStack alignItems="center" gap="$2" marginBottom="$3">
+                      <Download size={20} />
+                      <H2 fontSize="$6" fontWeight="500">
+                        Catalog ({filteredCatalog.length}{filteredCatalog.length !== catalog.length ? ` of ${catalog.length}` : ''})
+                      </H2>
+                    </XStack>
+                    <YStack gap="$2">
+                      {filteredCatalog.map(entry => {
+                        const installed = installedIds.has(entry.name);
+                        return (
+                          <XStack
+                            key={`${entry.service}/${entry.name}`}
+                            alignItems="center"
+                            gap="$3"
+                            padding="$3"
+                            backgroundColor="$color2"
+                            borderRadius="$5"
+                            borderWidth={1}
+                            borderColor="$borderColor"
+                          >
+                            <YStack flex={1} minWidth={0} gap="$1">
+                              <XStack alignItems="center" gap="$2" flexWrap="wrap">
+                                <SizableText fontSize="$3" fontWeight="500">{entry.name}</SizableText>
+                                <Badge variant="secondary">{entry.service}</Badge>
+                              </XStack>
+                              <Paragraph fontSize="$1" color="$color11" numberOfLines={2}>
+                                {entry.description}
+                              </Paragraph>
+                            </YStack>
+                            <Button
+                              size="sm"
+                              variant={installed ? 'outline' : undefined}
+                              disabled={installed || installing === entry.name}
+                              onClick={() => handleInstall(entry)}
+                            >
+                              {installed ? 'Added' : installing === entry.name ? 'Adding…' : (<><Plus size={16} />Add</>)}
+                            </Button>
+                          </XStack>
+                        );
+                      })}
                     </YStack>
                   </YStack>
                 )}

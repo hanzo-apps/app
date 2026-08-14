@@ -1,24 +1,26 @@
 "use client";
 
 import { SizableText, YStack, XStack, H1, Paragraph, H2, H3 } from '@hanzo/ui';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Github } from "lucide-react";
+import { fetchPublishedSlugs } from "@/lib/api/templates";
 import Header from "@/components/layout/header";
 import Reveal from "@/components/landing/reveal";
+import HeroPreview from "@/components/landing/hero-preview";
 import LazySection from "@/components/landing/lazy-section";
 import { TemplateThumb } from "@/components/template-thumb";
 import { TEMPLATE_SHOTS } from "@/lib/template-shots";
 import { bySpectrum } from "@/lib/template-hues";
-import { BuildComposer, type ComposerMode } from "@/components/build-composer";
+import { BuildComposer, type Composer, type ComposerMode } from "@/components/build-composer";
 import { ProjectThumb } from "@/components/project-thumb";
 
 // Below-the-fold sections: code-split out of the initial bundle and mounted on
-// scroll via <LazySection>. The hero (Header + composer) stays eager so it paints
-// instantly; these chunks load as the viewport approaches each one.
-const HeroPreview = dynamic(() => import("@/components/landing/hero-preview"), { ssr: false });
+// scroll via <LazySection>. The hero — Header, copy, product frame and the
+// composer — stays eager
+// so it paints instantly; these chunks load as the viewport approaches each one.
 const LogoWall = dynamic(() => import("@/components/landing/logo-wall"), { ssr: false });
 const CloudIntegration = dynamic(() => import("@/components/landing/cloud-integration"), { ssr: false });
 const ModelsStrip = dynamic(() => import("@/components/landing/models-strip"), { ssr: false });
@@ -39,10 +41,26 @@ import {
 // per slug — a generated placeholder tile on the landing page reads as broken.
 // Ordered by the colour of the shot rather than by rating, so scrolling the
 // strip runs the spectrum instead of shuffling unrelated pictures.
-function qcTemplates(templates: GalleryTemplate[]): GalleryTemplate[] {
+/**
+ * The starter strip: real templates, each with a real shot, that really open.
+ *
+ * `openable` is the set the platform publishes source for, and it is a
+ * SEPARATE question from having a screenshot. Measured 2026-08-08: of the 49
+ * templates that cleared the shot list here, 27 — more than half — answered 404
+ * on /v1/templates/<slug>/pages, so the front page's showcase was mostly
+ * pictures of designs a visitor could pick and then not receive. 22 survive,
+ * which is more than a strip shows.
+ *
+ * An EMPTY `openable` means the warehouse has not answered yet (or at all), and
+ * then this filters on nothing — the strip is exactly what it was before rather
+ * than blank. A front page that renders no templates because a background fetch
+ * failed would be a worse bug than the one being fixed.
+ */
+function qcTemplates(templates: GalleryTemplate[], openable: Set<string>): GalleryTemplate[] {
   const seen = new Set<string>();
   const qc = popularTemplates(templates, 100).filter((t) => {
     if (!TEMPLATE_SHOTS.has(t.slug) || seen.has(t.slug)) return false;
+    if (openable.size > 0 && !openable.has(t.slug)) return false;
     seen.add(t.slug);
     return true;
   });
@@ -58,35 +76,43 @@ interface LandingProject {
   updatedAtIso: string | null;
 }
 
-// Honest app-type starters (not fabricated products) — shown as pills.
-// Exactly FOUR: they read as one row under the composer at desktop widths;
-// a fifth wrapped alone onto a second line and looked stranded.
-const STARTERS = [
-  "Internal admin dashboard",
-  "AI support chatbot",
-  "SaaS app with billing",
-  "Marketplace with auth",
-];
-
 // Typewriter phrases for the composer — the same honest app types, phrased as
 // natural completions of "Ask Hanzo to build …".
 const TYPED = [
   "a customer portal with login and a dashboard",
+  "an internal admin dashboard for my team",
   "an AI support chatbot trained on my docs",
   "a SaaS app with Stripe billing and auth",
   "a marketplace with listings and checkout",
+  "a booking site with payments and reminders",
+  "a CRM to track leads and deals",
   "a realtime chat app with presence",
+  "an analytics dashboard with live charts",
+  "a landing page with an email waitlist",
+  "an inventory tracker with low-stock alerts",
+  "a docs site with full-text search",
 ];
 
 export default function LandingPage() {
-  const { openLoginWindow, user } = useUser();
+  const { login, user } = useUser();
   const router = useRouter();
+  // The page's one composer, reachable from the hero: its "build this example"
+  // link fills the draft here, exactly as a starter chip does.
+  const composer = useRef<Composer>(null);
   const [projects, setProjects] = useState<LandingProject[]>([]);
   // A few real gallery templates surfaced beside the prompt: the bundled
   // snapshot seeds them instantly, then the live catalog (gallery.hanzo.ai)
   // refreshes below.
-  const [starterTemplates, setStarterTemplates] = useState<GalleryTemplate[]>(
-    () => qcTemplates(snapshotCatalog().templates),
+  // The gallery rows and the set that can be opened arrive separately, so both
+  // are held and the strip is derived — otherwise whichever landed second would
+  // have to remember the first.
+  const [galleryRows, setGalleryRows] = useState<GalleryTemplate[]>(
+    () => snapshotCatalog().templates,
+  );
+  const [openable, setOpenable] = useState<Set<string>>(() => new Set());
+  const starterTemplates = useMemo(
+    () => qcTemplates(galleryRows, openable),
+    [galleryRows, openable],
   );
 
   // Fetch the user's REAL projects from the ONE canonical org store (the same
@@ -142,10 +168,13 @@ export default function LandingPage() {
       .then((res) => res.json())
       .then((data) => {
         if (alive && Array.isArray(data.templates) && data.templates.length) {
-          setStarterTemplates(qcTemplates(data.templates));
+          setGalleryRows(data.templates);
         }
       })
       .catch(() => {});
+    // The shop window and the warehouse are different services that disagree by
+    // 43 rows, which is why both are asked.
+    fetchPublishedSlugs().then((s) => alive && setOpenable(s));
     return () => {
       alive = false;
     };
@@ -157,8 +186,12 @@ export default function LandingPage() {
     localStorage.setItem("initialPrompt", text);
     localStorage.setItem("initialMode", mode);
     if (!user) {
-      localStorage.setItem("redirectAfterLogin", "/dev");
-      openLoginWindow();
+      // `login(dest)` and not `openLoginWindow()`: the latter writes
+      // `redirectAfterLogin` from the CURRENT path, so setting it first was a
+      // no-op that this one overwrote. A visitor who typed a prompt on the
+      // landing page therefore came back to "/" — which routes on to
+      // /dashboard — and the prompt they had just written was never opened.
+      login("/dev");
       return;
     }
     router.push("/dev");
@@ -173,7 +206,9 @@ export default function LandingPage() {
   };
 
   return (
-    <YStack position="relative" minHeight="100%" backgroundColor="$background" overflow="hidden" className="landing-root">
+    // The clip is CSS (`.landing-root`, assets/globals.css) because gui types
+    // `overflow` as visible|hidden|scroll and the value has to be `clip`: hidden
+    <YStack position="relative" minHeight="100%" backgroundColor="$background" className="landing-root">
       {/* Monochrome hero glow — single soft white radial, zero hue. */}
       <YStack pointerEvents="none" position="fixed" top={0} right={0} bottom={0} left={0} zIndex={0} overflow="hidden">
         <YStack position="absolute" left="50%" top="-12%" height={560} width={900} marginLeft={-450} borderRadius="$10" backgroundColor="$color0075" filter="blur(130px)" />
@@ -181,47 +216,82 @@ export default function LandingPage() {
 
       <Header />
 
+      {/* The page's content, over the fixed glow behind it. */}
       <YStack position="relative" zIndex={10}>
-        {/* ── Hero ─────────────────────────────────────────────── */}
-        <YStack paddingHorizontal="$4" paddingBottom="$9" paddingTop="$10" $md={{ paddingHorizontal: "$6", paddingBottom: "$11", paddingTop: "$12" }}>
+        {/* ── Hero — the sentence on the left, the product on the right ──
+            `100svh` so the hero OWNS the fold: the two columns centre in the
+            space above the composer's slot (the padding below), and the
+            composer sits at the bottom of this screen with nothing scrolling
+            under it. It is the SMALL viewport unit because a phone's URL bar
+            moves the large one, which would push the composer under the fold
+            on first paint.
+
+            A phone stacks it — sentence, then the product frame under it, with
+            the composer already docked at the foot of the screen. From $lg the
+            two stand side by side, which is the arrangement the copy is
+            measured for: 1200 is two columns and the $8 (48px) gap between
+            them, and the left column stops at 576 because that is the width
+            the headline's two deliberate lines need — measured: at 520 the
+            second line broke again and left "it." alone on a third. */}
+        <YStack minHeight="100svh" justifyContent="center" paddingHorizontal="$4" paddingBottom="$10" paddingTop="$8" $md={{ paddingHorizontal: "$6" }}>
+          <YStack alignSelf="center" width="100%" maxWidth={768} gap="$7" $lg={{ flexDirection: "row", alignItems: "center", maxWidth: 1200, gap: "$8" }}>
+            {/* LEFT — what the product does, said once. */}
+            <YStack alignSelf="center" width="100%" maxWidth={768} $lg={{ flex: 1, maxWidth: 576, alignSelf: "center" }}>
+              <Reveal>
+                <XStack alignSelf="center" marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color0025" paddingHorizontal="$3" paddingVertical="$1.5" $lg={{ alignSelf: "flex-start" }}>
+                  <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
+                    Apps, wired to real data &amp; AI
+                  </SizableText>
+                </XStack>
+              </Reveal>
+
+              <Reveal delay={60}>
+                {/* 17px is the largest size that keeps the WHOLE sentence on one
+                    line at 390: measured, 358px of room and 17.5px renders 354 —
+                    so this is the fit with the slack a webfont's metrics need.
+                    At 30.4px it wrapped to three lines with "it." alone on the
+                    last. $sm and up are untouched, where the <br> below splits it
+                    into two deliberate lines. */}
+                <H1 fontSize={17} fontWeight="600" textAlign="center" lineHeight="1.05" letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: 48 }} $lg={{ textAlign: "left" }}>
+                  {/* The space is explicit: JSX drops the whitespace around the <br>,
+                      and the <br> is hidden below sm — without it the mobile heading
+                      reads "Describe your app.Hanzo builds and ships it." */}
+                  Describe your app.{' '}
+                  <br className="break-sm" />
+                  Hanzo builds and ships it.
+                </H1>
+              </Reveal>
+
+              <Reveal delay={120}>
+                {/* 12 on a phone, and the media queries are MIN-width, so that is the
+                    BASE and $md is the desktop branch. Written the other way round it
+                    reads as "small on phones" and does the exact opposite. $4 measured
+                    15px here, which wrapped the sentence to three lines at 390. */}
+                <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize={12} textAlign="center" color="$color11" $md={{ fontSize: "$6" }} $lg={{ alignSelf: "flex-start", textAlign: "left" }} lineHeight="1.5">
+                  One prompt becomes a live app on Hanzo Cloud — UI, database,
+                  auth, and 400+ AI models, wired in and deployed.
+                </Paragraph>
+              </Reveal>
+
+            </YStack>
+
+            {/* RIGHT — the product, building something, in the real chrome.
+                Drawn in HTML rather than played as a film: it stays sharp at
+                every width, costs a fraction of a master, and it is the actual
+                builder's components rather than a picture of them. Deliberately
+                bare of LazySection: the frame runs itself the moment it is seen,
+                and its one job is to already be going. */}
+            <YStack alignSelf="center" width="100%" minWidth={0} $lg={{ flex: 1, minWidth: 0 }}>
+              <HeroPreview ask={(prompt) => composer.current?.ask(prompt)} />
+            </YStack>
+          </YStack>
+        </YStack>
+
+        {/* ── Below the fold — the template lane ── */}
+        <YStack paddingHorizontal="$4" paddingTop="$6" paddingBottom="$9" $md={{ paddingHorizontal: "$6", paddingBottom: "$11" }}>
           <YStack alignSelf="center" maxWidth={768}>
-            <Reveal>
-              <XStack alignSelf="center" marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color0025" paddingHorizontal="$3" paddingVertical="$1.5">
-                <SizableText fontFamily="$mono" fontSize={11} color="$color11">
-                  Hanzo · App builder
-                </SizableText>
-              </XStack>
-            </Reveal>
-
-            <Reveal delay={60}>
-              <H1 fontSize="1.9rem" fontWeight="500" textAlign="center" lineHeight="1.05" letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
-                {/* The space is explicit: JSX drops the whitespace around the <br>,
-                    and the <br> is hidden below sm — without it the mobile heading
-                    reads "Describe your app.Hanzo builds and ships it." */}
-                Describe your app.{' '}
-                <br className="break-sm" />
-                Hanzo builds and ships it.
-              </H1>
-            </Reveal>
-
-            <Reveal delay={120}>
-              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" textAlign="center" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
-                Say what you want in plain words. Hanzo writes the screens, the
-                database and the sign-in, shows you the app running, and puts it
-                on a URL when you&apos;re ready.
-              </Paragraph>
-            </Reveal>
-
-            {/* ── Prompt composer — the ONE BuildComposer ── */}
             <Reveal delay={180}>
-              <YStack id="build" alignSelf="center" width="100%" marginTop="$6" maxWidth={672}>
-                <BuildComposer
-                  showPill={false}
-                  subline={false}
-                  typewriter={TYPED}
-                  starters={STARTERS}
-                  onSubmit={startBuild}
-  />
+              <YStack alignSelf="center" width="100%" maxWidth={672}>
 
                 {/* Or start from one of our great templates — one click forks it
                     into the builder, seeded from that template. */}
@@ -229,7 +299,7 @@ export default function LandingPage() {
                   <YStack marginTop="$5">
                     <XStack marginBottom="$3" alignItems="center" justifyContent="center" gap="$2.5">
                       <SizableText height={1} width="$5" backgroundColor="$borderColor" />
-                      <SizableText fontFamily="$mono" fontSize={11} color="$color10">or start from a template</SizableText>
+                      <SizableText fontFamily="$mono" fontSize="$1" color="$color10">or start from a template</SizableText>
                       <SizableText height={1} width="$5" backgroundColor="$borderColor" />
                     </XStack>
                     {/* FULL-BLEED lane: breaks out of the hero column to the
@@ -268,7 +338,7 @@ export default function LandingPage() {
                               <Paragraph numberOfLines={1} fontSize="$2" fontWeight="500" color="$color">
                                 {t.displayName}
                               </Paragraph>
-                              <Paragraph numberOfLines={1} fontSize={11} color="$color10">
+                              <Paragraph numberOfLines={1} fontSize="$1" color="$color10">
                                 {t.category}
                               </Paragraph>
                             </YStack>
@@ -279,6 +349,7 @@ export default function LandingPage() {
                     <YStack marginTop="$3" alignItems="center">
                       <Link
                         href="/templates"
+                        className="hz-tap"
                       ><SizableText fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>
                         Browse all templates →
                       </SizableText></Link>
@@ -287,12 +358,17 @@ export default function LandingPage() {
                 )}
 
                 <YStack marginTop="$5" alignItems="center" gap="$2">
-                  <SizableText fontSize="$1" color="$color11">
+                  {/* lineHeight + center: at `$1` the paired token line-height is
+                      far too tall, which only shows once the sentence wraps — a
+                      gaping gap between the two lines. String form = a multiplier
+                      (a number would be pixels). */}
+                  <SizableText fontSize="$1" lineHeight="1.4" textAlign="center" color="$color11">
                     Every app gets a database, sign-in and AI, and runs on
                     Hanzo Cloud.
                   </SizableText>
                   <Link
                     href="/new"
+                    className="hz-tap"
                   ><XStack alignItems="center" gap="$1.5">
                     <Github size={14} />
                     <SizableText fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>or import an existing GitHub repo</SizableText>
@@ -300,16 +376,6 @@ export default function LandingPage() {
                 </YStack>
               </YStack>
             </Reveal>
-          </YStack>
-
-          {/* Hero focal visual — the builder building an app, live. Lazy: it sits
-              just below the composer, so it mounts the moment it nears view. */}
-          <YStack marginTop="$10" $md={{ marginTop: "$11" }}>
-            <LazySection minHeight={440} rootMargin="900px 0px">
-              <Reveal delay={240}>
-                <HeroPreview />
-              </Reveal>
-            </LazySection>
           </YStack>
         </YStack>
 
@@ -322,17 +388,26 @@ export default function LandingPage() {
 
         {/* ── Continue building (logged-in) ── */}
         {user && projects.length > 0 && (
-          <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
-            <YStack alignSelf="center" maxWidth={1152}>
-              <XStack marginBottom="$7" alignItems="flex-end" justifyContent="space-between">
-                <div>
+          <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
+            {/* `width="100%"`, or a centred column is shrink-to-fit and
+                `maxWidth` caps a width it never takes. Measured at 555px on a
+                1440 row, which is why the grid had one track. */}
+            <YStack alignSelf="center" width="100%" maxWidth={1152}>
+              {/* A gui YStack, NOT a `<div>`. H2 and Paragraph are @hanzo/ui
+                  TEXT primitives and render INLINE, so a block wrapper does not
+                  stack them: measured, the subtitle sat at the heading's right
+                  edge on the heading's own baseline, and "View all" ran on after
+                  it. Only a flex column stacks them. `flexWrap` + `gap` so the
+                  link drops below instead of colliding when the row is tight. */}
+              <XStack marginBottom="$7" flexWrap="wrap" alignItems="flex-end" justifyContent="space-between" gap="$4">
+                <YStack>
                   <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$10" }} lineHeight="1.1">
                     Continue building
                   </H2>
                   <Paragraph marginTop="$1.5" fontSize="$3" color="$color11">
                     Open one and pick up where you left off.
                   </Paragraph>
-                </div>
+                </YStack>
                 <Link
                   href="/projects"
                 ><SizableText fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
@@ -340,16 +415,30 @@ export default function LandingPage() {
                 </SizableText></Link>
               </XStack>
 
-              {/* The ONE card grid (auto-fill/minmax — four across at desktop,
-                  fewer as the width shrinks). These were full-width Buttons in a
+              {/* The ONE card grid (auto-fit/minmax — THREE across at 1152,
+                  fewer as the width shrinks; the comment used to say four, but
+                  minmax(280) + an 18px gutter yields three, so a fourth card
+                  orphaned onto a row of its own). Three, and `View all` carries
+                  anyone who wants the rest. These were full-width Buttons in a
                   column: the size variant's pinned height cropped every preview
                   to a ~30px band (the same landmine the template strip names),
                   so the section read as four broken bars. A clickable stack
                   sizes from content; the thumb box crops a REAL preview —
                   ProjectThumb renders the deployed site scaled into the box, and
                   a draft gets the honest monogram tile, never fake content. */}
-              <div className="card-grid">
-                {projects.slice(0, 4).map((project) => (
+              {/* `.project-grid`, NOT `.card-grid`, and the difference is the
+                  whole section on a phone. card-grid is auto-fit/minmax(280px),
+                  which collapses to ONE column below ~580px — so each card went
+                  full-bleed while the framed iframe stayed at its own logical
+                  width, leaving the shot on the left and half the row empty
+                  black. project-grid fixes the track count (two on a phone,
+                  three from md) and its `minmax(0, 1fr)` lets the iframe scale
+                  DOWN to the track instead of forcing the track to the iframe.
+                  The rule and this comment already existed; the markup simply
+                  never pointed at them, so the dashboard got the layout and the
+                  home page did not. */}
+              <div className="project-grid">
+                {projects.slice(0, 3).map((project) => (
                   <YStack
                     key={project.slug}
                     role="button"
@@ -363,7 +452,12 @@ export default function LandingPage() {
                     }}
                     cursor="pointer" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color3" }}
                   >
-                    <YStack position="relative" overflow="hidden" height={175} backgroundColor="$color002">
+                    {/* No fixed height: ProjectThumb carries `aspectRatio 16/9`
+                        and `height: 100%`, so a pinned 175px box made the preview
+                        175x16/9 = 311px wide inside a 553px card and left the
+                        right third empty. Give it the width and let the ratio
+                        set the height. */}
+                    <YStack position="relative" overflow="hidden" width="100%" backgroundColor="$color002">
                       <ProjectThumb name={project.name} liveUrl={project.liveUrl} />
                     </YStack>
                     <YStack paddingHorizontal="$3" paddingVertical="$2.5">
@@ -371,11 +465,11 @@ export default function LandingPage() {
                         {project.name}
                       </H3>
                       <XStack marginTop="$1" alignItems="center" gap="$2">
-                        <Paragraph fontSize={11} color="$color10">
+                        <Paragraph fontSize="$1" color="$color10">
                           {project.status === "live" ? "Live" : "Draft"}
                         </Paragraph>
                         {project.updatedAtIso && (
-                          <SizableText fontFamily="$mono" fontSize={11} color="$color10">
+                          <SizableText fontFamily="$mono" fontSize="$1" color="$color10">
                             {new Date(project.updatedAtIso).toLocaleDateString()}
                           </SizableText>
                         )}
@@ -388,46 +482,72 @@ export default function LandingPage() {
           </YStack>
         )}
 
-        {/* ── Final CTA — the SAME composer as the hero, ready to type ── */}
-        <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
+        {/* ── Ship your first app ── */}
+        <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
           <Reveal alignSelf="center" width="100%" maxWidth={672}>
-            <YStack>
-              <H2 fontSize="$10" fontWeight="500" textAlign="center" letterSpacing={-0.4} $md={{ fontSize: "$12" }} lineHeight="1.1">
-                Ship your first app.
-              </H2>
-              <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" textAlign="center" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
-                Start with a sentence. Publish it when it looks right.
-              </Paragraph>
-            </YStack>
-            <YStack marginTop="$6">
-              <BuildComposer
-                showPill={false}
-                typewriter={TYPED}
-                onSubmit={startBuild}
-  />
-            </YStack>
+            <H2 fontSize="$10" fontWeight="500" textAlign="center" letterSpacing={-0.4} $md={{ fontSize: "$12" }} lineHeight="1.1">
+              Ship your first app.
+            </H2>
+            <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" textAlign="center" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
+              Start with a sentence. Publish it when it looks right.
+            </Paragraph>
           </Reveal>
         </YStack>
-      </YStack>
 
-      {/* ── Community — what people built, linking out to the showcase ── */}
-      <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6" }}>
-        <YStack alignSelf="center" width="100%" maxWidth={672} alignItems="center">
-          <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "$10" }} lineHeight="1.1">
-            Built on Hanzo.
-          </H2>
-          <Paragraph marginTop="$3" fontSize="$3" lineHeight="1.625" color="$color11" textAlign="center" maxWidth={512}>
-            Forks, remixes, and example apps from the community. Every entry
-            names the template it came from and who built it.
-          </Paragraph>
-          <Link href="/community"><XStack marginTop="$5" height={44} alignItems="center" gap="$1.5" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$4.5" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color005" }}>
-            <SizableText fontSize="$3" fontWeight="500" color="$color">See what people built</SizableText>
-          </XStack></Link>
+        {/* ── Community — what people built, linking out to the showcase ── */}
+        <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6" }}>
+          <YStack alignSelf="center" width="100%" maxWidth={672} alignItems="center">
+            <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "$10" }} lineHeight="1.1">
+              Built on Hanzo.
+            </H2>
+            <Paragraph marginTop="$3" fontSize="$3" lineHeight="1.625" color="$color11" textAlign="center" maxWidth={512}>
+              Forks, remixes, and example apps from the community — every entry
+              names the template it came from and who built it.
+            </Paragraph>
+            <Link href="/community"><XStack marginTop="$5" height={44} alignItems="center" gap="$1.5" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$4.5" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color005" }}>
+              <SizableText fontSize="$3" fontWeight="500" color="$color">See what people built</SizableText>
+            </XStack></Link>
+          </YStack>
+        </YStack>
+
+        <LazySection minHeight={200}><PreFooterCTA /></LazySection>
+        <LazySection minHeight={240}><SiteFooter /></LazySection>
+
+        {/* THE composer — one on the page, and this is its flow slot.
+            It rides the BOTTOM OF THE VIEWPORT the whole way down, and it is
+            the LAST thing on the page so that "the whole way down" means the
+            footer too. It used to sit above the community band and the footer,
+            which is a slot it REACHES: a sticky box comes to rest when its own
+            flow position scrolls into view, so the composer settled two
+            sections early and the rest of the page scrolled with no way to
+            type. Everything that is not the composer now comes before it.
+
+            Two placement rules the sticky depends on, both easy to undo by
+            accident. It must be the LAST child of the stack it rides — a sticky
+            box is held inside its containing block and pins only while its own
+            flow position is below the viewport — and it must sit OUTSIDE any
+            Reveal, whose fade-up is a transform, and a transformed ancestor
+            becomes the containing block for everything positioned inside it
+            (the composer's own popovers included).
+
+            `.hz-dock` in assets/globals.css is the whole pinning rule, and it
+            carries the ground the page passes behind. */}
+        <YStack
+          className="hz-dock"
+          paddingHorizontal="$4"
+          $md={{ paddingHorizontal: "$6" }}
+        >
+          <YStack id="build" alignSelf="center" width="100%" maxWidth={672}>
+            <BuildComposer
+              ref={composer}
+              showPill={false}
+              subline={false}
+              typewriter={TYPED}
+              onSubmit={startBuild}
+            />
+          </YStack>
         </YStack>
       </YStack>
-
-      <LazySection minHeight={200}><PreFooterCTA /></LazySection>
-      <LazySection minHeight={240}><SiteFooter /></LazySection>
     </YStack>
   );
 }

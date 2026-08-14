@@ -7,7 +7,7 @@ import { SizableText, Paragraph, YStack } from '@hanzo/ui';
 import { Anchor } from '@hanzo/gui';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, Button, Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui';
 import { ChevronDown } from 'lucide-react';
-import { setTelemetryOptIn, track } from '@/lib/telemetry';
+import { setConsent, track } from '@hanzogui/telemetry';
 
 interface TelemetryDisclosureProps {
   open: boolean;
@@ -16,7 +16,7 @@ interface TelemetryDisclosureProps {
 
 export function TelemetryDisclosure({ open, onDismiss }: TelemetryDisclosureProps) {
   const handleDisable = () => {
-    setTelemetryOptIn(false);
+    setConsent('denied');
     onDismiss();
   };
 

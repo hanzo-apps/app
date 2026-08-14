@@ -1,16 +1,196 @@
 "use client";
 
-import { Button } from '@hanzo/ui';
+import { Button, Input } from '@hanzo/ui';
+import { sends } from '@hanzo/ui/chat';
 import { SizableText, YStack, XStack, Paragraph } from '@hanzo/ui';
-import { useEffect, useRef } from "react";
-import { Check, GitBranch, PanelLeft } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, GitBranch, Square, SquareTerminal } from "lucide-react";
 
-import { Voice } from "@hanzo/voice";
 
-import { useMic } from "@/components/editor/ask-ai/mic";
+import { currentProject } from "@/lib/dev/workspace";
+import { HOME, TIMEOUT } from "@/lib/shell";
 
 import { BAR, DEFAULT_OPEN, MIN_OPEN, STEP, maxOpen, useDock } from "./dock";
-import { useConsoleLog } from "./log";
+import { currentSandbox, holdSandbox, push, useConsoleLog, useRun } from "./log";
+import { Terminal } from "./terminal";
+
+/**
+ * The prompt — the half of this dock you can type into.
+ *
+ * The agent has always been able to run commands on the project's pod; this is
+ * the same door for the person, and it lands in the SAME sandbox: when a run is
+ * live the shell borrows its id, so what you `ls` is the checkout the agent is
+ * editing, not a second copy of it.
+ *
+ * The directory is held HERE rather than on the pod because each command is its
+ * own process (see lib/shell) — carrying it is what makes `cd` mean anything.
+ * Nothing else survives between commands, and the placeholder does not claim
+ * otherwise.
+ */
+function Prompt() {
+  const run = useRun();
+  const [command, setCommand] = useState("");
+  const [cwd, setCwd] = useState(HOME);
+  const [busy, setBusy] = useState(false);
+  // What was typed, newest last. ArrowUp walks back through it; `at` is where
+  // the walk has got to, and length means "not walking" — the draft is at the
+  // end of the list, which is exactly where a fresh line belongs.
+  const past = useRef<string[]>([]);
+  const at = useRef(0);
+
+  const send = async () => {
+    const typed = command.trim();
+    if (!typed || busy) return;
+    past.current.push(typed);
+    at.current = past.current.length;
+    setCommand("");
+    setBusy(true);
+    // Echo before the round trip: at 60s a command can outlive your memory of
+    // asking for it, and a prompt that swallows the line looks broken.
+    push("you", "info", typed);
+    try {
+      const res = await fetch("/v1/shell", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          command: typed,
+          cwd,
+          project: currentProject(),
+          // The live run's pod wins: one sandbox, one checkout.
+          sandbox: currentSandbox() || undefined,
+        }),
+      });
+      const body = (await res.json().catch(() => null)) as {
+        error?: string; stdout?: string; stderr?: string;
+        exitCode?: number; timedOut?: boolean; sandbox?: string; cwd?: string;
+      } | null;
+
+      if (!res.ok || !body || body.error) {
+        push("sandbox", "error", body?.error || `The shell could not run that (${res.status}).`);
+        return;
+      }
+      holdSandbox(body.sandbox ?? "");
+      setCwd(body.cwd || cwd);
+      if (body.stdout?.trim()) push("sandbox", "log", body.stdout.replace(/\n+$/, ""));
+      if (body.stderr?.trim()) push("sandbox", "error", body.stderr.replace(/\n+$/, ""));
+      // A non-zero status is the whole answer for a command that printed
+      // nothing, and silence would read as success.
+      if (body.timedOut) push("sandbox", "warn", `timed out after ${TIMEOUT}s`);
+      else if (body.exitCode) push("sandbox", "warn", `exit ${body.exitCode}`);
+    } catch {
+      push("sandbox", "error", "Could not reach the shell.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  /** Walk the history. Returns false when there is nothing that way. */
+  const walk = (by: number) => {
+    const next = at.current + by;
+    if (next < 0 || next > past.current.length) return false;
+    at.current = next;
+    setCommand(past.current[next] ?? "");
+    return true;
+  };
+
+  return (
+    <XStack alignItems="center" gap="$1.5" paddingTop="$1.5" data-field-box>
+      {/* The path IS the prompt, and it is the only place the shell says where
+          you are — so it never collapses to nothing. */}
+      <SizableText
+        fontFamily="$mono" fontSize="$1" lineHeight="1.625"
+        color="$color11" flexShrink={0} maxWidth={180} numberOfLines={1}
+      >
+        {cwd === HOME ? "$" : `${cwd.split("/").slice(-2).join("/")} $`}
+      </SizableText>
+      <Input
+        flex={1}
+        value={command}
+        onChangeText={setCommand}
+        disabled={busy}
+        placeholder="Run a command — cd is remembered, exports are not"
+        aria-label="Run a command in this project's sandbox"
+        fontFamily="$mono"
+        fontSize="$1"
+        borderWidth={0}
+        backgroundColor="transparent"
+        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+          if (sends(e.key, e.nativeEvent)) {
+            e.preventDefault();
+            void send();
+            return;
+          }
+          // Only steal the arrows while walking is possible, so a caret moving
+          // through a long command still moves.
+          if (e.key === "ArrowUp" && walk(-1)) e.preventDefault();
+          else if (e.key === "ArrowDown" && walk(1)) e.preventDefault();
+        }}
+      />
+    </XStack>
+  );
+}
+
+/**
+ * Stop what the sandbox is running.
+ *
+ * TWO VERBS EXIST AND THIS IS THE FIRST. `stop` interrupts the command; `end`
+ * releases the sandbox. A person hits this because a build is wedged or a test
+ * is hanging, and what they want next is to LOOK at it — the checkout, the
+ * half-written file, everything the run has said. So the box stays, and the
+ * label says so, because a control that might delete your work is one people
+ * hesitate over instead of using.
+ *
+ * Zero stopped is not a failure: a command that finished a moment ago is one
+ * there was nothing left to interrupt. Either way the run is no longer running,
+ * which is what the person asked for and what the console says.
+ */
+function Stop({ sandbox }: { sandbox: string }) {
+  const [stopping, setStopping] = useState(false);
+
+  const stop = async () => {
+    setStopping(true);
+    try {
+      const res = await fetch("/v1/sandboxes/stop", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: sandbox }),
+      });
+      const body = (await res.json().catch(() => null)) as { message?: string } | null;
+      push(
+        "sandbox",
+        res.ok ? "info" : "error",
+        res.ok
+          ? "stopped — the sandbox and everything in it are still here"
+          : body?.message || `Could not stop the run (${res.status})`
+      );
+    } catch {
+      push("sandbox", "error", "Could not reach the sandbox to stop it.");
+    } finally {
+      setStopping(false);
+    }
+  };
+
+  return (
+    <Button
+      type="button"
+      onClick={stop}
+      disabled={stopping}
+      variant="ghost"
+      group
+      aria-label="Stop the running command — the sandbox and its files stay"
+      title="Stop the running command. The sandbox, the checkout and the log stay."
+      height="$4.5" alignItems="center" justifyContent="center" gap="$1"
+      paddingHorizontal="$2" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}
+    >
+      <SizableText color="var(--destructive)">
+        <Square size={12} fill="currentColor" />
+      </SizableText>
+      <SizableText fontSize="$1" color="$color11" $group-hover={{ color: "$color" }}>
+        {stopping ? "Stopping…" : "Stop"}
+      </SizableText>
+    </Button>
+  );
+}
 
 /**
  * The developer console — the builder's bottom dock.
@@ -29,7 +209,7 @@ import { useConsoleLog } from "./log";
  */
 function Sep() {
   return (
-    <SizableText aria-hidden fontSize={11} color="$color11">
+    <SizableText aria-hidden fontSize="$1" color="$color11">
       ·
     </SizableText>
   );
@@ -40,8 +220,6 @@ export function Console({
   saveText,
   branch,
   pageCount,
-  sidebarCollapsed,
-  onToggleSidebar,
 }: {
   isAiWorking: boolean;
   /** Honest persistence state — see lib/pages/save-label. */
@@ -49,13 +227,17 @@ export function Console({
   /** The linked repo's branch, or undefined when the project has no repo. */
   branch?: string;
   pageCount: number;
-  sidebarCollapsed: boolean;
-  onToggleSidebar: () => void;
 }) {
   const { height, open, setHeight, toggle, nudge } = useDock();
   const { entries } = useConsoleLog();
+  // The dock's second face: the REAL terminal (cloud's framed emulator) in
+  // place of the log + line-prompt. Same pod either way — the frame and the
+  // prompt share the held sandbox — so this is a view choice, not a session
+  // choice, and flipping back loses nothing.
+  const [term, setTerm] = useState(false);
+  // The live run, or null. Its sandbox is the handle Stop acts on.
+  const run = useRun();
   // The composer's voice, drawn here. Null until a composer is mounted.
-  const voice = useMic();
 
   // OLD: `const branch = "main"` — stated unconditionally. Builder projects are
   // single-branch when they have a repo, but MOST HAVE NONE: the only paths that
@@ -155,7 +337,7 @@ export function Console({
             else return;
             e.preventDefault();
           }}
-          position="absolute" top={0} right={0} bottom={0} left={0} cursor="row-resize" userSelect="none" borderTopWidth={1} borderColor="$borderColor" group
+          position="absolute" top={0} right={0} bottom={0} left={0} cursor="row-resize" userSelect="none" borderTopWidth={open ? 1 : 0} borderColor="$borderColor" group
         >
           {/* The affordance: a hairline that lifts and a grip that fades in on
               hover, focus or drag. Nothing is drawn while the bar is at rest. */}
@@ -163,35 +345,29 @@ export function Console({
           <SizableText pointerEvents="none" position="absolute" left="50%" top={3} height="$1" width="$6" x="-50%" borderRadius="$10" backgroundColor="transparent" $group-hover={{ backgroundColor: "$color06" }} $group-focus={{ backgroundColor: "$color06" }} $group-press={{ backgroundColor: "$color" }} />
         </YStack>
 
-        {/* Far LEFT — the chat/AI panel toggle. It shows and hides the LEFT pane,
-            so it belongs on the left: a right-side control that collapsed the left
-            pane read as belonging to the preview, and people could not find it.
-            Floated over the bar like the right cluster so the separator underneath
-            stays one clean, uninterrupted drag target. */}
-        <XStack position="absolute" left="$2" top="$0" height="100%" alignItems="center">
-          <Button
-            type="button"
-            onClick={onToggleSidebar}
-            aria-label="Chat panel"
-            aria-expanded={!sidebarCollapsed}
-            variant="ghost"
-            group
-            width="$4.5" height="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}
-          >
-            {/* ONE glyph for the left panel — `PanelLeft`, open or shut (the
-                fleet rule; see components/sidebar). `aria-expanded` above already
-                says which it is. `size={16}` is the rest of that rule: one glyph
-                means one SIZE too, and this was the app's only 14. */}
-            <SizableText color="$color11" $group-hover={{ color: "$color" }}>
-              <PanelLeft size={16} />
-            </SizableText>
-          </Button>
-        </XStack>
 
         {/* State, inert: it rides on the bar but never eats the drag. Padded to
             clear the panel toggle on the left and the mic + Enso on the right —
-            measured clearances, so they stay the measurements they are. */}
-        <XStack pointerEvents="none" position="relative" height="100%" alignItems="center" gap="$2.5" paddingLeft="2.25rem" paddingRight="4.25rem">
+            measured clearances, so they stay the measurements they are.
+            OPEN ONLY: at rest the dock is an invisible edge, and everything
+            this row says lives behind the pull. */}
+        {open && (
+        <XStack
+          pointerEvents="none"
+          position="relative"
+          height="100%"
+          alignItems="center"
+          gap="$2.5"
+          paddingLeft="2.25rem"
+          // The right cluster is floated OVER this row, so the row reserves its
+          // width rather than flowing around it — which means the reservation
+          // has to grow when the cluster does. Stop appears only while a run is
+          // live, and at 4.25rem it painted straight through "Working". The two
+          // numbers are the measured widths of what is actually there; the
+          // geometry assertion in tests/e2e/live-run.spec.ts is what keeps them
+          // honest when either side changes.
+          paddingRight={run?.sandbox ? "9.5rem" : "4.25rem"}
+        >
           <XStack alignItems="center" gap="$1.5">
             {/* A live indicator: a small dot inside a wider, dimmer halo. All
                 three boxes were `$1.5` — 24px, the size of a BUTTON, so this
@@ -202,49 +378,69 @@ export function Console({
               <SizableText position="absolute" width={12} height={12} borderRadius="$10" backgroundColor="var(--brand-accent)" opacity={0.25} />
               <SizableText position="relative" width={6} height={6} borderRadius="$10" backgroundColor="var(--brand-accent)" />
             </XStack>
-            <SizableText fontSize={11} color="$color11">Live</SizableText>
+            <SizableText fontSize="$1" color="$color11">Live</SizableText>
           </XStack>
           <Sep />
           {/* The real save state. This said "Auto-saved" unconditionally, checked
               against nothing, while the project lived only in the browser. */}
-          <SizableText fontSize={11} color="$color11">{isAiWorking ? "Building…" : saveText}</SizableText>
+          <SizableText fontSize="$1" color="$color11">{isAiWorking ? "Building…" : saveText}</SizableText>
           {branch && (
             <>
               <Sep />
               <XStack alignItems="center" gap="$1">
                 <GitBranch size={12} />
-                <SizableText fontSize={11} color="$color11">{branch}</SizableText>
+                <SizableText fontSize="$1" color="$color11">{branch}</SizableText>
               </XStack>
             </>
           )}
           <Sep />
-          <SizableText fontSize={11} color="$color11">
+          <SizableText fontSize="$1" color="$color11">
             {pageCount} file{pageCount === 1 ? "" : "s"}
           </SizableText>
           <XStack marginLeft="auto" alignItems="center" gap="$1">
             {isAiWorking ? (
-              <SizableText className="thread-shimmer-text" fontSize={11} color="$color11">Working</SizableText>
+              <SizableText className="thread-shimmer-text" fontSize="$1" color="$color11">Working</SizableText>
             ) : (
               <>
                 <Check size={12} />
-                <SizableText fontSize={11} color="$color11">Ready</SizableText>
+                <SizableText fontSize="$1" color="$color11">Ready</SizableText>
               </>
             )}
           </XStack>
         </XStack>
+        )}
 
         {/* Far right — the workspace AI controls, floated over the bar so the
             separator underneath stays one clean, uninterrupted drag target.
             Order is mic then Enso: the mic is the conversation, Enso the editor,
             and the user asked for the mark to sit to the RIGHT of the mic. */}
-        <XStack position="absolute" right="$2" top="$0" height="100%" alignItems="center" gap="$0.5">
-          {voice && (
-            <Voice
-              voice={voice}
-              disabled={isAiWorking}
-              className="voice-control"
-  />
-          )}
+        {/* display, not unmount: #enso-dock inside is the anchor an external
+            script (public/edit.js) injects into, and unmounting it on collapse
+            would strand Enso. Hidden at rest with everything else — the edge
+            shows nothing. */}
+        <XStack position="absolute" right="$2" top="$0" height="100%" alignItems="center" gap="$0.5" display={open ? "flex" : "none"}>
+          {/* Only while there is a command to interrupt, and only when it runs
+              somewhere interruptible: a scratch run edits a map in this process
+              and has no sandbox to stop. An always-visible Stop that sometimes
+              does nothing is worse than one that appears when it can act. */}
+          {/* The cloud shell — the same real terminal console.hanzo.ai frames,
+              in this project's pod. A toggle, not a door: the dock's body flips
+              between the log and the frame, and the bar stays the bar. */}
+          <Button size="icon"
+            type="button"
+            onClick={() => setTerm((t) => !t)}
+            variant="ghost"
+            aria-label="Open a cloud shell — a real terminal in your sandbox"
+            aria-pressed={term}
+            title="Cloud shell — a real terminal in your sandbox"
+            height="$4.5" width="$4.5" minWidth="$4.5" alignItems="center" justifyContent="center"
+            paddingHorizontal={0} borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}
+          >
+            <SizableText color={term ? "$color" : "$color11"}>
+              <SquareTerminal size={14} />
+            </SizableText>
+          </Button>
+          {run?.sandbox && <Stop sandbox={run.sandbox} />}
           {/* Enso mounts HERE (public/edit.js, `hanzo:anchor` in app/dev/layout),
               to the RIGHT of the mic. It used to float at the viewport corner, on
               top of the customer's preview — so /dev turned it off entirely. In
@@ -257,34 +453,47 @@ export function Console({
         </XStack>
       </YStack>
 
-      {open && (
+      {/* The second face: the framed terminal replaces the log AND the prompt —
+          a real shell brings its own prompt. Mount/unmount is the session
+          boundary (a fresh ticket each mount); the tmux session named per
+          project is what makes that cheap, reattaching to the shell it left. */}
+      {open && term && (
+        <YStack minHeight={0} flex={1} borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background">
+          <Terminal project={currentProject()} />
+        </YStack>
+      )}
+      {open && !term && (
         <YStack minHeight={0} flex={1} borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" overflow="scroll">
           {entries.length === 0 ? (
-            <Paragraph fontFamily="$mono" fontSize={11} lineHeight="1.625" color="$color11">
-              Nothing logged yet — the preview&apos;s console and the commands the agent
-              runs in your sandbox both appear here.
+            <Paragraph fontFamily="$mono" fontSize="$1" lineHeight="1.625" color="$color11">
+              Nothing logged yet — the preview&apos;s console, the commands the agent
+              runs in your sandbox, and anything you type below all appear here.
             </Paragraph>
           ) : (
             entries.map((entry) => (
               <XStack key={entry.id} gap="$1.5" alignItems="flex-start">
-                {/* One character says which machine spoke. `$` is the sandbox —
-                    a real shell on a real pod — and its absence is the page's
+                {/* One character says who spoke. `$` is the prompt — a line you
+                    typed — `›` is the sandbox answering, and `·` is the page's
                     own console. A source column of words would be wider than
-                    most of the lines it labels. */}
+                    most of the lines it labels.
+
+                    Your own lines are the only ones drawn in the foreground.
+                    That is how a terminal is read: you scan for what you asked,
+                    and the output belongs to it. */}
                 <SizableText
                   aria-hidden
                   fontFamily="$mono"
-                  fontSize={11}
+                  fontSize="$1"
                   lineHeight="1.625"
-                  color={entry.source === "sandbox" ? "var(--brand-accent)" : "$color06"}
+                  color={entry.source === "you" ? "$color" : "$color06"}
                 >
-                  {entry.source === "sandbox" ? "$" : "·"}
+                  {entry.source === "you" ? "$" : entry.source === "sandbox" ? "›" : "·"}
                 </SizableText>
                 <Paragraph
                   className="break-words"
                   flex={1}
-                  fontFamily="$mono" fontSize={11} lineHeight="1.625"
-                  whiteSpace="pre-wrap" {...{ color: entry.level === "error" ? "var(--destructive)" : entry.level === "warn"
+                  fontFamily="$mono" fontSize="$1" lineHeight="1.625"
+                  whiteSpace="pre-wrap" {...{ color: entry.level === "error" ? "var(--destructive)" : entry.level === "warn" || entry.source === "you"
                         ? "$color"
                         : "$color11" }}
                 >
@@ -294,6 +503,13 @@ export function Console({
             ))
           )}
           <div ref={tail} />
+        </YStack>
+      )}
+      {/* The prompt sits OUTSIDE the scroller so it stays put while output runs
+          past it — the one row of this dock that is always reachable once open. */}
+      {open && !term && (
+        <YStack borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingBottom="$2">
+          <Prompt />
         </YStack>
       )}
     </YStack>

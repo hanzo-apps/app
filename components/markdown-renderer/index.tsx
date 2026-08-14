@@ -159,7 +159,7 @@ export function MarkdownRenderer({ content, muted = false, skipNormalization = f
             <YStack position="relative">
               {language && (
                 <YStack position="absolute" top="$2" right="$2" paddingHorizontal="$1.5" paddingVertical="$0.5" backgroundColor="$background" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backdropFilter="blur(4px)">
-                  <SizableText fontSize={10} fontWeight="500" color="$color11">{language}</SizableText>
+                  <SizableText fontSize="$1" fontWeight="500" color="$color11">{language}</SizableText>
                 </YStack>
               )}
               <pre {...props}>{children}</pre>
@@ -181,7 +181,7 @@ export function MarkdownRenderer({ content, muted = false, skipNormalization = f
 
           // Fenced code block with language
           return (
-            <SizableText fontFamily="$mono" fontSize={12} lineHeight="1.625">
+            <SizableText fontFamily="$mono" fontSize="$1" lineHeight="1.625">
               {children}
             </SizableText>
           );

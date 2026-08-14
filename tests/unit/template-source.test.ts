@@ -243,3 +243,59 @@ describe('a template carries what an opaque origin cannot fetch', () => {
     expect(html).toContain(`url("${ORIGIN}/fonts/Satoshi.woff2")`);
   });
 });
+
+/**
+ * Carrying the styles gets the page painted; it does not get the page STARTED.
+ *
+ * The frame is sandboxed without `allow-same-origin`, so the document runs at
+ * `about:srcdoc` on an opaque origin while its markup still names the site it
+ * came from. A client router boots by writing that address into session history,
+ * and `history.replaceState` refuses a URL from another origin — it throws, and
+ * the startup stops on that line. Measured on `loop`: 6,812 characters of text
+ * and 45 images all present in the DOM, under a preloader that only lifts when
+ * React mounts. A black screen over a finished page.
+ */
+describe('a template keeps booting where it has no origin', () => {
+  it('lets a refused history entry pass, so the rest of the startup runs', async () => {
+    serve(200, '<!doctype html><html><head></head><body></body></html>');
+
+    const html = (await templatePages('blocks'))![0].html;
+
+    expect(html).toContain('replaceState');
+    expect(html).toContain('pushState');
+    expect(html).toContain('catch');
+  });
+
+  it('goes in ahead of the page, which is the only order that helps', async () => {
+    serve(
+      200,
+      '<!doctype html><html><head><script defer src="/app.js"></script></head><body></body></html>',
+    );
+
+    const html = (await templatePages('blocks'))![0].html;
+
+    // After the router has thrown there is nothing left to rescue. Both indexes
+    // are asserted present first: a missing one is -1, which sorts before
+    // everything and would let this pass on a document with no fix in it at all.
+    const ours = html.indexOf('replaceState');
+    const theirs = html.indexOf('/app.js');
+    expect(ours).toBeGreaterThan(-1);
+    expect(theirs).toBeGreaterThan(-1);
+    expect(ours).toBeLessThan(theirs);
+  });
+
+  it('treats a build that starts only at its own URL as no source', async () => {
+    global.fetch = jest.fn(() => {
+      throw new Error('a build that cannot travel must not be fetched for');
+    }) as unknown as typeof fetch;
+
+    // All four serve their own design at `<slug>.hanzo.app` and keep their demo
+    // link; what they cannot do is start at `about:srcdoc`. Framing the error
+    // screen they produce there — Next's "Application error", or `kinetic`'s
+    // empty root — would be worse than saying there is nothing to open.
+    for (const slug of ['kinetic', 'prism-react', 'saas-landing', 'synapse']) {
+      expect(await templatePages(slug)).toBeNull();
+    }
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+});

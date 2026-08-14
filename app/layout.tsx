@@ -1,3 +1,7 @@
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
@@ -28,9 +32,15 @@ import "@hanzo/ui/theme.css";
 // GuiProvider gets disableInjectCSS so the same 350KB is no longer inlined into
 // every HTML document, uncacheable.
 import "./gui.css";
+
+// The no-flash half of @hanzo/appearance. Imported from ./state so the panel
+// itself (and React) stay out of the root layout's bundle.
+import { bootScript as appearanceBoot } from "@hanzo/appearance/state";
 import { SITE_URL } from "@/lib/site";
 import AppContext from "@/components/contexts/app-context";
 import IframeDetector from "@/components/iframe-detector";
+import { AccentSync } from "@/components/accent-sync";
+import { AppearanceSync } from "@/components/appearance-sync";
 import { ChunkReloader } from "@/components/chunk-reloader";
 import { Providers } from "./providers";
 import { ErrorBoundary } from "@/components/error-boundary/error-boundary";
@@ -69,7 +79,15 @@ const SPECULATION_RULES = JSON.stringify({
 });
 
 export const metadata: Metadata = {
-  title: "Hanzo — describe an app and it gets built",
+  // The brand is appended HERE and nowhere else. Every page used to carry its
+  // own suffix, which meant twelve chances to write it and three spellings in
+  // use — "— Hanzo", "| Hanzo", "— Built on Hanzo" — plus `/store`, which said
+  // only "Store" and named nobody. A `template` is Next's own mechanism for
+  // exactly this: a page states what IT is, the root says who WE are.
+  title: {
+    default: "Hanzo — describe an app and it gets built",
+    template: "%s — Hanzo AI",
+  },
   description:
     "Say what you want in plain words. Hanzo writes the screens, the database and the sign-in, shows you the app running, and puts it on a URL on Hanzo Cloud.",
   // Absolute base for OG/Twitter/canonical URL resolution; white-label overridable
@@ -77,8 +95,13 @@ export const metadata: Metadata = {
   // the canonical don't resolve and Next warns at build.
   metadataBase: new URL(SITE_URL),
   alternates: { canonical: "/" },
+  // NO `title` here, and that omission is the whole mechanism. Metadata is
+  // inherited segment by segment, so a `title` declared on this object is
+  // inherited by every child — and og:title on /pricing read "Hanzo AI | Build
+  // with AI" while its tab correctly read "Pricing". Left absent, Next falls
+  // og:title back to the page's own resolved title, template and all. Twelve
+  // pages fixed by deleting one line; the same for `twitter` below.
   openGraph: {
-    title: "Hanzo — describe an app and it gets built",
     description:
       "Say what you want in plain words. Hanzo writes the screens, the database and the sign-in, shows you the app running, and puts it on a URL on Hanzo Cloud.",
     url: SITE_URL,
@@ -94,7 +117,6 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hanzo — describe an app and it gets built",
     description:
       "Say what you want in plain words. Hanzo writes the screens, the database and the sign-in, shows you the app running, and puts it on a URL on Hanzo Cloud.",
     images: ["/banner.png"],
@@ -120,9 +142,38 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   initialScale: 1,
-  maximumScale: 1,
   themeColor: "#000000",
 };
+
+// The accent is the one axis the package's head script leaves for React, which
+// validates the colour on mount. Mirror an already-stored pick before first
+// paint too, so a non-default accent never flashes white on the way to it: the
+// design ramp reads --primary/--accent, the app's monochrome chrome (links, the
+// focus ring, ::selection, the product menu) reads --hanzo-accent. AccentSync
+// keeps --hanzo-accent in step after mount; an unset accent stays white.
+const ACCENT_BOOT =
+  "(function(){try{var a=(JSON.parse(localStorage.getItem('hanzo.appearance')||'{}')||{}).accent;" +
+  "if(typeof a==='string'&&a){var s=document.documentElement.style;" +
+  "s.setProperty('--primary',a);s.setProperty('--accent',a);s.setProperty('--hanzo-accent',a);}}catch(e){}})()";
+
+// edit.js is a stable-URL public asset behind Cloudflare's 4h Browser-Cache-TTL,
+// which OVERRIDES the origin's max-age — so a fix to the widget sits stale in a
+// browser for hours (the fix is live at origin+edge, but the tab keeps the old
+// bytes). Version the URL by the file's own CONTENT hash: the query changes ONLY
+// when edit.js changes, so a deploy that touches it is a cache MISS in every
+// browser (a new URL the 4h TTL can't cover), while an unchanged file keeps its
+// cache. Read once at module load; if the file can't be read, fall back to the
+// bare URL — never break render over a cache-busting nicety. (A CF Cache Rule
+// scoping /edit.js to "Respect origin" would make this unnecessary AND cover the
+// cross-app embeds; this covers hanzo.app's own load without CF access.)
+const EDIT_JS_SRC = (() => {
+  try {
+    const body = readFileSync(path.join(process.cwd(), "public", "edit.js"));
+    return `/edit.js?v=${createHash("sha256").update(body).digest("hex").slice(0, 8)}`;
+  } catch {
+    return "/edit.js";
+  }
+})();
 
 export default async function RootLayout({
   children,
@@ -154,12 +205,27 @@ export default async function RootLayout({
       className={`dark ${geistSans.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        {/* A person's own type size and density, applied BEFORE first paint.
+            Same reasoning as the `dark` class above: a client controller
+            resolves after the page has painted, so a preference read in an
+            effect means every load renders at the default and then jumps. The
+            script is tiny and inert (a try/catch around two setProperty calls)
+            and @hanzo/appearance re-applies — and validates the accent — the
+            moment React mounts. */}
+        <script dangerouslySetInnerHTML={{ __html: appearanceBoot() + ";" + ACCENT_BOOT }} />
+      </head>
       <body>
         {/* Providers is OUTERMOST. It owns createGui(), which registers the
             token and media tables in module-global state; anything rendered
             above it reaches `useMedia()` before that state exists and the first
             responsive prop ($sm/$md/$lg) throws on `new Proxy(undefined)`. */}
         <Providers>
+          <AccentSync />
+          {/* Makes appearance account-level: reads the signed-in user's stored
+              preference and applies it, and writes local changes back. A guest
+              stays on localStorage — this no-ops on a 401. */}
+          <AppearanceSync />
           <IframeDetector />
           <ChunkReloader />
           <ErrorBoundary level="app">
@@ -173,7 +239,7 @@ export default async function RootLayout({
             (anyone) or a real fork→edit→PR (admin free, credit-holders debited).
             Served by hanzo.app at /edit.js; any Hanzo app drops in the same tag:
             <script async src="https://hanzo.app/edit.js"></script>. */}
-        <script async src="/edit.js" />
+        <script async src={EDIT_JS_SRC} />
         {/* Speculation Rules — progressive: browsers that don't know the script
             type ignore it entirely. Top nav routes prefetch on hover/pointerdown
             (moderate); the static marketing pages additionally prerender on

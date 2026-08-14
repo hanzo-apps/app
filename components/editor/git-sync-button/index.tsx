@@ -325,7 +325,7 @@ export function GitSyncButton({
         <YStack borderBottomWidth={1} borderColor="$borderColor" padding="$4.5">
           <XStack marginBottom="$1" alignItems="center" gap="$2">
             <UploadCloud size={18} />
-            <H3 fontSize={15} fontWeight="500">Push to a Git repository</H3>
+            <H3 fontSize="$4" fontWeight="500">Push to a Git repository</H3>
           </XStack>
           <Paragraph fontSize="$3" color="$color11">
             Push your generated project to a repo you own — one commit, on the
@@ -442,7 +442,7 @@ export function GitSyncButton({
             <YStack borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$3.5">
               <XStack marginBottom="$1.5" alignItems="center" gap="$1.5">
                 <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$green8" />
-                <SizableText fontSize={11} letterSpacing={0.4} color="$color11">
+                <SizableText fontSize="$1" letterSpacing={0.4} color="$color11">
                   Linked repository
                 </SizableText>
               </XStack>
@@ -640,7 +640,7 @@ function CommitMessageField({
           <Spinner size={14} />
         )}
       </YStack>
-      <Paragraph marginTop="$1" fontSize={10} color="$color11">
+      <Paragraph marginTop="$1" fontSize="$1" color="$color11">
         AI-proposed from your edits — edit before pushing.
       </Paragraph>
     </div>

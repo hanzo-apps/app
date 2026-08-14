@@ -1,98 +1,40 @@
 "use client";
 
-import { Image, YStack, XStack, SizableText } from '@hanzo/ui';
-// TemplateThumb — a real preview picture when we have one, else an on-brand tile.
+// TemplateThumb — the real photograph of a template when one exists, and a
+// drawn one when it does not.
 //
 // Image-first: if the slug has a captured, hand-QC'd shot at
-// `public/templates/<slug>.webp` (tracked in TEMPLATE_SHOTS), render it
-// (object-cover object-top, lazy-loaded). If that image ever fails to load, or
-// the slug has no shot, fall back to the generated tile below.
-//
-// The tile is a consistent, self-hosted, monochrome placeholder that matches the
-// site: a directional grayscale gradient + soft light + fine texture + a category
-// icon. Deterministic per slug (no randomness, SSR/hydration-safe), so every card
-// is stable and same-category cards still differ. Zero hue by construction —
-// variety comes from icon and gradient geometry, never color (the brand rule).
+// `public/templates/<slug>.webp` (`hasTemplateShot`), render it (object-cover
+// object-top, lazy-loaded). If that image ever fails to load, or the slug has
+// no shot, fall through to `TemplateSchematic`, which draws a coloured mini
+// screen from the slug — so the card is always a picture of an app, never a
+// placeholder, and two slugs have to collide in hue AND layout to look alike.
 //
 // The shots are self-hosted only. We never point at gallery.hanzo.ai/screenshots:
 // those were an inconsistent grab-bag (some third-party UI-kit mockups carrying
 // another designer's watermark, some raw link-index pages), so only clean,
-// visually-verified captures are allowed into TEMPLATE_SHOTS.
+// visually-verified captures are allowed into the shot list.
 
 import { useState } from "react";
-import { TEMPLATE_SHOTS } from "@/lib/template-shots";
-import {
-  Sparkles,
-  LayoutDashboard,
-  ShoppingBag,
-  Briefcase,
-  LayoutTemplate,
-  Dumbbell,
-  MessagesSquare,
-  Smartphone,
-  UtensilsCrossed,
-  Blocks,
-  AppWindow,
-  UserRound,
-  Aperture,
-  Frame,
-  GalleryVerticalEnd,
-  Camera,
-  LayoutGrid,
-  Boxes,
-  Rocket,
-  Building2,
-  type LucideIcon,
-} from "lucide-react";
-
-// Category → a small set of meaningful icons; the per-slug seed picks one so
-// even the many same-category templates (e.g. 26 portfolios) don't repeat.
-const ICONS: Record<string, LucideIcon[]> = {
-  "folio portfolio": [UserRound, Aperture, Frame, GalleryVerticalEnd, Camera],
-  portfolio: [UserRound, Frame, GalleryVerticalEnd, Camera],
-  "bento cards": [LayoutGrid, Boxes, Blocks],
-  saas: [Rocket, Sparkles, LayoutTemplate],
-  "ai/saas": [Sparkles, Rocket],
-  dashboard: [LayoutDashboard, Boxes],
-  "e-commerce": [ShoppingBag],
-  business: [Briefcase, Building2],
-  landing: [LayoutTemplate, Rocket],
-  fitness: [Dumbbell],
-  "social media": [MessagesSquare],
-  "mobile app": [Smartphone],
-  hospitality: [UtensilsCrossed],
-  "component library": [Blocks, Boxes],
-  app: [AppWindow],
-};
-const FALLBACK: LucideIcon[] = [LayoutTemplate, Boxes, Sparkles];
-
-// FNV-1a — stable string → uint32, so the visual is a pure function of the slug.
-function seedOf(s: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return h >>> 0;
-}
+import { Image } from "@hanzo/ui";
+import { hasTemplateShot } from "@/lib/template-shots";
+import { TemplateSchematic } from "@/components/template-schematic";
 
 export function TemplateThumb({
   name,
   category,
   slug,
-  showLabel = false,
   className = "",
 }: {
   name: string;
   category?: string;
   slug?: string;
-  showLabel?: boolean;
   className?: string;
 }) {
   // Real picture first. If the shot 404s at runtime, `broken` flips and we drop
-  // through to the generated tile — so a missing/corrupt file never leaves a hole.
+  // through to the drawing — so a missing/corrupt file never leaves a hole.
   const [broken, setBroken] = useState(false);
-  if (slug && TEMPLATE_SHOTS.has(slug) && !broken) {
+  if (slug && hasTemplateShot(slug) && !broken) {
     return (
       <Image
         src={`/templates/${slug}.webp`}
@@ -100,72 +42,16 @@ export function TemplateThumb({
         loading="lazy"
         decoding="async"
         onError={() => setBroken(true)}
-        height="100%" width="100%" objectFit="cover" objectPosition="top" className={`${className}`}
+        height="100%" width="100%" objectFit="cover" objectPosition="top" className={`hz-shot ${className}`}
   />
     );
   }
 
-  const seed = seedOf((slug || name || "template").toString());
-  const set = ICONS[(category || "").toLowerCase()] || FALLBACK;
-  const Icon = set[seed % set.length];
-
-  const angle = 90 + (seed % 180); // 90..269deg — directional base light
-  const hx = 8 + (seed % 46); // soft-light x, 8..53%
-  const hy = 6 + ((seed >> 4) % 40); // soft-light y, 6..45%
-  const rot = ((seed >> 7) % 17) - 8; // icon tilt, -8..8deg
-  const dots = (seed & 1) === 0; // texture: dot-grid vs hairline diagonals
-
   return (
-    <YStack
-      position="relative" height="100%" width="100%" overflow="hidden" backgroundColor="$background" className={`${className}`}
-    >
-      {/* directional base gradient (grayscale) */}
-      <YStack
-        position="absolute" top={0} right={0} bottom={0} left={0}
-        style={{
-          background: `linear-gradient(${angle}deg, rgba(255,255,255,0.07), rgba(255,255,255,0.015) 55%, rgba(255,255,255,0) 100%)`,
-        }}
-  />
-      {/* soft light bloom */}
-      <YStack
-        position="absolute" height="$17" width="$17" borderRadius="$10" backgroundColor="$color005" filter="blur(120px)"
-        style={{ left: `${hx}%`, top: `${hy}%`, transform: "translate(-40%,-40%)" }}
-  />
-      {/* fine texture */}
-      <YStack
-        position="absolute" top={0} right={0} bottom={0} left={0}
-        style={
-          dots
-            ? {
-                backgroundImage:
-                  "radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)",
-                backgroundSize: "15px 15px",
-                opacity: 0.6,
-              }
-            : {
-                backgroundImage:
-                  "repeating-linear-gradient(135deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 11px)",
-                opacity: 0.7,
-              }
-        }
-  />
-      {/* category icon */}
-      <XStack position="absolute" top={0} right={0} bottom={0} left={0} alignItems="center" justifyContent="center">
-        <Icon
-          size={56} color="var(--foreground)" opacity={0.2}
-          strokeWidth={1.1}
-          style={{ transform: `rotate(${rot}deg)` }}
-  />
-      </XStack>
-      {showLabel && category ? (
-        <YStack position="absolute" bottom="$2.5" left="$3">
-          <SizableText fontFamily="$mono" fontSize={10} color="$color11">
-            {category}
-          </SizableText>
-        </YStack>
-      ) : null}
-      {/* crisp inner hairline */}
-      <YStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} />
-    </YStack>
+    <TemplateSchematic
+      slug={slug || name || "template"}
+      category={category}
+      className={`hz-shot ${className}`}
+    />
   );
 }

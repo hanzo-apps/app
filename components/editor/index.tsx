@@ -10,7 +10,7 @@ import { toast, Button } from '@hanzo/ui';
 import type { CodeEditorHandle } from "@/components/code-editor";
 import type { ElementInfo } from "./preview/bridge";
 import dynamic from "next/dynamic";
-import { CopyIcon, Share2 } from "lucide-react";
+import { CopyIcon, PanelLeft, Share2 } from "lucide-react";
 
 // CodeMirror bundles locally (no CDN, no web workers) so it is CSP-clean.
 // Still code-split out of the /dev first-load chunk and rendered client-only
@@ -47,8 +47,7 @@ import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signa
 import { SaveButton } from "./save-button";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { useAutosave } from "@/hooks/useAutosave";
-import { commitTurn } from "@/lib/git/commit-turn";
-import { currentProject, loadWorkspace, saveWorkspace } from "@/lib/dev/workspace";
+import { loadWorkspace, saveWorkspace } from "@/lib/dev/workspace";
 import { saveLabel } from "@/lib/pages/save-label";
 import { FileTree } from "./file-tree";
 import { HistoryPanel } from "./history";
@@ -56,6 +55,9 @@ import { RevisionDetails, type DetailsRev } from "./history/details";
 import { ShareModal } from "./share-modal";
 import { Console } from "./console";
 import { VisualEditor } from "./visual-editor";
+import { FilesPane } from "./files";
+import { MorePane } from "./more";
+import { rightPane } from "@/lib/panes";
 import { OrgProvider } from "@/lib/org/client";
 
 export const AppEditor = ({
@@ -63,11 +65,14 @@ export const AppEditor = ({
   pages: initialPages,
   images,
   isNew,
+  siteUrl,
 }: {
   project?: Project | null;
   pages?: Page[];
   images?: string[];
   isNew?: boolean;
+  /** The project's own public address, when it has one — see Preview.siteUrl. */
+  siteUrl?: string | null;
 }) => {
   const [htmlStorage, , removeHtmlStorage] = useLocalStorage("pages");
   const [, copyToClipboard] = useCopyToClipboard();
@@ -109,6 +114,33 @@ export const AppEditor = ({
   // docked on the left; this drives what the RIGHT pane shows — preview or the
   // code editor — and, on mobile, which single pane is visible.
   const [currentTab, setCurrentTab] = useState("chat");
+  // BOOT ON THE PREVIEW WHEN THERE IS AN APP TO SHOW — the site you opened is
+  // the thing you came to see.
+  //
+  // Desktop docks the chat column permanently and shows the preview on the
+  // right, so a `chat` tab there only stranded the pane pill on a segment hidden
+  // above lg — the bar read as dead chrome over a live preview. That flip stays,
+  // unconditional on desktop.
+  //
+  // On a phone ONE pane shows at a time, and this was the bug the owner hit: a
+  // LOADED project opened on the chat tab, so the site sat invisible behind the
+  // chat pane while the assistant's "your site is in the preview" message
+  // pointed at a pane the phone was not showing. A project that loads with a
+  // real app now lands on that preview at every width. A FRESH project — a
+  // conversation with nothing built yet — has nothing to preview, so it stays on
+  // the full-width chat boot; the preview unfurls into view when the first
+  // build streams in and `fresh` goes false.
+  //
+  // Runs once on mount: `fresh` is correct from the first render (pages seed
+  // from `initialPages`), and scoping to mount keeps a mid-conversation build
+  // from yanking the phone off chat.
+  useEffect(() => {
+    const desktop = typeof window !== "undefined" && window.innerWidth >= 1024;
+    if (desktop || !fresh) {
+      setCurrentTab((t) => (t === "chat" ? "preview" : t));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   /**
    * What the RIGHT pane shows. Per the comment above, `currentTab` carries two
    * meanings, and `chat` belongs to only one of them: the right pane shows
@@ -121,7 +153,21 @@ export const AppEditor = ({
    * an element in the preview sets the tab back to `chat` (it opens the chat to
    * ask about that element), which disarmed editing again on every use.
    */
-  const rightView = currentTab === "code" ? "code" : "preview";
+  const rightView = rightPane(currentTab);
+  /**
+   * BOOT: a project with nothing in it yet — one page still wearing the
+   * scaffold. The window is the CONVERSATION alone: no preview card, no pane
+   * pills, no page tooling, because every one of those operates on an app that
+   * does not exist, and chrome for a missing thing reads as a broken thing.
+   * Ask questions, plan, talk — full width, like the reference.
+   *
+   * The unfurl is not an event, it is this predicate flipping: the first real
+   * bytes stream into `pages` mid-generation, `isTheSameHtml` goes false, and
+   * the workspace appears exactly when there is something to show. Plan-mode
+   * turns never touch pages, so a purely conversational start stays a
+   * conversation.
+   */
+  const fresh = pages.length <= 1 && isTheSameHtml(pages[0]?.html ?? "");
   // The left pane is ALWAYS the chat composer; a history/rollback ICON in the
   // header toggles the version-history panel as an OVERLAY over it (item 10).
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -131,6 +177,16 @@ export const AppEditor = ({
   // The chat pane can be collapsed on desktop to give preview/code the full
   // width; on mobile the tab switcher already shows one pane at a time.
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // The Code pane is a desktop master-detail — a fixed file rail beside the
+  // editor — that does not fit a phone (260 of rail left the editor ~130). Below
+  // $md it drills down: the editor is the whole pane, a Files button opens the
+  // rail full-width, and picking a file returns to the editor. Desktop ignores
+  // this ($md forces both columns visible).
+  const [codeTreeOpen, setCodeTreeOpen] = useState(false);
+  // The chat pane's width in px — the ONE number the pane, the resizer and the
+  // header all read, so the chrome above the split can sit exactly over the
+  // pane it controls. 0 = no docked chat (mobile, collapsed, boot).
+  const [chatW, setChatW] = useState(0);
   // Live mirror so the once-registered window-resize listener always sees the
   // current collapsed state in the split math (no stale closure, no re-register).
   const sidebarCollapsedRef = useRef(false);
@@ -171,10 +227,17 @@ export const AppEditor = ({
       const r = resizer.current;
       const resizerWidth = r && 'scrollTo' in r ? r.offsetWidth : 8; // w-2 = 8px
       const availableWidth = window.innerWidth - resizerWidth;
-      // Chat ~27% (v2: 24–28%); the preview gets the room.
-      el.style.width = `${Math.round(availableWidth * 0.27)}px`;
+      // Chat 27% BUT CAPPED IN PIXELS. A percentage scales with the monitor
+      // and a conversation does not: on an ultrawide, 27% is a thousand pixels
+      // of mostly-empty column and the owner's exact words were "too wide".
+      // The reference sits ~500; drag past the cap any time — this is only
+      // where a fresh layout starts.
+      const w = Math.min(520, Math.max(360, Math.round(availableWidth * 0.27)));
+      el.style.width = `${w}px`;
+      setChatW(w);
     } else {
       el.style.width = "";
+      setChatW(0);
     }
   };
 
@@ -193,6 +256,7 @@ export const AppEditor = ({
     );
     // Set ONLY the chat pane; the preview region (flex-1) absorbs the rest.
     el.style.width = `${clampedEditorWidth}px`;
+    setChatW(clampedEditorWidth);
   };
 
   const handleMouseDown = () => {
@@ -293,8 +357,8 @@ export const AppEditor = ({
    * addresses it, so there is ONE write path; a project with no record has
    * nowhere to save and the bar says so instead of reassuring.
    */
-  const [saveNs, saveRepo] = (project?.space_id ?? "").split("/");
-  const autosave = useAutosave(saveNs, saveRepo, pages, prompts, isAiWorking);
+  const saveRepo = (project?.space_id ?? "").split("/")[1];
+  const autosave = useAutosave(saveRepo, pages, prompts, isAiWorking);
 
   // Keep the working copy current. Debounced so a streaming build does not write
   // on every chunk, and skipped while building because a partial document is not
@@ -326,6 +390,23 @@ export const AppEditor = ({
     setTimeout(() => URL.revokeObjectURL(url), 60_000);
   };
 
+  // The split is re-stamped when the states that suspend it change: boot
+  // ending (the unfurl), the sidebar toggling. resetLayout reads refs, so it is
+  // stable to call from here.
+  useEffect(() => {
+    resetLayout();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fresh, sidebarCollapsed]);
+
+  // ONE history toggle — the header's icon and the composer's [+] menu share
+  // it, so the two ways in cannot drift.
+  const toggleHistory = () => {
+    const next = !historyOpen;
+    setHistoryOpen(next);
+    // Opening history must reveal the left pane if it was collapsed.
+    if (next) setSidebarCollapsed(false);
+  };
+
   return (
     <OrgProvider>
     {/* overflow="hidden" as well as the exact height: the height alone only says
@@ -343,34 +424,37 @@ export const AppEditor = ({
         currentPage={currentPage}
         onSelectPage={setCurrentPage}
         onOpenExternal={openInNewTab}
+        booted={!fresh}
+        leftWidth={!fresh && !sidebarCollapsed ? chatW : 0}
+        chatOpen={!sidebarCollapsed}
+        onToggleChat={() => setSidebarCollapsed((v) => !v)}
         historyOpen={historyOpen}
-        onToggleHistory={() => {
-          const next = !historyOpen;
-          setHistoryOpen(next);
-          // Opening history must reveal the left pane if it was collapsed.
-          if (next) setSidebarCollapsed(false);
-        }}
+        onToggleHistory={toggleHistory}
         project={project}
       >
         {/* Two lean actions, Codex-minimal: Share (a preview link) and Publish
             (the sole solid primary). ONE secondary treatment — a quiet glass
             toolbar button — so the cluster reads as a set. Git push is NOT a
-            header verb: every finished turn already commits to git.hanzo.ai
-            (onSuccess → commitTurn), so a manual Push button was a third size
+            header verb: autosave already commits every settled change to
+            git.hanzo.ai, so a manual Push button was a third size
             competing for the corner while doing, on demand, exactly what happens
             on its own. Load is gone too — you are already inside a project
             editing it, so "load a project" here was a door to nowhere. */}
         <Button
-          variant="outline"
+          variant="ghost"
           size="sm"
           onClick={() => setIsShareModalOpen(true)}
-          height={28} gap="$1.5" paddingHorizontal="$2.5" borderRadius="$4" borderColor="$color06" backgroundColor="$color04" hoverStyle={{ backgroundColor: "$color08", borderColor: "$color8" }}
+          // The same pill as Publish beside it — one family, differing only in
+          // emphasis. It was an outline rect on a translucent fill next to a
+          // raised rounded primary: two shapes for two siblings, which is what
+          // read as "weirdly different".
+          height={32} gap="$1.5" paddingHorizontal="$3" borderRadius={999} backgroundColor="$color4" hoverStyle={{ backgroundColor: "$color5" }}
         >
           <Share2 size={14} />
-          <SizableText display="none" $md={{ display: "inline" }}>Share</SizableText>
+          <SizableText display="none" $md={{ display: "inline" }} fontSize="$2" fontWeight="500" color="$color">Share</SizableText>
         </Button>
         {project?._id ? (
-          <SaveButton pages={pages} prompts={prompts} />
+          <SaveButton save={autosave.saveNow} />
         ) : (
           <DeployButton pages={pages} prompts={prompts} disabled={isAiWorking} />
         )}
@@ -411,13 +495,26 @@ export const AppEditor = ({
           //
           // Mobile: one pane at a time, chosen by the tab. Desktop: chat docked
           // left unless collapsed, preview beside it.
-          display={currentTab === "chat" ? "flex" : "none"}
-          $lg={{ flex: 1, flexShrink: 0, display: sidebarCollapsed ? "none" : "flex" }}
+          display={currentTab === "chat" || fresh ? "flex" : "none"}
+          // flexGrow 0 on desktop, and that zero is the whole resizer. The pane
+          // carried `flex: 1`, and grow re-expands past any width the drag
+          // writes — resetLayout stamped 27%, grow pulled it straight back to
+          // half, so the split sat pinned at 50/50 and the drag was a no-op
+          // that read as "I can't even resize it". One authoritative width
+          // (style.width, owned by resetLayout + the drag), one flex fill (the
+          // preview). Boot is the exception: the conversation IS the window.
+          $lg={{ flexGrow: fresh ? 1 : 0, flexShrink: 0, display: !fresh && sidebarCollapsed ? "none" : "flex" }}
         >
           {/* Chat — ALWAYS the left pane (composer/thread live here permanently);
               the history panel OVERLAYS it when toggled from the header icon. */}
-          <YStack minHeight={0} flex={1}>
+          {/* When fresh (no preview yet — first build, a remix mid-build), the
+              chat is the whole window, so it must cap at a READING width or the
+              messages spread into giant blobs. 672 matches the composer's own
+              maxWidth (ask-ai root) — the two used to disagree (860 vs 672), so
+              the thread ran wider than the box beneath it. One column now. */}
+          <YStack minHeight={0} flex={1} {...(fresh ? { width: "100%", maxWidth: 600, alignSelf: "center" } : null)}>
             <AskAI
+              onToggleHistory={toggleHistory}
               isNew={isNew}
               project={project}
               images={images}
@@ -430,26 +527,11 @@ export const AppEditor = ({
                 // (no-ops if a generation produced none). Fire-and-forget.
                 sendRewardSignal(getLastGenerationRequestId(), "accept");
 
-                // VERSION HISTORY. Each finished turn is a commit on
-                // git.hanzo.ai, so the history panel has real revisions to show,
-                // bookmark and fork from. Fire-and-forget — the build is already
-                // on screen and a slow forge must not hold up the next prompt —
-                // but never silent: an unwired forge or a failed write says so,
-                // because implying a history that is not being written is the
-                // same defect as the status bar that read "Auto-saved".
-                // A STABLE name. Deriving it from the title meant every
-                // first-time project was called "untitled-site" and they
-                // overwrote each other's history in one shared repo.
-                const repoName = currentProject(project?.space_id?.split("/")[1]);
-                void (repoName
-                  ? commitTurn(repoName, newPages, p)
-                  : Promise.resolve({ ok: false as const, reason: "no project id", unconfigured: true })
-                ).then((r) => {
-                  if (!r.ok && !r.unconfigured) {
-                    toast.error(`Saved here, but not committed to git: ${r.reason}`);
-                  }
-                });
-
+                // Persistence is autosave's job and ONLY autosave's job. A commit
+                // fired here as well, two seconds ahead of the debounce, so every
+                // turn wrote the same pages to the same repo twice and the history
+                // grew a duplicate per turn. The status bar reports the one write
+                // that remains, which is also the one the person can see.
                 const currentHistory = [...htmlHistory];
                 currentHistory.unshift({
                   pages: newPages,
@@ -508,10 +590,14 @@ export const AppEditor = ({
           role="separator"
           aria-orientation="vertical"
           aria-label="Resize chat and preview panes"
-          position="relative" width="$3" height="100%" flexShrink={0} cursor="col-resize" alignItems="center" justifyContent="center"
+          // 10 in PX. `width="$3"` resolved through gui's SIZE scale to 36px —
+          // the $6=64 trap, on the one element between the panes — so a third
+          // of the owner's "too much gap" was the resizer track itself.
+          // Measured live: 36px. Ten is still a comfortable grab.
+          position="relative" width={10} height="100%" flexShrink={0} cursor="col-resize" alignItems="center" justifyContent="center"
           // Only where there are two panes to divide: hidden on mobile, shown on
           // desktop. It was exactly inverted.
-          display="none" $lg={{ display: "flex" }} className="group/resizer"
+          display="none" $lg={{ display: fresh ? "none" : "flex" }} className="group/resizer"
         >
           {/* macOS split view: NO visible divider at rest — the panes simply
               meet. The wide (w-3) hit target still grabs from either edge, and a
@@ -527,11 +613,25 @@ export const AppEditor = ({
             card is the only element that lifts off the flat workspace. Preview
             stays mounted (iframe warm, iframeRef valid); Code overlays it. */}
         <YStack
-          position="relative" flex={1} minWidth={0} height="100%" padding="$2"
-          display={currentTab === "chat" ? "none" : "flex"}
-          $lg={{ padding: "$3", display: "flex" }}
+          position="relative" flex={1} minWidth={0} height="100%"
+          // Gutter on top and sides, but NONE on the bottom: the card meets the
+          // console footer flush, the same bottom line the chat composer already
+          // sits on — so chat, preview and footer line up instead of the card
+          // floating 12px above the bar while the composer runs down to it.
+          paddingTop="$2" paddingHorizontal="$2" paddingBottom={0}
+          display={currentTab === "chat" || fresh ? "none" : "flex"}
+          $lg={{ paddingTop: "$2", paddingHorizontal: "$2", paddingBottom: 0, display: fresh ? "none" : "flex" }}
         >
-          <YStack position="relative" height="100%" width="100%" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={5} className="preview-stage">
+          {/* FULL-BLEED, the owner's call: the preview IS the workspace's right
+              region, not a card floating in it. The gutter, the hairline and
+              the elevation are gone — the resizer's hover seam is the only
+              boundary, and the canvas runs to the window edges (the console at
+              rest is an invisible pull-up edge, so the bottom is the window's). */}
+          {/* A PANEL you can see: one step off true black, hairline edge,
+              rounded — an 8px gutter, not the old padded float. Full-bleed on a
+              black field made the pane's own surface invisible; this keeps the
+              space and restores the shape. */}
+          <YStack position="relative" height="100%" width="100%" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$color02" backgroundColor="$color1" className="preview-stage">
             {/* Faint top highlight — a crisp edge that reads as raised glass. */}
             <YStack pointerEvents="none" position="absolute" left="$0" right="$0" top="$0" zIndex={20} height={1} />
             <Preview
@@ -540,6 +640,7 @@ export const AppEditor = ({
               isAiWorking={isAiWorking}
               ref={preview}
               device={device}
+              siteUrl={siteUrl}
               pages={pages}
               setCurrentPage={setCurrentPage}
               currentTab={currentTab}
@@ -548,13 +649,21 @@ export const AppEditor = ({
               onClickElement={(element) => {
                 setIsEditableModeEnabled(false);
                 setSelectedElement(element);
-                setCurrentTab("chat");
+                // "chat" is a destination only where chat is a TAB (mobile —
+                // one pane at a time, and the composer is what you need next).
+                // On desktop the composer is already docked beside the preview,
+                // and flipping the tab would only strip the trough's active
+                // pill — the same dead-bar state the boot fix removed.
+                if (typeof window === "undefined" || window.innerWidth < 1024) {
+                  setCurrentTab("chat");
+                }
               }}
   />
             {rightView === "preview" && (
               <VisualEditor
                 iframeRef={iframeRef}
                 editorRef={editorRef}
+                pagePath={currentPageData?.path ?? "index.html"}
                 isEnabled={isEditableModeEnabled}
                 onToggle={setIsEditableModeEnabled}
                 onElementSelect={(_info) => {
@@ -570,11 +679,27 @@ export const AppEditor = ({
                 }}
   />
             )}
+            {/* FILES view — a browser over the project's real file list, with a
+                preview of whatever is selected. Distinct from Code, which is an
+                editor: this answers "what is in here", that answers "change it". */}
+            {rightView === "files" && (
+              <FilesPane
+                pages={pages}
+                currentPage={currentPage}
+                onSelectPage={setCurrentPage}
+  />
+            )}
+            {/* MORE view — everything about the project that is not its source:
+                the Hanzo services behind it, analytics, connectors, payments. */}
+            {rightView === "more" && <MorePane projectId={project?.space_id ?? null} />}
             {/* CODE view — the CodeMirror editor overlaid inside the card when the
                 header switches to Code. The left panel stays chat; code lives here. */}
             {rightView === "code" && (
               <XStack position="absolute" top={0} right={0} bottom={0} left={0} zIndex={10} backgroundColor="$background">
-                {/* File browser rail — see + navigate every project file. */}
+                {/* File browser rail — see + navigate every project file. Full
+                    width on a phone (shown only when the Files button opens it),
+                    a fixed 260 beside the editor on a desktop. */}
+                <YStack display={codeTreeOpen ? "flex" : "none"} width="100%" flexShrink={0} height="100%" $md={{ display: "flex", width: 260 }}>
                 <FileTree
                   pages={pages}
                   currentPage={currentPage}
@@ -589,6 +714,8 @@ export const AppEditor = ({
                     } else {
                       setCurrentPage(path);
                     }
+                    // On a phone, picking a file returns to the editor.
+                    setCodeTreeOpen(false);
                   }}
                   onDeletePage={(path) => {
                     const newPages = pages.filter((page) => page.path !== path);
@@ -608,14 +735,19 @@ export const AppEditor = ({
                     setCurrentPage(`page-${pages.length + 1}.html`);
                   }}
   />
-                <YStack position="relative" minWidth={0} flex={1} overflow="hidden">
-                  <CopyIcon
-                    size={16}
-                    onClick={() => {
-                      copyToClipboard(currentPageData.html);
-                      toast.success("HTML copied.");
-                    }}
-  />
+                </YStack>
+                <YStack display={codeTreeOpen ? "none" : "flex"} $md={{ display: "flex" }} position="relative" minWidth={0} flex={1} overflow="hidden">
+                  {/* Files — phone only: opens the rail; on a desktop the rail
+                      never leaves, so there is nothing to toggle. */}
+                  <Button
+                    type="button"
+                    onClick={() => setCodeTreeOpen(true)}
+                    aria-label="Browse files"
+                    title="Files"
+                    display="flex" $md={{ display: "none" }} position="absolute" top="$2" left="$2" zIndex={20} size="icon-sm" borderRadius="$4" backgroundColor="$color3" hoverStyle={{ backgroundColor: "$color4" }}
+                  >
+                    <PanelLeft size={16} />
+                  </Button>
                   <YStack
                     position="absolute"
                     top="$0"
@@ -643,6 +775,21 @@ export const AppEditor = ({
                     }}
                   />
                   </YStack>
+                  <Button
+                    size="icon-sm"
+                    variant="ghost"
+                    aria-label="Copy HTML"
+                    position="absolute"
+                    top="$2"
+                    right="$2"
+                    zIndex={20}
+                    onClick={() => {
+                      copyToClipboard(currentPageData.html);
+                      toast.success("HTML copied.");
+                    }}
+                  >
+                    <CopyIcon size={16} />
+                  </Button>
                 </YStack>
               </XStack>
             )}
@@ -663,8 +810,6 @@ export const AppEditor = ({
         saveText={saveLabel(autosave.state, autosave.at)}
         branch={project?.repo?.branch}
         pageCount={pages.length}
-        sidebarCollapsed={sidebarCollapsed}
-        onToggleSidebar={() => setSidebarCollapsed((v) => !v)}
   />
 
       <ShareModal

@@ -1,17 +1,30 @@
 import type { NextResponse } from 'next/server';
 
 /**
- * The CDNs the generation system prompt (lib/prompts.ts) endorses. The /dev
- * builder previews generated apps in an `about:srcdoc` iframe, which INHERITS
- * this page's CSP — so a source missing here renders every generated page
- * unstyled in the preview while the published copy works fine.
+ * Where a generated site's libraries come from: OUR origin, and only ours.
+ *
+ * This was four hosts we do not own — `cdn.jsdelivr.net`,
+ * `cdn.tailwindcss.com`, `cdnjs.cloudflare.com`, `unpkg.com` — because the
+ * generation prompts told every site to fetch Tailwind, icons, animation and
+ * maps from them. That put three parties in front of every visitor to every
+ * site anyone builds here, each able to see the traffic and to change what
+ * executes on the page, and it needed this policy widened to permit them.
+ *
+ * The libraries are now pinned in `package.json`, copied out of node_modules by
+ * `scripts/vendor.mjs`, and served from `/vendor/` — so the same capability
+ * costs one origin instead of four, and the bytes are ours.
+ *
+ * `lib/vendor.ts` is where a URL is decided; this names the origin so the
+ * policy says out loud where a generated page may load code from, rather than
+ * leaving it to whatever `'self'` happens to be.
+ *
+ * The /dev preview is an `about:srcdoc` iframe and INHERITS this policy, so a
+ * source missing here renders every generated page unstyled in the preview.
+ * That is also why documents saved before this change are rewritten on the way
+ * to the browser (`vendor.rewrite`) rather than left naming hosts this policy
+ * no longer allows.
  */
-const CDN = [
-  'https://cdn.jsdelivr.net',
-  'https://cdn.tailwindcss.com',
-  'https://cdnjs.cloudflare.com',
-  'https://unpkg.com',
-];
+const CDN = ['https://hanzo.app'];
 
 /**
  * Our own surfaces. `*.hanzo.app` is where a published project lives, and the
@@ -32,6 +45,26 @@ const OURS = ['https://*.hanzo.ai', 'https://*.hanzo.app'];
 
 /** IdP login domains — NOT under *.hanzo.ai, and each needs naming. */
 const IDP = ['https://hanzo.id', 'https://lux.id', 'https://zoo.id', 'https://pars.id'];
+
+/**
+ * Cloudflare Web Analytics, which the ZONE injects — not this repo.
+ *
+ * Web Analytics is on with `auto_install` across the estate (every hanzo zone),
+ * so the edge appends `beacon.min.js` to each HTML response on the way out.
+ * Nothing in this repo asks for it and nothing here can stop asking: the tag is
+ * added after the app has finished responding. This policy then refused it, so
+ * the beacon executed nowhere and the analytics measured nothing, at the cost of
+ * a blocked request and a console error on every page view.
+ *
+ * Measured live on hanzo.app at 375x667: `script-src-elem` blocked
+ * `static.cloudflareinsights.com/beacon.min.js/v4513…`.
+ *
+ * Two hosts, because they are two different jobs: the script is served from
+ * `static.`, and the beacon reports to the apex `cloudflareinsights.com`
+ * (`/cdn-cgi/rum`). Allowing only the first loads a script that can send nothing.
+ */
+const RUM_SCRIPT = 'https://static.cloudflareinsights.com';
+const RUM_REPORT = 'https://cloudflareinsights.com';
 
 /**
  * ONE policy, stated once.
@@ -58,9 +91,15 @@ const policy = (dev: boolean) => {
   const src = (...parts: string[]) => parts.join(' ');
   return [
     "default-src 'self'",
-    src("script-src 'self' 'unsafe-inline' 'unsafe-eval'", ...CDN, ...OURS, ...http),
-    src("style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", ...CDN, ...OURS, ...http),
-    src("font-src 'self' data: https://fonts.gstatic.com", ...CDN, ...OURS, ...http),
+    src("script-src 'self' 'unsafe-inline' 'unsafe-eval'", ...CDN, ...OURS, RUM_SCRIPT, ...http),
+    // Google Fonts is gone from both of these. It was here because the skill
+    // prompts offered it as the font choice, which put a request to Google on
+    // every view of every site built here — a third party learning who reads
+    // our customers' pages, for a typeface. The two faces a generated page uses
+    // now arrive inside the design stylesheet we serve from `/vendor/`, which
+    // is why `font-src` needs the same origin list and no third party at all.
+    src("style-src 'self' 'unsafe-inline'", ...CDN, ...OURS, ...http),
+    src("font-src 'self' data:", ...CDN, ...OURS, ...http),
     // `http:`/`https:` already cover localhost — naming it again would be noise.
     src("img-src 'self' data: blob: https: http:"),
     src("media-src 'self' blob: data:", ...OURS, ...http),
@@ -68,10 +107,26 @@ const policy = (dev: boolean) => {
     // is cross-origin and MUST be allowed, or the SSO callback silently fails
     // and the session never persists. This is the one directive a socket
     // belongs to.
+    // `blob:` is here for the same reason it is already in `img-src` and
+    // `media-src`, and leaving it out of this one directive is what made a
+    // previewed project half-render: a Blob URL could be SHOWN and not FETCHED.
+    // Measured on /dev/hanzo/megashop — the site's 3D texture went through
+    // THREE.GLTFLoader, which fetches, and the console read "Connecting to
+    // 'blob:null/…' violates … connect-src". The hero stayed black while the
+    // nav and footer painted, which reads as a broken generated app rather
+    // than a policy.
+    //
+    // It grants no reach. A blob: URL is a handle to bytes this document
+    // already holds — only its own origin can mint one — so allowing it to be
+    // fetched permits reading what is already in memory, never a request to
+    // anybody. Canvas exports, workers, object URLs and every 3D loader are
+    // ordinary things for a generated app to do; refusing them silently is
+    // what was not ordinary.
     src(
-      "connect-src 'self' wss://*.hanzo.ai https://api.openai.com https://api.anthropic.com",
+      "connect-src 'self' blob: wss://*.hanzo.ai https://api.openai.com https://api.anthropic.com",
       ...OURS,
       ...IDP,
+      RUM_REPORT,
       ...http,
       ...socket,
     ),

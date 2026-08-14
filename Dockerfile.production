@@ -11,7 +11,27 @@ RUN corepack enable && corepack prepare pnpm@10.17.1 --activate
 RUN apk add --no-cache libc6-compat python3 make g++
 WORKDIR /app
 
+# `patches/` travels with the manifest WHEN THERE IS ONE, and the trailing `*`
+# is what makes both states work.
+#
+# When package.json declares `pnpm.patchedDependencies`, pnpm hashes the named
+# file during RESOLUTION rather than at a later patch step, so a missing
+# directory kills the install outright:
+#   ENOENT: no such file or directory, open '/app/patches/@hanzo__ui@8.0.70.patch'
+# exit 254. That is what this lane did on every commit from 167cb522 on — the
+# `test` job stayed green beside it, so main kept moving and no image was cut.
+#
+# The mirror image then happened: @hanzo/ui 8.0.76 carries the change upstream,
+# the patch was deleted, and this COPY failed in FOUR SECONDS on a directory
+# that no longer exists — the same lane, the same silence, the opposite cause.
+#
+# So the directory is kept, empty, by `patches/.keep`. A glob (`patches*`) would
+# have read as the clever fix and is not one: BuildKit fails a COPY whose
+# pattern matches nothing, so it trades a break-when-absent for a
+# break-when-absent. A directory that is always there cannot be absent, and the
+# next patch drops into it with no Dockerfile change at all.
 COPY package.json pnpm-lock.yaml* ./
+COPY patches/ ./patches/
 RUN pnpm install --no-frozen-lockfile
 
 COPY . .

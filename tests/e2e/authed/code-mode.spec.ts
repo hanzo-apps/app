@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 
-import { bearer, createSandbox, destroy, readFile, uniq } from './sandbox-api';
+import { bearer, createSandbox, deleteProject, destroy, readFile, uniq } from './sandbox-api';
 
 /**
  * THE UI edits a real sandbox — driven in a browser, verified in a pod.
@@ -77,8 +77,27 @@ test.describe('the composer edits a real sandbox', () => {
   const project = `e2e-code-${uniq()}`;
   const mark = `MARK-${uniq()}`;
 
+  // The project this suite created is its own to clean up. Without this every run
+  // left one behind in the REAL system — 45 had accumulated, one per run, sitting in
+  // repository listings beside people's work. The token is captured from the run
+  // rather than minted again, so teardown needs no credential of its own.
+  let token = '';
+  test.afterAll(async ({ playwright }) => {
+    if (!token) return;
+    const request = await playwright.request.newContext();
+    try {
+      await deleteProject(request, token, project);
+    } finally {
+      await request.dispose();
+    }
+  });
+
   test('the run names the OPEN PROJECT — the line nothing ever sent', async ({ page }) => {
     await openCodeMode(page, project);
+    // Captured in the FIRST test, not the one that happens to need it: this suite is
+    // serial, so a failure here skips the rest — and that is exactly the run whose
+    // project would otherwise be left behind.
+    token = await bearer(page);
     const body = await send(page, `Write a file proof.txt containing exactly ${mark}, then stop.`);
 
     // THE assertion. Not "a project" — THIS project, the one the page has open.
@@ -98,7 +117,7 @@ test.describe('the composer edits a real sandbox', () => {
     request,
   }) => {
     await page.goto('/dashboard');
-    const token = await bearer(page);
+    token ||= await bearer(page);
     const sandbox = await createSandbox(request, token, { class: 'dev', project });
     try {
       await expect
