@@ -77,6 +77,20 @@ interface Story {
    *  every hanzo.app project gets the data plane — and the second name is the
    *  primitive this example needed. */
   wire: string;
+  /** The app's own colour, and the ONE place hue enters this page.
+   *
+   *  Hanzo's chrome is monochrome by construction and stays that way — the
+   *  design system publishes exactly one hue token in the whole file, for the
+   *  live dot. But the thing inside the frame is not Hanzo's chrome: it is a
+   *  picture of somebody's app, and an app has a colour. Painting all five in
+   *  the same grey said the builder makes five grey things; each carrying its
+   *  own says it makes real ones, and it is the honest reading of what a
+   *  generated app looks like.
+   *
+   *  It reaches the DATA only — the measured fill and the live dot. Labels,
+   *  counts and every piece of chrome around it stay monochrome, which is what
+   *  keeps the frame reading as Hanzo's and the app reading as the customer's. */
+  tint: string;
   /** Build, then two edits. The step's INDEX is the version it reveals: 0 the
    *  app, 1 the measured rows, 2 the primitive wired in. */
   steps: readonly [Step, Step, Step];
@@ -94,6 +108,7 @@ interface Story {
 const STORIES: readonly Story[] = [
   {
     name: "Shift Board",
+    tint: '#5b8cff',
     heading: "Open shifts this week",
     rows: [
       { label: "Thu · morning", n: 4, w: "80%" },
@@ -119,6 +134,7 @@ const STORIES: readonly Story[] = [
   },
   {
     name: "Front Desk",
+    tint: '#2fbf8f',
     heading: "What people asked today",
     rows: [
       { label: "Tune-up", n: 12, w: "75%" },
@@ -144,6 +160,7 @@ const STORIES: readonly Story[] = [
   },
   {
     name: "Handbook",
+    tint: '#c07cf0',
     heading: "Most-opened answers",
     rows: [
       { label: "Time off", n: 18, w: "78%" },
@@ -169,6 +186,7 @@ const STORIES: readonly Story[] = [
   },
   {
     name: "Client Portal",
+    tint: '#f0a53d',
     heading: "Who can open what",
     rows: [
       { label: "Clients", n: 24, w: "80%" },
@@ -194,6 +212,7 @@ const STORIES: readonly Story[] = [
   },
   {
     name: "Monday Digest",
+    tint: '#f0607d',
     heading: "This week at the nursery",
     rows: [
       { label: "Sold", n: 96, w: "82%" },
@@ -241,7 +260,7 @@ function App({ story, v, compact }: { story: Story; v: number; compact?: boolean
         </SizableText>
         {v >= 2 && (
           <XStack alignItems="center" gap="$1">
-            <SizableText height={6} width={6} borderRadius="$10" backgroundColor="$color" className="livedot" />
+            <SizableText height={6} width={6} borderRadius="$10" className="livedot" backgroundColor={story.tint} />
             {!compact && (
               <SizableText fontFamily="$mono" fontSize="$1" color="$color11">{story.wire}</SizableText>
             )}
@@ -265,7 +284,17 @@ function App({ story, v, compact }: { story: Story; v: number; compact?: boolean
             position="relative" overflow="hidden" alignItems="center" justifyContent="space-between" height={row} borderRadius="$3" borderWidth={1} {...{ paddingHorizontal: compact ? "$1.5" : "$2.5", borderColor: i === 0 && v >= 1 ? "$color06" : "$borderColor" }}
           >
             {v >= 1 && (
-              <YStack position="absolute" left={0} top={0} bottom={0} backgroundColor="$color4" style={{ width: o.w }} className="rise" />
+              <YStack
+                position="absolute" left={0} top={0} bottom={0} className="rise"
+                style={{
+                  width: o.w,
+                  // The app's own colour, at the weight a FILL can carry behind
+                  // text: 26% of the hue over the frame's ground reads as a
+                  // measured bar rather than a swatch, and the label on top of
+                  // it keeps its contrast.
+                  backgroundColor: `color-mix(in srgb, ${story.tint} 26%, transparent)`,
+                }}
+              />
             )}
             <SizableText position="relative" fontWeight="500" {...{ fontSize: fs, color: i === 0 ? "$color" : "$color11" }}>
               {o.label}
