@@ -31,7 +31,7 @@ const capabilities: Capability[] = [
     name: "Deploy to Hanzo Cloud",
     product: "Cloud",
     href: "https://hanzo.ai/cloud",
-    desc: "One click ships your app to a live URL on real infrastructure — no Dockerfile, no pipeline to wire up.",
+    desc: "One click puts the app on a live URL. There is no Dockerfile to write and no pipeline to set up.",
     snippet: "→ https://your-app.hanzo.app",
     primary: true,
   },
@@ -40,7 +40,7 @@ const capabilities: Capability[] = [
     name: "Database, built in",
     product: "Base",
     href: "https://hanzo.ai/base",
-    desc: "Every app gets Hanzo Base — an embedded SQLite datastore with realtime queries. Schema generated from your prompt.",
+    desc: "Every app gets Hanzo Base, an embedded SQLite datastore with realtime queries. The schema comes from what you asked for.",
     snippet: "db.from('tasks').select('*')",
   },
   {
@@ -48,7 +48,7 @@ const capabilities: Capability[] = [
     name: "Auth, built in",
     product: "IAM",
     href: "https://hanzo.ai/iam",
-    desc: "Sign-in ships wired to Hanzo IAM — OIDC, sessions, and org-scoped access with zero config.",
+    desc: "Sign-in is wired to Hanzo IAM: OIDC, sessions, and access scoped to an org. Nothing to configure.",
     snippet: "import { auth } from '@hanzo/iam'",
   },
   {
@@ -56,7 +56,7 @@ const capabilities: Capability[] = [
     name: "AI, built in",
     product: "AI",
     href: "https://hanzo.ai/llm",
-    desc: "Call 400+ models — Zen plus Anthropic, OpenAI, Google, Mistral — from your app through one gateway.",
+    desc: "Your app calls Zen, Anthropic, OpenAI, Google and Mistral through one endpoint, with one key.",
     snippet: "POST api.hanzo.ai/v1/chat/completions",
   },
   {
@@ -72,7 +72,7 @@ const capabilities: Capability[] = [
     name: "Functions & edge",
     product: "Functions",
     href: "https://hanzo.ai/functions",
-    desc: "Server logic runs as serverless functions at the edge — scaled and routed by the platform automatically.",
+    desc: "Server logic runs as functions at the edge. Hanzo Cloud routes them and scales them.",
     snippet: "export const POST = handler(...)",
   },
 ];
@@ -83,14 +83,15 @@ export default function CloudIntegration() {
       <YStack alignSelf="center" maxWidth={1152}>
         <Reveal alignSelf="center" width="100%" maxWidth={672}>
           <Paragraph textAlign="center" fontFamily="$mono" fontSize={11} color="$color11">
-            The difference
+            What ships with it
           </Paragraph>
           <H2 textAlign="center" marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "2.75rem", lineHeight: "1.1" }}>
-            More than a UI. A full app on Hanzo Cloud.
+            Every app comes with its backend.
           </H2>
           <Paragraph textAlign="center" marginTop="$4" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
-            Other builders hand you a screenshot. Hanzo ships a running app —
-            database, auth, AI, secrets, and storage already connected.
+            The database, the sign-in, the AI calls, the secrets and the file
+            storage are connected the first time the app runs. You wire up none
+            of it.
           </Paragraph>
         </Reveal>
 
@@ -139,7 +140,7 @@ export default function CloudIntegration() {
 
         <Reveal delay={120} marginTop={40}>
           <Paragraph fontFamily="$mono" fontSize={12} color="$color11" textAlign="center">
-            The same infrastructure that runs Hanzo, wired into every app you build.
+            The same infrastructure Hanzo runs on, in every app you build.
           </Paragraph>
         </Reveal>
       </YStack>

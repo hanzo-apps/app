@@ -80,7 +80,7 @@ export default function Header() {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => logout()}>
           <LogOut size={16} />
-          Log out
+          Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -89,7 +89,7 @@ export default function Header() {
   const signedOutCTAs = (
     <>
       <Button onClick={() => login()} variant="ghost">
-        Sign In
+        Sign in
       </Button>
       {/* This asked the library for its loud variant by name, which paints
           identically today — measured rgb(51,51,51) on rgb(69,69,69), i.e.
@@ -115,8 +115,8 @@ export default function Header() {
   const nav = [
     { id: "features", label: "Features", href: "/features" },
     { id: "pricing", label: "Pricing", href: "/pricing" },
-    { id: "resources", label: "Resources", href: "/templates" },
-    { id: "solutions", label: "Solutions", href: "/enterprise" },
+    { id: "resources", label: "Templates", href: "/templates" },
+    { id: "solutions", label: "Enterprise", href: "/enterprise" },
     { id: "help", label: "Help", href: "/help" },
   ];
 

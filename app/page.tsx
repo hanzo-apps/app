@@ -188,7 +188,7 @@ export default function LandingPage() {
             <Reveal>
               <XStack alignSelf="center" marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color0025" paddingHorizontal="$3" paddingVertical="$1.5">
                 <SizableText fontFamily="$mono" fontSize={11} color="$color11">
-                  Apps, wired to real data &amp; AI
+                  Hanzo · App builder
                 </SizableText>
               </XStack>
             </Reveal>
@@ -206,8 +206,9 @@ export default function LandingPage() {
 
             <Reveal delay={120}>
               <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" textAlign="center" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
-                One prompt becomes a live app on Hanzo Cloud — UI, database,
-                auth, and 400+ AI models, wired in and deployed.
+                Say what you want in plain words. Hanzo writes the screens, the
+                database and the sign-in, shows you the app running, and puts it
+                on a URL when you&apos;re ready.
               </Paragraph>
             </Reveal>
 
@@ -287,8 +288,8 @@ export default function LandingPage() {
 
                 <YStack marginTop="$5" alignItems="center" gap="$2">
                   <SizableText fontSize="$1" color="$color11">
-                    Every app ships on Hanzo Cloud with database, auth, and AI
-                    built in.
+                    Every app gets a database, sign-in and AI, and runs on
+                    Hanzo Cloud.
                   </SizableText>
                   <Link
                     href="/new"
@@ -329,7 +330,7 @@ export default function LandingPage() {
                     Continue building
                   </H2>
                   <Paragraph marginTop="$1.5" fontSize="$3" color="$color11">
-                    Jump back into your recent projects.
+                    Open one and pick up where you left off.
                   </Paragraph>
                 </div>
                 <Link
@@ -392,10 +393,10 @@ export default function LandingPage() {
           <Reveal alignSelf="center" width="100%" maxWidth={672}>
             <YStack>
               <H2 fontSize="$10" fontWeight="500" textAlign="center" letterSpacing={-0.4} $md={{ fontSize: "$12" }} lineHeight="1.1">
-                Ship your first app today.
+                Ship your first app.
               </H2>
               <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" textAlign="center" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
-                Start with a sentence. Deploy to Hanzo Cloud in one click.
+                Start with a sentence. Publish it when it looks right.
               </Paragraph>
             </YStack>
             <YStack marginTop="$6">
@@ -416,11 +417,11 @@ export default function LandingPage() {
             Built on Hanzo.
           </H2>
           <Paragraph marginTop="$3" fontSize="$3" lineHeight="1.625" color="$color11" textAlign="center" maxWidth={512}>
-            Forks, remixes, and example apps from the community — every entry
+            Forks, remixes, and example apps from the community. Every entry
             names the template it came from and who built it.
           </Paragraph>
           <Link href="/community"><XStack marginTop="$5" height={44} alignItems="center" gap="$1.5" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$4.5" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color005" }}>
-            <SizableText fontSize="$3" fontWeight="500" color="$color">Explore the community</SizableText>
+            <SizableText fontSize="$3" fontWeight="500" color="$color">See what people built</SizableText>
           </XStack></Link>
         </YStack>
       </YStack>

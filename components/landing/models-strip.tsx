@@ -36,13 +36,13 @@ export default function ModelsStrip() {
             Hanzo AI
           </Paragraph>
           <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }} lineHeight="1.1">
-            One API. 400+ models.
+            Call any model through one API.
           </H2>
           <Paragraph marginTop="$4" maxWidth={448} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
-            Your app calls any frontier model — Hanzo&apos;s own Zen family plus
-            Anthropic, OpenAI, Google, Mistral and more — through OpenAI-
-            and Anthropic-compatible endpoints. Swap models with one string,
-            and connect MCP tool servers the gateway can call mid-completion.
+            Your app calls Zen, our own family, alongside Anthropic, OpenAI,
+            Google and Mistral — through OpenAI- and Anthropic-compatible
+            endpoints. Change the model by changing one string. Connect MCP tool
+            servers and Hanzo AI calls them mid-completion.
           </Paragraph>
 
           <Anchor display="inline-flex"
@@ -51,7 +51,7 @@ export default function ModelsStrip() {
             rel="noopener noreferrer"
             marginTop="$5" alignItems="center" gap="$1.5" fontSize="$3" fontWeight="500" color="$color11" hoverStyle={{ color: "$color" }}
           >
-            Explore the gateway
+            Learn more about Hanzo AI
             <span aria-hidden>→</span>
           </Anchor>
         </Reveal>

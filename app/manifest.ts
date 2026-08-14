@@ -5,10 +5,10 @@ import type { MetadataRoute } from "next";
 // Icons resolve to the Next file-convention routes (app/icon.svg, app/apple-icon.png).
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Hanzo — Build with AI",
+    name: "Hanzo — describe an app and it gets built",
     short_name: "Hanzo",
     description:
-      "Build websites with AI, no code required. Create, deploy, and scale.",
+      "Describe an app in plain words. Hanzo writes it, runs it, and puts it on a URL.",
     start_url: "/",
     display: "standalone",
     background_color: "#000000",

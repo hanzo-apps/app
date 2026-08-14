@@ -23,12 +23,11 @@ export default function HanzoModels() {
             Hanzo models
           </Paragraph>
           <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "2.75rem", lineHeight: "1.1" }}>
-            Frontier intelligence, without the frontier bill.
+            We build the models too.
           </H2>
           <Paragraph marginTop="$4" fontSize="$4" color="$color11" textAlign="center" $md={{ fontSize: "$6" }} lineHeight="1.5">
-            Two models we build in-house: Enso, our flagship that routes every
-            request to the cheapest model that can nail it — and Zen, the
-            open-source family you can run anywhere.
+            Enso is our frontier model. Zen is our open family — open weights
+            you can download, fine-tune and run on your own machines.
           </Paragraph>
         </Reveal>
 
@@ -53,10 +52,10 @@ export default function HanzoModels() {
                 Enso
               </H3>
               <Paragraph marginTop="$2" flex={1} fontSize="$3" lineHeight="1.625" color="$color11">
-                Our new frontier model — and an agentic orchestrator with a
-                trainable routing model. Point it at your workloads and it drives
-                cost down by sending each request to the cheapest model that can
-                do it well, so AI doesn&apos;t cost you an arm and a robot leg.
+                Our frontier model, and an agentic orchestrator with a routing
+                model you can train. It leads several public benchmarks. It
+                sends each request to the cheapest model that can do it well, so
+                a busy app stops costing frontier prices.
               </Paragraph>
               <SizableText marginTop="$5" fontSize="$3" fontWeight="500" color="$color" $group-hover={{ color: "$color" }}>
                 Learn more about Enso <span aria-hidden>→</span>
@@ -84,12 +83,11 @@ export default function HanzoModels() {
                 Zen
               </H3>
               <Paragraph marginTop="$2" flex={1} fontSize="$3" lineHeight="1.625" color="$color11">
-                The Zen family — open-weight models you can run, fine-tune, and
-                self-host anywhere. The same models behind the gateway, yours to
-                own with zero lock-in.
+                Open-weight models you can run, fine-tune and host yourself.
+                The same models Hanzo AI serves, yours to download and keep.
               </Paragraph>
               <SizableText marginTop="$5" fontSize="$3" fontWeight="500" color="$color" $group-hover={{ color: "$color" }}>
-                Explore Zen <span aria-hidden>→</span>
+                Learn more about Zen <span aria-hidden>→</span>
               </SizableText>
             </Anchor>
           </Reveal>

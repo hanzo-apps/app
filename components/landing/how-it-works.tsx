@@ -6,21 +6,24 @@ import { YStack, Paragraph, H2, SizableText, H3 } from '@hanzo/ui';
 
 import Reveal from "./reveal";
 
+// The mono line above each step names what you HAVE at that point. It used to
+// be an ordinal — "01/02/03" — which said nothing the order of the three cards
+// wasn't already saying.
 const steps = [
   {
-    n: "01",
-    title: "Describe it",
-    body: "Type what you want to build in plain English — or import an existing GitHub repo to start from real code.",
+    n: "A sentence",
+    title: "Say what you want",
+    body: "Type it in plain words. Or import a GitHub repo and start from code you already have.",
   },
   {
-    n: "02",
-    title: "Watch it come to life",
-    body: "Hanzo generates the UI, database schema, auth, and API — then refines with you in a live editor as you chat.",
+    n: "A working app",
+    title: "Watch it get built",
+    body: "Hanzo writes the screens, the database schema, the sign-in and the API. Keep talking to it and the app changes while you watch.",
   },
   {
-    n: "03",
+    n: "A live URL",
     title: "Ship it on Hanzo Cloud",
-    body: "One click deploys to a live URL with your database, auth, AI, and storage already running. No pipeline to set up.",
+    body: "Publish, and the app is on a URL with its database, sign-in, AI and storage already running. There is no pipeline to set up.",
   },
 ];
 

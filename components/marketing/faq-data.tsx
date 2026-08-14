@@ -76,10 +76,10 @@ export const productFaq: QA[] = [
     q: "What is hanzo.app?",
     a: (
       <>
-        hanzo.app is Hanzo&apos;s AI app builder. Describe what you want in plain
-        language and it generates a real, full-stack app — then publishes it live
-        on Hanzo Cloud with database, auth, and AI already wired in. No
-        boilerplate, no setup.
+        hanzo.app is Hanzo&apos;s AI app builder. Say what you want in plain words
+        and it writes the app — screens, database, sign-in and API — then
+        publishes it on Hanzo Cloud. There is no boilerplate to start from and
+        nothing to set up.
       </>
     ),
   },
@@ -91,9 +91,9 @@ export const productFaq: QA[] = [
         <SizableText color="$color">Zen</SizableText> and{" "}
         <SizableText color="$color">Enso</SizableText> model families, served through
         the Hanzo AI API at{" "}
-        <SizableText fontFamily="$mono" color="$color">api.hanzo.ai</SizableText>. The same
-        gateway gives every app you publish one OpenAI-compatible endpoint to 400+
-        frontier models — swap models with a single string.
+        <SizableText fontFamily="$mono" color="$color">api.hanzo.ai</SizableText>. Every app
+        you publish gets that same API, so it can call any model Hanzo AI serves
+        by changing one string.
       </>
     ),
   },
@@ -103,8 +103,8 @@ export const productFaq: QA[] = [
       <>
         Every project deploys to a live{" "}
         <SizableText fontFamily="$mono" color="$color">*.hanzo.app</SizableText> URL you can
-        share immediately. Publishing is one click from the builder — the running
-        app is the deliverable, not a zip file.
+        share immediately. Publishing is one click from the builder, and what you
+        get back is the running app, not a zip file.
       </>
     ),
   },

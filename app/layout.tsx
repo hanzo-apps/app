@@ -69,18 +69,18 @@ const SPECULATION_RULES = JSON.stringify({
 });
 
 export const metadata: Metadata = {
-  title: "Hanzo AI | Build with AI",
+  title: "Hanzo — describe an app and it gets built",
   description:
-    "Hanzo AI is a cutting-edge web development platform that helps you build websites with AI, no code required. Create, deploy, and scale your projects with the power of AI.",
+    "Say what you want in plain words. Hanzo writes the screens, the database and the sign-in, shows you the app running, and puts it on a URL on Hanzo Cloud.",
   // Absolute base for OG/Twitter/canonical URL resolution; white-label overridable
   // via NEXT_PUBLIC_APP_URL (see lib/site.ts). Without it, relative OG images and
   // the canonical don't resolve and Next warns at build.
   metadataBase: new URL(SITE_URL),
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Hanzo AI | Build with AI",
+    title: "Hanzo — describe an app and it gets built",
     description:
-      "Hanzo AI is a cutting-edge web development platform that helps you build websites with AI, no code required. Create, deploy, and scale your projects with the power of AI.",
+      "Say what you want in plain words. Hanzo writes the screens, the database and the sign-in, shows you the app running, and puts it on a URL on Hanzo Cloud.",
     url: SITE_URL,
     siteName: "Hanzo AI",
     images: [
@@ -94,9 +94,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hanzo AI | Build with AI",
+    title: "Hanzo — describe an app and it gets built",
     description:
-      "Hanzo AI is a cutting-edge web development platform that helps you build websites with AI, no code required. Create, deploy, and scale your projects with the power of AI.",
+      "Say what you want in plain words. Hanzo writes the screens, the database and the sign-in, shows you the app running, and puts it on a URL on Hanzo Cloud.",
     images: ["/banner.png"],
   },
   appleWebApp: {
