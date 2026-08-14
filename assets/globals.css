@@ -2243,10 +2243,34 @@ div[data-hanzo-shell] > button {
    for. Without it the rule is a silent no-op; measured, the value stayed .72. */
 html:root .is_PopperContent,
 html:root .is_DialogContent,
-html:root #hanzo-meet-menu {
-  background-color: var(--popover) !important;
+html:root #hanzo-meet-menu,
+html:root #hanzo-products-menu {
+  /* DENSE, not opaque. `var(--popover)` alone is #0f0f0f — flat paint, and the
+     drape read as a black slab with no depth at all.
+     The legibility problem above is real, so the answer is not "go back to
+     0.72": it is a ground dense enough that the page behind cannot be READ
+     without the blur, while still letting the light through. At 88% a white
+     heading behind resolves to 12% over black — a wash you sense rather than
+     read — so the surface stays legible in WebKit and becomes glass in the
+     engines that composite. */
+  background-color: color-mix(in srgb, var(--popover) 88%, transparent) !important;
   -webkit-backdrop-filter: blur(20px) saturate(1.8);
   backdrop-filter: blur(20px) saturate(1.8);
+}
+
+/* The drape is full-bleed; its CONTENTS are not.
+   The panel is edge-to-edge on purpose (it is the header's own surface
+   continuing down the page), but the rail + link columns were stretched across
+   the whole of it: at 1600 the columns box measured 1332px wide holding about
+   500px of links, so four short lists floated in a field of black with the
+   right two-thirds empty. Centre the CONTENT on the same 1152 column the page
+   itself uses, so the menu lines up with the page under it instead of with the
+   viewport edge. */
+html:root #hanzo-meet-menu > div,
+html:root #hanzo-products-menu > div {
+  max-width: 1152px;
+  margin-inline: auto;
+  width: 100%;
 }
 
 /* The composer rides the bottom of the viewport, and it is IN THE PAGE.

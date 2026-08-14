@@ -482,7 +482,7 @@ export default function LandingPage() {
           </YStack>
         )}
 
-        {/* ── Ship your first app today — where the composer comes to rest ── */}
+        {/* ── Ship your first app today ── */}
         <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
           <Reveal alignSelf="center" width="100%" maxWidth={672}>
             <H2 fontSize="$10" fontWeight="500" textAlign="center" letterSpacing={-0.4} $md={{ fontSize: "$12" }} lineHeight="1.1">
@@ -494,20 +494,44 @@ export default function LandingPage() {
           </Reveal>
         </YStack>
 
+        {/* ── Community — what people built, linking out to the showcase ── */}
+        <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6" }}>
+          <YStack alignSelf="center" width="100%" maxWidth={672} alignItems="center">
+            <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "$10" }} lineHeight="1.1">
+              Built on Hanzo.
+            </H2>
+            <Paragraph marginTop="$3" fontSize="$3" lineHeight="1.625" color="$color11" textAlign="center" maxWidth={512}>
+              Forks, remixes, and example apps from the community — every entry
+              names the template it came from and who built it.
+            </Paragraph>
+            <Link href="/community"><XStack marginTop="$5" height={44} alignItems="center" gap="$1.5" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$4.5" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color005" }}>
+              <SizableText fontSize="$3" fontWeight="500" color="$color">Explore the community</SizableText>
+            </XStack></Link>
+          </YStack>
+        </YStack>
+
+        <LazySection minHeight={200}><PreFooterCTA /></LazySection>
+        <LazySection minHeight={240}><SiteFooter /></LazySection>
+
         {/* THE composer — one on the page, and this is its flow slot.
-            It rides the BOTTOM OF THE VIEWPORT the whole way down and comes to
-            rest here. It briefly moved up into the left column; pinned is what
-            it is meant to be, and what it was.
+            It rides the BOTTOM OF THE VIEWPORT the whole way down, and it is
+            the LAST thing on the page so that "the whole way down" means the
+            footer too. It used to sit above the community band and the footer,
+            which is a slot it REACHES: a sticky box comes to rest when its own
+            flow position scrolls into view, so the composer settled two
+            sections early and the rest of the page scrolled with no way to
+            type. Everything that is not the composer now comes before it.
 
             Two placement rules the sticky depends on, both easy to undo by
             accident. It must be the LAST child of the stack it rides — a sticky
             box is held inside its containing block and pins only while its own
-            flow position is below the viewport — and it must sit OUTSIDE the
-            Reveal above it, whose fade-up is a transform, and a transformed
-            ancestor becomes the containing block for everything positioned
-            inside it (the composer's own popovers included).
+            flow position is below the viewport — and it must sit OUTSIDE any
+            Reveal, whose fade-up is a transform, and a transformed ancestor
+            becomes the containing block for everything positioned inside it
+            (the composer's own popovers included).
 
-            `.hz-dock` in assets/globals.css is the whole pinning rule. */}
+            `.hz-dock` in assets/globals.css is the whole pinning rule, and it
+            carries the ground the page passes behind. */}
         <YStack
           className="hz-dock"
           paddingHorizontal="$4"
@@ -523,27 +547,7 @@ export default function LandingPage() {
             />
           </YStack>
         </YStack>
-
       </YStack>
-
-      {/* ── Community — what people built, linking out to the showcase ── */}
-      <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6" }}>
-        <YStack alignSelf="center" width="100%" maxWidth={672} alignItems="center">
-          <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "$10" }} lineHeight="1.1">
-            Built on Hanzo.
-          </H2>
-          <Paragraph marginTop="$3" fontSize="$3" lineHeight="1.625" color="$color11" textAlign="center" maxWidth={512}>
-            Forks, remixes, and example apps from the community — every entry
-            names the template it came from and who built it.
-          </Paragraph>
-          <Link href="/community"><XStack marginTop="$5" height={44} alignItems="center" gap="$1.5" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$4.5" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color005" }}>
-            <SizableText fontSize="$3" fontWeight="500" color="$color">Explore the community</SizableText>
-          </XStack></Link>
-        </YStack>
-      </YStack>
-
-      <LazySection minHeight={200}><PreFooterCTA /></LazySection>
-      <LazySection minHeight={240}><SiteFooter /></LazySection>
     </YStack>
   );
 }

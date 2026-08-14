@@ -60,9 +60,20 @@ describe("the hero is a sentence beside the product", () => {
     expect(landing).toContain('className="hz-dock"');
     expect(css).toContain(".hz-dock");
 
-    // A sticky box pins only while its own flow position is below the viewport,
-    // so it has to come after the frame it answers for.
-    expect(landing.indexOf("<HeroPreview")).toBeLessThan(landing.indexOf("<BuildComposer"));
+    // A sticky box pins only while its own flow position is below the viewport
+    // — it comes to REST the moment its own slot scrolls in — so the composer
+    // must be the LAST thing on the page. Anything placed after it is page a
+    // visitor scrolls with no way to type: it sat above the community band and
+    // the footer, and settled two sections early, which is silent to the eye
+    // that wrote it and obvious to anyone who scrolls to the bottom.
+    for (const before of [
+      "<HeroPreview",
+      "Built on Hanzo.",
+      "<PreFooterCTA />",
+      "<SiteFooter />",
+    ]) {
+      expect(landing.indexOf(before)).toBeLessThan(landing.indexOf("<BuildComposer"));
+    }
 
     // `100svh` and not `vh`: a phone's URL bar moves the large unit, so the
     // hero would resize under the fold it is supposed to own.
