@@ -16,8 +16,39 @@ logged-in projects logic in `page.tsx`; elevate design only.
   generated app in a rounded frame on desktop AND a phone — that BUILDS
   something the first time it is seen: the composer types a prompt, build lines
   stream, the app appears, two follow-up edits apply, and it publishes to a
-  green Live dot. A replay control re-runs it; touching nothing still leaves a
-  settled, finished frame.
+  green Live dot. Then it builds the NEXT example. A replay control re-runs the
+  current one; touching nothing still leaves a settled, finished frame.
+
+  **A storyline is DATA, and there is ONE renderer.** `STORIES` holds five
+  small apps — a shift board, a front desk, a handbook, a client portal, a
+  Monday digest — each three turns (build, then two edits) over the same body:
+  a name, a heading, three measured rows, a note. A sixth example is an entry
+  in that array and nothing else. It replaced a single hand-authored `VibeApp`,
+  which is the shape that makes a demo show one thing forever; `App` renders any
+  storyline, and `tests/unit/hero-fold.test.ts` fails if a second renderer or a
+  literal name comes back.
+
+  Each one lands on a REAL leaf of the commerce catalog
+  (`api.hanzo.ai/v1/commerce/catalog`, snapshot in `hanzo.ai/lib/data/catalog.json`)
+  — Base and Vector under Data, Agents under AI, IAM under Security, Functions
+  under Compute — and **Base is in every `wire` string**, because every
+  hanzo.app project gets the data plane. That is the through-line, and the test
+  asserts it. No invented product, no number presented as ours: the figures are
+  the demo app's own content.
+
+  **The cycle only runs while it is watched.** The IntersectionObserver keeps
+  observing rather than disconnecting after one play, and `pending` is the
+  storyline waiting for the frame to be on screen — starting at 0, so the FIRST
+  play and every resume-after-a-scroll-away are one mechanism instead of two.
+  Reduced motion never observes at all: settled frame, no animation, no cycling.
+
+  **The link under the frame is the composer's own fill.** It hands the current
+  example's opening prompt to `BuildComposer` through its one handle
+  (`Composer.ask`, the same function a starter chip calls), so the draft appears
+  focused, editable, and sent by the send button or Enter like any typed idea.
+  `app/page.tsx` holds the ref. Do not grow a second way to seed a prompt —
+  `tests/unit/hero-recreate.test.tsx` renders both components wired as the page
+  wires them and clicks the link.
 
   **Drawn in HTML, deliberately — not a film.** A 12s master was tried as a
   full-bleed hero and taken back out: a video crops (one master cannot be both a
@@ -30,11 +61,18 @@ logged-in projects logic in `page.tsx`; elevate design only.
   stale once before.
 
   **It never shows an address.** The frame's strip carries the app's NAME
-  (`const APP`), never `<app>.hanzo.app`: a visitor reading it is already on
+  (`story.name`), never `<app>.hanzo.app`: a visitor reading it is already on
   hanzo.app, so a domain there tells them where they are and puts a URL in front
   of the product it exists to show. `tests/unit/hero-fold.test.ts` pins that,
-  comment-stripped so the rule written above the constant cannot satisfy its own
+  comment-stripped so the rule written above the data cannot satisfy its own
   check.
+
+  **The admission rides the strip, beside the name.** A caption under the frame
+  used to carry it — "Demo · watch the builder build…" — where it said what the
+  picture already showed and edited nothing; a label outside a picture is also
+  the first thing a reader's eye drops. The mono `Demo` tag is IN the address
+  strip now, so it is on screen whenever the app's name is. Deleting the caption
+  without moving the label would have been deleting the honesty.
 
   Honest by construction: the app is a clearly-labelled demo, hand-authored
   here, with no real customer and no metric presented as ours. Everything is
@@ -50,14 +88,16 @@ logged-in projects logic in `page.tsx`; elevate design only.
   `elevation={6}` it replaced compiled to `0 3px 5px rgba(0,0,0,.33)` — present
   in the computed style and invisible to the eye.
 
-  **The composer lives in the left column**, under the subline, and there is
-  exactly one on the page. It used to ride a sticky `.hz-dock` across the foot
-  of the page, which pinned it to the viewport and left the fold reading as
-  copy, a picture, and an unrelated bar at the bottom; on a phone it sat under
-  everything else rather than after the headline. In the column the fold reads
-  as one thought — here is what this does, here is where you say it — and the
-  phone stack falls out for free: headline, composer, product. The dock rule is
-  deleted from `globals.css`; left there it reads as live pinning.
+  **The composer rides the bottom of the viewport** (`.hz-dock`, sticky, the
+  whole rule in `globals.css`) and comes to rest in its flow slot at the foot of
+  the page, and there is exactly one on the page. It spent a release in the
+  hero's left column instead; the dock is what it is and what it went back to,
+  so the offer to type is on screen wherever a visitor has scrolled to — which
+  is also what makes the hero's "build this example" link work from the fold.
+  Two placement rules the sticky depends on, both silent to undo: it must be the
+  LAST child of the stack it rides, and it must sit OUTSIDE the `Reveal` above
+  it, because a transformed ancestor becomes the containing block for everything
+  positioned inside it — the composer's own popovers included.
 
   The hero's own arithmetic lives in `app/page.tsx`: `100svh` so the fold is
   OWNED (small viewport unit — a phone's URL bar moves the large one), and the

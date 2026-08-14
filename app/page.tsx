@@ -1,7 +1,7 @@
 "use client";
 
 import { SizableText, YStack, XStack, H1, Paragraph, H2, H3 } from '@hanzo/ui';
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,7 +14,7 @@ import LazySection from "@/components/landing/lazy-section";
 import { TemplateThumb } from "@/components/template-thumb";
 import { TEMPLATE_SHOTS } from "@/lib/template-shots";
 import { bySpectrum } from "@/lib/template-hues";
-import { BuildComposer, type ComposerMode } from "@/components/build-composer";
+import { BuildComposer, type Composer, type ComposerMode } from "@/components/build-composer";
 import { ProjectThumb } from "@/components/project-thumb";
 
 // Below-the-fold sections: code-split out of the initial bundle and mounted on
@@ -96,6 +96,9 @@ const TYPED = [
 export default function LandingPage() {
   const { login, user } = useUser();
   const router = useRouter();
+  // The page's one composer, reachable from the hero: its "build this example"
+  // link fills the draft here, exactly as a starter chip does.
+  const composer = useRef<Composer>(null);
   const [projects, setProjects] = useState<LandingProject[]>([]);
   // A few real gallery templates surfaced beside the prompt: the bundled
   // snapshot seeds them instantly, then the live catalog (gallery.hanzo.ai)
@@ -279,7 +282,7 @@ export default function LandingPage() {
                 bare of LazySection: the frame runs itself the moment it is seen,
                 and its one job is to already be going. */}
             <YStack alignSelf="center" width="100%" minWidth={0} $lg={{ flex: 1, minWidth: 0 }}>
-              <HeroPreview />
+              <HeroPreview ask={(prompt) => composer.current?.ask(prompt)} />
             </YStack>
           </YStack>
         </YStack>
@@ -512,6 +515,7 @@ export default function LandingPage() {
         >
           <YStack id="build" alignSelf="center" width="100%" maxWidth={672}>
             <BuildComposer
+              ref={composer}
               showPill={false}
               subline={false}
               typewriter={TYPED}

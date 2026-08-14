@@ -36,12 +36,12 @@ describe("the hero is a sentence beside the product", () => {
     const hero = landing.slice(landing.indexOf("── Hero"), landing.indexOf("── Below the fold"));
     expect(hero).toMatch(/\$lg=\{\{ flexDirection: "row"/);
     expect(hero).not.toMatch(/flexDirection="row"/); // never unconditionally
-    expect(hero.indexOf("Describe your app.")).toBeLessThan(hero.indexOf("<HeroPreview />"));
+    expect(hero.indexOf("Describe your app.")).toBeLessThan(hero.indexOf("<HeroPreview"));
   });
 
   it("mounts the product frame exactly once, in the fold", () => {
-    expect(landing.match(/<HeroPreview \/>/g)).toHaveLength(1);
-    expect(landing.indexOf("<HeroPreview />")).toBeLessThan(landing.indexOf("── Below the fold"));
+    expect(landing.match(/<HeroPreview/g)).toHaveLength(1);
+    expect(landing.indexOf("<HeroPreview")).toBeLessThan(landing.indexOf("── Below the fold"));
   });
 
   it("does not put the frame to sleep behind LazySection", () => {
@@ -51,40 +51,72 @@ describe("the hero is a sentence beside the product", () => {
     expect(hero).not.toMatch(/<LazySection\b/);
   });
 
-  it("puts the composer in the column with the sentence it answers", () => {
-    // There is ONE composer on the page and it belongs to the hero's left
-    // column, under the subline — not in a sticky bar across the foot of the
-    // page. That bar is why the fold read as copy, a picture, and an unrelated
-    // strip at the bottom, and on a phone it sat under everything else instead
-    // of after the headline.
-    const hero = landing.slice(landing.indexOf("── Hero"), landing.indexOf("── Below the fold"));
-    expect(hero).toContain("<BuildComposer");
+  it("keeps ONE composer, riding the bottom of the viewport", () => {
+    // The composer pins to the foot of the screen the whole way down and comes
+    // to rest in its own flow slot at the end of the page, so the offer to type
+    // is never off screen. `.hz-dock` is the whole pinning rule and it takes
+    // both halves — the class here and the rule there.
     expect(landing.match(/<BuildComposer/g)).toHaveLength(1);
-    expect(hero.indexOf("One prompt becomes a live app")).toBeLessThan(hero.indexOf("<BuildComposer"));
-    expect(hero.indexOf("<BuildComposer")).toBeLessThan(hero.indexOf("<HeroPreview />"));
+    expect(landing).toContain('className="hz-dock"');
+    expect(css).toContain(".hz-dock");
 
-    // The dock is gone from BOTH sides. Left in the stylesheet it is dead
-    // weight that reads as live pinning.
-    expect(landing).not.toContain("hz-dock");
-    expect(css).not.toContain(".hz-dock");
+    // A sticky box pins only while its own flow position is below the viewport,
+    // so it has to come after the frame it answers for.
+    expect(landing.indexOf("<HeroPreview")).toBeLessThan(landing.indexOf("<BuildComposer"));
 
     // `100svh` and not `vh`: a phone's URL bar moves the large unit, so the
     // hero would resize under the fold it is supposed to own.
+    const hero = landing.slice(landing.indexOf("── Hero"), landing.indexOf("── Below the fold"));
     expect(hero).toMatch(/minHeight="100svh"/);
   });
 
   it("shows the product, and never the address of the page you are on", () => {
     // A visitor reading this is already on hanzo.app. An "<app>.hanzo.app" in
     // the frame's address strip is the site telling them where they are, and it
-    // puts a domain in front of the product it exists to show.
+    // puts a domain in front of the product it exists to show. What the strip
+    // carries is the demo app's NAME, which now comes from the storyline
+    // playing rather than from a constant.
     //
     // Measured against the code that RENDERS, with comments stripped: the rule
-    // is written down a few lines above the constant it governs, and a check
-    // that reads prose fails on its own explanation.
+    // is written down a few lines above the data it governs, and a check that
+    // reads prose fails on its own explanation.
     const code = frame.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
     expect(code).not.toContain("hanzo.app");
     expect(code).not.toContain("your-app");
-    expect(code).toContain('const APP = "Vibe Check"');
+    expect(code).toContain("{story.name}");
+  });
+
+  it("cycles several examples through ONE renderer", () => {
+    const code = frame.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+
+    // A storyline is DATA. Adding a sixth example must be an entry in STORIES
+    // and nothing else — the hand-authored demo app it replaced was a component
+    // per example, which is how a demo comes to show one thing forever.
+    expect(code).toContain("const STORIES: readonly Story[]");
+    expect(code.match(/function App\(/g)).toHaveLength(1);
+    expect(code.match(/<App story=\{story\}/g)).toHaveLength(2); // desktop + phone
+
+    const wires = code.match(/wire: "[^"]+"/g) ?? [];
+    expect(wires.length).toBeGreaterThanOrEqual(4);
+    // Base is the through-line: every hanzo.app project gets the data plane, so
+    // every example says so, and each one lands on a further real primitive.
+    for (const wire of wires) expect(wire).toContain("Base");
+
+    // Finishing an example starts the next, and a frame nobody is looking at
+    // parks instead of playing to an empty room.
+    expect(code).toMatch(/run\(i \+ 1\)/);
+    expect(code).toContain("pending.current");
+  });
+
+  it("carries the honesty INSIDE the picture, and offers to build it", () => {
+    // The caption under the frame said what the picture already showed and
+    // edited nothing; the "Demo" tag rides the address strip instead, beside
+    // the app's name. The link that replaced the caption does the one thing a
+    // caption cannot: it hands the example's prompt to the page's composer
+    // (behaviour pinned in tests/unit/hero-recreate.test.tsx).
+    expect(frame).not.toContain("watch the builder build");
+    expect(frame).toContain(">Demo</SizableText>");
+    expect(frame).toContain("ask(story.steps[0].prompt)");
   });
 
   it("draws the frame in HTML, so it is sharp at every width", () => {

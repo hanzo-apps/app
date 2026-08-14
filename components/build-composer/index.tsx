@@ -20,7 +20,7 @@ import { YStack, H1, XStack, SizableText, Paragraph } from '@hanzo/ui';
 // same way it drops the GuiElement type. Tracked; everything else in this
 // file comes from @hanzo/ui.
 import { Anchor } from '@hanzo/gui';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { EVENTS } from '@hanzo/event';
 import { useAnalytics } from '@hanzo/event/react';
@@ -47,6 +47,16 @@ import { start } from '@/lib/dev/starter';
 
 export type ComposerMode = 'build' | 'plan';
 
+/**
+ * What the page can do to this composer from outside: put an idea in it.
+ *
+ * `ask` is the starter chips' own fill — the draft appears focused, to be read
+ * and edited, then sent by the same send button and Enter a typed idea uses.
+ * The hero's "build this example" link reaches it through this handle rather
+ * than growing a second way to seed a prompt.
+ */
+export type Composer = { ask(text: string): void };
+
 // A spreadsheet gets the table, a picture the frame, a container we cannot open
 // the clip. Everything else we can read is a page.
 const mark = (read: Read, name: string) =>
@@ -72,12 +82,15 @@ export function BuildComposer({
   typewriter,
   starters,
   subline = true,
+  ref,
 }: {
   greetingName?: string;
   showPill?: boolean;
   autoFocus?: boolean;
   className?: string;
   onSubmit?: (text: string, mode: ComposerMode) => void;
+  /** Hand the page the `ask` above. */
+  ref?: React.Ref<Composer>;
   /** Idle typewriter phrases completing "Ask Hanzo to build …" (landing hero). */
   typewriter?: string[];
   /** Starter prompts rendered as pills under the bubble; clicking submits. */
@@ -144,10 +157,15 @@ export function BuildComposer({
   // A starter/crawl chip FILLS the composer — it does not submit. The draft
   // appears so it can be read and edited, then sent with the send button or
   // Enter. (A moving chip is hard to "submit" by tap; filling is the fix.)
-  const fillIdea = (s: string) => {
+  // Focus does the scrolling: a browser brings a focused field into view, so
+  // this is also how a caller elsewhere on the page reaches the composer.
+  const ask = (s: string) => {
     setIdea(s);
     textareaRef.current?.focus();
   };
+  // Both refs it closes over are stable, so the handle is made once.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useImperativeHandle(ref, () => ({ ask }), []);
 
   // Hold the crawl still around a press. Hover pauses it for a pointer and a
   // touch has no hover, so the chip a thumb aimed at keeps sliding: the press
@@ -644,7 +662,7 @@ export function BuildComposer({
       {/* Starter prompts — honest app types, as ONE continuous "news crawl"
           (the .hz-crawl marquee in globals.css): the set is rendered twice and
           the track translates exactly one copy, so the loop never seams.
-          Clicking one fills the draft (`fillIdea`) so it can be read and edited
+          Clicking one fills the draft (`ask`) so it can be read and edited
           before it is sent, by the same send button and Enter a typed idea uses.
           Hover, focus and a press each hold the crawl still so a moving chip can
           be caught; the second copy is decorative (aria-hidden). */}
@@ -664,14 +682,14 @@ export function BuildComposer({
                     <SizableText
                       key={`${copy}-${s}`}
                       {...(clone ? {} : { role: "button", tabIndex: 0 })}
-                      onClick={() => fillIdea(s)}
+                      onClick={() => ask(s)}
                       onKeyDown={
                         clone
                           ? undefined
                           : (e) => {
                               if (e.key === "Enter" || e.key === " ") {
                                 e.preventDefault();
-                                fillIdea(s);
+                                ask(s);
                               }
                             }
                       }
