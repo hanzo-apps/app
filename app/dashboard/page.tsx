@@ -1,5 +1,6 @@
 "use client";
 
+import { firstName } from "@/lib/greeting";
 import { LoadingScreen } from "@/components/ui/loading-screen";
 import { XStack, SizableText, Paragraph, YStack, Image, H3 } from '@hanzo/ui';
 // `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
@@ -107,7 +108,9 @@ export default function DashboardPage() {
     );
   }
 
-  const greetingName = user.fullname || user.name || "there";
+  // The name a person answers to, not their record: "Ready to build, Zach?" —
+  // never "Zach Kelling?", which is how a database addresses a row.
+  const greetingName = firstName(user.fullname || user.name) || "there";
 
   return (
     // No title: the dashboard is a canvas page, so it owns its own hero rather
