@@ -6,49 +6,40 @@ const ROOT = join(__dirname, "..", "..");
 /**
  * Appearance density must keep moving the chrome.
  *
- * @hanzo/ui ships a NUMERIC gui space scale, so `--density` (written by the
- * Appearance panel) reaches nothing — every padding is baked px. A pnpm patch
- * rewrites the space tokens to `calc(Npx * var(--density,1))` so the knob works
- * (a no-op at density=1, proven live: setting --density=1.15 must move a gui
- * button's padding 12→13.8px). This patch is the ONLY thing keeping density a
- * live control rather than a UI lie — a @hanzo/ui bump that drops it, or a
- * "cleanup" that deletes it, silently reverts density to dead with nothing else
- * catching it. This guards the whole chain: pinned in package.json AND the patch
- * still makes the space scale density-aware.
+ * gui renders spacing as atomic classes (`_pl-c-space-3`) that read
+ * `var(--c-space-N)`. If those are baked px, `--density` — the value the
+ * Appearance panel writes — reaches nothing, and the control is a UI lie: the
+ * slider moves, the number changes, the page does not.
  *
- * The right home is @hanzo/ui/gui-config.ts (upstream when #113 unblocks); until
- * then the patch carries it. On a @hanzo/ui bump: RE-APPLY the patch and update
- * the pin — do not just delete this test.
+ * This guards the GUARANTEE, not the mechanism. It used to assert that a pnpm
+ * patch existed and that the patch contained particular lines, because that is
+ * how the multiplier got in. @hanzo/ui 8.0.76 does it in `gui-config` upstream,
+ * so the patch is gone — and a test written against the mechanism failed the
+ * build for a change that IMPROVED it, while the thing worth protecting was
+ * never in question. Asserting the artifact instead means the multiplier can
+ * arrive from a patch, from the package, or from anywhere later, and this still
+ * bites the day it stops arriving.
+ *
+ * The artifact is `app/gui.css`, which is GENERATED from the config by
+ * scripts/gen-gui-css.mjs. Regenerate it after any gui or config change: the
+ * config alone is inert, which is exactly how density looked dead the first
+ * time. Verified live — density 1.5 moves a gui gap 8→12px.
  */
-describe("appearance: density stays wired through the @hanzo/ui space patch", () => {
-  const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8")) as {
-    pnpm?: { patchedDependencies?: Record<string, string> };
-  };
-  const patched = pkg.pnpm?.patchedDependencies ?? {};
-  const entry = Object.entries(patched).find(([k]) => k.startsWith("@hanzo/ui@"));
+describe("appearance: density stays wired through the gui space scale", () => {
+  const css = readFileSync(join(ROOT, "app/gui.css"), "utf8");
 
-  it("package.json pins a @hanzo/ui patch", () => {
-    expect(entry).toBeDefined();
-  });
-
-  it("the patch makes the gui space scale density-aware (positive, negative, $true)", () => {
-    const patch = readFileSync(join(ROOT, entry![1]), "utf8");
-    expect(patch).toContain("space[`$${k}`] = `calc(${v}px * var(--density, 1))`");
-    expect(patch).toContain("space[`-${k}`] = `calc(${-v}px * var(--density, 1))`");
-    expect(patch).toContain("space.$true = `calc(${STEP['4']}px * var(--density, 1))`");
-  });
-
-  // The patch only matters once it reaches the APPLIED sheet. gui renders spacing
-  // as atomic classes (`_pl-c-space-3`) that read `var(--c-space-N)`, and those
-  // vars live in app/gui.css — regenerated from the config by scripts/gen-gui-css.mjs.
-  // The config patch is INERT until gui.css is regenerated (the bug that made
-  // density look dead the first time). This asserts the real artifact: the
-  // `--c-space-N` ramp multiplies by --density. Verified live — density 1.5
-  // moves a gui gap 8→12px. Regenerate gui.css after ANY gui/config change.
-  it("app/gui.css space vars are density-aware — the knob actually moves the chrome", () => {
-    const css = readFileSync(join(ROOT, "app/gui.css"), "utf8");
+  it("the space ramp multiplies by --density, at every rung", () => {
     expect(css).toContain("--c-space-1:calc(4px * var(--density, 1))");
     const rungs = css.match(/--c-space-\d+:calc\([0-9.]+px \* var\(--density/g) || [];
     expect(rungs.length).toBeGreaterThanOrEqual(10);
+  });
+
+  it("negative space tracks it too, or gaps and offsets drift apart", () => {
+    const neg = css.match(/--c-space--\d+:calc\(-?[0-9.]+px \* var\(--density/g) || [];
+    expect(neg.length).toBeGreaterThan(0);
+  });
+
+  it("defaults to 1, so an app that never writes --density is unchanged", () => {
+    expect(css).toContain("var(--density, 1)");
   });
 });
