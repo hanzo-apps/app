@@ -31,9 +31,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@hanzo/ui";
+import { PrimaryButton } from "@hanzo/ui/product";
 import { HeaderSearch } from "@/components/layout/header-search";
 import { useUser } from "@/hooks/useUser";
-import { accent } from "@/lib/chrome";
 
 export default function Header() {
   const { user, isAuthenticated, login, logout } = useUser();
@@ -95,21 +95,22 @@ export default function Header() {
   // as equals, which is the opposite of what a header should say: one action,
   // one weight.
   //
-  // It stays `accent`, and the colour is NOT decided here. Reaching for a white
-  // fill by hand was tried and is wrong twice over, both pinned by tests: a
-  // Button in this shell must carry a variant or `accent`
-  // (ui-centralization), and re-spelling a foreground on an accent label is
-  // exactly how login-modal ended up at 1.07:1 and invisible
-  // (signed-out-emphasis). `accent` carries its own label colour; naming one is
-  // how that goes silent.
+  // It is WHITE, and `PrimaryButton` is what makes it white.
   //
-  // So if the primary should be white, `accent` is where white belongs — ONE
-  // recipe in @hanzo/ui/glass, and then every signed-out surface agrees at once
-  // instead of this header disagreeing with the other four.
+  // `accent` is `$color5` — a raised neutral, right for a secondary action and
+  // too quiet for the one thing we want a visitor to do. hanzo.ai and
+  // cloud.hanzo.ai both put a white pill in this slot; this header was the odd
+  // one out. Spelling white here instead would break two rules the tests hold: a
+  // Button in this shell carries a variant or a recipe (ui-centralization), and
+  // re-spelling a foreground on a filled label is exactly how login-modal reached
+  // 1.07:1 and went invisible (signed-out-emphasis).
+  //
+  // `PrimaryButton` is that recipe, already published, and already described as
+  // "the one white, high-emphasis action … sign in, save, get started": it flips
+  // the control to `theme="light"`, so the fill and its label move TOGETHER —
+  // white ground, near-black label — with no colour named at this call site.
   const signedOutCTAs = (
-    <Button onClick={getStarted} {...accent}>
-      Get started
-    </Button>
+    <PrimaryButton onClick={getStarted}>Get started</PrimaryButton>
   );
 
   // The registry surface with THIS surface's nav as DATA (never a fork). The
@@ -121,12 +122,14 @@ export default function Header() {
   // No `productsTaxonomy`: the ten-category cloud mega-menu belongs to the cloud
   // surfaces. This one gets the flat nav plus the universal Meet Hanzo menu.
   const surface = resolveSurface("hanzo.app");
+  // THREE, not five. Pricing and Help are gone from the bar: pricing is a row in
+  // the Meet Hanzo menu and a section of /features, and Help is a support link,
+  // not a peer of what the product does. Five flat words spent the bar's width on
+  // the two nobody arrives for.
   const nav = [
     { id: "features", label: "Features", href: "/features" },
-    { id: "pricing", label: "Pricing", href: "/pricing" },
     { id: "resources", label: "Resources", href: "/templates" },
     { id: "solutions", label: "Solutions", href: "/enterprise" },
-    { id: "help", label: "Help", href: "/help" },
   ];
 
   // `primaryCTA` is overridden for the same reason `localNav` is: the shared
