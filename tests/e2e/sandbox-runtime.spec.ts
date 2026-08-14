@@ -138,7 +138,25 @@ async function run(page: Page, prompt: string, sandbox: object): Promise<Record<
   return body as Record<string, unknown>;
 }
 
-test.describe('the sandbox runtime is a choice, and an honest one', () => {
+/**
+ * SKIPPED FOR THE SAME REASON AS live-run.spec.ts: the runtime is a choice
+ * nothing can currently make.
+ *
+ * `openComposer` waits on the composer's `code` button, and the composer offers
+ * only Build and Plan — `components/editor/ask-ai/index.tsx` pins `isCode`
+ * false, closing the only path to `codeTurn` and to the POST /v1/agents/runs
+ * these tests read the `runtime` field off. The picker itself is still correct:
+ * every testid and every line of copy asserted below is present in
+ * `components/editor/ask-ai/settings.tsx`. It simply has no reachable trigger,
+ * and no UI action can put a run on the wire to carry the choice.
+ *
+ * Restore a control that selects Code mode and this suite runs as written. Two
+ * locators will need their names refreshed with it — the Mode control is a
+ * dropdown labelled `Mode: <mode>` rather than a pressed `code` button, and
+ * Settings is now the `Model: <model>` chip — but those are labels, not
+ * assertions, and none of what this file actually proves has been softened.
+ */
+test.describe.skip('the sandbox runtime is a choice, and an honest one', () => {
   test.describe.configure({ mode: 'serial', timeout: 180_000 });
   // A window the height of a laptop's, not Playwright's 720. The popover opens
   // UPWARD from a trigger that sits at the bottom of the screen, so how much of

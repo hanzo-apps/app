@@ -192,7 +192,29 @@ async function startRun(page: Page) {
   await page.getByRole('separator').first().click();
 }
 
-test.describe('watching a run', () => {
+/**
+ * SKIPPED BECAUSE THE DOOR IS SHUT, NOT BECAUSE THE TEST IS WRONG.
+ *
+ * Every assertion below describes Code mode: the agent works in the project's
+ * sandbox and its commands stream into the console dock. The composer no longer
+ * offers that mode — `components/editor/ask-ai/index.tsx` narrows the stored
+ * value to build | plan and pins `isCode` false, so the branch that calls
+ * `codeTurn` (and through it the only browser-side POST /v1/agents/runs) cannot
+ * be reached from any control. Writing 'code' into localStorage, as the setup
+ * below does, no longer survives that narrowing.
+ *
+ * So these tests time out waiting for output that nothing can produce. That is
+ * worth saying rather than hiding: `codeTurn`, `startAgentRun`, the runtime
+ * picker and the console dock's live wiring are still in the tree, now
+ * unreachable. The comment beside `isCode` records the removal as deliberate —
+ * the ask was to remove the BUTTON — and deleting the machinery is a call the
+ * owner has not made.
+ *
+ * Nothing here is weakened, and nothing is deleted: restore a control that sets
+ * mode to 'code' and this suite runs again as written. If instead the machinery
+ * goes, this file goes with it.
+ */
+test.describe.skip('watching a run', () => {
   test.beforeEach(async ({ page, context, baseURL }) => {
     const url = new URL(baseURL ?? 'http://localhost:3210');
     // `middleware.ts` only checks that a session cookie EXISTS before /dev
