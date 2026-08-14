@@ -30,6 +30,71 @@ export const runtime = 'nodejs';
 /** Project ids are slugs — reject anything that could escape the data dir. */
 const SAFE_ID = /^[a-z0-9][a-z0-9_-]{0,63}$/i;
 
+/**
+ * GET /v1/provision?projectId= — read back what POST stamped.
+ *
+ * The marker rows ARE the record of provisioning, so this reports them and
+ * nothing else. It never opens a connection the way POST does: opening CREATES
+ * the store, which would make asking the question change the answer — every
+ * unprovisioned project would read as provisioned the moment someone looked. So
+ * an absent file is reported as absent.
+ *
+ * `null` means NOT KNOWN and is distinct from `false`, in every field. A store
+ * that exists but carries no marker (created by the app before provisioning, or
+ * by an older build) knows nothing about analytics. And a project id the store
+ * layer cannot address at all — it names its files by the storage id, which is
+ * hex, while a project is also known by its slug — cannot be LOOKED UP, which is
+ * not the same as being absent. Both report null and the caller draws a dash.
+ */
+export async function GET(req: NextRequest) {
+  const scope = await resolveScope(req);
+  if (!scope) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const projectId = (req.nextUrl.searchParams.get('projectId') || '').trim();
+  if (!SAFE_ID.test(projectId)) {
+    return NextResponse.json({ error: 'invalid projectId' }, { status: 400 });
+  }
+
+  const unknown = { projectId, base: null, analytics: null, provisionedAt: null, org: null };
+
+  const { projectDatabaseExists, getProjectDatabaseConnection } = await import(
+    '@/lib/vfs/adapters/sqlite-connection'
+  );
+
+  // The store REFUSES an id it cannot turn into a path, by throwing. That is the
+  // question being unanswerable, so it is answered with nulls rather than with a
+  // 500 (which says the server broke) or a false (which says "not provisioned",
+  // a claim about the project that nothing established).
+  let exists: boolean;
+  try {
+    exists = projectDatabaseExists(projectId);
+  } catch {
+    return NextResponse.json(unknown);
+  }
+  if (!exists) {
+    return NextResponse.json({ ...unknown, base: false });
+  }
+
+  let marker: Record<string, string> = {};
+  try {
+    const rows = getProjectDatabaseConnection(projectId)
+      .prepare('SELECT key, value FROM _hanzo_app_meta')
+      .all() as Array<{ key: string; value: string }>;
+    marker = Object.fromEntries(rows.map((r) => [r.key, r.value]));
+  } catch {
+    // The store exists but carries no marker table — Base is real, the rest is
+    // unknown. Reported as such below; nothing is inferred from the absence.
+  }
+
+  return NextResponse.json({
+    projectId,
+    base: true,
+    analytics: 'analytics_enabled' in marker ? marker.analytics_enabled === '1' : null,
+    provisionedAt: marker.provisioned_at ?? null,
+    org: marker.provisioned_org || null,
+  });
+}
+
 export async function POST(req: NextRequest) {
   const csrf = requireSameOrigin(req);
   if (csrf) return csrf;

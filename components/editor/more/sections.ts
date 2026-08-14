@@ -23,19 +23,20 @@ import {
  * render nothing when clicked — the failure that makes a settings screen feel
  * broken rather than incomplete.
  *
- * `where` is the surface that ANSWERS the section, and it is the honest part.
- * A section with a `where` reads real state from a real endpoint. A section
- * without one is named, reachable, and says plainly that it is not connected
- * yet — because a settings pane that renders a convincing empty dashboard over
- * nothing is worse than one that admits the gap: the first teaches you to
- * distrust every number on the screen.
+ * A row is either READ or it is not connected, and nothing in between. Every
+ * section here except Security and SEO has a reader in `./index` that goes to a
+ * live surface; those two say plainly that nothing answers them. There is no
+ * third state announcing an endpoint nobody drew, because a settings pane that
+ * describes what it would show teaches you to distrust what it does show.
+ *
+ * Each reader names its own endpoint where it renders it — a hint under a table,
+ * the way every Hanzo product surface does it. Declaring the path here as well
+ * would be a second copy free to drift from the fetch that actually runs.
  */
 export interface Section {
   id: string;
   label: string;
   icon: typeof Cloud;
-  /** The BFF path that backs it. Absent = named but not connected yet. */
-  where?: string;
   /** One line: what this section is for. Shown as the pane's lede. */
   blurb: string;
   /** Nested rows, for a section that is really a group (Cloud). */
@@ -47,7 +48,6 @@ export const SECTIONS: Section[] = [
     id: 'analytics',
     label: 'Analytics',
     icon: LineChart,
-    where: '/v1/analytics',
     blurb: 'Traffic to your published app — visitors, pages, sources and devices.',
   },
   {
@@ -60,46 +60,42 @@ export const SECTIONS: Section[] = [
         id: 'cloud-overview',
         label: 'Overview',
         icon: Gauge,
-        where: '/v1/provision',
         blurb: 'What is provisioned for this project, and what is still to come.',
       },
       {
         id: 'cloud-database',
         label: 'Database',
         icon: Database,
-        where: '/v1/base',
         blurb: 'Hanzo Base — the data door your app reads and writes, proven live.',
       },
       {
         id: 'cloud-users',
         label: 'Users',
         icon: Users,
-        blurb: 'Sign-in for your app, on Hanzo IAM. Not connected yet.',
+        blurb: 'Everyone who can sign in to this workspace, on Hanzo IAM.',
       },
       {
         id: 'cloud-storage',
         label: 'Storage',
         icon: FolderOpen,
-        blurb: 'Files, images and documents your app uploads. Not connected yet.',
+        blurb: 'Buckets your app stores files, images and documents in.',
       },
       {
         id: 'cloud-secrets',
         label: 'Secrets',
         icon: KeyRound,
-        blurb: 'API keys and credentials, held in Hanzo KMS. Not connected yet.',
+        blurb: 'API keys and credentials held in Hanzo KMS — names only, never a value.',
       },
       {
         id: 'cloud-logs',
         label: 'Logs',
         icon: FileClock,
-        where: '/v1/o11y',
         blurb: 'What your app did, and what went wrong.',
       },
       {
         id: 'cloud-usage',
         label: 'Usage',
         icon: Activity,
-        where: '/v1/usage',
         blurb: 'What this project has consumed, and what it costs.',
       },
     ],
@@ -108,28 +104,24 @@ export const SECTIONS: Section[] = [
     id: 'ai',
     label: 'AI',
     icon: Sparkles,
-    where: '/v1/models',
     blurb: 'The models this project can call, and which one it calls by default.',
   },
   {
     id: 'agents',
     label: 'Agent integrations',
     icon: Boxes,
-    where: '/v1/mcp',
     blurb: 'MCP servers and tools your app can hand to an agent.',
   },
   {
     id: 'payments',
     label: 'Payments',
     icon: CreditCard,
-    where: '/v1/commerce',
     blurb: 'Take money in your app — the real catalog, checkout and orders from commerce.',
   },
   {
     id: 'connectors',
     label: 'Connectors',
     icon: Plug,
-    where: '/v1/connectors',
     blurb: 'Third-party services this workspace has connected — any project can use them.',
   },
   {
