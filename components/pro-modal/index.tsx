@@ -42,34 +42,34 @@ export const ProModal = ({
             </XStack>
           </XStack>
           <H2 fontSize="$8" fontWeight="500" color="$color">
-            Only $9 to enhance your possibilities
+            You&apos;ve run out for this month
           </H2>
           <Paragraph color="$color11" fontSize="$4" marginTop="$2" maxWidth={384}>
-            It seems like you have reached the monthly free limit of Hanzo.
+            You have used this month&apos;s AI allowance. Building and editing here
+            draws on it, and it is spent.
           </Paragraph>
           <Separator borderColor="$borderColor" width="100%" maxWidth={150} marginVertical="$5" />
           <Paragraph fontSize="$6" marginTop="$3" color="$color" fontWeight="500">
-            Upgrade to a <ProTag /> Account, and unlock your
-            Hanzo high quota access ⚡
+            A <ProTag /> plan raises the allowance.
           </Paragraph>
           <YStack marginTop="$3" rowGap="$1">
             <SizableText fontSize="$3" color="$color11" marginBottom="$3">
-              You&apos;ll also unlock PRO features, like:
+              What a paid plan changes
             </SizableText>
             <XStack alignItems="center" justifyContent="flex-start" gap="$2" columnGap="$2">
               <CheckCheck size={16} color="var(--brand-accent-muted)" />
-              <SizableText fontSize="$3" color="$color11">Get acces to thousands of AI app (ZeroGPU) with high quota</SizableText>
+              <SizableText fontSize="$3" color="$color11">A larger monthly allowance, drawn from one pool</SizableText>
             </XStack>
             <XStack alignItems="center" justifyContent="flex-start" gap="$2" columnGap="$2">
               <CheckCheck size={16} color="var(--brand-accent-muted)" />
-              <SizableText fontSize="$3" color="$color11">Get exclusive early access to new features and updates</SizableText>
+              <SizableText fontSize="$3" color="$color11">The same allowance covers the builder, Hanzo Chat and the API</SizableText>
             </XStack>
             <XStack alignItems="center" justifyContent="flex-start" gap="$2" columnGap="$2">
               <CheckCheck size={16} color="var(--brand-accent-muted)" />
-              <SizableText fontSize="$3" color="$color11">Get free credits across all Inference Providers</SizableText>
+              <SizableText fontSize="$3" color="$color11">Month to month — change tier or cancel from billing settings</SizableText>
             </XStack>
             <SizableText fontSize="$3" color="$color11" marginTop="$3">
-              ... and lots more!
+              Hosting your published apps on Hanzo Cloud is included either way.
             </SizableText>
           </YStack>
           {/* Sole action of the modal, so it is the loud one. Unnamed, it
@@ -82,7 +82,7 @@ export const ProModal = ({
             width="100%" height={44} marginTop="$6"
             onClick={handleProClick}
           >
-            Subscribe to PRO ($9/month)
+            See the plans
           </Button>
         </YStack>
       </DialogContent>

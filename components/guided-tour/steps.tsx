@@ -9,7 +9,7 @@ export const GUIDED_TOUR_STEPS: GuidedTourStepContent[] = [
     title: 'Welcome to Hanzo App',
     body: (
       <YStack rowGap="$2">
-        <Paragraph fontSize="$3" color="$color11">Let's take a guided tour of the workspace so you can see how projects, agents, and saves all fit together.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">This tour walks through the workspace: where projects live, how the agent works, and what saving does.</Paragraph>
         <Paragraph fontSize="$3" color="$color11">The tour takes under two minutes and you can skip at any time.</Paragraph>
       </YStack>
     ),
@@ -19,11 +19,11 @@ export const GUIDED_TOUR_STEPS: GuidedTourStepContent[] = [
   },
   {
     id: 'projects-overview',
-    title: 'Projects at a Glance',
+    title: 'Your projects',
     body: (
       <YStack rowGap="$2">
-        <Paragraph fontSize="$3" color="$color11">This is your project gallery. Recent work appears here with quick actions for opening, duplicating, or exporting.</Paragraph>
-        <Paragraph fontSize="$3" color="$color11">I've loaded a demo project so you can explore without setting anything up.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">This is where your projects live. Recent work shows up here, with actions to open, duplicate or export it.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">A demo project is already loaded, so there is nothing to set up first.</Paragraph>
       </YStack>
     ),
     location: 'project-manager',
@@ -34,10 +34,10 @@ export const GUIDED_TOUR_STEPS: GuidedTourStepContent[] = [
   },
   {
     id: 'create-project',
-    title: 'Creating a Project',
+    title: 'Making a project',
     body: (
       <YStack rowGap="$2">
-        <Paragraph fontSize="$3" color="$color11">Use the New Project button to start fresh. The dialog lets you name the project and add an optional description.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">New Project starts an empty one. Give it a name, and a description if you want one.</Paragraph>
       </YStack>
     ),
     location: 'project-manager',
@@ -48,10 +48,10 @@ export const GUIDED_TOUR_STEPS: GuidedTourStepContent[] = [
   },
   {
     id: 'project-controls',
-    title: 'Exporting a Project',
+    title: 'Exporting a project',
     body: (
       <YStack rowGap="$2">
-        <Paragraph fontSize="$3" color="$color11">Click the dropdown menu on any project card to access export options. You can export as a ZIP for deployment or JSON for backup.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">The menu on any project card exports it: ZIP to deploy somewhere else, JSON to keep a backup.</Paragraph>
         <Paragraph fontSize="$3" color="$color11">Projects can also be duplicated or deleted from this menu.</Paragraph>
       </YStack>
     ),
@@ -63,10 +63,10 @@ export const GUIDED_TOUR_STEPS: GuidedTourStepContent[] = [
   },
   {
     id: 'edit-project',
-    title: 'Editing a Project',
+    title: 'Opening a project',
     body: (
       <YStack rowGap="$2">
-        <Paragraph fontSize="$3" color="$color11">To get to the workspace and start editing, simply click on the project card. This will open the full development environment.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">Click a project card to open the workspace, where the editor, the preview and the agent all sit together.</Paragraph>
         <Paragraph fontSize="$3" color="$color11">Click Next to enter the workspace and continue the tour.</Paragraph>
       </YStack>
     ),
@@ -78,11 +78,11 @@ export const GUIDED_TOUR_STEPS: GuidedTourStepContent[] = [
   },
   {
     id: 'workspace-overview',
-    title: 'Workspace Layout',
+    title: 'The workspace',
     body: (
       <YStack rowGap="$2">
-        <Paragraph fontSize="$3" color="$color11">The workspace has four main areas: the assistant conversation, the virtual file explorer, your editor tabs, and the live preview.</Paragraph>
-        <Paragraph fontSize="$3" color="$color11">The VFS works like a project file tree—add HTML, CSS, JS, or assets and the agent can edit them just like local files.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">The workspace holds the agent conversation, the file explorer, your editor tabs, and the live preview.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">The file explorer works like a project tree. Add HTML, CSS, JS or assets and the agent edits them the same way it edits anything else.</Paragraph>
       </YStack>
     ),
     location: 'workspace',
@@ -93,11 +93,11 @@ export const GUIDED_TOUR_STEPS: GuidedTourStepContent[] = [
   },
   {
     id: 'workspace-edit',
-    title: 'See the Agent in Action',
+    title: 'Watch the agent work',
     body: (
       <YStack rowGap="$2">
-        <Paragraph fontSize="$3" color="$color11">I'll request the agent to change the color of "Our Services" button to a green accent and the agent performs the task.</Paragraph>
-        <Paragraph fontSize="$3" color="$color11">This mimics what you will see when asking the agent to perform tasks.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">The tour asks the agent to change the "Our Services" button to a green accent, and the agent does it.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">This is what any request to the agent looks like.</Paragraph>
       </YStack>
     ),
     location: 'workspace',
@@ -108,11 +108,11 @@ export const GUIDED_TOUR_STEPS: GuidedTourStepContent[] = [
   },
   {
     id: 'workspace-focus',
-    title: 'Element Focus Tool',
+    title: 'Pointing at an element',
     body: (
       <YStack rowGap="$2">
-        <Paragraph fontSize="$3" color="$color11">The crosshair tool in the preview panel lets you select and focus on specific elements in your design.</Paragraph>
-        <Paragraph fontSize="$3" color="$color11">Click it to activate element selection mode, then click any element in the preview to highlight it.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">The crosshair in the preview panel picks out one element, so a request can name the thing you mean instead of describing it.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">Click the crosshair, then click any element in the preview to select it.</Paragraph>
       </YStack>
     ),
     location: 'workspace',
@@ -123,11 +123,11 @@ export const GUIDED_TOUR_STEPS: GuidedTourStepContent[] = [
   },
   {
     id: 'workspace-checkpoint',
-    title: 'Checkpoints & Manual Saves',
+    title: 'Checkpoints and saves',
     body: (
       <YStack rowGap="$2">
-        <Paragraph fontSize="$3" color="$color11">The "Discard Changes" button restores to the original saved point, letting you revert any changes back to your last manual save.</Paragraph>
-        <Paragraph fontSize="$3" color="$color11">If you like the result, use the Save button to lock it in as your manual checkpoint.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">Discard Changes puts the project back to your last save, whatever the agent has done since.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">If you like where it got to, Save makes that the point it goes back to next time.</Paragraph>
       </YStack>
     ),
     location: 'workspace',
@@ -138,11 +138,11 @@ export const GUIDED_TOUR_STEPS: GuidedTourStepContent[] = [
   },
   {
     id: 'clear-conversation',
-    title: 'Clear Conversation',
+    title: 'Clearing the conversation',
     body: (
       <YStack rowGap="$2">
-        <Paragraph fontSize="$3" color="$color11">The agent will have the last tasks and responses in memory. You can clear it with the trashcan button to start fresh.</Paragraph>
-        <Paragraph fontSize="$3" color="$color11">This removes the conversation history but keeps your project files intact.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">The agent keeps the recent tasks and replies in memory. The trash button clears them.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">That removes the conversation only. Your project files are untouched.</Paragraph>
       </YStack>
     ),
     location: 'workspace',
@@ -153,13 +153,13 @@ export const GUIDED_TOUR_STEPS: GuidedTourStepContent[] = [
   },
   {
     id: 'provider-settings',
-    title: 'Connect Your Provider',
+    title: 'Connect a provider',
     body: (
       <YStack rowGap="$2">
-        <Paragraph fontSize="$3" color="$color11">Set your API key under Settings → Provider. I recommend trying OpenRouter with the <code>gpt-oss-120b</code> model, but you can use any supported provider.</Paragraph>
-        <Paragraph fontSize="$3" color="$color11">You can return here anytime from the header menu.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">Set your API key under Settings → Provider. OpenRouter with the <code>gpt-oss-120b</code> model is a reasonable starting point, and any supported provider works.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">The header menu brings you back here whenever you want to change it.</Paragraph>
         <Paragraph fontSize="$1" color="$orange9">
-          Privacy note: Remote LLM providers (OpenAI, Anthropic, etc.) will receive your code when generating. For complete privacy, use local models with Ollama or LM Studio.
+          A remote provider — OpenAI, Anthropic and the rest — receives your code when it generates. Run a local model with Ollama or LM Studio to keep the code on your own machine.
         </Paragraph>
       </YStack>
     ),
@@ -171,11 +171,11 @@ export const GUIDED_TOUR_STEPS: GuidedTourStepContent[] = [
   },
   {
     id: 'wrap-up',
-    title: "You're Ready!",
+    title: "That's the tour",
     body: (
       <YStack rowGap="$2">
-        <Paragraph fontSize="$3" color="$color11">That's the basics—prompt the agent, preview updates, and save when you're happy. You can replay this tour from the Help menu anytime.</Paragraph>
-        <Paragraph fontSize="$3" color="$color11">Have fun building! Let me know what you ship.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">That's all of it: ask the agent, watch the preview, save when it looks right. The Help menu replays this tour whenever you want it.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">Close this and start with a sentence.</Paragraph>
       </YStack>
     ),
     location: 'workspace',

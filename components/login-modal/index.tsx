@@ -12,8 +12,8 @@ export const LoginModal = ({
   open,
   pages,
   onClose,
-  title = "Log In to use Hanzo for free",
-  description = "Sign in with your Hanzo account to continue building and increase your monthly limit.",
+  title = "Sign in to keep building",
+  description = "Sign in with your Hanzo account. What you have built so far comes with you.",
 }: {
   open: boolean;
   pages?: Page[];
@@ -62,7 +62,7 @@ export const LoginModal = ({
             width="100%" height={44} marginTop="$6"
             onClick={handleClick}
           >
-            Log In to Continue
+            Sign in and keep building
           </Button>
         </YStack>
       </DialogContent>

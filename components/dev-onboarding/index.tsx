@@ -36,23 +36,23 @@ interface DevOnboardingProps {
 
 const features = [
   {
-    title: "Instant Generation",
-    description: "Streams as it builds",
+    title: "Writes as you watch",
+    description: "Files appear as they are written",
     icon: <Zap size={16} />
   },
   {
-    title: "400+ AI Models",
-    description: "Latest LLMs available",
+    title: "Zen and Enso",
+    description: "Plus Anthropic, OpenAI, Google and Mistral",
     icon: <Brain size={16} />
   },
   {
-    title: "Real Data",
-    description: "Hanzo Base, built in",
+    title: "A real database",
+    description: "Hanzo Base, in every app",
     icon: <Database size={16} />
   },
   {
-    title: "Beautiful UIs",
-    description: "Tailored & shadowui",
+    title: "Screens, not wireframes",
+    description: "Laid out and styled from the start",
     icon: <Palette size={16} />
   }
 ];
@@ -122,7 +122,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                 states its own verb: hanzo.app builds, hanzo.chat asks, the
                 extension (which drives the browser) does. */}
             <H1 fontSize="$11" fontWeight="500" color="$color" marginBottom="$4" textAlign="center">
-              Build anything
+              Describe an app and it gets built
             </H1>
           </YStack>
 
@@ -130,10 +130,10 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
           <YStack gap="$5" marginBottom="$6">
             <Card backgroundColor="$background" borderColor="$borderColor" padding="$5">
               <H3 fontSize="$6" fontWeight="500" color="$color" marginBottom="$4">
-                Start with a prompt
+                Describe it
               </H3>
               <Textarea
-                placeholder="Describe what you want to build..."
+                placeholder="An internal admin dashboard with logins and a table of orders"
                 backgroundColor="$color3" borderColor="$borderColor" color="$color" marginBottom="$4" minHeight={100}
                 value={prompt}
                 onChangeText={(t) => setPrompt(t)}
@@ -144,13 +144,13 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                 disabled={!prompt.trim()}
               >
                 <Sparkles size={16} />
-                Start Building
+                Start building
               </Button>
             </Card>
 
             <Card backgroundColor="$background" borderColor="$borderColor" padding="$5">
               <H3 fontSize="$6" fontWeight="500" color="$color" marginBottom="$4">
-                Import existing project
+                Or start from code you have
               </H3>
               <YStack rowGap="$3">
                 <Button
@@ -256,15 +256,18 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
             ))}
           </YStack>
 
-          {/* Proof — real only: Techstars '17 backing + the real model count. */}
+          {/* Proof — real only: Techstars '17 backing + the models Hanzo builds
+              itself. The second tile used to read "400+ / AI models"; a count
+              that has to be re-verified every quarter is a worse fact than the
+              names, and the landing dropped it for the same reason. */}
           <XStack justifyContent="center" gap="$6" marginTop="$6">
             <div>
               <Paragraph fontSize="$8" fontWeight="500" color="$color" textAlign="center">Techstars &apos;17</Paragraph>
               <Paragraph fontSize="$1" color="$color11" textAlign="center">backed</Paragraph>
             </div>
             <div>
-              <Paragraph fontSize="$8" fontWeight="500" color="$color" textAlign="center">400+</Paragraph>
-              <Paragraph fontSize="$1" color="$color11" textAlign="center">AI models</Paragraph>
+              <Paragraph fontSize="$8" fontWeight="500" color="$color" textAlign="center">Zen &amp; Enso</Paragraph>
+              <Paragraph fontSize="$1" color="$color11" textAlign="center">our own models</Paragraph>
             </div>
           </XStack>
         </YStack>

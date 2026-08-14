@@ -39,21 +39,20 @@ export function InviteFriends() {
               </XStack>
             </XStack>
             <Paragraph fontSize="$7" fontWeight="500" color="$color" maxWidth={200} lineHeight="1.4">
-              Invite your friends to join us!
+              Invite someone to Hanzo
             </Paragraph>
             <Paragraph fontSize="$3" color="$color11" marginTop="$2" maxWidth={384}>
-              Support us and share the love and let them know about our awesome
-              platform.
+              Send them the link. They describe an app and watch it get built.
             </Paragraph>
             <YStack marginTop="$4" columnGap="$3.5">
               <a
-                href="https://x.com/intent/post?url=https://hanzo.ai/&text=Checkout%20this%20awesome%20Ai%20Tool!%20Vibe%20coding%20has%20never%20been%20so%20easy✨"
+                href="https://x.com/intent/post?url=https://hanzo.ai/&text=Describe%20an%20app%20and%20Hanzo%20builds%20it."
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <Button variant="outline" size="sm">
                   <Twitter size={16} />
-                  Share on
+                  Share on X
                 </Button>
               </a>
               <Button
@@ -61,11 +60,11 @@ export function InviteFriends() {
                 size="sm"
                 onClick={() => {
                   copyToClipboard("https://hanzo.ai/");
-                  toast.success("Invite link copied to clipboard!");
+                  toast.success("Invite link copied");
                 }}
               >
                 <Link size={16} />
-                Copy Invite Link
+                Copy invite link
               </Button>
             </YStack>
           </main>
