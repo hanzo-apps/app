@@ -78,16 +78,16 @@ const ROWS: Row[] = [
     name: "Hanzo",
     hanzo: true,
     cells: [
-      g("$0 hidden", "Transparent usage pricing — no surprise fees"),
-      g("Zero lock-in", "Open source — you own 100% of the code"),
-      g("Blazing fast", "Hand-optimized, production-grade output"),
-      g("Unlimited", "Real, editable code — no ceilings"),
-      g("Best-in-class", "Frontier models, highest accuracy"),
-      g("Built to scale", "Prototype to production, no rewrite"),
-      g("Private by default", "Privacy-first — self-host or our cloud"),
-      g("Near-zero", "We keep it running; you just build"),
-      g("1M+ tokens", "Whole-codebase context — never forgets"),
-      g("Ships polished", "Slick, modern, production-ready UI"),
+      g("Usage pricing", "One monthly allowance, and no fee for anything else"),
+      g("None", "Open source. Push the code to your own repo whenever you like"),
+      g("Fast", "Runs on Hanzo Cloud, behind a CDN"),
+      g("Unlimited", "Real code you can open and edit, so nothing is off limits"),
+      g("Frontier models", "Enso, our own frontier model, and every other model on Hanzo AI"),
+      g("Built to scale", "The first version and the production one are the same app"),
+      g("Private by default", "Run it on Hanzo Cloud, or take the code and host it yourself"),
+      g("Near-zero", "Hanzo Cloud runs the servers, the database and the deploys"),
+      g("Whole project", "It reads across the files it needs, not one file at a time"),
+      g("Ships styled", "Screens arrive laid out and styled, not as wireframes"),
     ],
   },
   {
@@ -315,12 +315,12 @@ export default function Comparison() {
             Why Hanzo
           </Paragraph>
           <H2 textAlign="center" marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "2.75rem", lineHeight: "1.1" }}>
-            One platform beats the whole stack.
+            All of it in one place.
           </H2>
           <Paragraph textAlign="center" marginTop="$4" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
-            Site builders lock you in. AI coding tools hand you bugs to clean up.
-            Hanzo ships production apps you own — fast, secure, and built to
-            scale.
+            Site builders will not give you the code. AI coding tools give you
+            the code and leave you to run it. Hanzo writes the app, runs it, and
+            gives you the code.
           </Paragraph>
         </Reveal>
 
@@ -364,7 +364,7 @@ export default function Comparison() {
           <Reveal delay={80}>
             <XStack marginBottom="$3" alignItems="center" justifyContent="space-between" gap="$4">
               <Paragraph fontFamily="$mono" fontSize={11} color="$color11">
-                Slide across all {COLS.length} criteria →
+                Slide to see the rest →
               </Paragraph>
               <XStack gap="$2">
                 <Button
