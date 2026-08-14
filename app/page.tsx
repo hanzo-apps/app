@@ -205,8 +205,6 @@ export default function LandingPage() {
   return (
     // The clip is CSS (`.landing-root`, assets/globals.css) because gui types
     // `overflow` as visible|hidden|scroll and the value has to be `clip`: hidden
-    // would make this box the scrollport for everything inside it and the
-    // composer's `position: sticky` would do nothing at all.
     <YStack position="relative" minHeight="100%" backgroundColor="$background" className="landing-root">
       {/* Monochrome hero glow — single soft white radial, zero hue. */}
       <YStack pointerEvents="none" position="fixed" top={0} right={0} bottom={0} left={0} zIndex={0} overflow="hidden">
@@ -215,10 +213,7 @@ export default function LandingPage() {
 
       <Header />
 
-      {/* Everything the composer rides over, and its own flow slot at the end.
-          A sticky box is held inside its containing block, so this stack is
-          exactly the run of the page the composer stays on screen for: the hero
-          through the closing CTA, where it comes to rest. */}
+      {/* The page's content, over the fixed glow behind it. */}
       <YStack position="relative" zIndex={10}>
         {/* ── Hero — the sentence on the left, the product on the right ──
             `100svh` so the hero OWNS the fold: the two columns centre in the
@@ -235,7 +230,7 @@ export default function LandingPage() {
             them, and the left column stops at 576 because that is the width
             the headline's two deliberate lines need — measured: at 520 the
             second line broke again and left "it." alone on a third. */}
-        <YStack minHeight="100svh" justifyContent="center" paddingHorizontal="$4" paddingBottom={200} paddingTop="$8" $md={{ paddingHorizontal: "$6" }}>
+        <YStack minHeight="100svh" justifyContent="center" paddingHorizontal="$4" paddingBottom="$10" paddingTop="$8" $md={{ paddingHorizontal: "$6" }}>
           <YStack alignSelf="center" width="100%" maxWidth={768} gap="$7" $lg={{ flexDirection: "row", alignItems: "center", maxWidth: 1200, gap: "$8" }}>
             {/* LEFT — what the product does, said once. */}
             <YStack alignSelf="center" width="100%" maxWidth={768} $lg={{ flex: 1, maxWidth: 576, alignSelf: "center" }}>
@@ -274,6 +269,28 @@ export default function LandingPage() {
                   auth, and 400+ AI models, wired in and deployed.
                 </Paragraph>
               </Reveal>
+
+              {/* THE composer — one on the page, and it belongs to the sentence
+                  it answers. It sat in a sticky dock across the foot of the
+                  page before, which pinned it to the viewport and left the hero
+                  reading as copy, a picture, and an unrelated bar at the bottom.
+                  In the column it reads as one thought: here is what this does,
+                  here is where you say it. On a phone that also puts it where
+                  the stack wants it — headline, composer, then the product —
+                  instead of under the fold behind everything else.
+
+                  OUTSIDE the Reveal above it: that fade-up is a transform, and
+                  a transformed ancestor becomes the containing block for
+                  anything positioned inside it, which is what the composer's
+                  own popovers hang from. */}
+              <YStack id="build" marginTop="$6" width="100%" maxWidth={576}>
+                <BuildComposer
+                  showPill={false}
+                  subline={false}
+                  typewriter={TYPED}
+                  onSubmit={startBuild}
+                />
+              </YStack>
             </YStack>
 
             {/* RIGHT — the product, building something, in the real chrome.
@@ -495,26 +512,6 @@ export default function LandingPage() {
           </Reveal>
         </YStack>
 
-        {/* THE composer — one on the page, and this is its flow slot.
-            It must be the LAST child of the stack it rides (a sticky box is
-            held inside its containing block, and it pins only while its own
-            flow position is below the viewport), and OUTSIDE the Reveal above
-            it, whose fade-up transform would make it scroll like anything else.
-            .hz-dock (assets/globals.css) is the whole pinning rule. */}
-        <YStack
-          className="hz-dock"
-          paddingHorizontal="$4"
-          $md={{ paddingHorizontal: "$6" }}
-        >
-          <YStack id="build" alignSelf="center" width="100%" maxWidth={672}>
-            <BuildComposer
-              showPill={false}
-              subline={false}
-              typewriter={TYPED}
-              onSubmit={startBuild}
-            />
-          </YStack>
-        </YStack>
       </YStack>
 
       {/* ── Community — what people built, linking out to the showcase ── */}

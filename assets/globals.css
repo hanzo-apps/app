@@ -1654,52 +1654,6 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   overflow-x: clip;
 }
 
-/* The composer rides the bottom of the viewport, and it is IN THE PAGE.
-   `position: fixed` put it over the landing from the first paint — a bar
-   floating above a hero it was never part of. Sticky keeps it in flow: it sits
-   where app/page.tsx writes it (the hero owns the first screen, so nothing
-   scrolls under it there), rides the bottom of the viewport through the page,
-   and comes to rest in the closing "Ship your first app today" section, which
-   is its one flow slot.
-
-   Two things a sticky box cannot survive, both measured in Chromium: an
-   ancestor with `overflow: hidden` (it becomes the scrollport, which never
-   scrolls, so the box just scrolls away) and an ancestor carrying a transform —
-   `translate` + `will-change` is the landing's Reveal fade-up exactly. So the
-   dock lives outside every Reveal and no ancestor between it and the viewport
-   clips. */
-.hz-dock {
-  position: sticky;
-  /* Flush with the bottom, and the inset lives INSIDE as padding: an inset
-     written as `bottom:` leaves a strip under the box where the page shows
-     through the ground below. As padding it does double duty — the composer's
-     breathing room when it is pinned, and its bottom margin in the CTA. */
-  bottom: 0;
-  padding-bottom: max(12px, env(safe-area-inset-bottom));
-  /* Sticky is positioned, so it already paints over its in-flow siblings; this
-     only settles it against sections that raise themselves. */
-  z-index: 20;
-  /* A ground, because the page passes BEHIND it: the bubble is opaque but the
-     idea crawl is chips with air between them, and a section heading read
-     straight through the gaps. In the composer's own flow slot (the closing
-     CTA) this is background over background, so one rule serves both states. */
-  background: var(--background);
-}
-/* The dissolve sits ABOVE the box rather than inside its padding: the padding
-   is the CTA band's rhythm and the fade is a fixed 40px, and braiding them made
-   one number answer two questions. A hard edge here would cut a heading in half
-   as it scrolled under. */
-.hz-dock::before {
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: 100%;
-  left: 0;
-  height: 40px;
-  background: linear-gradient(to top, var(--background), transparent);
-  pointer-events: none;
-}
-
 /* The `group` prop exists in this app for STATE only ($group-hover/press/
    focus), which compiles to descendant selectors. Tamagui's group ALSO emits
    `container-type: inline-size` to power $group-<size> container queries —

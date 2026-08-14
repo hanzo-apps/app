@@ -41,12 +41,29 @@ logged-in projects logic in `page.tsx`; elevate design only.
   simulated client-side — the landing is pre-auth and calls no API. Reduced
   motion gets the settled final frame and no animation.
 
+  **It floats.** The frame is a device mockup on the page's own black — no card
+  behind it — and its depth is TWO things, because a plain drop shadow cannot
+  work here: black on `#000` is invisible. So `.idm .window` pairs a wide soft
+  pool (which darkens the floor glow behind the frame) with a 1px light rim that
+  catches an edge the ground cannot draw. Measured: `0 32px 64px -16px rgba(0,0,0,.9)`,
+  `0 8px 24px -8px rgba(0,0,0,.7)`, `0 0 0 1px rgba(255,255,255,.06)`. The
+  `elevation={6}` it replaced compiled to `0 3px 5px rgba(0,0,0,.33)` — present
+  in the computed style and invisible to the eye.
+
+  **The composer lives in the left column**, under the subline, and there is
+  exactly one on the page. It used to ride a sticky `.hz-dock` across the foot
+  of the page, which pinned it to the viewport and left the fold reading as
+  copy, a picture, and an unrelated bar at the bottom; on a phone it sat under
+  everything else rather than after the headline. In the column the fold reads
+  as one thought — here is what this does, here is where you say it — and the
+  phone stack falls out for free: headline, composer, product. The dock rule is
+  deleted from `globals.css`; left there it reads as live pinning.
+
   The hero's own arithmetic lives in `app/page.tsx`: `100svh` so the fold is
-  OWNED (small viewport unit — a phone's URL bar moves the large one and would
-  push the composer under the fold), `paddingBottom={200}` as the docked
-  composer's reserved slot, and the row only from `$lg`, so a phone stacks
-  sentence-then-frame. The left column stops at **576**, measured: at 520 the
-  headline's second line broke again and left "it." alone on a third.
+  OWNED (small viewport unit — a phone's URL bar moves the large one), and the
+  row only from `$lg`, so a phone stacks. The left column stops at **576**,
+  measured: at 520 the headline's second line broke again and left "it." alone
+  on a third.
 - **`logo-wall.tsx`** — REAL partners only (Techstars '17 + NVIDIA/AWS/Microsoft/
   Google/DigitalOcean/Nebius/Lux/Zoo), mono-tinted white via
   `[filter:brightness(0)_invert(1)]`. Labeled "Backed by Techstars · Built on

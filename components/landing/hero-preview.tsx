@@ -263,15 +263,26 @@ export default function HeroPreview() {
         .idm .rise { animation: idmRise .5s cubic-bezier(.4,0,.2,1) both; }
         .idm .line { animation: idmLine .32s ease-out both; }
         .idm .livedot { animation: idmPulse 2s ease-in-out infinite; }
+        /* The window FLOATS: it is a device mockup on the page's own black, not
+           a panel in a card. A plain drop shadow cannot say that here — black
+           on #000 is invisible — so the depth is two things at once: a wide soft
+           pool that darkens the glow behind the frame, and a light rim that
+           catches an edge the ground has no way to draw. */
+        .idm .window {
+          box-shadow:
+            0 32px 64px -16px rgba(0, 0, 0, .9),
+            0 8px 24px -8px rgba(0, 0, 0, .7),
+            0 0 0 1px rgba(255, 255, 255, .06);
+        }
         @media (prefers-reduced-motion: reduce) {
           .idm .caret, .idm .rise, .idm .line, .idm .livedot { animation: none; }
         }
       `}</style>
 
-      {/* Soft floor glow to seat the frame. */}
-      <YStack pointerEvents="none" position="absolute" left="$0" right="$0" bottom="$-7" top="$6" zIndex={-10} borderRadius="2rem" backgroundColor="$color005" filter="blur(80px)" $sm={{ left: "$-6", right: "$-6" }} />
+      {/* Soft floor glow — the lit ground the window's shadow pools against. */}
+      <YStack pointerEvents="none" position="absolute" left="$0" right="$0" bottom="$-7" top="$6" zIndex={-10} borderRadius="2rem" backgroundColor="$color0075" filter="blur(80px)" $sm={{ left: "$-6", right: "$-6" }} />
 
-      <YStack overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={6}>
+      <YStack className="window" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
         {/* ── Editor header — the real /dev chrome in miniature ── */}
         <XStack alignItems="center" gap="$3" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$2">
           {/* Left anchor = the real editor's: the Hanzo mark, then the project

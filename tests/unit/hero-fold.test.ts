@@ -51,13 +51,26 @@ describe("the hero is a sentence beside the product", () => {
     expect(hero).not.toMatch(/<LazySection\b/);
   });
 
-  it("keeps the hero's fold arithmetic, so the composer is never pushed off screen", () => {
-    // `100svh` and not `vh`: a phone's URL bar moves the large unit, which
-    // drops the docked composer below the fold on first paint. The bottom
-    // padding is the composer's reserved slot.
+  it("puts the composer in the column with the sentence it answers", () => {
+    // There is ONE composer on the page and it belongs to the hero's left
+    // column, under the subline — not in a sticky bar across the foot of the
+    // page. That bar is why the fold read as copy, a picture, and an unrelated
+    // strip at the bottom, and on a phone it sat under everything else instead
+    // of after the headline.
     const hero = landing.slice(landing.indexOf("── Hero"), landing.indexOf("── Below the fold"));
+    expect(hero).toContain("<BuildComposer");
+    expect(landing.match(/<BuildComposer/g)).toHaveLength(1);
+    expect(hero.indexOf("One prompt becomes a live app")).toBeLessThan(hero.indexOf("<BuildComposer"));
+    expect(hero.indexOf("<BuildComposer")).toBeLessThan(hero.indexOf("<HeroPreview />"));
+
+    // The dock is gone from BOTH sides. Left in the stylesheet it is dead
+    // weight that reads as live pinning.
+    expect(landing).not.toContain("hz-dock");
+    expect(css).not.toContain(".hz-dock");
+
+    // `100svh` and not `vh`: a phone's URL bar moves the large unit, so the
+    // hero would resize under the fold it is supposed to own.
     expect(hero).toMatch(/minHeight="100svh"/);
-    expect(hero).toMatch(/paddingBottom=\{200\}/);
   });
 
   it("shows the product, and never the address of the page you are on", () => {
