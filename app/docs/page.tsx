@@ -49,16 +49,16 @@ const destinations: Dest[] = [
     icon: <Terminal size={20} />,
     title: "AI API",
     description:
-      "One OpenAI-compatible endpoint to Hanzo's Zen and Enso models plus 400+ frontier models at api.hanzo.ai.",
+      "One endpoint at api.hanzo.ai for Hanzo's own Zen and Enso models, and for Anthropic, OpenAI, Google and Mistral.",
     href: "https://hanzo.ai/llm",
     external: true,
-    cta: "Explore the gateway",
+    cta: "Learn more about Hanzo AI",
   },
   {
     icon: <LayoutGrid size={20} />,
     title: "Templates gallery",
     description:
-      "Production-grade, open-source apps you can fork into the builder and deploy live in one click.",
+      "Open-source apps you can fork into the builder, change, and publish under your own name.",
     href: "/community",
     cta: "Browse templates",
   },
@@ -75,7 +75,7 @@ const destinations: Dest[] = [
     icon: <GraduationCap size={20} />,
     title: "Learn",
     description:
-      "Walk-throughs and concepts for getting the most out of the builder and Hanzo Cloud.",
+      "Walk-throughs and the ideas behind the builder and Hanzo Cloud.",
     href: "/learn",
     cta: "Start learning",
   },
@@ -83,7 +83,7 @@ const destinations: Dest[] = [
     icon: <Wand2 size={20} />,
     title: "Open the builder",
     description:
-      "The fastest way to learn is to build. Describe an app and watch it come together, wired to a database, auth, and AI.",
+      "Describe an app and watch it get written, with its database, sign-in and AI already connected.",
     href: "/dev",
     cta: "Start building",
   },
@@ -91,19 +91,19 @@ const destinations: Dest[] = [
 
 const steps = [
   {
-    n: "01",
+    n: "A sentence",
     title: "Describe",
-    body: "Tell the builder what you want in plain language — “a job board with logins and a Postgres-backed listings table.” No boilerplate, no scaffolding to configure.",
+    body: "Tell the builder what you want in plain words — “a job board with logins and a listings table.” There is no boilerplate to start from and no scaffolding to configure.",
   },
   {
-    n: "02",
+    n: "A working app",
     title: "Generate",
-    body: "Hanzo generates a real, full-stack app and shows you a live preview. Iterate by chatting — ask for changes and watch them apply in place.",
+    body: "Hanzo writes the whole app and shows you a preview you can click. Ask for changes in the chat and watch them land in place.",
   },
   {
-    n: "03",
+    n: "A live URL",
     title: "Publish",
-    body: "Ship to a live *.hanzo.app URL in one click, with database, auth, and AI already wired in. Connect a custom domain or push to GitHub whenever you like.",
+    body: "One click puts it on a *.hanzo.app address, with the database, sign-in and AI already running. Point a custom domain at it, or push it to GitHub, whenever you like.",
   },
 ];
 
@@ -131,17 +131,17 @@ export default function DocsPage() {
 
             <Reveal delay={60}>
               <H1 fontSize="$11" fontWeight="500" textAlign="center" lineHeight="1.03" letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
-                Everything you need
+                Learn how
                 <br />
-                to build with Hanzo.
+                Hanzo works.
               </H1>
             </Reveal>
 
             <Reveal delay={120}>
               <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" textAlign="center" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
-                Start in the builder, then reach for the full docs, the API, and
-                the template gallery when you need them. Real destinations, no
-                dead ends.
+                Start in the builder. Reach for the full docs, the API and the
+                template gallery when you need them. Every link here goes
+                somewhere real.
               </Paragraph>
             </Reveal>
 
@@ -261,12 +261,12 @@ export default function DocsPage() {
                 API
               </Paragraph>
               <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }} lineHeight="1.1">
-                One endpoint. 400+ models.
+                Call any model through one API.
               </H2>
               <Paragraph marginTop="$4" maxWidth={448} fontSize="$4" color="$color11">
-                Every app you build can call any frontier model — Hanzo&apos;s own
-                Zen and Enso families included — through a single OpenAI-compatible
-                endpoint. Swap models with one string.
+                Every app you build can call Hanzo&apos;s own Zen and Enso models,
+                and the ones from Anthropic, OpenAI, Google and Mistral, through
+                the same endpoint. Change the model by changing one string.
               </Paragraph>
               <Anchor display="inline-flex"
                 href="https://hanzo.ai/llm"
@@ -274,7 +274,7 @@ export default function DocsPage() {
                 rel="noopener noreferrer"
                 marginTop="$5" alignItems="center" gap="$1.5" fontSize="$3" fontWeight="500" color="$color11" hoverStyle={{ color: "$color" }}
               >
-                Explore the gateway
+                Learn more about Hanzo AI
                 <ArrowUpRight size={16} />
               </Anchor>
             </Reveal>

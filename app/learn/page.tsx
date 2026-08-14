@@ -115,10 +115,10 @@ export default function LearnPage() {
             Hanzo Academy
           </Badge>
           <H1 fontSize="$11" fontWeight="500" marginBottom="$5" textAlign="center" $md={{ fontSize: "$13" }} lineHeight="1.1">
-            Learn to build with AI superpowers
+            Learn how to build on Hanzo
           </H1>
           <Paragraph fontSize="$7" color="$color11" marginBottom="$6" maxWidth={672} alignSelf="center" textAlign="center" lineHeight="1.4">
-            Free courses, tutorials, and resources to help you master AI development
+            Courses and walk-throughs for the builder, Hanzo Cloud and the API.
           </Paragraph>
           <XStack alignItems="center" gap="$4" justifyContent="center">
             <Button size="lg" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}>
@@ -231,17 +231,17 @@ export default function LearnPage() {
         <YStack maxWidth={1280} alignSelf="center">
           <YStack marginBottom="$8">
             <H2 fontSize="$10" fontWeight="500" marginBottom="$4" textAlign="center" $md={{ fontSize: "$11" }} lineHeight="1.1">
-              Additional Resources
+              Where else to look
             </H2>
             <Paragraph fontSize="$6" color="$color11" textAlign="center">
-              Everything you need to succeed
+              The docs, the community, and the videos.
             </Paragraph>
           </YStack>
           <YStack gap="$5">
             <YStack backgroundColor="$color3" borderRadius="$8" padding="$5" borderWidth={1} borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}>
               <BookOpen size={32} />
               <H3 fontSize="$7" fontWeight="500" marginBottom="$2">Documentation</H3>
-              <Paragraph color="$color11" marginBottom="$4">Comprehensive guides and API references</Paragraph>
+              <Paragraph color="$color11" marginBottom="$4">Guides and the API reference</Paragraph>
               <Link href="/docs"><SizableText color="$purple8" hoverStyle={{ color: "$purple4" }}>
                 Explore Docs <ArrowRight size={16} />
               </SizableText></Link>
@@ -270,10 +270,10 @@ export default function LearnPage() {
       <YStack paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6" }}>
         <YStack maxWidth={896} alignSelf="center">
           <H2 fontSize="$10" fontWeight="500" marginBottom="$5" textAlign="center" $md={{ fontSize: "$11" }} lineHeight="1.1">
-            Start your learning journey today
+            Read one, then go and build something
           </H2>
           <Paragraph fontSize="$7" color="$color11" marginBottom="$6" textAlign="center" lineHeight="1.4">
-            Join thousands of developers mastering AI development
+            The courses assume nothing. Open the first one and follow along in the builder.
           </Paragraph>
           <Button size="lg" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}>
             Start Free Course

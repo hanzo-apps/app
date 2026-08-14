@@ -16,7 +16,7 @@ import CommunityPageView from './view';
 export const metadata = {
   title: "Community — Built on Hanzo",
   description:
-    "Every app people have built on Hanzo, with the template each one was forked from. Fork any of them and ship yours.",
+    "Apps people have built on Hanzo, each one naming the template it was forked from. Fork any of them and publish your own.",
 };
 
 export default function CommunityPage() {

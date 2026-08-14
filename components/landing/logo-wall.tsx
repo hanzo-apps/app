@@ -30,7 +30,7 @@ export default function LogoWall() {
       <YStack alignSelf="center" maxWidth={1152}>
         <Reveal>
           <Paragraph fontFamily="$mono" fontSize={11} color="$color11" textAlign="center">
-            Backed by Techstars · Built on world-class infrastructure
+            Backed by Techstars · Running on their infrastructure
           </Paragraph>
         </Reveal>
 

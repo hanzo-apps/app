@@ -210,11 +210,11 @@ function NewProjectInner() {
 
         <YStack position="relative" paddingTop="$10" $sm={{ paddingTop: "$11" }}>
           <H1 fontSize="$11" fontWeight="500" letterSpacing={-0.32} textAlign="center" $sm={{ fontSize: "$12" }} lineHeight="1.1">
-            Let&rsquo;s build something new
+            Start something new
           </H1>
           <Paragraph alignSelf="center" marginTop="$4" maxWidth={576} textAlign="center" fontSize="$4" color="$color11" $sm={{ fontSize: "$6" }} lineHeight="1.5">
-            Describe an app to build, or paste a Git repository to deploy as a
-            service. Hanzo builds, ships, and manages it.
+            Describe the app you want. Or paste a Git repository and Hanzo runs
+            it as a service instead.
           </Paragraph>
 
           {/* Composer */}

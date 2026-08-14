@@ -41,16 +41,16 @@ export default function LoginPage() {
   }, [login]);
 
   const ideas = [
-    'Build a SaaS dashboard with real-time analytics',
-    'Create an AI-powered chat application',
-    'Design a modern e-commerce platform',
-    'Develop a social media scheduler with AI',
-    'Build a cryptocurrency trading dashboard',
-    'Create a video streaming platform like Netflix',
-    'Design a project management tool with AI insights',
-    'Build a marketplace for digital products',
-    'Create a learning management system',
-    'Develop a fitness tracking app with AI coach',
+    'Build a SaaS dashboard with realtime analytics',
+    'Create an AI support chatbot trained on my docs',
+    'Build a storefront with a cart and checkout',
+    'Build a social post scheduler',
+    'Build a crypto price dashboard',
+    'Create a video library with playlists',
+    'Build a project tracker with boards and due dates',
+    'Build a marketplace with listings and checkout',
+    'Build a course site with lessons and progress',
+    'Build a workout tracker with charts',
   ];
 
   useEffect(() => {
@@ -99,7 +99,7 @@ export default function LoginPage() {
 
             {/* Desktop App Options */}
             <YStack rowGap="$4">
-              <Paragraph fontSize="$3" color="$color11" textAlign="center">Run locally without login</Paragraph>
+              <Paragraph fontSize="$3" color="$color11" textAlign="center">Or run Hanzo on your own machine</Paragraph>
 
               <YStack gap="$3">
                 <Anchor display="flex"
@@ -139,7 +139,7 @@ export default function LoginPage() {
               </YStack>
 
               <Paragraph fontSize="$1" color="$color11" textAlign="center">
-                Mobile coming soon • Local AI models included
+                No mobile build yet — the desktop app is Windows, macOS and Linux.
               </Paragraph>
             </YStack>
           </YStack>
@@ -167,13 +167,13 @@ export default function LoginPage() {
             <YStack marginBottom="$6">
               <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" backgroundColor="$color3" backdropFilter="blur(4px)" borderRadius="$10" borderWidth={1} borderColor="$borderColor" marginBottom="$5">
                 <Sparkles size={16} />
-                <SizableText fontSize="$3" color="$color">AI-powered development</SizableText>
+                <SizableText fontSize="$3" color="$color">Hanzo · App builder</SizableText>
               </XStack>
 
-              <H2 fontSize="$10" fontWeight="500" marginBottom="$4">Start building in seconds</H2>
+              <H2 fontSize="$10" fontWeight="500" marginBottom="$4">Describe an app. Watch it get built.</H2>
 
               <Paragraph color="$color11" marginBottom="$6">
-                Describe your idea and watch AI bring it to life instantly
+                Type a sentence into the builder and the files start appearing.
               </Paragraph>
             </YStack>
 
@@ -205,16 +205,16 @@ export default function LoginPage() {
 
             <YStack gap="$5" marginTop="$7">
               <YStack>
-                <Paragraph fontSize="$10" fontWeight="300" color="$color" textAlign="center">10k+</Paragraph>
-                <Paragraph fontSize="$1" color="$color11" marginTop="$1" textAlign="center">Apps built</Paragraph>
+                <Paragraph fontSize="$10" fontWeight="300" color="$color" textAlign="center">Enso</Paragraph>
+                <Paragraph fontSize="$1" color="$color11" marginTop="$1" textAlign="center">Our frontier model</Paragraph>
               </YStack>
               <YStack>
-                <Paragraph fontSize="$10" fontWeight="300" color="$color" textAlign="center">50ms</Paragraph>
-                <Paragraph fontSize="$1" color="$color11" marginTop="$1" textAlign="center">Response time</Paragraph>
+                <Paragraph fontSize="$10" fontWeight="300" color="$color" textAlign="center">Base</Paragraph>
+                <Paragraph fontSize="$1" color="$color11" marginTop="$1" textAlign="center">A database in every app</Paragraph>
               </YStack>
               <YStack>
-                <Paragraph fontSize="$10" fontWeight="300" color="$color" textAlign="center">400+</Paragraph>
-                <Paragraph fontSize="$1" color="$color11" marginTop="$1" textAlign="center">AI models</Paragraph>
+                <Paragraph fontSize="$10" fontWeight="300" color="$color" textAlign="center">Cloud</Paragraph>
+                <Paragraph fontSize="$1" color="$color11" marginTop="$1" textAlign="center">Where it goes live</Paragraph>
               </YStack>
             </YStack>
           </YStack>

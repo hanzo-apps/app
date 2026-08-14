@@ -11,33 +11,33 @@ export default function EnterprisePage() {
   const features = [
     {
       icon: <Shield size={24} />,
-      title: "Enterprise Security",
-      description: "End-to-end encryption, SAML SSO, and advanced access controls. SOC 2 Type II audit in progress."
+      title: "Single sign-on and access control",
+      description: "SAML single sign-on, role-based access, and encryption at rest and in transit. SOC 2 Type II audit in progress."
     },
     {
       icon: <Users size={24} />,
-      title: "Unlimited Team Members",
-      description: "Scale your team without limits. Advanced role management and permissions"
+      title: "As many seats as you need",
+      description: "Everyone works in one organization, on shared projects and one bill. Roles keep owners and members apart."
     },
     {
       icon: <Zap size={24} />,
-      title: "Dedicated Infrastructure",
-      description: "Isolated compute resources with guaranteed performance and 99.99% SLA"
+      title: "Your own compute",
+      description: "Isolated compute rather than shared, backed by a 99.99% SLA."
     },
     {
       icon: <Globe size={24} />,
-      title: "Global Deployment",
-      description: "Deploy to multiple regions with automatic failover and edge optimization"
+      title: "More than one region",
+      description: "Run in several regions, with failover between them."
     },
     {
       icon: <Lock size={24} />,
-      title: "Private AI Models",
-      description: "Train and deploy custom models on your data with complete privacy"
+      title: "Models trained on your data",
+      description: "Train and run your own models on your own data, inside your organization."
     },
     {
       icon: <HeadphonesIcon size={24} />,
-      title: "24/7 Priority Support",
-      description: "Dedicated support team with <1 hour response time and technical account manager"
+      title: "Support that answers",
+      description: "A technical account manager, and a reply inside an hour, at any hour."
     }
   ];
 
@@ -50,24 +50,24 @@ export default function EnterprisePage() {
         <YStack maxWidth={896} alignSelf="center">
           <Badge className="mb-4">
             <Building size={16} />
-            Enterprise Ready
+            Enterprise
           </Badge>
           <H1 fontSize="$11" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$13" }} lineHeight="1.1">
-            AI Development at
+            Hanzo, for
             <SizableText color="$color">
-              {" "}Enterprise Scale
+              {" "}your whole company
             </SizableText>
           </H1>
           <Paragraph fontSize="$7" color="$color11" marginBottom="$6" maxWidth={672} alignSelf="center" lineHeight="1.4">
-            Build, deploy, and scale AI applications with enterprise-grade security, compliance, and dedicated support
+            One organization, as many seats as you need, with single sign-on, role-based access and an audit trail. Your own compute, and a person to call.
           </Paragraph>
           <YStack alignItems="center" gap="$4" justifyContent="center" $sm={{ flexDirection: "row" }}>
             <Button size="lg" width="100%" backgroundColor="$color5" borderWidth={1} borderColor="$color6" $sm={{ width: "auto" }} hoverStyle={{ backgroundColor: "$color6" }}>
-              Schedule Demo
+              Schedule a demo
               <ArrowRight size={20} />
             </Button>
             <Button size="lg" variant="outline" width="100%" borderColor="$borderColor" $sm={{ width: "auto" }} hoverStyle={{ backgroundColor: "$color3" }}>
-              Download Whitepaper
+              Talk to sales
             </Button>
           </YStack>
         </YStack>
@@ -81,10 +81,10 @@ export default function EnterprisePage() {
         <YStack maxWidth={1280} alignSelf="center">
           <YStack marginBottom="$10">
             <H2 fontSize="$10" fontWeight="500" marginBottom="$4" $md={{ fontSize: "$11" }} lineHeight="1.1">
-              Everything you need for enterprise AI
+              What an organization gets
             </H2>
             <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center">
-              Built from the ground up with enterprise requirements in mind
+              The parts a single-person account does not have.
             </Paragraph>
           </YStack>
 
@@ -108,40 +108,40 @@ export default function EnterprisePage() {
           <YStack gap="$10" alignItems="center">
             <div>
               <Badge variant="secondary" className="mb-4">
-                Security First
+                Security
               </Badge>
               <H2 fontSize="$10" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$11" }} lineHeight="1.1">
-                Bank-grade security & compliance
+                Security and compliance
               </H2>
               <Paragraph fontSize="$6" color="$color11" marginBottom="$6">
-                We take security seriously so you can focus on building amazing products
+                Where your data sits, who can reach it, and what we can show an auditor.
               </Paragraph>
               <YStack rowGap="$4">
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle2 size={24} />
                   <div>
-                    <YStack marginBottom="$1"><SizableText fontWeight="500">SOC 2 Type II — Audit in Progress</SizableText></YStack>
+                    <YStack marginBottom="$1"><SizableText fontWeight="500">SOC 2 Type II audit in progress</SizableText></YStack>
                     <YStack><SizableText fontSize="$3" color="$color11">Independent Type II audit underway; report available under NDA on completion</SizableText></YStack>
                   </div>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle2 size={24} />
                   <div>
-                    <YStack marginBottom="$1"><SizableText fontWeight="500">GDPR & CCPA Compliant</SizableText></YStack>
-                    <YStack><SizableText fontSize="$3" color="$color11">Full compliance with global data privacy regulations</SizableText></YStack>
+                    <YStack marginBottom="$1"><SizableText fontWeight="500">GDPR and CCPA</SizableText></YStack>
+                    <YStack><SizableText fontSize="$3" color="$color11">Personal data is handled under the EU and California privacy rules</SizableText></YStack>
                   </div>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle2 size={24} />
                   <div>
-                    <YStack marginBottom="$1"><SizableText fontWeight="500">SSO, RBAC & Audit Logs</SizableText></YStack>
+                    <YStack marginBottom="$1"><SizableText fontWeight="500">Single sign-on, roles, and an audit trail</SizableText></YStack>
                     <YStack><SizableText fontSize="$3" color="$color11">SAML single sign-on, role-based access control, and a full audit trail</SizableText></YStack>
                   </div>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle2 size={24} />
                   <div>
-                    <YStack marginBottom="$1"><SizableText fontWeight="500">End-to-end Encryption</SizableText></YStack>
+                    <YStack marginBottom="$1"><SizableText fontWeight="500">Encryption</SizableText></YStack>
                     <YStack><SizableText fontSize="$3" color="$color11">Your data is encrypted at rest and in transit</SizableText></YStack>
                   </div>
                 </XStack>
@@ -150,7 +150,7 @@ export default function EnterprisePage() {
             <YStack backgroundColor="$color3" borderRadius="$8" padding="$6" borderWidth={1} borderColor="$borderColor">
               <H3 fontSize="$8" fontWeight="500" marginBottom="$5">Get a custom quote</H3>
               <Paragraph color="$color11" marginBottom="$6">
-                Tell us about your needs and we'll create a custom plan for your organization
+                Tell us what you are building and how many people will work on it. We come back with a plan and a price.
               </Paragraph>
               {/* This form used to run its own control spec, and got five controls
                   onto four of them: two 49px hand-rolled inputs, a 46px NATIVE
@@ -160,11 +160,11 @@ export default function EnterprisePage() {
                   neutralises to a grey barely distinct from the resting border. All
                   five are now the ONE control. */}
               <YStack rowGap="$4">
-                <Input type="text" placeholder="Company Name" />
-                <Input type="email" placeholder="Work Email" />
+                <Input type="text" placeholder="Company name" />
+                <Input type="email" placeholder="Work email" />
                 <Select>
                   <SelectTrigger>
-                    <SelectValue placeholder="Company Size" />
+                    <SelectValue placeholder="Company size" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="10-50">10-50 employees</SelectItem>
@@ -173,14 +173,14 @@ export default function EnterprisePage() {
                     <SelectItem value="1000+">1000+ employees</SelectItem>
                   </SelectContent>
                 </Select>
-                <Textarea placeholder="Tell us about your project" rows={4} />
+                <Textarea placeholder="What you want to build, and how many people will work on it" rows={4} />
                 {/* The fill is the variant's to choose, not this call site's. It
                     used to hand-paint a violet->purple gradient; the monochrome
                     sweep neutralises those decorative hues to a mid grey, but the
                     Button kept the near-black foreground that was picked for its
                     WHITE default fill — leaving the page's primary CTA at 1.10:1.
                     Its sibling, which never hand-painted, measures 19.80:1. */}
-                <Button width="100%">Contact Sales Team</Button>
+                <Button width="100%">Send this to sales</Button>
               </YStack>
             </YStack>
           </YStack>
@@ -191,13 +191,13 @@ export default function EnterprisePage() {
       <YStack paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6" }}>
         <YStack maxWidth={896} alignSelf="center">
           <H2 fontSize="$10" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$11" }} lineHeight="1.1">
-            Ready to transform your business with AI?
+            Bring your whole team.
           </H2>
           <Paragraph fontSize="$7" color="$color11" marginBottom="$6" lineHeight="1.4">
-            Join leading companies using Hanzo to build the future
+            Tell us what you need and we will show you how it works on your own code.
           </Paragraph>
           <Button size="lg" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}>
-            Schedule Enterprise Demo
+            Schedule a demo
             <ArrowRight size={20} />
           </Button>
         </YStack>

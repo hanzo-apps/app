@@ -99,11 +99,11 @@ export default function PricingPage() {
 
             <Reveal delay={120}>
               <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" color="$color11" textAlign="center" $md={{ fontSize: "$6" }} lineHeight="1.5">
-                One subscription powers AI across the app builder, Hanzo Chat, and
-                the API at{" "}
-                <SizableText fontFamily="$mono" color="$color">api.hanzo.ai</SizableText> — from
-                a single monthly allowance. Pick the plan that fits; scale it when
-                you need more.
+                One subscription covers AI in the app builder, in Hanzo Chat and
+                through the API at{" "}
+                <SizableText fontFamily="$mono" color="$color">api.hanzo.ai</SizableText>, out
+                of a single monthly allowance. Move up a plan when you need more
+                of it.
               </Paragraph>
             </Reveal>
           </YStack>
@@ -135,7 +135,7 @@ export default function PricingPage() {
 
             {catalogError ? (
               <Paragraph alignSelf="center" fontSize="$3" color="$color11" textAlign="center">
-                The plan catalog couldn&apos;t be loaded — refresh to try again.
+                The plan list didn&apos;t load. Refresh the page to try again.
               </Paragraph>
             ) : (
               <XStack flexWrap="wrap" gap="$4" justifyContent="center">
@@ -156,7 +156,7 @@ export default function PricingPage() {
                             {highlighted && (
                               <YStack position="absolute" top="$-3" left={28}>
                                 <SizableText borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$3" paddingVertical="$1" fontSize={11} fontWeight="500" color="$color12">
-                                  Most popular
+                                  Recommended
                                 </SizableText>
                               </YStack>
                             )}
@@ -222,12 +222,12 @@ export default function PricingPage() {
             <YStack alignItems="flex-start" justifyContent="space-between" gap="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$5" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: 28 }}>
               <div>
                 <H3 fontSize="$4" fontWeight="500" color="$color">
-                  Start in minutes
+                  What every plan includes
                 </H3>
                 <Paragraph marginTop="$1" fontSize="$3" color="$color11">
-                  Every plan includes the builder, Hanzo Chat, and the API from
-                  one shared allowance. Choose a plan, add a card, and ship —
-                  change or cancel anytime.
+                  The builder, Hanzo Chat and the API, out of one shared
+                  allowance. Pick a plan, add a card, and start. Change or cancel
+                  whenever you like.
                 </Paragraph>
               </div>
               <Link

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 export { default } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Install Hanzo — CLI, MCP, Node, Desktop & extensions",
+  title: "Install Hanzo — browser, editor, desktop and office",
   description:
-    "Get Hanzo everywhere: the CLI (curl -fsSL https://hanzo.sh | sh), the MCP and Zap servers, Hanzo Node and Desktop, and the browser and editor extensions.",
+    "Install Hanzo in your browser, your editor, your desktop and your office, or connect the tools your team already runs. One key authenticates all of them.",
   alternates: { canonical: "/install" },
 };

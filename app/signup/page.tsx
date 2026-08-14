@@ -66,17 +66,17 @@ export default function SignupPage() {
               </XStack>
               <CardTitle fontSize="$8">Create your account</CardTitle>
               <CardDescription color="$color11">
-                Start building with Hanzo AI today
+                One account for the builder, Hanzo Chat and the API.
               </CardDescription>
             </CardHeader>
             <CardContent rowGap="$5">
               {/* What you get section */}
               <YStack rowGap="$3" padding="$4" backgroundColor="$color3" borderRadius="$5" borderWidth={1} borderColor="$borderColor">
-                <H3 fontSize="$3" fontWeight="500" color="$color" marginBottom="$3">What you'll get:</H3>
+                <H3 fontSize="$3" fontWeight="500" color="$color" marginBottom="$3">What the account gets you</H3>
                 <YStack gap="$2">
                   <XStack alignItems="center" gap="$3">
                     <Sparkles size={16} />
-                    <SizableText fontSize="$3" color="$color">Access to 400+ AI models</SizableText>
+                    <SizableText fontSize="$3" color="$color">Zen and Enso, plus Anthropic, OpenAI, Google and Mistral</SizableText>
                   </XStack>
                   {/* No starter-credit line here. The free $5 grant was
                       retired — onboarding picks a paid plan at hanzo.id — and
@@ -87,11 +87,11 @@ export default function SignupPage() {
                       actually gets you. */}
                   <XStack alignItems="center" gap="$3">
                     <Shield size={16} />
-                    <SizableText fontSize="$3" color="$color">Secure cloud infrastructure</SizableText>
+                    <SizableText fontSize="$3" color="$color">Apps that run on Hanzo Cloud, with a database and sign-in</SizableText>
                   </XStack>
                   <XStack alignItems="center" gap="$3">
                     <Rocket size={16} />
-                    <SizableText fontSize="$3" color="$color">Deploy instantly to production</SizableText>
+                    <SizableText fontSize="$3" color="$color">One click to publish, on a hanzo.app URL</SizableText>
                   </XStack>
                 </YStack>
               </YStack>
@@ -129,11 +129,11 @@ export default function SignupPage() {
               <XStack alignItems="center" justifyContent="center" gap="$5" paddingTop="$2">
                 <XStack alignItems="center" gap="$2">
                   <Shield size={16} />
-                  <SizableText fontSize="$1" color="$color11">Encrypted &amp; Audited</SizableText>
+                  <SizableText fontSize="$1" color="$color11">Encrypted at rest and in transit</SizableText>
                 </XStack>
                 <XStack alignItems="center" gap="$2">
                   <Shield size={16} />
-                  <SizableText fontSize="$1" color="$color11">GDPR Ready</SizableText>
+                  <SizableText fontSize="$1" color="$color11">GDPR and CCPA</SizableText>
                 </XStack>
               </XStack>
 

@@ -4,6 +4,6 @@ export { default } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "Features — Hanzo",
   description:
-    "Everything you need to build with AI in one platform — prompt to preview to deployed site, wired to real data and AI.",
+    "What comes with every app Hanzo builds: the code, an editor, a database, sign-in, AI, file storage, and a URL to publish it on.",
   alternates: { canonical: "/features" },
 };
