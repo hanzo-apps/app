@@ -1,6 +1,12 @@
 /**
  * /v1/provision — enable the Hanzo stack for a newly-created project.
  *
+ * Base is ONE backend with several tiers, so this is ONE call that provisions
+ * them: the tier that STORES (below) and the tier that RUNS (Functions — the
+ * app's declared handlers, deployed to the caller's Hanzo Functions registry;
+ * see lib/base/functions.ts). There is no per-tier switch: Base is on, and a
+ * tier is provisioned when the app declares something for it.
+ *
  * The REAL work behind the remix flow's "Setting up integrations" step (see
  * components/remix/remix-progress + lib/remix). For the given project it:
  *
@@ -22,13 +28,17 @@
  */
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { resolveScope } from '@/lib/org/server';
+import { cloudBase, resolveScope } from '@/lib/org/server';
 import { requireSameOrigin } from '@/lib/org/csrf';
+import { provisionFunctions, type FunctionDef } from '@/lib/base/functions';
 
 export const runtime = 'nodejs';
 
 /** Project ids are slugs — reject anything that could escape the data dir. */
 const SAFE_ID = /^[a-z0-9][a-z0-9_-]{0,63}$/i;
+
+/** Bound the handlers one publish may deploy; the rest is the registry's job. */
+const MAX_FUNCTIONS = 50;
 
 /**
  * GET /v1/provision?projectId= — read back what POST stamped.
@@ -103,9 +113,11 @@ export async function POST(req: NextRequest) {
   if (!scope) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   let projectId = '';
+  let functions: FunctionDef[] = [];
   try {
-    const body = (await req.json()) as { projectId?: string };
+    const body = (await req.json()) as { projectId?: string; functions?: FunctionDef[] };
     projectId = (body.projectId || '').trim();
+    functions = Array.isArray(body.functions) ? body.functions.slice(0, MAX_FUNCTIONS) : [];
   } catch {
     return NextResponse.json({ error: 'invalid body' }, { status: 400 });
   }
@@ -138,5 +150,34 @@ export async function POST(req: NextRequest) {
     pending.push({ name: 'Hanzo Base backend', connectUrl: '/connectors', skippable: true });
   }
 
-  return NextResponse.json({ projectId, provisioned, pending });
+  // Functions: the tier of the app's backend that RUNS. Handlers the generated
+  // app declares are deployed to the caller's Hanzo Functions registry, grouped
+  // under this project's slug. Reported only when the registry accepted them —
+  // a refusal is named, never rounded up to success.
+  const fns = functions.length
+    ? await provisionFunctions(
+        (path, init) =>
+          fetch(`${cloudBase()}${path}`, {
+            method: init.method,
+            headers: {
+              Authorization: `Bearer ${scope.token}`,
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+              // Honored upstream only for an admin acting cross-org; ignored otherwise.
+              ...(scope.crossOrg ? { 'X-Org-Id': scope.org } : {}),
+            },
+            body: init.body,
+            cache: 'no-store',
+          }),
+        projectId,
+        functions,
+      )
+    : { deployed: [], failed: [] };
+
+  if (fns.deployed.length) provisioned.push('Functions');
+  if (fns.failed.length) {
+    pending.push({ name: 'Functions', connectUrl: '/connectors', skippable: true });
+  }
+
+  return NextResponse.json({ projectId, provisioned, pending, functions: fns });
 }
