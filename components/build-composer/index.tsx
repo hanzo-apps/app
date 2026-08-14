@@ -31,7 +31,6 @@ import {
   Hammer,
   ListTodo,
   ChevronDown,
-  Database,
   Sparkles,
   Plus,
   GitBranch,
@@ -44,8 +43,7 @@ import {
 import { ACCEPT, inline, seed, take, type Attachment, type Read } from '@/lib/attach';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Textarea, Button } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
-import { baseEnabled, setBaseEnabled } from '@/lib/base/flag';
-import { startNewBuild } from '@/lib/dev/workspace';
+import { start } from '@/lib/dev/starter';
 
 export type ComposerMode = 'build' | 'plan';
 
@@ -90,9 +88,6 @@ export function BuildComposer({
   const analytics = useAnalytics();
   const [idea, setIdea] = useState('');
   const [mode, setMode] = useState<ComposerMode>('build');
-  // Base backend: ON by default — every new app ships with a real data plane
-  // unless the user opts out. Persisted so the builder + publish read the same value.
-  const [withBase, setWithBase] = useState(true);
   const [focused, setFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -167,10 +162,6 @@ export function BuildComposer({
     pauseRef.current = setTimeout(() => setPaused(false), 3000);
   };
   useEffect(() => () => clearTimeout(pauseRef.current), []);
-
-  useEffect(() => {
-    setWithBase(baseEnabled());
-  }, []);
 
   useEffect(() => {
     if (autoFocus) textareaRef.current?.focus();
@@ -270,12 +261,39 @@ export function BuildComposer({
     ? `Ask Hanzo to build ${typed}█`
     : 'Ask Hanzo to build…';
 
-  const toggleBase = () => {
-    setWithBase((v) => {
-      setBaseEnabled(!v);
-      return !v;
-    });
-  };
+  /**
+   * Build ↔ Plan, alternating slowly while nobody is here — the other half of
+   * the idle motif, so both modes are SEEN rather than hidden behind a menu.
+   *
+   * `mode` is a VALUE: it rides `onSubmit(text, mode)` and
+   * `localStorage.initialMode`. So the loop moves `shown` — the LABEL — and
+   * never the value. Cycling the value instead would make two identical actions
+   * (type, Enter) build two different things depending on when they landed;
+   * a submit is not a coin flip.
+   *
+   * That leaves one seam — a label reading Plan while a submit would send build
+   * — and `idle` closes it, because it is already false the moment a person
+   * focuses the field or types a character, and `settled` retires the loop for
+   * good the moment they reach for this control. Both happen BEFORE anything can
+   * be sent, so the label anyone acts on is the truth. Reduced motion never
+   * starts it: the label simply states the mode, as it always did.
+   */
+  const [shown, setShown] = useState<ComposerMode>('build');
+  const [settled, setSettled] = useState(false);
+  useEffect(() => {
+    if (settled || !idle) {
+      setShown(mode);
+      return;
+    }
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    ) {
+      return;
+    }
+    const t = setInterval(() => setShown((m) => (m === 'build' ? 'plan' : 'build')), 4000);
+    return () => clearInterval(t);
+  }, [settled, idle, mode]);
 
   /**
    * The ONE submit. `raw` defaults to the composer's draft, so the send button
@@ -290,8 +308,11 @@ export function BuildComposer({
     // Top-of-funnel build INTENT — the landing composer fires this for logged-out
     // visitors too, and no app exists yet (that is `app_created`, at publish).
     // FUNNELS.appShip step 2. Enumerated props only; never the prompt text.
-    analytics.capture(EVENTS.BUILD_STARTED, { mode, withBase });
-    setBaseEnabled(withBase);
+    analytics.capture(EVENTS.BUILD_STARTED, { mode, withBase: true });
+    // The new build itself: previous one forgotten, Base on, the ONE starter laid
+    // down as its working copy. Before the branch, because a caller with its own
+    // `onSubmit` (the landing's login bounce) opens the same builder.
+    start();
 
     // Default seed pipeline (PRESERVED contract + the one new mode key).
     const go = (brief: string) => {
@@ -300,9 +321,6 @@ export function BuildComposer({
         return;
       }
       try {
-        // A fresh prompt is a NEW project — drop the previous unsaved build's
-        // minted repo id so this one does not commit into that one's history.
-        startNewBuild();
         localStorage.setItem('initialPrompt', brief);
         localStorage.setItem('initialMode', mode);
       } catch {
@@ -349,7 +367,7 @@ export function BuildComposer({
     },
   });
 
-  const CurrentMode = MODES.find((m) => m.value === mode) ?? MODES[0];
+  const Shown = MODES.find((m) => m.value === shown) ?? MODES[0];
 
   return (
     <YStack alignSelf="center" width="100%" maxWidth={608} className={`${className}`}>
@@ -384,17 +402,38 @@ export function BuildComposer({
           12 outside and 14 inside — the inner corner rounder than the corner
           containing it, so the gradient showed a fatter sliver at the corners
           than along the edges. Change the two together or the seam comes back. */}
-      <YStack borderRadius={28} elevation={6} className="hz-composer" {...dragging}>
+      {/* The drop ring is OUT HERE and OUTSIDE the box, and both halves were
+          bought with a measurement.
+
+          It used to sit on the panel below — the `[data-field-box]` whose
+          `:focus-within` rule (assets/globals.css, html:root-anchored) lights
+          its edge. That selector is (0,2,1) against the (0,1,0) atomic class a
+          gui prop compiles to, so the stylesheet won and a drag over a composer
+          someone had already typed in changed NOTHING: 1px solid at rest, 1px
+          solid over a file, at 390 and 1280. The affordance was missing exactly
+          when a file is most likely to arrive.
+
+          Moving it to the host is not enough on its own: `.hz-composer > *` is
+          `z-index: 1` (the panel has to cover the spinning gradient behind it),
+          and an opaque child above the parent hides any ring drawn INSIDE the
+          parent's box — computed style said `2px dashed` while the screenshot
+          showed nothing. So the ring sits just outside, where the panel cannot
+          reach it. It only appears mid-drag, so the bubble is never seen to
+          grow; at rest the gradient rim is still the outermost edge. */}
+      <YStack
+        borderRadius={28}
+        elevation={6}
+        className="hz-composer"
+        outlineWidth={over ? 2 : 0}
+        outlineStyle="dashed"
+        outlineColor="$color8"
+        outlineOffset={2}
+        {...dragging}
+      >
         <YStack
           data-field-box
           borderRadius={26.5}
           backgroundColor="$background"
-          // Drawn INSIDE the bubble (negative offset) so the gradient rim stays
-          // the outermost edge and the pill does not appear to grow on hover.
-          outlineWidth={over ? 2 : 0}
-          outlineStyle="dashed"
-          outlineColor="$color8"
-          outlineOffset={-6}
         >
           <Textarea
             ref={textareaRef}
@@ -417,7 +456,15 @@ export function BuildComposer({
             // `.hz-ask` (assets/globals.css) is that floor; the arithmetic and
             // the width it starts at are stated there.
             className="hz-ask"
-            width="100%" backgroundColor="transparent" borderWidth={0} paddingHorizontal="$3.5" paddingBottom="$1.5" paddingTop="$3" fontSize={16} lineHeight="1.375" color="$color" placeholderTextColor="$color11" focusStyle={{ borderWidth: 0 }}
+            // Room around the sentence, and the two axes are not the same
+            // question. Sideways is free: measured at 280 and 320, every
+            // typewriter phrase wraps to the same three lines at 14, 16, 18 and
+            // 20px of side padding. VERTICAL is not — `.hz-ask`'s 84px floor is
+            // three 22px lines plus exactly this 12/6, so a taller box needs 90
+            // and clips the third line at ≤340px until that number moves with
+            // it. So the field takes the sideways room and the row below takes
+            // the vertical (its own paddingTop), which the floor does not count.
+            width="100%" backgroundColor="transparent" borderWidth={0} paddingHorizontal="$4.5" paddingBottom="$1.5" paddingTop="$3" fontSize={16} lineHeight="1.375" color="$color" placeholderTextColor="$color11" focusStyle={{ borderWidth: 0 }}
   />
           {/* What is attached, and what was turned away, between the field and
               its controls — the answer to "did that land?" belongs next to the
@@ -481,7 +528,7 @@ export function BuildComposer({
               secondary chrome, so it keeps the library's own 32px controls on a
               phone instead of the 44px coarse floor (assets/globals.css states
               both halves). */}
-          <XStack className="hz-dense" alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$2" paddingBottom="$2">
+          <XStack className="hz-dense" alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$2" paddingTop="$1.5" paddingBottom="$2">
             <XStack alignItems="center" gap="$1">
               {/* [+] — bring in existing code, the same affordance the builder's
                   composer has, on the left of the row. Import routes to /new
@@ -521,17 +568,21 @@ export function BuildComposer({
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Build / Plan mode */}
+              {/* Build / Plan mode. The trigger's own press or focus is the
+                  "someone is here" signal that stops the idle alternation above
+                  — permanently, so the label can never move under a pointer. */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     type="button"
                     variant="ghost"
+                    onPointerDown={() => setSettled(true)}
+                    onFocus={() => setSettled(true)}
                     height={34} alignItems="center" gap="$1.5" borderWidth={0} borderRadius="$5" backgroundColor="$color005" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color3" }}
                   >
                     <XStack alignItems="center" gap="$1.5">
-                      <CurrentMode.icon size={14} />
-                      <SizableText fontSize="$1" color="$color">{CurrentMode.label}</SizableText>
+                      <Shown.icon size={14} />
+                      <SizableText fontSize="$1" color="$color">{Shown.label}</SizableText>
                       <ChevronDown size={12} />
                     </XStack>
                   </Button>
@@ -542,7 +593,10 @@ export function BuildComposer({
                   {MODES.map((m) => (
                     <DropdownMenuItem
                       key={m.value}
-                      onClick={() => setMode(m.value)}
+                      onClick={() => {
+                        setMode(m.value);
+                        setSettled(true);
+                      }}
                       flexDirection="column" alignItems="flex-start" gap="$0.5"
                     >
                       <XStack alignItems="center" gap="$2">
@@ -554,23 +608,10 @@ export function BuildComposer({
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-
-              {/* Base backend toggle — spawn a Hanzo Base for this app. The row
-                  carries no outlines, so active is said by the label and icon
-                  going bright (monochrome) — a fill read as a pressed slab. */}
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={toggleBase}
-                aria-pressed={withBase}
-                title="Hanzo Base backend — database, auth, realtime for this app"
-                group height={34} alignItems="center" gap="$1.5" borderWidth={0} borderRadius="$5" backgroundColor="$color005" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color3" }}
-              >
-                <XStack alignItems="center" gap="$1.5" opacity={withBase ? 1 : 0.5} $group-hover={{ opacity: 1 }}>
-                  <Database size={14} />
-                  <SizableText fontSize="$1">Base</SizableText>
-                </XStack>
-              </Button>
+              {/* No Base control. Every build gets the data plane now (`start()`
+                  writes the flag and the starter it lays down is already wired to
+                  it), and a toggle for something that is always on is a question
+                  with one answer. */}
             </XStack>
 
             <XStack alignItems="center" gap="$1">

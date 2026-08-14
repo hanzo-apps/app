@@ -245,7 +245,7 @@ describe("BuildComposer starters", () => {
   });
 
   it("marks the action row dense — the field is the tap target, not the toolbar", () => {
-    // `.hz-dense` is what exempts these five controls from the 44px coarse
+    // `.hz-dense` is what exempts the row's controls from the 44px coarse
     // floor (assets/globals.css, pinned by tests/unit/touch-target.test.ts).
     // Without the class the exemption matches nothing and the row silently
     // goes back to 44px slabs on every phone.
