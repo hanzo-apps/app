@@ -369,8 +369,14 @@ export function BuildComposer({
   // builder use — here there is no reply to read back, so the turn simply goes
   // through `submit`, exactly as the send button does.
   const kept = useRef<string | null>(null);
+  // What was already typed when dictation starts, so speech APPENDS instead of
+  // replacing. The mirror is written after the commit, not during render: a ref
+  // read during render is a value React cannot see changing, and speech arrives
+  // from an event long after the paint that set this.
   const held = useRef(idea);
-  held.current = idea;
+  useEffect(() => {
+    held.current = idea;
+  }, [idea]);
   const join = (heard: string) => (kept.current ? `${kept.current} ${heard}` : heard);
 
   const voice = useVoice({
@@ -594,6 +600,12 @@ export function BuildComposer({
                   <Button
                     type="button"
                     variant="ghost"
+                    /* Named for the MODE, never for `Shown.label`: the label
+                       alternates while nobody is here, and a control whose
+                       accessible name drifts on a timer is one a screen reader
+                       cannot describe twice the same way. Same spelling the
+                       editor's pill uses, so one control has one name. */
+                    aria-label={`Mode: ${mode}`}
                     onPointerDown={() => setSettled(true)}
                     onFocus={() => setSettled(true)}
                     height={34} alignItems="center" gap="$1.5" borderWidth={0} borderRadius="$5" backgroundColor="$color005" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color3" }}

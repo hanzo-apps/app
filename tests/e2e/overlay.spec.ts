@@ -43,7 +43,12 @@ for (const [name, viewport] of VIEWPORTS) {
     await page.setViewportSize(viewport);
     await page.goto('/');
 
-    const trigger = page.getByRole('button', { name: /^Build/ }).first();
+    // The MODE pill, named by what it is. `/^Build/` matched three things on
+    // this page — the hero's "Build Shift Board →", this pill, and a starter
+    // chip — and `.first()` took the hero, which opens no menu. It also could
+    // not be stable by text: the pill alternates Build ↔ Plan while the page
+    // idles, so half the time the name it was hunting was not on screen.
+    const trigger = page.getByRole('button', { name: /^Mode:/ });
     await trigger.scrollIntoViewIfNeeded();
     await trigger.click();
 
