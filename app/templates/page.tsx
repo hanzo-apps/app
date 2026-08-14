@@ -13,7 +13,7 @@
  */
 
 import { SizableText, YStack, XStack, H1, Paragraph, Image, H3 } from '@hanzo/ui';
-import { glass } from "@/lib/chrome";
+import { glass, HEADER_H } from "@/lib/chrome";
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Badge, Input, Button } from '@hanzo/ui';
@@ -148,8 +148,17 @@ function ResourcesBrowser() {
                   `{n} resources` — which JSX hands over as two children — stacks the
                   count above the word and the pill, sized for one line, crops the
                   second. Measured on /templates: clientHeight 24, scrollHeight 34,
-                  two block spans of 16px. One interpolated string is one child. */}
-              <Badge variant="secondary">{`${items.length} resources`}</Badge>
+                  two block spans of 16px. One interpolated string is one child.
+
+                  `alignSelf="center"` because @hanzo/ui's Badge frame hard-codes
+                  `alignSelf: flex-start` to keep itself from stretching in a
+                  flex parent — which also overrides this row's alignItems and
+                  hangs the pill off the cap-height of "Resources" like a
+                  superscript (measured: row centre 137, badge centre 113). */}
+              {/* Badge is a plain <span>, so alignment rides `style` — a style
+                  PROP type-errors and, untyped, would reach the DOM as an
+                  attribute React drops. */}
+              <Badge variant="secondary" style={{ alignSelf: 'center' }}>{`${items.length} resources`}</Badge>
             </XStack>
             <Paragraph maxWidth={672} color="$color11">
               Start from a template to build your next project. Every template forks into the
@@ -159,8 +168,13 @@ function ResourcesBrowser() {
           </YStack>
         </YStack>
 
-        {/* Filters */}
-        <YStack {...glass(2)} position="sticky" top="$0" zIndex={30} borderBottomWidth={1}>
+        {/* Filters. Sticks BELOW the header, not under it: both were pinned to
+            y=0 and the header wins on z-index (200 against 30), so from the
+            first pixel of scroll the search field sat inside the header's 0–60
+            band — its placeholder and magnifier read straight THROUGH the
+            header's 72% glass, with the Hanzo mark on top of the glyph, and the
+            only way to filter 100 resources by name was gone and unclickable. */}
+        <YStack {...glass(2)} position="sticky" top={HEADER_H} zIndex={30} borderBottomWidth={1}>
           <XStack width="100%" maxWidth={1280} alignSelf="center" flexWrap="wrap" alignItems="flex-start" gap="$3" paddingHorizontal="$5" paddingVertical="$3">
             {/* The glyph goes IN the field, which is what `startAdornment` is
                 for. As a plain sibling it was never positioned, so it stacked
@@ -183,8 +197,21 @@ function ResourcesBrowser() {
                 could shrink it, so `flexWrap: wrap` (already on from 640 up)
                 never had a reason to wrap and `overflow="scroll"` never had
                 anything to scroll: the box was never smaller than its content.
-                Letting it shrink is what turns both of those back on. */}
-            <XStack flexWrap="nowrap" alignItems="center" gap="$1.5" flexShrink={1} overflow="scroll" $sm={{ flexWrap: "wrap" }} className="no-scrollbar">
+                Letting it shrink is what turns both of those back on.
+
+                `flex={1}` (basis 0) is what keeps this bar TWO bands instead of
+                three. Wrapping is decided on hypothetical sizes before any
+                shrinking happens, so a chips block whose content is 1380px wide
+                claimed a flex line of its own and pushed the count onto a third
+                — a whole empty row with one pill at the end of it, 189px of
+                sticky bar at 1024. From a basis of zero the three items share
+                one line and the chips wrap inside their own box.
+
+                `.fade-end` is for the phone, where this is a nowrap scroller:
+                the cut used to land wherever a chip happened to be ("Portfolio"
+                sliced to a bare "P") and read as damage rather than as more to
+                swipe to. */}
+            <XStack flexWrap="nowrap" alignItems="center" gap="$1.5" flex={1} overflow="scroll" $sm={{ flexWrap: "wrap" }} className="no-scrollbar fade-end">
               {categories.map((cat) => (
                 <Button
                   key={cat}
@@ -212,7 +239,9 @@ function ResourcesBrowser() {
                 Tailwind is gone, so the count was never right-aligned. A Badge
                 is typed as span props and takes no layout of its own, so the
                 margin belongs to a stack around it. */}
-            <YStack marginLeft="auto">
+            <YStack marginLeft="auto" alignSelf="center">
+              {/* The stack above already centres this; a second alignSelf here
+                  is both redundant and a type error on a <span>. */}
               <Badge variant="secondary">
                 {`${filtered.length} shown${loading ? ' · syncing…' : ''}`}
               </Badge>

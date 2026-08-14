@@ -37,10 +37,11 @@ export default function HanzoModels() {
             which a reader can only make when both are on screen at once.
             `.card-grid` is the app's ONE card grid (cloud-integration and
             /templates use it): auto-fill/minmax, so two columns above ~580px and
-            one on a phone, with no breakpoints to keep in sync. `align-items:
-            stretch` overrides its `start` for this pair only — with two cards of
-            unequal prose, `start` leaves one visibly shorter than the other. */}
-        <div className="card-grid" style={{ marginTop: 36, alignItems: "stretch" }}>
+            one on a phone, with no breakpoints to keep in sync. Equal heights
+            come from the class now — the inline `alignItems: "stretch"` that
+            used to be here was overriding its `align-items: start`, and that
+            declaration is gone, so every consumer gets what this pair needed. */}
+        <div className="card-grid" style={{ marginTop: 36 }}>
           {/* Enso — proprietary flagship */}
           <Reveal height="100%">
             <Anchor

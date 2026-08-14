@@ -309,7 +309,12 @@ export default function Comparison() {
   };
   return (
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$10" }}>
-      <YStack alignSelf="center" maxWidth={1152}>
+      {/* `width="100%"` is what makes the cap a cap. Without it `alignSelf:
+          center` is shrink-to-fit, so this column sized to the matrix's
+          max-content (188px label + 10 × 208px) clamped to 1152 — and stayed
+          1152 at every width, hanging 64px off both edges of a 1024 screen
+          with the pager unreachable and the heading's first words cut off. */}
+      <YStack alignSelf="center" width="100%" maxWidth={1152}>
         <Reveal alignSelf="center" width="100%" maxWidth={672}>
           <Paragraph textAlign="center" fontFamily="$mono" fontSize="$1" color="$color11">
             Why Hanzo
