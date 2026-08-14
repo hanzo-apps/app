@@ -104,7 +104,16 @@ function OptionCard({
         <XStack height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color3">
           <SizableText color="$color"><Icon size={20} /></SizableText>
         </XStack>
-        <YStack minWidth={0} flex={1} gap="$1">
+        {/* flexGrow + an AUTO basis, never `flex={1}`.
+            `flex={1}` compiles to `flex-basis: 0` in gui's flex model, so in a
+            content-sized row the column's hypothetical height is 0 and it does
+            not reserve the space its own text needs. The wrapping description
+            then painted OUTSIDE the card and landed on the card below it — the
+            live modal showed "…for what you use." running through "Upgrade your
+            plan". Same collapse this app already fixed on TabsContent and
+            CardContent; the remedy is the same: keep the growing, restore the
+            basis. */}
+        <YStack minWidth={0} flexGrow={1} flexBasis="auto" gap="$1">
           <XStack alignItems="center" justifyContent="space-between" gap="$2">
             <SizableText fontSize="$3" fontWeight="500" color="$color">{title}</SizableText>
             <SizableText color="$color11" flexShrink={0}><ArrowRight size={16} /></SizableText>
