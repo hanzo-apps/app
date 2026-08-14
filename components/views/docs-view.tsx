@@ -55,7 +55,7 @@ function DocsViewContent() {
         }, 100);
       } catch (err) {
         console.error('Failed to load doc:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load document');
+        setError(err instanceof Error ? err.message : 'The page did not load, and the server gave no reason. Pick it again from the list.');
         setContent('');
       } finally {
         setLoading(false);
@@ -227,7 +227,7 @@ function DocsViewContent() {
             <XStack alignItems="center" justifyContent="center" height="100%">
               <YStack alignItems="center">
                 <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$color11" alignSelf="center" />
-                <Paragraph marginTop="$4" color="$color11">Loading documentation...</Paragraph>
+                <Paragraph marginTop="$4" color="$color11">Loading the page…</Paragraph>
               </YStack>
             </XStack>
           )}
@@ -236,7 +236,7 @@ function DocsViewContent() {
             <XStack alignItems="center" gap="$3" padding="$4" backgroundColor="transparent" borderWidth={1} borderColor="$red9" borderRadius="$5">
               <AlertCircle size={20} />
               <div>
-                <Paragraph fontWeight="500">Error loading document</Paragraph>
+                <Paragraph fontWeight="500">This page didn&apos;t load</Paragraph>
                 <Paragraph fontSize="$3">{error}</Paragraph>
               </div>
             </XStack>
@@ -275,7 +275,7 @@ function DocsViewContent() {
 // Wrapper component with Suspense boundary for Next.js 15
 export function DocsView() {
   return (
-    <Suspense fallback={<XStack alignItems="center" justifyContent="center" height="100%">Loading documentation...</XStack>}>
+    <Suspense fallback={<XStack alignItems="center" justifyContent="center" height="100%">Loading the docs…</XStack>}>
       <DocsViewContent />
     </Suspense>
   );

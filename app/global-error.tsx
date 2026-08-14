@@ -31,10 +31,10 @@ export default function GlobalError({
     <html>
       <body>
         <main className="crash">
-          <h1>Critical Error</h1>
+          <h1>This page crashed</h1>
           <p>
-            The application encountered an unexpected error and needs to restart. Our
-            team has been notified.
+            Try again reloads it, and that usually works. The error was reported to
+            us automatically — if it keeps happening, send us the reference below.
           </p>
           {error.digest && (
             <p className="crash-ref">

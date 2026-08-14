@@ -552,7 +552,7 @@ function RecentProjectsCard({
       </XStack>
       {projects.length === 0 ? (
         <Paragraph fontSize="$1" color="$color11" textAlign="center" paddingVertical="$2" flex={1} display="flex" alignItems="center" justifyContent="center">
-          No projects yet
+          No projects yet. Describe one to start.
         </Paragraph>
       ) : (
         <YStack rowGap="$1.5" flex={1}>
@@ -593,7 +593,7 @@ function RecentDeploymentsCard({ deployments }: { deployments: DashboardData['re
       </XStack>
       {deployments.length === 0 ? (
         <Paragraph fontSize="$1" color="$color11" textAlign="center" paddingVertical="$2" flex={1} display="flex" alignItems="center" justifyContent="center">
-          No deployments yet
+          No deployments yet. Publish a project to make one.
         </Paragraph>
       ) : (
         <YStack rowGap="$1.5" flex={1}>
@@ -632,7 +632,7 @@ function TrafficLists({ data }: { data: DashboardData }) {
         </XStack>
         {data.traffic.topDeployments.length === 0 ? (
           <Paragraph fontSize="$1" color="$color11" textAlign="center" paddingVertical="$2" flex={1} display="flex" alignItems="center" justifyContent="center">
-            No traffic recorded yet
+            No visitors in the last 24 hours.
           </Paragraph>
         ) : (
           <YStack rowGap="$1.5" flex={1}>
@@ -727,7 +727,7 @@ export function DashboardView({ onNavigate, onProjectSelect, onStartTour }: Dash
       }
       setLastUpdated(new Date());
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      setError(err instanceof Error ? err.message : 'The dashboard did not load, and the server gave no reason.');
     } finally {
       setLoading(false);
     }
@@ -760,7 +760,7 @@ export function DashboardView({ onNavigate, onProjectSelect, onStartTour }: Dash
       <XStack height="100%" alignItems="center" justifyContent="center">
         <YStack>
           <YStack borderRadius="$10" height="$6" width="$6" borderBottomWidth={2} borderColor="$orange9" alignSelf="center"></YStack>
-          <Paragraph marginTop="$3" fontSize="$3" color="$color11" textAlign="center">Loading dashboard...</Paragraph>
+          <Paragraph marginTop="$3" fontSize="$3" color="$color11" textAlign="center">Loading dashboard…</Paragraph>
         </YStack>
       </XStack>
     );
@@ -774,7 +774,7 @@ export function DashboardView({ onNavigate, onProjectSelect, onStartTour }: Dash
           <AlertTriangle size={32} />
           <Paragraph color="$color11" fontSize="$3" textAlign="center">{error}</Paragraph>
           <Button variant="outline" size="sm" onClick={fetchData} marginTop="$4">
-            Retry
+            Load the dashboard again
           </Button>
         </YStack>
       </XStack>

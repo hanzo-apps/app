@@ -120,13 +120,13 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
       await vfs.init();
       const project = await vfs.getProject(deployment.projectId);
       if (!project) {
-        toast.error('Project not found in local storage');
+        toast.error("This deployment's project isn't stored on this device, so there is nothing to open.");
         return;
       }
       onProjectSelect(project);
     } catch (error) {
       logger.error('[DeploymentsView] Failed to load project:', error);
-      toast.error('Failed to load project');
+      toast.error("Couldn't read the project from this device's storage.");
     }
   };
 
@@ -137,7 +137,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
       await vfs.init();
       const project = await vfs.getProject(deployment.projectId);
       if (!project) {
-        toast.error('Project not found in local storage');
+        toast.error("This deployment's project isn't stored on this device, so there is nothing to open.");
         return;
       }
       setTemplateExportDeployment(deployment);
@@ -145,7 +145,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
       setShowTemplateExportModal(true);
     } catch (error) {
       logger.error('[DeploymentsView] Failed to load project for template export:', error);
-      toast.error('Failed to load project');
+      toast.error("Couldn't read the project from this device's storage.");
     }
   };
 
@@ -251,7 +251,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
     setSwapDialogState(null);
     setShowSettingsModal(false);
     setSelectedDeployment(null);
-    toast.success('Project swapped and deployment republished');
+    toast.success('Swapped the project and republished the deployment');
     await loadData();
   };
 
@@ -320,7 +320,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
 
       const result = await response.json();
 
-      toast.success(`Deployment published! ${result.filesWritten} files written.`);
+      toast.success(`Published. ${result.filesWritten} files written.`);
 
       // Update state optimistically with publish data
       updateDeploymentInState(deploymentId, {
@@ -334,7 +334,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
       setPublishingStates(prev => ({ ...prev, [deploymentId]: false }));
     } catch (error) {
       logger.error('Failed to publish:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to publish. Please try again.');
+      toast.error(error instanceof Error ? error.message : 'Publish did not finish. The live site is unchanged — try again.');
       // Clear publishing state on error
       setPublishingStates(prev => ({ ...prev, [deploymentId]: false }));
     }
@@ -355,7 +355,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
       });
     } catch (err) {
       logger.error('[DeploymentsView] Failed to update deployment thumbnail:', err);
-      toast.error('Failed to update thumbnail');
+      toast.error("The thumbnail didn't change. The old one is still showing.");
     }
   };
 
@@ -390,7 +390,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
       });
     } catch (error) {
       logger.error('Failed to disable deployment:', error);
-      alert('Failed to disable deployment. Please try again.');
+      alert('The deployment is still enabled — the server refused the change. Try again.');
     }
   };
 
@@ -421,7 +421,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
       });
     } catch (error) {
       logger.error('Failed to enable deployment:', error);
-      alert('Failed to enable deployment. Please try again.');
+      alert('The deployment is still disabled — the server refused the change. Try again.');
     }
   };
 
@@ -446,7 +446,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
       await loadData();
     } catch (error) {
       logger.error('Failed to delete deployment:', error);
-      alert('Failed to delete deployment. Please try again.');
+      alert('The deployment was not deleted. It is still listed — try again.');
     }
   };
 
@@ -526,7 +526,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
       <XStack height="100%" alignItems="center" justifyContent="center">
         <YStack alignItems="center">
           <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$orange9" alignSelf="center"></YStack>
-          <Paragraph marginTop="$4" textAlign="center">Loading deployments...</Paragraph>
+          <Paragraph marginTop="$4" textAlign="center">Loading deployments…</Paragraph>
         </YStack>
       </XStack>
     );
@@ -594,17 +594,19 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
                 <Globe size={64} />
                 {deployments.length === 0 ? (
                   <>
-                    <H2 fontSize="$7" fontWeight="500" marginBottom="$2" textAlign="center">No Deployments Yet</H2>
+                    <H2 fontSize="$7" fontWeight="500" marginBottom="$2" textAlign="center">No deployments yet</H2>
                     <Paragraph color="$color11" marginBottom="$4" maxWidth={448} textAlign="center">
-                      Create your first deployment by clicking the "New" button above.
-                      Deployments let you publish projects and manage their public settings independently.
+                      A deployment is one published copy of a project, with its own address and
+                      its own public settings. One project can have several. Make the first one
+                      with New, above.
                     </Paragraph>
                   </>
                 ) : (
                   <>
-                    <H2 fontSize="$7" fontWeight="500" marginBottom="$2" textAlign="center">No deployments found</H2>
+                    <H2 fontSize="$7" fontWeight="500" marginBottom="$2" textAlign="center">Nothing matches</H2>
                     <Paragraph color="$color11" marginBottom="$4" maxWidth={448} textAlign="center">
-                      Try adjusting your search or filter criteria
+                      None of your deployments match the search and filters above. Clear them to
+                      see all of them again.
                     </Paragraph>
                   </>
                 )}

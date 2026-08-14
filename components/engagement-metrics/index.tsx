@@ -45,7 +45,7 @@ export function EngagementMetrics({ deploymentId }: EngagementMetricsProps) {
       setData(metrics);
     } catch (error) {
       console.error('Failed to fetch engagement metrics:', error);
-      toast.error('Failed to load engagement metrics');
+      toast.error("Engagement didn't load. Reopen this tab to try again.");
     } finally {
       setLoading(false);
     }
@@ -68,7 +68,7 @@ export function EngagementMetrics({ deploymentId }: EngagementMetricsProps) {
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" height={384} borderWidth={1} borderRadius="$5">
-        <Paragraph color="$color11">Loading engagement metrics...</Paragraph>
+        <Paragraph color="$color11">Loading engagement…</Paragraph>
       </XStack>
     );
   }
@@ -76,7 +76,7 @@ export function EngagementMetrics({ deploymentId }: EngagementMetricsProps) {
   if (!data) {
     return (
       <XStack alignItems="center" justifyContent="center" height={384} borderWidth={1} borderRadius="$5">
-        <Paragraph color="$color11">No engagement data available</Paragraph>
+        <Paragraph color="$color11">Nothing recorded yet. Once people visit, this shows how long each page holds them, how far down they scroll, and which pages they arrive on and leave from.</Paragraph>
       </XStack>
     );
   }
@@ -203,7 +203,7 @@ export function EngagementMetrics({ deploymentId }: EngagementMetricsProps) {
       {/* Refresh Button */}
       <XStack justifyContent="flex-end">
         <Button onClick={fetchEngagementMetrics} disabled={loading}>
-          {loading ? 'Loading...' : 'Refresh'}
+          {loading ? 'Loading…' : 'Reload'}
         </Button>
       </XStack>
     </YStack>

@@ -43,10 +43,10 @@ export function ErrorFallback({
             <AlertCircle size={20} />
             <YStack flex={1}>
               <H3 fontSize="$3" fontWeight="500" color="$red11" $theme-dark={{ color: "$red3" }}>
-                Component Error
+                This part didn&apos;t load
               </H3>
               <Paragraph fontSize="$3" color="$red10" marginTop="$1" $theme-dark={{ color: "$red4" }}>
-                {isDevelopment ? error.message : 'Something went wrong with this component.'}
+                {isDevelopment ? error.message : 'The rest of the page still works. It retries on its own in a few seconds.'}
               </Paragraph>
               <Button
                 onClick={resetErrorBoundary}
@@ -75,12 +75,12 @@ export function ErrorFallback({
               </YStack>
               <div>
                 <H1 fontSize="$8" fontWeight="500" color="$color">
-                  {level === 'app' ? 'Application Error' : 'Page Error'}
+                  {level === 'app' ? 'Hanzo hit an error' : 'This page hit an error'}
                 </H1>
                 <Paragraph color="$color11" fontSize="$3" marginTop="$1">
                   {isPermanent
-                    ? 'Multiple errors detected. Please refresh the page.'
-                    : 'An unexpected error occurred.'}
+                    ? 'It failed three times in a row, so it stopped retrying. Reload the page.'
+                    : 'It stopped part-way through. Retrying usually works.'}
                 </Paragraph>
               </div>
             </XStack>
@@ -91,7 +91,7 @@ export function ErrorFallback({
               <YStack marginBottom="$5">
                 <YStack backgroundColor="$color3" borderRadius="$5" padding="$4" marginBottom="$4">
                   <H2 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
-                    Error Details (Development Only)
+                    Error detail — development only
                   </H2>
                   <Paragraph fontSize="$3" color="$color" fontFamily="$mono">
                     {error.message}
@@ -101,7 +101,7 @@ export function ErrorFallback({
                 {error.stack && (
                   <details style={{ fontSize: 12 }}>
                     <summary style={{ cursor: "pointer", color: "var(--muted-foreground)" }}>
-                      View Stack Trace
+                      View the stack trace
                     </summary>
                     <SizableText marginTop="$2" backgroundColor="$color3" borderRadius="$2" padding="$3" color="$color11" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
                       {error.stack}
@@ -114,8 +114,8 @@ export function ErrorFallback({
             {!isDevelopment && (
               <YStack marginBottom="$5">
                 <Paragraph color="$color11">
-                  We apologize for the inconvenience. The error has been logged and our team will
-                  investigate the issue.
+                  The error was reported to us automatically. If it keeps happening, use
+                  Report this issue below — it carries the error message with it.
                 </Paragraph>
                 <YStack marginTop="$4" padding="$3" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" borderRadius="$5">
                   <Paragraph fontSize="$3" color="$color">
@@ -132,7 +132,7 @@ export function ErrorFallback({
                   width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color6" }}
                 >
                   <RefreshCw size={16} />
-                  <SizableText color="$background" fontWeight="500">Try Again</SizableText>
+                  <SizableText color="$background" fontWeight="500">Try again</SizableText>
                 </Button>
               )}
 
@@ -142,7 +142,7 @@ export function ErrorFallback({
                   width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color6" }}
                 >
                   <RefreshCw size={16} />
-                  <SizableText color="$background" fontWeight="500">Refresh Page</SizableText>
+                  <SizableText color="$background" fontWeight="500">Reload the page</SizableText>
                 </Button>
               )}
 
@@ -151,7 +151,7 @@ export function ErrorFallback({
                 width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color4" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color4" }}
               >
                 <Home size={16} />
-                <SizableText color="$color">Go to Homepage</SizableText>
+                <SizableText color="$color">Go to the home page</SizableText>
               </Button>
 
               {!isDevelopment && (
@@ -160,7 +160,7 @@ export function ErrorFallback({
                   width="100%" alignItems="center" justifyContent="center" columnGap="$2" borderWidth={1} borderColor="$borderColor" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
                 >
                   <Bug size={16} />
-                  <SizableText color="$color">Report This Issue</SizableText>
+                  <SizableText color="$color">Report this issue</SizableText>
                 </Button>
               )}
             </YStack>
@@ -169,7 +169,7 @@ export function ErrorFallback({
 
         {isDevelopment && (
           <SizableText marginTop="$4" textAlign="center" fontSize="$1" color="$color11">
-            This detailed error view is only shown in development mode.
+            This detail only appears in development.
           </SizableText>
         )}
       </YStack>

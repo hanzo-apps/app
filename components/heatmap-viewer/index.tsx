@@ -82,7 +82,7 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
     } catch (error) {
       if (myId !== reqIdRef.current) return;
       console.error('Failed to fetch heatmap data:', error);
-      toast.error('Failed to load heatmap data');
+      toast.error("Clicks didn't load. Switch page or device to try again.");
     } finally {
       if (myId === reqIdRef.current) setLoading(false);
     }
@@ -160,11 +160,11 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
         const cacheKey = `${selectedPage}-${deviceFilter}`;
         setScreenshotCache(prev => ({ ...prev, [cacheKey]: dataUrl }));
       } else {
-        toast.error('Failed to capture screenshot');
+        toast.error('The screenshot came back empty. Capture it again.');
       }
     } catch (error) {
       console.error('Failed to capture screenshot:', error);
-      toast.error('Failed to capture page screenshot');
+      toast.error("Couldn't capture the page. It may not have finished loading — try again.");
     } finally {
       setScreenshotLoading(false);
     }
@@ -263,7 +263,7 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Devices</SelectItem>
+              <SelectItem value="all">All devices</SelectItem>
               <SelectItem value="mobile">Mobile</SelectItem>
               <SelectItem value="tablet">Tablet</SelectItem>
               <SelectItem value="desktop">Desktop</SelectItem>
@@ -272,7 +272,7 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
         </YStack>
 
         <Button onClick={fetchHeatmapData} disabled={loading}>
-          {loading ? 'Loading...' : 'Refresh'}
+          {loading ? 'Loading…' : 'Reload'}
         </Button>
       </XStack>
 
@@ -286,7 +286,7 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
       {/* Visualization */}
       {loading && (
         <XStack alignItems="center" justifyContent="center" height={384} borderWidth={1} borderRadius="$5">
-          <Paragraph color="$color11">Loading heatmap data...</Paragraph>
+          <Paragraph color="$color11">Loading clicks…</Paragraph>
         </XStack>
       )}
 
@@ -294,14 +294,14 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
         <YStack borderWidth={1} borderRadius="$5" overflow="hidden">
           {!screenshotDataUrl && !screenshotLoading && (
             <YStack padding="$6">
-              <Paragraph color="$color11" marginBottom="$4" textAlign="center">Capture a screenshot of the page to visualize click heatmap</Paragraph>
-              <Button onClick={captureScreenshot}>Capture Page Screenshot</Button>
+              <Paragraph color="$color11" marginBottom="$4" textAlign="center">The heatmap paints clicks onto a picture of the page. Capture one to see them.</Paragraph>
+              <Button onClick={captureScreenshot}>Capture the page</Button>
             </YStack>
           )}
 
           {screenshotLoading && (
             <YStack padding="$6">
-              <Paragraph color="$color11" textAlign="center">Capturing screenshot...</Paragraph>
+              <Paragraph color="$color11" textAlign="center">Capturing the page…</Paragraph>
             </YStack>
           )}
 
@@ -317,7 +317,7 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
               <YStack padding="$4" backgroundColor="$color3" borderTopWidth={1}>
                 <XStack alignItems="center" justifyContent="space-between">
                   <div>
-                    <Paragraph fontWeight="500" fontSize="$3" marginBottom="$2">Click Heatmap Legend:</Paragraph>
+                    <Paragraph fontWeight="500" fontSize="$3" marginBottom="$2">What the colours mean</Paragraph>
                     <XStack gap="$4">
                       <XStack alignItems="center" gap="$2">
                         <YStack width="$4" height="$4" borderRadius="$2" backgroundColor="$red9" />
@@ -335,7 +335,7 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
                   </div>
                   <YStack>
                     <Button variant="outline" size="sm" onClick={captureScreenshot}>
-                      Recapture
+                      Capture again
                     </Button>
                   </YStack>
                 </XStack>
@@ -360,7 +360,7 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
 
       {!loading && !data && (
         <XStack alignItems="center" justifyContent="center" height={384} borderWidth={1} borderRadius="$5">
-          <Paragraph color="$color11">No heatmap data available</Paragraph>
+          <Paragraph color="$color11">No clicks recorded on this page yet. Try another page, or come back once people have visited.</Paragraph>
         </XStack>
       )}
     </YStack>

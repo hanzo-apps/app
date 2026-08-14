@@ -23,19 +23,19 @@ export default function NotFound() {
   />
         </XStack>
 
-        <H1 fontSize="$11" fontWeight="500" marginBottom="$4" letterSpacing={-0.4} textAlign="center">404 — page not found</H1>
-        <Paragraph color="$color11" fontSize="$6" marginBottom="$7" textAlign="center">This page does not exist or has moved.</Paragraph>
+        <H1 fontSize="$11" fontWeight="500" marginBottom="$4" letterSpacing={-0.4} textAlign="center">This page doesn&apos;t exist</H1>
+        <Paragraph color="$color11" fontSize="$6" marginBottom="$7" textAlign="center">The link may be out of date, or the page may have moved. Everything you have built is in your dashboard.</Paragraph>
 
         <XStack alignItems="center" justifyContent="center" gap="$4">
           <Link
             href="/"
           ><SizableText paddingHorizontal="$4.5" paddingVertical="$2.5" backgroundColor="$color5" borderWidth={1} borderColor="$color6" color="$color12" borderRadius="$6" fontWeight="500" fontSize="$3" hoverStyle={{ backgroundColor: "$color6" }}>
-            Back to Hanzo
+            Go to the home page
           </SizableText></Link>
           <Link
             href="/dashboard"
           ><SizableText fontSize="$3" color="$color" hoverStyle={{ color: "$color" }}>
-            Go to dashboard
+            Open your dashboard
           </SizableText></Link>
         </XStack>
       </YStack>

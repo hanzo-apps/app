@@ -82,7 +82,7 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
       setPages(uniquePages);
     } catch (error) {
       console.error('Failed to fetch analytics overview:', error);
-      toast.error(`Failed to load overview: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(`Analytics didn't load: ${error instanceof Error ? error.message : 'the server gave no reason'}`);
     } finally {
       setLoading(false);
     }
@@ -108,7 +108,7 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
       setStorage(data);
     } catch (error) {
       console.error('Failed to fetch storage info:', error);
-      toast.error(`Failed to load storage: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(`Storage numbers didn't load: ${error instanceof Error ? error.message : 'the server gave no reason'}`);
     }
   };
 
@@ -138,16 +138,16 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
 
-      toast.success('Analytics data exported');
+      toast.success('CSV saved to your downloads');
     } catch (error) {
       console.error('Failed to export analytics:', error);
-      toast.error('Failed to export analytics data');
+      toast.error("The export didn't finish. Nothing was downloaded — try again.");
     }
   };
 
   const handleClearData = async () => {
     if (!deployment) return;
-    if (!confirm('Are you sure you want to clear all analytics data? This cannot be undone.')) {
+    if (!confirm('Clear every pageview, session and interaction recorded for this deployment? This cannot be undone.')) {
       return;
     }
 
@@ -163,12 +163,12 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
 
       if (!response.ok) throw new Error('Failed to clear data');
 
-      toast.success('Analytics data cleared');
+      toast.success('Analytics cleared. Counting starts again with the next visitor.');
       fetchOverview();
       fetchStorage();
     } catch (error) {
       console.error('Failed to clear analytics:', error);
-      toast.error('Failed to clear analytics data');
+      toast.error("The data wasn't cleared. It is all still there — try again.");
     }
   };
 
@@ -187,17 +187,17 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
       <DialogContent maxWidth="64rem" height="90vh" padding="$0" flexDirection="column">
         <XStack borderBottomWidth={1} paddingHorizontal="$5" paddingVertical="$4" alignItems="center" justifyContent="space-between">
           <DialogHeader rowGap="$1">
-            <DialogTitle fontSize="$8">Analytics Dashboard</DialogTitle>
+            <DialogTitle fontSize="$8">Analytics</DialogTitle>
             <DialogDescription>{deployment.name || deployment.id}</DialogDescription>
           </DialogHeader>
           <XStack alignItems="center" gap="$2">
             <Button variant="outline" size="sm" onClick={handleExport} disabled={notPublished}>
               <Download size={16} />
-              Export
+              Export CSV
             </Button>
             <Button variant="outline" size="sm" onClick={handleClearData} disabled={notPublished}>
               <Trash2 size={16} />
-              Clear Data
+              Clear data
             </Button>
           </XStack>
         </XStack>
@@ -252,10 +252,12 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
               {!loading && notPublished && (
                 <YStack alignItems="center" justifyContent="center" height={384}>
                   <BarChart3 size={64} />
-                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">Analytics Not Available</H3>
+                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">Nothing to measure yet</H3>
                   <Paragraph color="$color11" maxWidth={448} textAlign="center">
-                    Analytics data will be available after you publish your deployment for the first time.
-                    The analytics database is created when the deployment is published.
+                    This tab counts pageviews and visitors, and shows which pages they read,
+                    where they came from and what they browsed on. The analytics database is
+                    created the first time you publish this deployment, and counting starts
+                    with the first visitor after that.
                   </Paragraph>
                 </YStack>
               )}
@@ -338,9 +340,11 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
               {notPublished ? (
                 <YStack alignItems="center" justifyContent="center" height={384}>
                   <MousePointerClick size={64} />
-                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">Heatmaps Not Available</H3>
+                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">No heatmap yet</H3>
                   <Paragraph color="$color11" maxWidth={448} textAlign="center">
-                    Heatmap data will be collected after you publish your deployment.
+                    A heatmap paints every click onto a screenshot of the page, so you can see
+                    what people reach for and what they miss. Publish this deployment and
+                    clicks start being recorded on the next visit.
                   </Paragraph>
                 </YStack>
               ) : (
@@ -352,9 +356,11 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
               {notPublished ? (
                 <YStack alignItems="center" justifyContent="center" height={384}>
                   <Users size={64} />
-                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">Sessions Not Available</H3>
+                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">No sessions yet</H3>
                   <Paragraph color="$color11" maxWidth={448} textAlign="center">
-                    Session data will be collected after you publish your deployment.
+                    A session is one visit, start to finish — the pages in the order they were
+                    opened and how long each one held. Publish this deployment and the next
+                    visit is recorded.
                   </Paragraph>
                 </YStack>
               ) : (
@@ -366,9 +372,11 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
               {notPublished ? (
                 <YStack alignItems="center" justifyContent="center" height={384}>
                   <Activity size={64} />
-                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">Engagement Metrics Not Available</H3>
+                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">No engagement data yet</H3>
                   <Paragraph color="$color11" maxWidth={448} textAlign="center">
-                    Engagement data will be collected after you publish your deployment.
+                    This tab shows how long each page holds a reader, how far down they scroll,
+                    and which pages they arrive on and leave from. Publish this deployment and
+                    it fills in as people visit.
                   </Paragraph>
                 </YStack>
               ) : (

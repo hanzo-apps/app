@@ -71,7 +71,7 @@ export function SessionViewer({ deploymentId }: SessionViewerProps) {
       setData(sessionData);
     } catch (error) {
       console.error('Failed to fetch session data:', error);
-      toast.error('Failed to load session data');
+      toast.error("Sessions didn't load. Reopen this tab to try again.");
     } finally {
       setLoading(false);
     }
@@ -277,13 +277,13 @@ export function SessionViewer({ deploymentId }: SessionViewerProps) {
 
       {loading && (
         <XStack alignItems="center" justifyContent="center" height={384} borderWidth={1} borderRadius="$5">
-          <Paragraph color="$color11">Loading session data...</Paragraph>
+          <Paragraph color="$color11">Loading sessions…</Paragraph>
         </XStack>
       )}
 
       {!loading && !data && (
         <XStack alignItems="center" justifyContent="center" height={384} borderWidth={1} borderRadius="$5">
-          <Paragraph color="$color11">No session data available</Paragraph>
+          <Paragraph color="$color11">Nobody has visited yet. The first visit shows up here as a session — the pages in the order they were opened, and how long each one held.</Paragraph>
         </XStack>
       )}
     </YStack>

@@ -27,7 +27,7 @@ function SettingsViewInner({ tab }: SettingsViewProps) {
 
 export function SettingsView({ tab }: SettingsViewProps) {
   return (
-    <Suspense fallback={<XStack height="100%" alignItems="center" justifyContent="center"><Paragraph color="$color11">Loading...</Paragraph></XStack>}>
+    <Suspense fallback={<XStack height="100%" alignItems="center" justifyContent="center"><Paragraph color="$color11">Loading settings…</Paragraph></XStack>}>
       <SettingsViewInner tab={tab} />
     </Suspense>
   );
