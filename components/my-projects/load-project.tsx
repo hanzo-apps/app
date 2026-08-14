@@ -38,11 +38,11 @@ export const LoadProject = ({
   const handleClick = async () => {
     if (isLoading) return; // Prevent multiple clicks while loading
     if (!url) {
-      toast.error("Please enter a URL.");
+      toast.error("Paste the URL of the project you want to import.");
       return;
     }
     if (!checkIfUrlIsValid(url)) {
-      toast.error("Please enter a valid Hanzo project URL.");
+      toast.error("That is not a Hanzo project URL. It looks like hanzo.app/projects/you/your-project.");
       return;
     }
 
@@ -53,7 +53,7 @@ export const LoadProject = ({
     setIsLoading(true);
     try {
       const response = await api.post(`/me/projects/${username}/${namespace}`);
-      toast.success("Project imported successfully!");
+      toast.success("Project imported");
       setOpen(false);
       setUrl("");
       onSuccess(response.data.project);
@@ -63,7 +63,7 @@ export const LoadProject = ({
         return router.push(error.response.data.redirect);
       }
       toast.error(
-        error?.response?.data?.error ?? "Failed to import the project."
+        error?.response?.data?.error ?? "Could not import that project. Check the URL and that the project is yours."
       );
     } finally {
       setIsLoading(false);
@@ -86,13 +86,13 @@ export const LoadProject = ({
             <View $lg={{ display: "none" }}>
               <Import size={14} />
             </View>
-            <SizableText fontSize="$1">Load</SizableText><SizableText fontSize="$2" $lg={{ display: "none" }}> existing Project</SizableText>
+            <SizableText fontSize="$1">Load</SizableText><SizableText fontSize="$2" $lg={{ display: "none" }}> an existing project</SizableText>
           </Button>
           <LoginModal
             open={openLoginModal}
             onClose={setOpenLoginModal}
-            title="Log In to load your Project"
-            description="Log In to load an existing project and increase your free limit!"
+            title="Sign in to load a project"
+            description="Loading a project needs an account, so Hanzo knows which projects are yours."
   />
         </>
       ) : (
@@ -127,17 +127,17 @@ export const LoadProject = ({
                 </XStack>
               </XStack>
               <Paragraph fontSize="$8" fontWeight="500" color="$color" textAlign="center">
-                Import a Project
+                Import a project
               </Paragraph>
               <Paragraph fontSize="$4" color="$color11" marginTop="$1.5" textAlign="center">
-                Enter the URL of your Hanzo project to import an existing
-                project.
+                Paste the URL of a Hanzo project you own and its files come
+                across into this account.
               </Paragraph>
             </YStack>
             <YStack rowGap="$4" paddingHorizontal={36} paddingBottom={36} paddingTop="$2">
               <div>
                 <Paragraph fontSize="$3" color="$color11" marginBottom="$2" textAlign="center">
-                  Enter your Hanzo project URL
+                  Project URL
                 </Paragraph>
                 <Input
                   type="text"
@@ -151,7 +151,7 @@ export const LoadProject = ({
                       return;
                     }
                     if (!checkIfUrlIsValid(inputUrl)) {
-                      toast.error("Please enter a valid URL.");
+                      toast.error("That is not a Hanzo project URL. It looks like hanzo.app/projects/you/your-project.");
                       return;
                     }
                     setUrl(inputUrl);
@@ -161,7 +161,7 @@ export const LoadProject = ({
               </div>
               <div>
                 <Paragraph fontSize="$3" color="$color11" marginBottom="$2" textAlign="center">
-                  Then, let&apos;s import it!
+                  The files copy across; the original stays where it is.
                 </Paragraph>
                 <Button
                   position="relative" width="100%"
@@ -170,10 +170,10 @@ export const LoadProject = ({
                   {isLoading ? (
                     <>
                       <Loading overlay={false} size={16} />
-                      Fetching your Space...
+                      Importing…
                     </>
                   ) : (
-                    <>Import your Space</>
+                    <>Import this project</>
                   )}
                 </Button>
               </div>

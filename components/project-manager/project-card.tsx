@@ -94,19 +94,19 @@ export function ProjectCard({
 
   const saveEdits = async () => {
     if (!editedName.trim()) {
-      toast.error('Project name cannot be empty');
+      toast.error('A project needs a name. Kept the old one.');
       setEditedName(project.name);
       setIsEditing(false);
       return;
     }
 
     if (editedName.length > 50) {
-      toast.error('Project name must be 50 characters or less');
+      toast.error('Project names are 50 characters or less.');
       return;
     }
 
     if (editedDescription.length > 200) {
-      toast.error('Description must be 200 characters or less');
+      toast.error('Descriptions are 200 characters or less.');
       return;
     }
 
@@ -119,7 +119,7 @@ export function ProjectCard({
       toast.success('Project updated');
     } catch (error) {
       logger.error('Failed to update project:', error);
-      toast.error('Failed to update project');
+      toast.error('Could not save the change. The old name and description are back.');
       setEditedName(project.name);
       setEditedDescription(project.description || '');
     }
@@ -233,7 +233,7 @@ export function ProjectCard({
                       onKeyDown={(e) => {
                         if (e.key === 'Escape') cancelEdit();
                       }}
-                      placeholder="Add a description..."
+                      placeholder="What this project is for"
                       minHeight={60} fontSize="$3" className="resize-none"
                       maxLength={200}
   />
@@ -543,7 +543,7 @@ export function ProjectCard({
               onKeyDown={(e) => {
                 if (e.key === 'Escape') cancelEdit();
               }}
-              placeholder="Add a description..."
+              placeholder="What this project is for"
               minHeight={60} fontSize="$3" className="resize-none"
               maxLength={200}
   />

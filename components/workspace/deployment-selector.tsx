@@ -77,7 +77,7 @@ export function DeploymentSelector({
     return (
       <XStack alignItems="center" gap="$2" className={`${className}`}>
         <Spinner size={16} />
-        <SizableText fontSize="$3" color="$color11">Loading deployments...</SizableText>
+        <SizableText fontSize="$3" color="$color11">Loading deployments…</SizableText>
       </XStack>
     );
   }
@@ -104,7 +104,7 @@ export function DeploymentSelector({
         <TooltipContent>
           <p>Backend</p>
           <Paragraph fontSize="$1" color="$color11">
-            Connect to a deployment for database, edge functions, and secrets
+            Connect a deployment and this project reads its database, edge functions and secrets.
           </Paragraph>
         </TooltipContent>
       </Tooltip>

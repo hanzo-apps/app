@@ -27,7 +27,7 @@ type StartMode = "fork" | "edit" | "deploy";
 const START_OPTIONS: { mode: StartMode; icon: LucideIcon; title: string; desc: string }[] = [
   { mode: "edit", icon: Code, title: "Edit in Hanzo", desc: "Opens in the editor — the app runs live in the preview beside your code, with the AI assistant on hand." },
   { mode: "fork", icon: Copy, title: "Fork to your account", desc: "Your own copy as a fresh repository — customize it, keep version control, and deploy independently." },
-  { mode: "deploy", icon: Rocket, title: "Deploy to Hanzo Cloud", desc: "Ship it live in seconds — a public URL with automatic SSL on Hanzo Cloud." },
+  { mode: "deploy", icon: Rocket, title: "Deploy to Hanzo Cloud", desc: "Puts it straight on a public URL with SSL, ready to share." },
 ];
 
 interface TemplateLoaderProps {
@@ -222,7 +222,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
   />
             </YStack>
             <Paragraph marginTop="$1.5" fontSize="$1" color="$color11">
-              Leave blank to open the template as-is — it loads and previews instantly. Add a note and Hanzo builds it on top.
+              Leave this blank to open the template as it is. Write something and Hanzo makes that change first.
             </Paragraph>
           </YStack>
 

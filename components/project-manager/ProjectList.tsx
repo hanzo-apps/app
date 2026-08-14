@@ -34,7 +34,7 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
     try {
       setProjects(await fetchProjects());
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load projects.');
+      setError(err instanceof Error ? err.message : 'Could not reach the server.');
     } finally {
       setLoading(false);
     }
@@ -50,7 +50,7 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
       await apiDeleteProject(project.slug);
       setProjects((prev) => prev.filter((p) => p.slug !== project.slug));
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to delete project.');
+      alert(err instanceof Error ? err.message : `Could not delete "${project.name}". Try again in a moment.`);
     }
   };
 
@@ -83,9 +83,9 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
     return (
       <XStack alignItems="center" justifyContent="center" paddingVertical="$12">
         <YStack maxWidth={384} alignItems="center">
-          <Paragraph color="$red9" fontWeight="500" marginBottom="$2" textAlign="center">Error</Paragraph>
+          <Paragraph color="$red9" fontWeight="500" marginBottom="$2" textAlign="center">Could not load your projects</Paragraph>
           <Paragraph fontSize="$3" color="$color11" marginBottom="$4" textAlign="center">{error}</Paragraph>
-          <Button variant="outline" onClick={load}>Retry</Button>
+          <Button variant="outline" onClick={load}>Try again</Button>
         </YStack>
       </XStack>
     );
@@ -110,7 +110,7 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
           {showOrgSwitcher && <OrgSwitcher />}
           <Button onClick={() => setCreateOpen(true)}>
             <Plus size={16} />
-            New Project
+            New project
           </Button>
         </XStack>
       </YStack>
@@ -127,15 +127,17 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
         <YStack alignItems="center" paddingVertical="$10">
           <FolderOpen size={48} />
           <H2 fontSize="$7" fontWeight="500" marginBottom="$2" textAlign="center">
-            {searchQuery ? 'No projects found' : 'No projects yet'}
+            {searchQuery ? 'Nothing matches that search' : 'No projects yet'}
           </H2>
           <Paragraph color="$color11" marginBottom="$5" textAlign="center">
-            {searchQuery ? 'Try a different search term.' : 'Create your first project to get started.'}
+            {searchQuery
+              ? 'No project here has that name, description or framework.'
+              : 'Projects in this organization show up here. Create one and it gets its own files, database and URL.'}
           </Paragraph>
           {!searchQuery && (
             <Button onClick={() => setCreateOpen(true)}>
               <Plus size={16} />
-              Create Project
+              Create a project
             </Button>
           )}
         </YStack>

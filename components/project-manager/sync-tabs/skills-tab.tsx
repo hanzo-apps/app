@@ -62,7 +62,7 @@ export function SkillsTab({
     try {
       const skill = await skillsService.getSkill(item.id);
       if (!skill) {
-        toast.error(`Skill "${item.name}" not found`);
+        toast.error(`"${item.name}" is no longer in this browser, so there is nothing to push. Refresh the list.`);
         return;
       }
 
@@ -81,11 +81,11 @@ export function SkillsTab({
         onRefresh();
         onSyncComplete();
       } else {
-        toast.error(result.error || 'Failed to push skill');
+        toast.error(result.error || `The server would not take "${item.name}". Try pushing it again.`);
       }
     } catch (error) {
       logger.error('Push skill error:', error);
-      toast.error('Failed to push skill');
+      toast.error(`Could not reach the server to push "${item.name}".`);
     } finally {
       const next = new Set(syncingIdsRef.current);
       next.delete(item.id);
@@ -99,7 +99,7 @@ export function SkillsTab({
       const result = await syncManager.pullSkill(item.id);
 
       if (!result.success || !result.skill) {
-        toast.error(result.error || 'Failed to pull skill');
+        toast.error(result.error || `The server did not return "${item.name}". Refresh the list and try again.`);
         return;
       }
 
@@ -111,7 +111,7 @@ export function SkillsTab({
       onSyncComplete();
     } catch (error) {
       logger.error('Pull skill error:', error);
-      toast.error('Failed to pull skill');
+      toast.error(`Could not reach the server to pull "${item.name}".`);
     } finally {
       const next = new Set(syncingIdsRef.current);
       next.delete(item.id);
@@ -168,7 +168,7 @@ export function SkillsTab({
   if (items.length === 0) {
     return (
       <YStack paddingVertical="$6">
-        <SizableText textAlign="center" color="$color11">No custom skills to sync</SizableText>
+        <SizableText textAlign="center" color="$color11">No custom skills here or on the server. Write one and it will show up to sync.</SizableText>
       </YStack>
     );
   }

@@ -26,7 +26,7 @@ export function CreateDeploymentModal({
 
   const handleCreate = async () => {
     if (!projectId || !name) {
-      setError('Project and deployment name are required');
+      setError('Pick a project and give the deployment a name.');
       return;
     }
 
@@ -45,7 +45,7 @@ export function CreateDeploymentModal({
       setName('');
       setSlug('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create deployment');
+      setError(err instanceof Error ? err.message : 'Could not create the deployment. Try a different name, or try again in a moment.');
     } finally {
       setIsCreating(false);
     }
@@ -76,10 +76,10 @@ export function CreateDeploymentModal({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent $sm={{ maxWidth: 500 }}>
         <DialogHeader>
-          <DialogTitle>Create New Deployment</DialogTitle>
+          <DialogTitle>New deployment</DialogTitle>
           <DialogDescription>
-            Create a new deployment to publish a project. Deployments let you manage publish settings
-            independently from your project workspace.
+            A deployment is a published copy of a project with its own URL and its
+            own publish settings. One project can have several.
           </DialogDescription>
         </DialogHeader>
 
@@ -100,35 +100,35 @@ export function CreateDeploymentModal({
               </SelectContent>
             </Select>
             <Paragraph fontSize="$1" color="$color11">
-              Choose which project to publish
+              The project whose files this deployment serves.
             </Paragraph>
           </YStack>
 
           {/* Deployment Name */}
           <YStack gap="$2">
-            <Label htmlFor="name">Deployment Name</Label>
+            <Label htmlFor="name">Deployment name</Label>
             <Input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="My Awesome Deployment"
+              placeholder="Production"
   />
             <Paragraph fontSize="$1" color="$color11">
-              Display name for this published deployment
+              What you call this deployment in the dashboard.
             </Paragraph>
           </YStack>
 
           {/* Slug (Optional) */}
           <YStack gap="$2">
-            <Label htmlFor="slug">Slug (Optional)</Label>
+            <Label htmlFor="slug">Slug (optional)</Label>
             <Input
               id="slug"
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
-              placeholder="my-awesome-deployment"
+              placeholder="my-project"
   />
             <Paragraph fontSize="$1" color="$color11">
-              URL-friendly identifier for this deployment
+              The name in the URL. Leave it blank and one is made from the deployment name.
             </Paragraph>
           </YStack>
 
@@ -147,7 +147,7 @@ export function CreateDeploymentModal({
             Cancel
           </Button>
           <Button onClick={handleCreate} disabled={isCreating || !projectId || !name}>
-            {isCreating ? 'Creating...' : 'Create Deployment'}
+            {isCreating ? 'Creating…' : 'Create deployment'}
           </Button>
         </DialogFooter>
       </DialogContent>

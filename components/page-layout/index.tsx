@@ -138,10 +138,10 @@ export function PageLayout({
           <DialogHeader>
             <DialogTitle display="flex" alignItems="center" gap="$2">
               <AlertTriangle size={20} />
-              Server Database Not Initialized
+              Your projects are only in this browser
             </DialogTitle>
             <DialogDescription>
-              Your server database is empty, but you have {localProjectCount} project{localProjectCount !== 1 ? 's' : ''} stored locally.
+              The server has none of them yet, and you have {localProjectCount} project{localProjectCount !== 1 ? 's' : ''} here. Clearing this browser&apos;s data would lose them.
             </DialogDescription>
           </DialogHeader>
 

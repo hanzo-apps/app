@@ -58,12 +58,12 @@ export function ProjectSwapDialog({
       );
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || 'Failed to analyze swap');
+        throw new Error(data.error || 'Could not work out what would change. Try again in a moment.');
       }
       const data = await res.json();
       setDiff(data.diff);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to analyze swap');
+      setError(err instanceof Error ? err.message : 'Could not work out what would change. Try again in a moment.');
     } finally {
       setLoading(false);
     }
@@ -85,7 +85,7 @@ export function ProjectSwapDialog({
       onSwapComplete();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to swap project');
+      setError(err instanceof Error ? err.message : 'The swap did not go through. The deployment still serves the project it had.');
     } finally {
       setSwapping(false);
     }
@@ -101,7 +101,7 @@ export function ProjectSwapDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent $sm={{ maxWidth: 512 }}>
         <DialogHeader>
-          <DialogTitle>Swap Source Project</DialogTitle>
+          <DialogTitle>Swap the source project</DialogTitle>
           <DialogDescription>
             Change &ldquo;{deploymentName}&rdquo; to use &ldquo;{newProjectName}&rdquo; as its source project.
             This will rebuild the deployment with the new project&apos;s files and backend features.
@@ -112,7 +112,7 @@ export function ProjectSwapDialog({
           {loading && (
             <XStack alignItems="center" justifyContent="center" paddingVertical="$6">
               <Spinner size={24} />
-              <SizableText marginLeft="$2" fontSize="$3" color="$color11">Analyzing changes...</SizableText>
+              <SizableText marginLeft="$2" fontSize="$3" color="$color11">Working out what would change…</SizableText>
             </XStack>
           )}
 
@@ -127,7 +127,7 @@ export function ProjectSwapDialog({
             <YStack rowGap="$4">
               {isEmpty && (
                 <Paragraph fontSize="$3" color="$color11">
-                  No backend feature changes detected. The deployment will be rebuilt with the new project&apos;s files.
+                  The backend stays as it is — same functions, same secrets, same schema. Only the files change.
                 </Paragraph>
               )}
 

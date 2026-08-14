@@ -135,7 +135,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
 
     } catch (error) {
       logger.error('Failed to load projects:', error);
-      toast.error('Failed to load projects');
+      toast.error('Could not open your projects. Reload the page to try again.');
 
     } finally {
       setLoading(false);
@@ -156,7 +156,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
       setProjectList(sorted);
     } catch (error) {
       logger.error('Failed to reload projects:', error);
-      toast.error('Failed to reload projects');
+      toast.error('Could not refresh the list. Reload the page to see the latest.');
     }
   }, [setProjectList]);
 
@@ -173,13 +173,13 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
         'Interactive examples showing how HTML, CSS, and JavaScript files work together'
       );
       await createProjectFromTemplate(vfs, demoProject.id, DEMO_PROJECT_TEMPLATE, DEMO_PROJECT_TEMPLATE.assets);
-      toast.success('Demo project created successfully');
+      toast.success('Demo project created');
       await reloadProjects();
       onProjectSelect(demoProject);
       return demoProject;
     } catch (error) {
       logger.error('Failed to create demo project:', error);
-      toast.error('Failed to create demo project');
+      toast.error('Could not create the demo project. Reload the page and try again.');
       demoCreationRef.current = false; // Reset on failure
       throw error;
     }
@@ -206,7 +206,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
       logger.info('[Tour] Created tour demo project:', tourDemo.id);
     } catch (error) {
       logger.error('Failed to prepare for tour:', error);
-      toast.error('Failed to start tour - could not create demo project');
+      toast.error('The tour needs a demo project, and one could not be created. Reload the page and start the tour again.');
     }
   };
 
@@ -243,17 +243,17 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
 
   const createProject = async () => {
     if (!newProjectName.trim()) {
-      toast.error('Please enter a project name');
+      toast.error('Name the project before creating it.');
       return;
     }
 
     if (newProjectName.length > 50) {
-      toast.error('Project name must be 50 characters or less');
+      toast.error('Project names are 50 characters or less.');
       return;
     }
 
     if (newProjectDescription.length > 200) {
-      toast.error('Description must be 200 characters or less');
+      toast.error('Descriptions are 200 characters or less.');
       return;
     }
 
@@ -340,7 +340,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
             await provisionBackendFeatures(finalProject.id, backendFeatures);
           } catch (provisionError) {
             logger.error('Failed to provision backend features:', provisionError);
-            toast.warning('Project created but backend features provisioning failed.');
+            toast.warning('Project created, but its database and functions were not set up. Open Backend from the project menu to add them.');
           }
 
           // In Server Mode, also provision the schema into Hanzo Base so the
@@ -354,7 +354,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
               });
               if (res.ok) {
                 const data = await res.json();
-                if (data.created?.length) toast.success(`Base backend ready: ${data.created.join(', ')}`);
+                if (data.created?.length) toast.success(`Tables created in Hanzo Base: ${data.created.join(', ')}`);
               } else if (res.status !== 503) {
                 logger.warn('[Base] provisioning returned', res.status);
               }
@@ -365,7 +365,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
         }
       }
 
-      toast.success('Project created successfully');
+      toast.success('Project created');
       setCreateDialogOpen(false);
       setNewProjectName('');
       setNewProjectDescription('');
@@ -375,12 +375,12 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
       onProjectSelect(finalProject);
     } catch (error) {
       logger.error('Failed to create project:', error);
-      toast.error('Failed to create project');
+      toast.error('Could not create the project. Reload the page and try again.');
     }
   };
 
   const deleteProject = async (project: Project) => {
-    if (!confirm(`Are you sure you want to delete "${project.name}"? This cannot be undone.`)) {
+    if (!confirm(`Delete "${project.name}"? Its files go with it, and this cannot be undone.`)) {
       return;
     }
 
@@ -391,19 +391,19 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
       await reloadProjects();
     } catch (error) {
       logger.error('Failed to delete project:', error);
-      toast.error('Failed to delete project');
+      toast.error(`Could not delete "${project.name}". Reload the page and try again.`);
     }
   };
 
   const duplicateProject = async (project: Project) => {
     try {
       const newProject = await vfs.duplicateProject(project.id);
-      toast.success('Project duplicated successfully');
+      toast.success('Project duplicated');
       await reloadProjects();
       onProjectSelect(newProject);
     } catch (error) {
       logger.error('Failed to duplicate project:', error);
-      toast.error('Failed to duplicate project');
+      toast.error(`Could not duplicate "${project.name}". Reload the page and try again.`);
     }
   };
 
@@ -422,10 +422,10 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       
-      toast.success('Project exported');
+      toast.success('Downloaded as JSON');
     } catch (error) {
       logger.error('Failed to export project:', error);
-      toast.error('Failed to export project');
+      toast.error('Could not export the project. Reload the page and try again.');
     }
   };
 
@@ -442,10 +442,10 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       
-      toast.success('Project exported as ZIP');
+      toast.success('Downloaded as a ZIP');
     } catch (error) {
       logger.error('Failed to export project as ZIP:', error);
-      toast.error('Failed to export project as ZIP');
+      toast.error('Could not build the ZIP. Reload the page and try again.');
     }
   };
 
@@ -467,12 +467,12 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
         }
         
         const imported = await vfs.importProject(data);
-        toast.success('Project imported successfully');
+        toast.success('Project imported');
         await reloadProjects();
         onProjectSelect(imported);
       } catch (error) {
         logger.error('Failed to import project:', error);
-        toast.error('Failed to import project');
+        toast.error('Could not read that file. It has to be a project exported from Hanzo as JSON.');
       }
     };
     
@@ -510,7 +510,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
       <XStack alignItems="center" justifyContent="center" height="100%">
         <YStack>
           <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$color11" alignSelf="center"></YStack>
-          <Paragraph marginTop="$4">Loading projects...</Paragraph>
+          <Paragraph marginTop="$4">Loading your projects…</Paragraph>
         </YStack>
       </XStack>
     );
@@ -528,7 +528,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                 <YStack position="relative" flex={1}>
                   <Search size={16} />
                   <Input
-                    placeholder="Search projects..."
+                    placeholder="Search projects…"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     paddingLeft={36}
@@ -553,8 +553,8 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="updated">Last Updated</SelectItem>
-                            <SelectItem value="created">Date Created</SelectItem>
+                            <SelectItem value="updated">Last updated</SelectItem>
+                            <SelectItem value="created">Date created</SelectItem>
                             <SelectItem value="name">Name</SelectItem>
                           </SelectContent>
                         </Select>
@@ -604,22 +604,22 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                   <YStack paddingVertical="$8">
                     <FolderOpen size={48} />
                     <H2 fontSize="$7" fontWeight="500" marginBottom="$2">
-                      {searchQuery ? 'No projects found' : 'No projects yet'}
+                      {searchQuery ? 'Nothing matches that search' : 'No projects yet'}
                     </H2>
                     <Paragraph color="$color11" marginBottom="$5">
                       {searchQuery
-                        ? 'Try a different search term'
-                        : 'Create your first project to get started'}
+                        ? `No project name or description contains "${searchQuery}".`
+                        : 'A project is a set of files Hanzo builds, previews and publishes for you. Start an empty one, or open the demo to see how the pieces fit together.'}
                     </Paragraph>
                     {!searchQuery && (
                       <XStack gap="$3" justifyContent="center">
                         <Button onClick={() => setCreateDialogOpen(true)}>
                           <Plus size={16} />
-                          Create Project
+                          Create a project
                         </Button>
                         <Button variant="outline" onClick={createDemoProject}>
                           <FolderOpen size={16} />
-                          Create Demo Project
+                          Create the demo project
                         </Button>
                       </XStack>
                     )}
@@ -681,7 +681,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
               data-tour-id="footer-guided-tour"
             >
               <Info size={16} />
-              Guided Tour
+              Guided tour
             </Button>
             <Button
               variant="outline"
@@ -697,7 +697,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
               onClick={() => setAboutModalOpen(true)}
             >
               <Info size={16} />
-              About Hanzo App
+              About hanzo.app
             </Button>
             <Button
               variant="outline"
@@ -720,15 +720,15 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
       <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
         <DialogContent $sm={{ maxWidth: 448 }}>
           <DialogHeader>
-            <DialogTitle>Create New Project</DialogTitle>
+            <DialogTitle>New project</DialogTitle>
             <DialogDescription>
-              Start a new project
+              Pick a runtime and a template. Everything here can be changed later.
             </DialogDescription>
           </DialogHeader>
           <YStack rowGap="$4">
             <div>
               <XStack justifyContent="space-between" alignItems="center">
-                <Label htmlFor="name">Project Name</Label>
+                <Label htmlFor="name">Project name</Label>
                 <SizableText fontSize="$1" color="$color11">
                   {newProjectName.length}/50
                 </SizableText>
@@ -737,7 +737,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                 id="name"
                 value={newProjectName}
                 onChange={(e) => setNewProjectName(e.target.value.slice(0, 50))}
-                placeholder="My Awesome Website"
+                placeholder="Team dashboard"
                 marginTop="$2"
                 maxLength={50}
   />
@@ -804,7 +804,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                     const filtered = customTemplates.filter(t => (t.runtime || 'static') === newProjectRuntime);
                     return filtered.length > 0 ? (
                       <SelectGroup>
-                        <SelectLabel>Custom Templates</SelectLabel>
+                        <SelectLabel>Custom templates</SelectLabel>
                         {filtered.map(template => (
                           <SelectItem key={template.id} value={`custom:${template.id}`}>
                             <YStack gap="$0.5">
@@ -830,7 +830,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                 id="description"
                 value={newProjectDescription}
                 onChange={(e) => setNewProjectDescription(e.target.value.slice(0, 200))}
-                placeholder="A brief description of your project"
+                placeholder="What this project is for"
                 marginTop="$2"
                 rows={3}
                 maxLength={200}
@@ -842,7 +842,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
               Cancel
             </Button>
             <Button onClick={createProject}>
-              Create Project
+              Create project
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -40,17 +40,17 @@ export function TemplateExportDialog({
 
     // Validate required fields
     if (!metadata.name || metadata.name.length < 1 || metadata.name.length > 50) {
-      toast.error('Template name must be between 1 and 50 characters');
+      toast.error('Give the template a name of 50 characters or less.');
       return;
     }
 
     if (!metadata.description || metadata.description.length < 10 || metadata.description.length > 500) {
-      toast.error('Description must be between 10 and 500 characters');
+      toast.error('Describe the template in 10 to 500 characters, so whoever imports it knows what it builds.');
       return;
     }
 
     if (!metadata.version || !/^\d+\.\d+\.\d+$/.test(metadata.version)) {
-      toast.error('Version must be in format x.y.z (e.g., 1.0.0)');
+      toast.error('Write the version as x.y.z — 1.0.0, for example.');
       return;
     }
 
@@ -85,7 +85,7 @@ export function TemplateExportDialog({
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      toast.success('Template exported successfully!');
+      toast.success('Template downloaded');
       onOpenChange(false);
 
       // Reset form
@@ -104,7 +104,7 @@ export function TemplateExportDialog({
       setTagsInput('');
     } catch (error) {
       logger.error('Failed to export template:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to export template');
+      toast.error(error instanceof Error ? error.message : 'Could not package the template. Reload the page and try again.');
     } finally {
       setExporting(false);
     }
@@ -129,9 +129,9 @@ export function TemplateExportDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent maxWidth={672} maxHeight="90vh" overflow="scroll">
         <DialogHeader>
-          <DialogTitle>Export as Template</DialogTitle>
+          <DialogTitle>Export as a template</DialogTitle>
           <DialogDescription>
-            Create a reusable template from this project
+            Saves this project&apos;s files as a .oswt file. Anyone who imports it starts a new project from the same code.
           </DialogDescription>
         </DialogHeader>
 
@@ -139,7 +139,7 @@ export function TemplateExportDialog({
           {/* Preview Thumbnail */}
           {metadata.thumbnail && (
             <YStack rowGap="$2">
-              <Label>Preview Thumbnail</Label>
+              <Label>Preview thumbnail</Label>
               <YStack width="100%" borderRadius="$5" overflow="hidden" backgroundColor="$color3" borderWidth={1}>
                 <Image
                   src={metadata.thumbnail}
@@ -155,12 +155,12 @@ export function TemplateExportDialog({
 
           {!metadata.thumbnail && (
             <YStack rowGap="$2">
-              <Label>Preview Thumbnail</Label>
+              <Label>Preview thumbnail</Label>
               <XStack width="100%" height="$19" borderRadius="$5" backgroundColor="$color3" alignItems="center" justifyContent="center" borderWidth={1}>
                 <YStack alignItems="center">
                   <FileBox size={48} />
-                  <Paragraph fontSize="$3">No preview available</Paragraph>
-                  <Paragraph fontSize="$1">Save your project to capture a preview</Paragraph>
+                  <Paragraph fontSize="$3">No preview yet</Paragraph>
+                  <Paragraph fontSize="$1">Save the project and Hanzo captures one from the running app.</Paragraph>
                 </YStack>
               </XStack>
             </YStack>
@@ -180,7 +180,7 @@ export function TemplateExportDialog({
               id="template-name"
               value={metadata.name}
               onChangeText={(value) => setMetadata({ ...metadata, name: value.slice(0, 50) })}
-              placeholder="My Awesome Template"
+              placeholder="Marketing site with a blog"
               maxLength={50}
               required
   />
@@ -200,7 +200,7 @@ export function TemplateExportDialog({
               id="template-description"
               value={metadata.description}
               onChangeText={(value) => setMetadata({ ...metadata, description: value.slice(0, 500) })}
-              placeholder="A complete multi-page template with..."
+              placeholder="What this template builds, and what someone should change first"
               rows={3}
               maxLength={500}
               required
@@ -312,7 +312,7 @@ export function TemplateExportDialog({
             Cancel
           </Button>
           <Button onClick={handleExport} disabled={exporting}>
-            {exporting ? 'Exporting...' : 'Export Template'}
+            {exporting ? 'Packaging…' : 'Download .oswt'}
           </Button>
         </DialogFooter>
       </DialogContent>

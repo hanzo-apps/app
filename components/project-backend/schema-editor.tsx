@@ -117,11 +117,11 @@ export function SchemaEditor({ projectId, enabled, onSchemaChange }: SchemaEdito
 
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.error || 'Failed to apply DDL');
+        toast.error(data.error || 'The statements did not run. The schema is unchanged — check the SQL and try again.');
         return;
       }
 
-      toast.success('DDL applied successfully');
+      toast.success('Schema updated');
 
       // Update localStorage schema (append DDL) so AI server context stays in sync
       const existing = getProjectSchema(projectId);
@@ -133,7 +133,7 @@ export function SchemaEditor({ projectId, enabled, onSchemaChange }: SchemaEdito
       setSchemaKey(prev => prev + 1);
       setDdl('');
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to apply DDL');
+      toast.error(err instanceof Error ? err.message : 'The statements did not run. The schema is unchanged — check the SQL and try again.');
     } finally {
       setApplying(false);
     }
@@ -178,9 +178,9 @@ export function SchemaEditor({ projectId, enabled, onSchemaChange }: SchemaEdito
           <YStack height="100%" gap="$3">
             <XStack alignItems="center" justifyContent="space-between">
               <div>
-                <H4 fontSize="$3" fontWeight="500">Apply DDL</H4>
+                <H4 fontSize="$3" fontWeight="500">Change the schema</H4>
                 <Paragraph fontSize="$1" color="$color11" marginTop="$0.5">
-                  CREATE TABLE, ALTER TABLE, and other DDL statements
+                  CREATE TABLE, ALTER TABLE and the rest. They run against this project&apos;s database as written.
                 </Paragraph>
               </div>
               <Button
@@ -194,7 +194,7 @@ export function SchemaEditor({ projectId, enabled, onSchemaChange }: SchemaEdito
                 ) : (
                   <Play size={12} />
                 )}
-                Apply
+                Run
               </Button>
             </XStack>
             <Textarea

@@ -367,12 +367,12 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
             await uploadFile(file, targetDir); // Retry
           } catch (deleteError) {
             logger.error('Failed to overwrite file:', deleteError);
-            toast.error('Failed to overwrite file');
+            toast.error(`Could not replace ${file.name}. The old file is still there.`);
           }
         }
       } else {
         logger.error('Failed to upload file:', error);
-        toast.error(`Failed to upload ${file.name}: ${error.message}`);
+        toast.error(`Could not upload ${file.name}: ${error.message}`);
       }
     }
   };
@@ -457,7 +457,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
       toast.success(`Moved ${draggedItem.name} to ${targetDir === '/' ? 'root' : targetDir}`);
     } catch (error: any) {
       logger.error('Failed to move item:', error);
-      toast.error(`Failed to move: ${error.message}`);
+      toast.error(`Could not move ${draggedItem.name}: ${error.message}`);
     }
     
     setDropTarget(null);
@@ -729,7 +729,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
                   <Folder size={48} />
                   <YStack rowGap="$1">
                     <Paragraph fontSize="$4" fontWeight="500" color="$color" textAlign="center">No files yet</Paragraph>
-                    <Paragraph fontSize="$3" color="$color11" textAlign="center">Create your first file to get started</Paragraph>
+                    <Paragraph fontSize="$3" color="$color11" textAlign="center">Ask the agent to build something, or right-click here to add a file yourself. You can also drop files in.</Paragraph>
                   </YStack>
                 </YStack>
               </XStack>
@@ -764,8 +764,8 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
       {/* Missing .PROMPT.md notification */}
       {onAddPromptFile && !promptDismissed && files.length > 0 && !files.some(f => f.path === '/.PROMPT.md') && (
         <YStack marginHorizontal="$2" marginBottom="$2" padding="$2" borderRadius="$3" borderWidth={1} borderColor="$yellow9" backgroundColor="$yellow9">
-          <Paragraph color="$yellow10" marginBottom="$1.5" fontSize="$1" $theme-dark={{ color: "$yellow8" }}>No .PROMPT.md found</Paragraph>
-          <Paragraph color="$color11" marginBottom="$2" fontSize="$1">Add the default website prompt?</Paragraph>
+          <Paragraph color="$yellow10" marginBottom="$1.5" fontSize="$1" $theme-dark={{ color: "$yellow8" }}>This project has no .PROMPT.md</Paragraph>
+          <Paragraph color="$color11" marginBottom="$2" fontSize="$1">It is the standing instruction the agent reads before every change. Add the default one and edit it from there.</Paragraph>
           <XStack gap="$2">
             <Button
               size="sm"

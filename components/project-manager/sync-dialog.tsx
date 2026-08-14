@@ -52,9 +52,9 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className={`${dialogContentClass}`}>
           <DialogHeader>
-            <DialogTitle>Server Sync</DialogTitle>
+            <DialogTitle>Server sync</DialogTitle>
             <DialogDescription>
-              Checking authentication status...
+              Checking whether you are signed in…
             </DialogDescription>
           </DialogHeader>
         </DialogContent>
@@ -70,10 +70,10 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
           <DialogHeader>
             <DialogTitle display="flex" alignItems="center" gap="$2">
               <CloudOff size={20} />
-              Not Authenticated
+              You are signed out
             </DialogTitle>
             <DialogDescription>
-              You need to login to sync projects, skills, and templates with the server.
+              Sign in to copy projects, skills and templates between this browser and the server.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -81,7 +81,7 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
               Cancel
             </Button>
             <Button onClick={() => (window.location.href = '/admin/login')}>
-              Go to Login
+              Go to sign-in
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -95,10 +95,10 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
         <DialogHeader>
           <DialogTitle display="flex" alignItems="center" gap="$2">
             <Cloud size={20} />
-            Server Sync
+            Server sync
           </DialogTitle>
           <DialogDescription>
-            Synchronize projects, skills, and templates between your browser and the server.
+            Copy projects, skills and templates between this browser and the server.
           </DialogDescription>
         </DialogHeader>
 
@@ -109,7 +109,7 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
               <AlertTriangle size={20} />
               <YStack>
                 <Paragraph fontWeight="500" color="$red10" $theme-dark={{ color: "$red8" }}>
-                  Error loading sync status
+                  Could not read the sync status
                 </Paragraph>
                 <Paragraph color="$color11" marginTop="$1">{error}</Paragraph>
               </YStack>
@@ -120,7 +120,7 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
           {loading && (
             <XStack alignItems="center" justifyContent="center" paddingVertical="$6">
               <RefreshCw size={24} />
-              <SizableText marginLeft="$2" color="$color11">Loading sync status...</SizableText>
+              <SizableText marginLeft="$2" color="$color11">Reading sync status…</SizableText>
             </XStack>
           )}
 
@@ -153,7 +153,7 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
                 disabled={bulkState.isSyncing}
               >
                 <CheckSquare size={14} />
-                {bulkState.selectedCount === bulkState.selectableCount ? 'Deselect' : 'Select All'}
+                {bulkState.selectedCount === bulkState.selectableCount ? 'Deselect all' : 'Select all'}
               </Button>
             )}
 

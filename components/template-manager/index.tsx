@@ -46,7 +46,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
       setCustomTemplates(templates);
     } catch (error) {
       logger.error('Failed to load custom templates:', error);
-      toast.error('Failed to load custom templates');
+      toast.error('Could not open your saved templates. Reload the page to try again.');
     } finally {
       setLoading(false);
     }
@@ -67,11 +67,11 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
 
       try {
         await templateService.importTemplateFile(file);
-        toast.success('Template imported successfully!');
+        toast.success('Template imported');
         await loadCustomTemplates();
       } catch (error) {
         logger.error('Failed to import template:', error);
-        toast.error(error instanceof Error ? error.message : 'Failed to import template');
+        toast.error(error instanceof Error ? error.message : 'Could not read that file. Templates are .oswt files exported from Hanzo.');
       }
     };
 
@@ -79,7 +79,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
   };
 
   const handleDeleteTemplate = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this template?')) {
+    if (!confirm('Delete this template? Projects already made from it are not affected.')) {
       return;
     }
 
@@ -89,7 +89,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
       await loadCustomTemplates();
     } catch (error) {
       logger.error('Failed to delete template:', error);
-      toast.error('Failed to delete template');
+      toast.error('Could not delete the template. Reload the page and try again.');
     }
   };
 
@@ -97,7 +97,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
     try {
       // For built-in templates, create a custom template export
       if ('isBuiltIn' in template && template.isBuiltIn) {
-        toast.info('Exporting built-in template as custom template...');
+        toast.info('Packaging this built-in template as a .oswt file…');
 
         // Create a temporary project to export
         const tempProject = await vfs.createProject(
@@ -141,7 +141,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        toast.success('Template exported successfully!');
+        toast.success('Template downloaded');
       } else {
         // Custom template - re-export
         const customTemplate = template as CustomTemplate;
@@ -156,11 +156,11 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        toast.success('Template exported successfully!');
+        toast.success('Template downloaded');
       }
     } catch (error) {
       logger.error('Failed to export template:', error);
-      toast.error('Failed to export template');
+      toast.error('Could not package the template. Reload the page and try again.');
     }
   };
 
@@ -223,25 +223,25 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
           if (result.secrets > 0) parts.push(`${result.secrets} secret placeholder(s)`);
           if (result.hasDatabaseSchema) parts.push('database schema');
           if (parts.length > 0) {
-            toast.success(`Backend features provisioned: ${parts.join(', ')}`, { duration: 5000 });
+            toast.success(`Backend set up: ${parts.join(', ')}`, { duration: 5000 });
           }
         } catch (provisionError) {
           logger.error('Failed to provision backend features:', provisionError);
           toast.warning(
-            'Project created but backend features provisioning failed. You can configure features manually.',
+            'Project created, but its database and functions were not set up. Open Backend from the project menu to add them.',
             { duration: 6000 }
           );
         }
       }
 
-      toast.success(`Project "${project.name}" created successfully!`);
+      toast.success(`Created "${project.name}"`);
 
       if (onProjectCreated) {
         onProjectCreated(project.id, !!backendFeatures);
       }
     } catch (error) {
       logger.error('Failed to create project from template:', error);
-      toast.error('Failed to create project');
+      toast.error(`Could not start a project from "${template.name}". Reload the page and try again.`);
     } finally {
       setCreating(false);
     }
@@ -299,7 +299,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
       <XStack alignItems="center" justifyContent="center" height="100%">
         <SizableText textAlign="center" display="flex" flexDirection="column">
           <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$color11" alignSelf="center"></YStack>
-          <Paragraph marginTop="$4">{creating ? 'Setting up your project...' : 'Loading templates...'}</Paragraph>
+          <Paragraph marginTop="$4">{creating ? 'Setting up your project…' : 'Loading templates…'}</Paragraph>
         </SizableText>
       </XStack>
     );
@@ -314,7 +314,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
         <YStack position="relative" flex={1}>
           <Search size={16} />
           <Input
-            placeholder="Search templates..."
+            placeholder="Search templates…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             paddingLeft={36}
@@ -330,7 +330,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="all">All types</SelectItem>
               <SelectItem value="standard">Standard</SelectItem>
               <SelectItem value="server">Backend</SelectItem>
             </SelectContent>
@@ -352,10 +352,10 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="updated">Last Updated</SelectItem>
+                    <SelectItem value="updated">Last updated</SelectItem>
                     <SelectItem value="name">Name</SelectItem>
                     <SelectItem value="author">Author</SelectItem>
-                    <SelectItem value="files">File Count</SelectItem>
+                    <SelectItem value="files">File count</SelectItem>
                   </SelectContent>
                 </Select>
               </YStack>
@@ -400,9 +400,9 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
               {searchQuery ? (
                 <>
                   <Search size={48} />
-                  <H3 fontWeight="500" marginBottom="$2">No templates found</H3>
+                  <H3 fontWeight="500" marginBottom="$2">Nothing matches that search</H3>
                   <Paragraph fontSize="$3" color="$color11" marginBottom="$4">
-                    No templates match your search query "{searchQuery}"
+                    No template name, description, author or tag contains &quot;{searchQuery}&quot;.
                   </Paragraph>
                   <Button variant="outline" onClick={() => setSearchQuery('')}>
                     Clear search
@@ -413,11 +413,11 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
                   <Package size={48} />
                   <H3 fontWeight="500" marginBottom="$2">No custom templates yet</H3>
                   <Paragraph fontSize="$3" color="$color11" marginBottom="$4">
-                    Import custom templates to get started with professional designs.
+                    A template is a project saved as a starting point. Export one from a project you like, or import a .oswt file someone sent you.
                   </Paragraph>
                   <Button onClick={handleImportTemplate}>
                     <Upload size={16} />
-                    Import Template
+                    Import a template
                   </Button>
                 </>
               )}

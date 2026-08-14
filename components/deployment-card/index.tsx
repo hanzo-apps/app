@@ -108,13 +108,13 @@ export function DeploymentCard({
           {deployment.underConstruction && deployment.enabled && (
             <Badge variant="outline">
               <Construction size={12} />
-              Under Construction
+              Holding page
             </Badge>
           )}
           {hasPendingChanges && deployment.enabled && (
             <Badge variant="outline">
               <AlertCircle size={12} />
-              Pending Changes
+              Unpublished changes
             </Badge>
           )}
         </XStack>

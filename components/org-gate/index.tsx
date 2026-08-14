@@ -63,7 +63,7 @@ function OnboardingPanel() {
     try {
       await createOrg(opts);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to create organization');
+      setError(e instanceof Error ? e.message : 'Could not create the organization. Try a different name, or try again in a moment.');
       setBusy(null);
     }
   };

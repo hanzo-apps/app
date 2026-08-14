@@ -309,7 +309,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
       timestamp: now
     };
     setFocusContext(nextTarget);
-    toast.info('Focus context set', {
+    toast.info('Focused on this element', {
       description: describeFocusTarget(nextTarget)
     });
     lastFocusSignatureRef.current = { signature, timestamp: now };
@@ -329,7 +329,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
       toast.success(`Entry point set to ${path}`);
     } catch (err) {
       logger.error('Failed to set entry point:', err);
-      toast.error('Failed to set entry point');
+      toast.error(`Could not make ${path} the entry point. The preview still opens the old one.`);
     }
   }, [project.id]);
 
@@ -342,7 +342,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
       toast.success('.PROMPT.md added to project');
     } catch (err) {
       logger.error('Failed to add .PROMPT.md:', err);
-      toast.error('Failed to add .PROMPT.md');
+      toast.error('Could not write .PROMPT.md. Check whether the project already has one.');
     }
   }, [project.id, project.settings?.runtime]);
 
@@ -736,7 +736,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
       toast.success('Project saved');
     } catch (error) {
       logger.error('Failed to save project', error);
-      toast.error('Failed to save project');
+      toast.error('Could not save. Your edits are still open here — try saving again.');
     } finally {
       setSaveInProgress(false);
     }
@@ -752,7 +752,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
       toast.success('Thumbnail updated');
     } catch (err) {
       logger.error('Failed to save screenshot:', err);
-      toast.error('Failed to save thumbnail');
+      toast.error('Could not save the thumbnail. The project keeps the one it had.');
     }
   }, [project.id]);
 
@@ -787,7 +787,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
       // First check if checkpoint exists
       const exists = await checkpointManager.checkpointExists(checkpointId);
       if (!exists) {
-        toast.error('Checkpoint no longer exists - it may have been cleaned up');
+        toast.error('That checkpoint has been cleared. Pick a later one from the history.');
         logger.warn(`[Workspace] Checkpoint ${checkpointId} no longer exists`);
         return;
       }
@@ -808,11 +808,11 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           saveManager.markDirty(project.id);
         }
       } else {
-        toast.error('Failed to restore checkpoint');
+        toast.error('Could not restore that checkpoint. Your files are untouched.');
       }
     } catch (error) {
       logger.error('Error restoring checkpoint:', error);
-      toast.error('Failed to restore checkpoint');
+      toast.error('Could not restore that checkpoint. Your files are untouched.');
     }
   }, [handleFilesChange, project.id]);
 
@@ -833,7 +833,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
       // First check if checkpoint exists
       const exists = await checkpointManager.checkpointExists(checkpointId);
       if (!exists) {
-        toast.error('Checkpoint no longer exists - cannot retry');
+        toast.error('That checkpoint has been cleared, so there is nothing to retry from. Send the message again instead.');
         logger.warn(`[Workspace] Checkpoint ${checkpointId} no longer exists`);
         return;
       }
@@ -857,7 +857,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
       }
 
       if (!userMessageContent) {
-        toast.error('Cannot find original user message to retry');
+        toast.error('The message behind this checkpoint is gone from the transcript, so it cannot be re-run. Type it again to retry.');
         logger.warn('[Workspace] No user message found before checkpoint');
         return;
       }
@@ -874,7 +874,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
       }
 
       if (userMessageIndex === -1) {
-        toast.error('Cannot find user message event to truncate');
+        toast.error('The transcript no longer lines up with this checkpoint, so it cannot be re-run. Type the message again to retry.');
         logger.warn('[Workspace] User message event not found in debug events');
         return;
       }
@@ -884,7 +884,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
         checkpointManager.restoreCheckpoint(checkpointId)
       );
       if (!success) {
-        toast.error('Failed to restore checkpoint');
+        toast.error('Could not restore that checkpoint, so the retry stopped. Your files are untouched.');
         return;
       }
 
@@ -906,7 +906,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
       // Clear the persisted orchestrator to force fresh conversation rebuild
       setPersistedOrchestrator(null);
 
-      toast.success('Restored checkpoint and retrying...');
+      toast.success('Back at that checkpoint. Running the message again.');
       handleFilesChange();
 
       // Set the prompt to the original user message
@@ -918,7 +918,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
 
     } catch (error) {
       logger.error('Error during retry:', error);
-      toast.error('Failed to retry');
+      toast.error('The retry did not start. Your files are untouched — try again.');
     }
   }, [handleFilesChange, project.id, debugEvents, setPrompt]);
 
@@ -930,7 +930,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
     const trimmedPrompt = prompt.trim();
 
     if (!trimmedPrompt && (!images || images.length === 0)) {
-      toast.error('Please enter a prompt');
+      toast.error('Say what you want changed, or attach an image.');
       return;
     }
 
@@ -940,7 +940,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
 
     // Only require API key for providers that need it
     if (providerConfig.apiKeyRequired && !apiKey) {
-      toast.error(`Please set your ${providerConfig.name} API key in settings`);
+      toast.error(`${providerConfig.name} needs an API key. Add one in Settings, then send this again.`);
       return;
     }
 
@@ -948,7 +948,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
     if (providerConfig.isLocal) {
       const currentModel = configManager.getProviderModel(currentProvider);
       if (!currentModel) {
-        toast.error(`No model selected for ${providerConfig.name}. Please select a model in settings.`);
+        toast.error(`No model is picked for ${providerConfig.name}. Choose one in Settings, then send this again.`);
         return;
       }
     }
@@ -970,7 +970,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
 
     // Validate that we have a model selected
     if (!modelToUse) {
-      toast.error(`No model selected for ${chatMode ? 'chat' : 'code'} mode. Please select a model in settings.`);
+      toast.error(`No model is picked for ${chatMode ? 'chat' : 'code'} mode. Choose one in Settings, then send this again.`);
       return;
     }
 
@@ -1052,7 +1052,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           mode: chatMode ? 'chat' : 'code',
           durationMs: Date.now() - taskStartTime,
         });
-        toast.success('Task completed');
+        toast.success('Done');
       } else {
         track('task_fail', {
           provider: currentProvider,
@@ -1067,7 +1067,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           reason: 'result_error',
           durationMs: Date.now() - taskStartTime,
         });
-        toast.error(result.summary || 'Generation failed', {
+        toast.error(result.summary || 'The change did not go through. Your files are untouched — try again, or say it a different way.', {
           duration: 5000
         });
       }
@@ -1078,7 +1078,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
       }
     } catch (error) {
       logger.error('Generation error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to generate';
+      const errorMessage = error instanceof Error ? error.message : 'Could not reach the model. Check your connection and try again.';
 
       track('task_fail', {
         provider: currentProvider,
@@ -1118,7 +1118,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
         model: configManager.getDefaultModel(),
         reason: 'stopped',
       });
-      toast.info('Generation stopped');
+      toast.info('Stopped. Any files already written stay as they are.');
     }
   }, [currentOrchestrator]);
 

@@ -204,7 +204,7 @@ function GeneralTab({ project, onProjectUpdate }: { project: Project; onProjectU
       toast.success(`Runtime changed to ${label}`);
     } catch (err) {
       logger.error('Failed to update runtime:', err);
-      toast.error('Failed to update runtime');
+      toast.error('Could not change the runtime. The project keeps the one it had.');
     }
   };
 
@@ -220,7 +220,7 @@ function GeneralTab({ project, onProjectUpdate }: { project: Project; onProjectU
       toast.success(`Entry point set to ${trimmed}`);
     } catch (err) {
       logger.error('Failed to update entry point:', err);
-      toast.error('Failed to update entry point');
+      toast.error('Could not change the entry point. The preview still opens the old one.');
     }
   };
 
@@ -250,7 +250,7 @@ function GeneralTab({ project, onProjectUpdate }: { project: Project; onProjectU
       </YStack>
 
       <YStack rowGap="$2">
-        <Label htmlFor="entry-point">Preview Entry Point</Label>
+        <Label htmlFor="entry-point">Preview entry point</Label>
         <Input
           id="entry-point"
           value={editingEntryPoint}
@@ -420,7 +420,7 @@ export function ProjectSettingsModal({ project, isOpen, onClose, onProjectUpdate
             <div>
               <DialogTitle display="flex" alignItems="center" gap="$2">
                 <Settings2 size={16} />
-                Project Settings
+                Project settings
               </DialogTitle>
               <Paragraph fontSize="$3" color="$color11" marginTop="$1">
                 {project.name}
@@ -428,7 +428,7 @@ export function ProjectSettingsModal({ project, isOpen, onClose, onProjectUpdate
             </div>
             {isServerMode && (
               <XStack alignItems="center" gap="$2">
-                <SizableText fontSize="$1" color="$color11">Backend {enabled ? 'Enabled' : 'Disabled'}</SizableText>
+                <SizableText fontSize="$1" color="$color11">Backend {enabled ? 'on' : 'off'}</SizableText>
                 <Switch checked={enabled} onCheckedChange={onToggleEnabled} />
               </XStack>
             )}
