@@ -37,6 +37,15 @@ export type { Lift } from "@hanzo/ui/glass";
 export const RAIL = 960;
 
 /**
+ * The marketing header's height, and therefore where a SECOND sticky bar has
+ * to start. `@hanzogui/shell` fixes `HanzoHeader` at 60 and does not export the
+ * number, so the one place that needs it states it here rather than each page
+ * writing a 60 of its own — two pages disagreeing about this is a bar that
+ * hides under the chrome, which is exactly what /templates shipped.
+ */
+export const HEADER_H = 60;
+
+/**
  * ICON-ONLY CONTROLS: there is no recipe here, and that is the point.
  *
  * A Button whose whole content is one glyph takes `size="icon-sm" | "icon" |

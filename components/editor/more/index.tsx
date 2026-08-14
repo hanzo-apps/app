@@ -9,6 +9,7 @@ import { panel } from '@/lib/chrome';
 import { fetchConnectors, type Provider } from '@/lib/connectors';
 import { useModels } from '@/lib/hooks/use-models';
 import { fetchMcpServers, fetchMcpToolCount, type McpServer } from '@/lib/mcp';
+import { OverviewBody, SecretsBody, StorageBody, UsersBody } from './cloud';
 import { SECTIONS, findSection, type Section } from './sections';
 
 /**
@@ -159,49 +160,36 @@ function NavRow({
 /**
  * What a section shows.
  *
- * Deliberately one shape for now: the card names the surface that answers the
- * section, or says there is not one. Real readers land here section by section
- * — each is a different endpoint with a different shape, and inventing a shared
- * one before any of them is written is how a settings pane ends up with a
- * lowest-common-denominator table that suits none of them.
+ * One line per section, because a section IS its reader — there is no shared
+ * shape to find. Each surface is a different endpoint answering a different
+ * question, and the lowest common denominator between a request log and a
+ * bucket list is a table that serves neither.
+ *
+ * The Cloud group's readers live in `./cloud`: they render the console's own
+ * `@hanzo/ui/product` components over the same `/v1` surfaces the console reads,
+ * so the two screens cannot drift into two answers.
  */
 function SectionBody({ section, projectId }: { section: Section; projectId?: string | null }) {
-  // The sections whose readers already exist render the real thing.
   if (section.id === 'connectors') return <ConnectorsBody />;
   if (section.id === 'ai') return <ModelsBody />;
   if (section.id === 'agents') return <McpBody />;
   if (section.id === 'payments') return <PaymentsBody projectId={projectId} />;
+  if (section.id === 'cloud-overview') return <OverviewBody projectId={projectId} />;
   if (section.id === 'cloud-database') return <DatabaseBody />;
+  if (section.id === 'cloud-users') return <UsersBody />;
+  if (section.id === 'cloud-storage') return <StorageBody />;
+  if (section.id === 'cloud-secrets') return <SecretsBody />;
   if (section.id === 'cloud-usage') return <UsageBody />;
   if (section.id === 'cloud-logs') return <LogsBody />;
   if (section.id === 'analytics') return <AnalyticsBody />;
+  // Security and SEO. Nothing answers them, so there is nothing to show.
   return (
     <YStack {...panel} padding="$4" gap="$2">
-      {section.where ? (
-        <>
-          <SizableText fontSize="$3" color="$color">Connected</SizableText>
-          <Paragraph fontSize="$2" color="$color11">
-            This section reads{' '}
-            <SizableText fontFamily="$mono" fontSize="$1" color="$color">{section.where}</SizableText>
-            {projectId ? (
-              <>
-                {' '}for{' '}
-                <SizableText fontFamily="$mono" fontSize="$1" color="$color">{projectId}</SizableText>
-              </>
-            ) : null}
-            . The reader for this surface is not drawn here yet — the endpoint is live and the
-            wiring is the remaining work.
-          </Paragraph>
-        </>
-      ) : (
-        <>
-          <SizableText fontSize="$3" color="$color">Not connected yet</SizableText>
-          <Paragraph fontSize="$2" color="$color11">
-            Nothing answers this section, so there is nothing to show. It is listed because it is
-            planned and you should be able to see where it will live — not because it half works.
-          </Paragraph>
-        </>
-      )}
+      <SizableText fontSize="$3" color="$color">Not connected yet</SizableText>
+      <Paragraph fontSize="$2" color="$color11">
+        Nothing answers this section, so there is nothing to show. It is listed because it is
+        planned and you should be able to see where it will live — not because it half works.
+      </Paragraph>
     </YStack>
   );
 }
