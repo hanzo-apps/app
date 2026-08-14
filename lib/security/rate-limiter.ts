@@ -49,9 +49,15 @@ const BUDGETS: Record<Tier, Budget> = {
 // single-shot `/v1/generate`. It is listed exactly, not as `/v1/agents`: the
 // registry underneath that prefix is polled for session state and fleet views,
 // and sweeping it into a 30/min model budget would rate-limit watching a run.
-const MODEL = ['/v1/generate', '/v1/images', '/v1/agents/runs', '/api/ai'];
-const CREDENTIAL = ['/v1/auth', '/api/auth'];
-const CHARGE = ['/v1/commerce', '/api/commerce', '/v1/crypto/payment'];
+//
+// One spelling per route. The `/api/…` twin of each of these named nothing —
+// `app/api` does not exist and every handler lives under `app/v1` — so the
+// tables described a second URL shape this app has never served. A budget
+// listed twice is a budget nobody can state, and the dead half is the one that
+// looks like the answer when a route is later read from the wrong list.
+const MODEL = ['/v1/generate', '/v1/images', '/v1/agents/runs'];
+const CREDENTIAL = ['/v1/auth'];
+const CHARGE = ['/v1/commerce', '/v1/crypto/payment'];
 
 const under = (path: string, roots: string[]): boolean =>
   roots.some((root) => path === root || path.startsWith(root + '/'));

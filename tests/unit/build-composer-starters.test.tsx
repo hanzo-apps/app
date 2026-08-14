@@ -113,7 +113,7 @@ describe("BuildComposer starters", () => {
     const onSubmit = jest.fn();
     renderComposer(<BuildComposer starters={STARTERS} onSubmit={onSubmit} />);
 
-    openMenu(screen.getByRole("button", { name: /Build/ }));
+    openMenu(screen.getByRole("button", { name: /^Mode:/ }));
     fireEvent.click(screen.getByRole("menuitem", { name: /Plan/ }));
     fireEvent.click(screen.getByRole("button", { name: "Marketplace with auth" }));
     fireEvent.click(screen.getByRole("button", { name: "Start building" }));

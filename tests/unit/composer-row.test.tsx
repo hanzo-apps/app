@@ -58,7 +58,11 @@ const renderComposer = (ui: React.ReactElement) => render(ui, { wrapper: WithGui
 
 /** gui renders a div[role=button]; `disabled` shows as aria-disabled. */
 const send = () => screen.getByRole('button', { name: /Start building|^Build a/ });
-const modeControl = () => screen.getByRole('button', { name: /^(Build|Plan)$/ });
+// By NAME, which states the mode, not by the label, which alternates while the
+// page idles. The assertions below still read the label — that is the thing
+// under test — but finding the control by it made every one of them depend on
+// which half of the animation was showing.
+const modeControl = () => screen.getByRole('button', { name: /^Mode:/ });
 
 beforeEach(() => {
   jest.clearAllMocks();

@@ -80,6 +80,17 @@ function transpiled() {
     // cope, so a change that adopts this package can be green everywhere a human
     // looks and still take two jest suites down.
     '@hanzo/logo',
+    // Where a person's type scale, density and accent are stored and applied.
+    // `"type": "module"` with no `require` condition, so jest's CJS runtime gets
+    // `import { vars, css } from '@hanzo/design'` verbatim and dies on the first
+    // token. It arrived in the graph under @hanzo/ui rather than through an
+    // import anyone wrote here, which is why it took eighteen suites at once and
+    // none of them mentioned appearance.
+    '@hanzo/appearance',
+    // Reached BY appearance, and ESM only for the same reason — a transform that
+    // stops at the package the app names is a transform that fails one import
+    // deeper.
+    '@hanzo/design',
     // `@hanzo/ui/product` re-exports the design tokens and tag tones from
     // @hanzo/data, whose exports map points at `src/index.ts` — TypeScript
     // SOURCE, not a build. So the first app file to import from `product` takes
