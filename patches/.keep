@@ -1,0 +1,11 @@
+Keeps this directory in git.
+
+Dockerfile.production does `COPY patches/ ./patches/` before `pnpm install`,
+because pnpm hashes a patched dependency's file during RESOLUTION — a declared
+patch that is not in the image kills the install with ENOENT, exit 254.
+
+The directory therefore has to exist even when nothing is patched: with the
+last patch deleted (its change went upstream in @hanzo/ui 8.0.76) the COPY
+failed in four seconds on a missing path, and no image was cut.
+
+Delete this file only together with that COPY.
