@@ -1,6 +1,6 @@
 "use client";
 
-import { SizableText, YStack, XStack, Paragraph, H2, H3 } from '@hanzo/ui';
+import { SizableText, YStack, XStack, H1, Paragraph, H2, H3 } from '@hanzo/ui';
 import { useState, useEffect, useMemo } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -9,7 +9,7 @@ import { Github } from "lucide-react";
 import { fetchPublishedSlugs } from "@/lib/api/templates";
 import Header from "@/components/layout/header";
 import Reveal from "@/components/landing/reveal";
-import HeroVideo from "@/components/landing/hero-video";
+import HeroPreview from "@/components/landing/hero-preview";
 import LazySection from "@/components/landing/lazy-section";
 import { TemplateThumb } from "@/components/template-thumb";
 import { TEMPLATE_SHOTS } from "@/lib/template-shots";
@@ -18,7 +18,8 @@ import { BuildComposer, type ComposerMode } from "@/components/build-composer";
 import { ProjectThumb } from "@/components/project-thumb";
 
 // Below-the-fold sections: code-split out of the initial bundle and mounted on
-// scroll via <LazySection>. The hero — Header, film and composer — stays eager
+// scroll via <LazySection>. The hero — Header, copy, product frame and the
+// composer — stays eager
 // so it paints instantly; these chunks load as the viewport approaches each one.
 const LogoWall = dynamic(() => import("@/components/landing/logo-wall"), { ssr: false });
 const CloudIntegration = dynamic(() => import("@/components/landing/cloud-integration"), { ssr: false });
@@ -93,7 +94,7 @@ const TYPED = [
 ];
 
 export default function LandingPage() {
-  const { openLoginWindow, user } = useUser();
+  const { login, user } = useUser();
   const router = useRouter();
   const [projects, setProjects] = useState<LandingProject[]>([]);
   // A few real gallery templates surfaced beside the prompt: the bundled
@@ -182,8 +183,12 @@ export default function LandingPage() {
     localStorage.setItem("initialPrompt", text);
     localStorage.setItem("initialMode", mode);
     if (!user) {
-      localStorage.setItem("redirectAfterLogin", "/dev");
-      openLoginWindow();
+      // `login(dest)` and not `openLoginWindow()`: the latter writes
+      // `redirectAfterLogin` from the CURRENT path, so setting it first was a
+      // no-op that this one overwrote. A visitor who typed a prompt on the
+      // landing page therefore came back to "/" — which routes on to
+      // /dashboard — and the prompt they had just written was never opened.
+      login("/dev");
       return;
     }
     router.push("/dev");
@@ -215,18 +220,73 @@ export default function LandingPage() {
           exactly the run of the page the composer stays on screen for: the hero
           through the closing CTA, where it comes to rest. */}
       <YStack position="relative" zIndex={10}>
-        {/* ── Hero — the film, and nothing else ──
-            It owns the fold, edge to edge, and the composer docks over its
-            foot. There is no pill, headline or subline here any more: the film
-            says all three itself, in the product's own chrome and type, and a
-            copy of that sentence in HTML beside it was the same thing twice.
-            With the copy gone the scrim went too — it existed to keep words
-            legible over a picture, and there are no words.
+        {/* ── Hero — the sentence on the left, the product on the right ──
+            `100svh` so the hero OWNS the fold: the two columns centre in the
+            space above the composer's slot (the padding below), and the
+            composer sits at the bottom of this screen with nothing scrolling
+            under it. It is the SMALL viewport unit because a phone's URL bar
+            moves the large one, which would push the composer under the fold
+            on first paint.
 
-            The film sizes itself (`100svh`, components/landing/hero-video.tsx),
-            which is also what retired the arithmetic that used to fit it around
-            the copy: there is nothing left to fit it around. */}
-        <HeroVideo />
+            A phone stacks it — sentence, then the product frame under it, with
+            the composer already docked at the foot of the screen. From $lg the
+            two stand side by side, which is the arrangement the copy is
+            measured for: 1200 is two columns and the $8 (48px) gap between
+            them, and the left column stops at 576 because that is the width
+            the headline's two deliberate lines need — measured: at 520 the
+            second line broke again and left "it." alone on a third. */}
+        <YStack minHeight="100svh" justifyContent="center" paddingHorizontal="$4" paddingBottom={200} paddingTop="$8" $md={{ paddingHorizontal: "$6" }}>
+          <YStack alignSelf="center" width="100%" maxWidth={768} gap="$7" $lg={{ flexDirection: "row", alignItems: "center", maxWidth: 1200, gap: "$8" }}>
+            {/* LEFT — what the product does, said once. */}
+            <YStack alignSelf="center" width="100%" maxWidth={768} $lg={{ flex: 1, maxWidth: 576, alignSelf: "center" }}>
+              <Reveal>
+                <XStack alignSelf="center" marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color0025" paddingHorizontal="$3" paddingVertical="$1.5" $lg={{ alignSelf: "flex-start" }}>
+                  <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
+                    Apps, wired to real data &amp; AI
+                  </SizableText>
+                </XStack>
+              </Reveal>
+
+              <Reveal delay={60}>
+                {/* 17px is the largest size that keeps the WHOLE sentence on one
+                    line at 390: measured, 358px of room and 17.5px renders 354 —
+                    so this is the fit with the slack a webfont's metrics need.
+                    At 30.4px it wrapped to three lines with "it." alone on the
+                    last. $sm and up are untouched, where the <br> below splits it
+                    into two deliberate lines. */}
+                <H1 fontSize={17} fontWeight="600" textAlign="center" lineHeight="1.05" letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: 48 }} $lg={{ textAlign: "left" }}>
+                  {/* The space is explicit: JSX drops the whitespace around the <br>,
+                      and the <br> is hidden below sm — without it the mobile heading
+                      reads "Describe your app.Hanzo builds and ships it." */}
+                  Describe your app.{' '}
+                  <br className="break-sm" />
+                  Hanzo builds and ships it.
+                </H1>
+              </Reveal>
+
+              <Reveal delay={120}>
+                {/* 12 on a phone, and the media queries are MIN-width, so that is the
+                    BASE and $md is the desktop branch. Written the other way round it
+                    reads as "small on phones" and does the exact opposite. $4 measured
+                    15px here, which wrapped the sentence to three lines at 390. */}
+                <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize={12} textAlign="center" color="$color11" $md={{ fontSize: "$6" }} $lg={{ alignSelf: "flex-start", textAlign: "left" }} lineHeight="1.5">
+                  One prompt becomes a live app on Hanzo Cloud — UI, database,
+                  auth, and 400+ AI models, wired in and deployed.
+                </Paragraph>
+              </Reveal>
+            </YStack>
+
+            {/* RIGHT — the product, building something, in the real chrome.
+                Drawn in HTML rather than played as a film: it stays sharp at
+                every width, costs a fraction of a master, and it is the actual
+                builder's components rather than a picture of them. Deliberately
+                bare of LazySection: the frame runs itself the moment it is seen,
+                and its one job is to already be going. */}
+            <YStack alignSelf="center" width="100%" minWidth={0} $lg={{ flex: 1, minWidth: 0 }}>
+              <HeroPreview />
+            </YStack>
+          </YStack>
+        </YStack>
 
         {/* ── Below the fold — the template lane ── */}
         <YStack paddingHorizontal="$4" paddingTop="$6" paddingBottom="$9" $md={{ paddingHorizontal: "$6", paddingBottom: "$11" }}>

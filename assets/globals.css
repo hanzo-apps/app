@@ -1749,6 +1749,17 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   color: var(--destructive);
 }
 
+/* The hero heading's line break only exists at sm+ — mobile reads it as one
+   sentence. */
+.break-sm {
+  display: none;
+}
+@media (min-width: 640px) {
+  .break-sm {
+    display: block;
+  }
+}
+
 /* Cell grid — a hairline-gap grid of a FIXED number of equal columns, where
    the 1px gap is the divider between touching cells (the template-detail
    highlights). gui stacks are flex; a real CSS grid is the one honest way to

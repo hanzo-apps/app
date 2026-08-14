@@ -3,73 +3,82 @@ import { join } from "path";
 
 const ROOT = join(__dirname, "..", "..");
 const landing = readFileSync(join(ROOT, "app/page.tsx"), "utf8");
-const film = readFileSync(join(ROOT, "components/landing/hero-video.tsx"), "utf8");
+const frame = readFileSync(join(ROOT, "components/landing/hero-preview.tsx"), "utf8");
 const css = readFileSync(join(ROOT, "assets/globals.css"), "utf8");
 
 /**
- * The hero IS the film, and every way of losing that is silent.
+ * The hero is a sentence on the left and the product on the right, and every
+ * way of losing that is silent.
  *
- * It began below the fold under a <LazySection> and a <Reveal> — both of which
- * decide WHEN a thing may be seen, while the film's one job is to already be
- * running when the page arrives. Then it was a capped box beside the headline,
- * sized by arithmetic that fitted it around the copy, which rendered it as a
- * 432px thumbnail on a 1440x900 screen. Now it fills the fold and the copy is
- * gone: the film says the sentence itself, in the product's own chrome, and the
- * HTML that used to say it again is deleted.
- *
- * None of those regressions would throw. What is pinned here is the shape that
- * makes them impossible to reintroduce quietly.
+ * The arrangement has been wrong in both directions. The product frame once sat
+ * BELOW the fold under a <LazySection> and a <Reveal> — both decide WHEN a thing
+ * may be seen, while the frame's one job is to already be running — and it has
+ * also been a full-bleed film with the copy floating over it, where the words
+ * and the picture fought for the same pixels. What is pinned here is the shape
+ * that is neither: two columns that stand beside each other above $lg, stack on
+ * a phone, and never occupy each other's space.
  */
-describe("the hero is the film", () => {
-  it("mounts the film in the hero, before the band below it", () => {
-    const mount = landing.indexOf("<HeroVideo />");
-    const belowFold = landing.indexOf("── Below the fold");
-    expect(mount).toBeGreaterThan(-1);
-    expect(mount).toBeLessThan(belowFold);
-    expect(landing.match(/<HeroVideo \/>/g)).toHaveLength(1);
+describe("the hero is a sentence beside the product", () => {
+  it("says what the product does, once, on the left", () => {
+    expect(landing).toContain("Describe your app.");
+    expect(landing).toContain("Hanzo builds and ships it.");
+    expect(landing).toContain("One prompt becomes a live app");
+    // The headline's break is CSS, not a second heading: `.break-sm` hides it
+    // below 640 so a phone reads one sentence. Delete the rule and the mobile
+    // heading silently becomes "Describe your app.Hanzo builds and ships it."
+    expect(landing).toContain('<br className="break-sm" />');
+    expect(css).toContain(".break-sm");
   });
 
-  it("keeps the hero's copy deleted, so the message is said once", () => {
-    // The film carries the headline, the pill and the subline itself. Each of
-    // these strings was a second copy of something the picture already says.
-    expect(landing).not.toContain("Describe your app.");
-    expect(landing).not.toContain("Apps, wired to real data");
-    expect(landing).not.toContain("One prompt becomes a live app");
-    // The line-break helper went with the headline that was its only caller;
-    // left behind it is a rule that reads live and governs nothing.
-    expect(css).not.toContain(".break-sm");
+  it("stands the two columns side by side only from $lg", () => {
+    // The row lives on the wrapper, in the $lg branch. Base is a column, which
+    // is what stacks a phone: sentence first, product frame under it.
+    const hero = landing.slice(landing.indexOf("── Hero"), landing.indexOf("── Below the fold"));
+    expect(hero).toMatch(/\$lg=\{\{ flexDirection: "row"/);
+    expect(hero).not.toMatch(/flexDirection="row"/); // never unconditionally
+    expect(hero.indexOf("Describe your app.")).toBeLessThan(hero.indexOf("<HeroPreview />"));
   });
 
-  it("does not put the film to sleep behind Reveal or LazySection", () => {
-    // Both gate visibility, and a browser will not autoplay a film it cannot
-    // see. The hero is now a single mount, so the span between the section
-    // comment and the mount is the only place a wrapper could hide.
-    const hero = landing.indexOf("── Hero");
-    const mount = landing.indexOf("<HeroVideo />");
-    expect(hero).toBeGreaterThan(-1);
-    expect(mount).toBeGreaterThan(hero);
-    const between = landing.slice(hero, mount);
-    expect(between).not.toMatch(/<Reveal\b/);
-    expect(between).not.toMatch(/<LazySection\b/);
+  it("mounts the product frame exactly once, in the fold", () => {
+    expect(landing.match(/<HeroPreview \/>/g)).toHaveLength(1);
+    expect(landing.indexOf("<HeroPreview />")).toBeLessThan(landing.indexOf("── Below the fold"));
   });
 
-  it("fills the fold, and the film is what decides that", () => {
-    // `100svh` and not `vh`: a phone's URL bar moves the large unit, and the
-    // film would resize under the composer every time it retracted.
-    expect(film).toMatch(/minHeight="100svh"/);
-    expect(film).toMatch(/object-fit: cover/);
-    // The page hands it no box at all any more — no cap, no wrapper geometry.
-    expect(landing).not.toContain("hz-fold");
-    expect(css).not.toContain(".hz-fold");
-    expect(film).not.toContain("maxWidth");
+  it("does not put the frame to sleep behind LazySection", () => {
+    // LazySection defers a subtree until it is scrolled to; the hero is what
+    // the page opens with, so a deferred hero renders nothing at all on arrival.
+    const hero = landing.slice(landing.indexOf("── Hero"), landing.indexOf("── Below the fold"));
+    expect(hero).not.toMatch(/<LazySection\b/);
   });
 
-  it("carries the film's message where a picture cannot be watched", () => {
-    // With the copy gone this alt text is the only sentence on the hero. It is
-    // what a screen reader reads and what a crawler indexes, so an empty or
-    // decorative alt here would leave the page's whole message inside a video.
-    const alt = film.match(/const ALT =\s*\n?\s*"([^"]+)"/);
-    expect(alt).not.toBeNull();
-    expect(alt![1].length).toBeGreaterThan(40);
+  it("keeps the hero's fold arithmetic, so the composer is never pushed off screen", () => {
+    // `100svh` and not `vh`: a phone's URL bar moves the large unit, which
+    // drops the docked composer below the fold on first paint. The bottom
+    // padding is the composer's reserved slot.
+    const hero = landing.slice(landing.indexOf("── Hero"), landing.indexOf("── Below the fold"));
+    expect(hero).toMatch(/minHeight="100svh"/);
+    expect(hero).toMatch(/paddingBottom=\{200\}/);
+  });
+
+  it("shows the product, and never the address of the page you are on", () => {
+    // A visitor reading this is already on hanzo.app. An "<app>.hanzo.app" in
+    // the frame's address strip is the site telling them where they are, and it
+    // puts a domain in front of the product it exists to show.
+    //
+    // Measured against the code that RENDERS, with comments stripped: the rule
+    // is written down a few lines above the constant it governs, and a check
+    // that reads prose fails on its own explanation.
+    const code = frame.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+    expect(code).not.toContain("hanzo.app");
+    expect(code).not.toContain("your-app");
+    expect(code).toContain('const APP = "Vibe Check"');
+  });
+
+  it("draws the frame in HTML, so it is sharp at every width", () => {
+    // Not a film: no <video>, no master to fetch, nothing to crop. The old
+    // full-bleed treatment and its four stills are gone with it.
+    expect(landing).not.toContain("HeroVideo");
+    expect(landing).not.toContain("hero-tall");
+    expect(frame).not.toContain("<video");
   });
 });
