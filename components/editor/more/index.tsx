@@ -9,7 +9,16 @@ import { panel } from '@/lib/chrome';
 import { fetchConnectors, type Provider } from '@/lib/connectors';
 import { useModels } from '@/lib/hooks/use-models';
 import { fetchMcpServers, fetchMcpToolCount, type McpServer } from '@/lib/mcp';
-import { OverviewBody, SecretsBody, StorageBody, UsersBody } from './cloud';
+import {
+  AgentsBody,
+  BotsBody,
+  FunctionsBody,
+  OverviewBody,
+  SandboxesBody,
+  SecretsBody,
+  StorageBody,
+  UsersBody,
+} from './cloud';
 import { SECTIONS, findSection, type Section } from './sections';
 
 /**
@@ -179,6 +188,10 @@ function SectionBody({ section, projectId }: { section: Section; projectId?: str
   if (section.id === 'cloud-users') return <UsersBody />;
   if (section.id === 'cloud-storage') return <StorageBody />;
   if (section.id === 'cloud-secrets') return <SecretsBody />;
+  if (section.id === 'cloud-functions') return <FunctionsBody />;
+  if (section.id === 'cloud-sandboxes') return <SandboxesBody />;
+  if (section.id === 'cloud-agents') return <AgentsBody />;
+  if (section.id === 'cloud-bots') return <BotsBody />;
   if (section.id === 'cloud-usage') return <UsageBody />;
   if (section.id === 'cloud-logs') return <LogsBody />;
   if (section.id === 'analytics') return <AnalyticsBody />;

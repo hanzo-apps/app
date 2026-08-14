@@ -8,7 +8,7 @@
  * what is tested here, is the reading: which shapes become rows, which become
  * NOTHING KNOWN, and what a row is allowed to carry.
  */
-import { SECRETS, STORAGE, USERS } from '@/components/editor/more/cloud';
+import { AGENTS, BOTS, FUNCTIONS, SANDBOXES, SECRETS, STORAGE, USERS } from '@/components/editor/more/cloud';
 
 const DASH = '—';
 
@@ -29,10 +29,31 @@ describe('an answer this build cannot read is never an empty list', () => {
     expect(SECRETS.rows(body)).toBeNull();
   });
 
+  it.each(unreadable)('functions: %p reads as not-known, not empty', (body) => {
+    expect(FUNCTIONS.rows(body)).toBeNull();
+  });
+
+  it.each(unreadable)('sandboxes: %p reads as not-known, not empty', (body) => {
+    expect(SANDBOXES.rows(body)).toBeNull();
+  });
+
+  it.each(unreadable)('agents: %p reads as not-known, not empty', (body) => {
+    expect(AGENTS.rows(body)).toBeNull();
+  });
+
+  it.each(unreadable)('bots: %p reads as not-known, not empty', (body) => {
+    expect(BOTS.rows(body)).toBeNull();
+  });
+
   it('a well-formed empty answer IS empty — that one may be claimed', () => {
     expect(USERS.rows({ status: 'success', data: [] })).toEqual([]);
     expect(STORAGE.rows({ buckets: [], total: 0 })).toEqual([]);
     expect(SECRETS.rows({ names: [], secrets: [], total: 0 })).toEqual([]);
+    expect(FUNCTIONS.rows({ functions: [] })).toEqual([]);
+    expect(SANDBOXES.rows({ sandboxes: [] })).toEqual([]);
+    expect(AGENTS.rows({ agents: [] })).toEqual([]);
+    // The live answer today. An org with no bots is a fact, not a gap.
+    expect(BOTS.rows({ bots: [] })).toEqual([]);
   });
 });
 
@@ -117,8 +138,60 @@ describe('secrets carry names, never values', () => {
   });
 });
 
+describe('a count of zero is a measurement; a missing count is not', () => {
+  it('keeps a real zero', () => {
+    const [f] = FUNCTIONS.rows({ functions: [{ name: 'fleet-smoke', invocations7d: 0 }] })!;
+    expect(f.calls).toBe('0');
+  });
+
+  it('will not print 0 for a number the answer never carried', () => {
+    const [f] = FUNCTIONS.rows({ functions: [{ name: 'fleet-smoke' }] })!;
+    expect(f.calls).toBe(DASH);
+    const [a] = AGENTS.rows({ agents: [{ id: 'a1', name: 'greeter' }] })!;
+    expect(a.runs).toBe(DASH);
+  });
+});
+
+describe('functions, sandboxes and agents read their live shapes', () => {
+  it('functions', () => {
+    expect(
+      FUNCTIONS.rows({
+        functions: [
+          { name: 'fleet-smoke', environment: 'python', status: 'ready', invocations7d: 1 },
+        ],
+      }),
+    ).toEqual([{ name: 'fleet-smoke', runtime: 'python', state: 'ready', calls: '1' }]);
+  });
+
+  it('sandboxes, with epoch lastUsedAt', () => {
+    expect(
+      SANDBOXES.rows({
+        sandboxes: [
+          {
+            id: 'm_a1c53480ce34ca40af10a899',
+            project: 'tabs',
+            class: 'dev',
+            status: 'running',
+            lastUsedAt: 1786668543,
+          },
+        ],
+      }),
+    ).toEqual([
+      { id: 'm_a1c53480ce34ca40af10a899', project: 'tabs', kind: 'dev', state: 'running', used: '2026-08-14' },
+    ]);
+  });
+
+  it('agents', () => {
+    expect(
+      AGENTS.rows({
+        agents: [{ id: 'agent_ceb', name: 'example-greeter', model: 'zen5', status: 'ready', runs: 1 }],
+      }),
+    ).toEqual([{ id: 'agent_ceb', name: 'example-greeter', model: 'zen5', state: 'ready', runs: '1' }]);
+  });
+});
+
 describe('every reader names one canonical /v1 surface', () => {
-  it.each([USERS, STORAGE, SECRETS])('$path is /v1/<head>/… with no /api and no version but v1', (spec) => {
+  it.each([USERS, STORAGE, SECRETS, FUNCTIONS, SANDBOXES, AGENTS, BOTS])('$path is /v1/<head>/… with no /api and no version but v1', (spec) => {
     expect(spec.path).toMatch(/^\/v1\/[a-z0-9]+(\/[a-z0-9-]+)*$/);
     expect(spec.path).not.toContain('/api/');
     expect(spec.path).not.toMatch(/\/v[2-9]/);

@@ -63,6 +63,14 @@ const list = (v: unknown, key: string): unknown[] | null => {
 
 const text = (v: unknown): string => (typeof v === 'string' && v ? v : '');
 
+/**
+ * A COUNT, which is the one place a zero is allowed — and only when the surface
+ * actually sent one. `0` means measured-and-none; a missing or non-numeric field
+ * means nobody measured, and that is a dash. Collapsing the two is how "no
+ * invocations" and "we did not ask" end up looking identical.
+ */
+const count = (v: unknown): string => (typeof v === 'number' && Number.isFinite(v) ? String(v) : NONE);
+
 /** ISO or epoch-seconds → a plain day. Anything else is not a date. */
 const day = (v: unknown): string => {
   const at = typeof v === 'number' ? new Date(v * 1000) : typeof v === 'string' ? new Date(v) : null;
@@ -236,8 +244,112 @@ export const SECRETS: List<Secret> = {
   scope: 'Names only, from Hanzo KMS. A value is never read by this screen.',
 };
 
+/** Functions — the org's deployed functions, from `/v1/functions`. */
+type Fn = { name: string; runtime: string; state: string; calls: string };
+
+export const FUNCTIONS: List<Fn> = {
+  path: '/v1/functions',
+  rows: (body) =>
+    list(body, 'functions')?.map((raw) => {
+      const f = (raw ?? {}) as Record<string, unknown>;
+      return {
+        name: text(f.name) || NONE,
+        runtime: text(f.environment) || text(f.runtime) || NONE,
+        state: text(f.status) || NONE,
+        // A count is a measurement, so it is shown only when one arrived.
+        calls: count(f.invocations7d),
+      };
+    }) ?? null,
+  columns: [
+    { key: 'name', header: 'Function', render: (f) => f.name, mono: true },
+    { key: 'runtime', header: 'Runtime', render: (f) => f.runtime, width: 110 },
+    { key: 'state', header: 'Status', render: (f) => f.state, width: 100 },
+    { key: 'calls', header: 'Calls · 7d', render: (f) => f.calls, width: 100, align: 'right', mono: true },
+  ],
+  key: (f) => f.name,
+  empty: 'No functions deployed yet.',
+  scope: 'Serverless functions in this workspace. Calls are the last seven days.',
+};
+
+/** Sandboxes — the org's live boxes, from `/v1/sandboxes`. */
+type Box = { id: string; project: string; kind: string; state: string; used: string };
+
+export const SANDBOXES: List<Box> = {
+  path: '/v1/sandboxes',
+  rows: (body) =>
+    list(body, 'sandboxes')?.map((raw) => {
+      const b = (raw ?? {}) as Record<string, unknown>;
+      return {
+        id: text(b.id) || NONE,
+        project: text(b.project) || NONE,
+        kind: text(b.class) || text(b.kind) || NONE,
+        state: text(b.status) || NONE,
+        used: day(b.lastUsedAt),
+      };
+    }) ?? null,
+  columns: [
+    { key: 'project', header: 'Project', render: (b) => b.project },
+    { key: 'kind', header: 'Class', render: (b) => b.kind, width: 90 },
+    { key: 'state', header: 'Status', render: (b) => b.state, width: 100 },
+    { key: 'used', header: 'Last used', render: (b) => b.used, width: 110, mono: true },
+  ],
+  key: (b) => b.id,
+  empty: 'No sandboxes running. One starts when a build needs to run something.',
+  scope: 'Boxes this workspace is holding. Stopping one lives with the run that owns it.',
+};
+
+/** Agents — the org's registry, from `/v1/agents`. */
+type Agent = { id: string; name: string; model: string; state: string; runs: string };
+
+export const AGENTS: List<Agent> = {
+  path: '/v1/agents',
+  rows: (body) =>
+    list(body, 'agents')?.map((raw) => {
+      const a = (raw ?? {}) as Record<string, unknown>;
+      return {
+        id: text(a.id) || text(a.name),
+        name: text(a.name) || NONE,
+        model: text(a.model) || NONE,
+        state: text(a.status) || NONE,
+        runs: count(a.runs),
+      };
+    }) ?? null,
+  columns: [
+    { key: 'name', header: 'Agent', render: (a) => a.name },
+    { key: 'model', header: 'Model', render: (a) => a.model, width: 110 },
+    { key: 'state', header: 'Status', render: (a) => a.state, width: 100 },
+    { key: 'runs', header: 'Runs', render: (a) => a.runs, width: 80, align: 'right', mono: true },
+  ],
+  key: (a) => a.id,
+  empty: 'No agents registered yet.',
+  scope: 'Agents this workspace can run, and how often each has run.',
+};
+
+/** Bots — the org's bots, from `/v1/bots`. */
+type Bot = { id: string; name: string; state: string };
+
+export const BOTS: List<Bot> = {
+  path: '/v1/bots',
+  rows: (body) =>
+    list(body, 'bots')?.map((raw) => {
+      const b = (raw ?? {}) as Record<string, unknown>;
+      return { id: text(b.id) || text(b.name), name: text(b.name) || NONE, state: text(b.status) || NONE };
+    }) ?? null,
+  columns: [
+    { key: 'name', header: 'Bot', render: (b) => b.name },
+    { key: 'state', header: 'Status', render: (b) => b.state, width: 110 },
+  ],
+  key: (b) => b.id,
+  empty: 'No bots yet.',
+  scope: 'Bots this workspace has published.',
+};
+
 export const UsersBody = () => <Table list={USERS} />;
 export const StorageBody = () => <Table list={STORAGE} />;
+export const FunctionsBody = () => <Table list={FUNCTIONS} />;
+export const SandboxesBody = () => <Table list={SANDBOXES} />;
+export const AgentsBody = () => <Table list={AGENTS} />;
+export const BotsBody = () => <Table list={BOTS} />;
 export const SecretsBody = () => <Table list={SECRETS} />;
 
 /**
