@@ -92,9 +92,20 @@ function Table<T>({ list: spec }: { list: List<T> }) {
   const [read, setRead] = useState<Read<T>>({ phase: 'loading' });
   const [attempt, setAttempt] = useState(0);
 
+  // WHICH question the answer in hand belongs to. Point the pane at another
+  // endpoint, or ask again, and the rows already on screen describe the old
+  // one — so they are dropped where React can still fold the change into the
+  // render in progress, rather than as a second commit after the paint that
+  // showed stale rows under a new heading.
+  const asked = `${spec.path}#${attempt}`;
+  const [answered, setAnswered] = useState(asked);
+  if (answered !== asked) {
+    setAnswered(asked);
+    setRead({ phase: 'loading' });
+  }
+
   useEffect(() => {
     let alive = true;
-    setRead({ phase: 'loading' });
     (async () => {
       try {
         const res = await fetch(spec.path, { credentials: 'include', cache: 'no-store' });
@@ -373,21 +384,28 @@ type State =
     };
 
 export function OverviewBody({ projectId }: { projectId?: string | null }) {
-  const [read, setRead] = useState<State>({ phase: 'idle' });
-
   // The pane carries the SPACE id (`org/slug`) because that is what a project is
   // called everywhere else. Provisioning keyed its marker by the bare SLUG —
   // both callers of the POST send `slug` — and a store is found by the name it
   // was filed under, not the one it is displayed under.
   const slug = (projectId ?? '').split('/').pop() ?? '';
+  const opening = (of: string): State => (of ? { phase: 'loading' } : { phase: 'idle' });
+
+  const [read, setRead] = useState<State>(() => opening(slug));
+
+  // WHICH project the answer in hand belongs to. Open another one and what is
+  // on screen describes the last one, so it is dropped during the render that
+  // switched — not in a commit afterwards, which is the frame where one
+  // project's provisioning is shown under another's name.
+  const [answered, setAnswered] = useState(slug);
+  if (answered !== slug) {
+    setAnswered(slug);
+    setRead(opening(slug));
+  }
 
   useEffect(() => {
-    if (!slug) {
-      setRead({ phase: 'idle' });
-      return;
-    }
+    if (!slug) return;
     let alive = true;
-    setRead({ phase: 'loading' });
     (async () => {
       try {
         const res = await fetch(`/v1/provision?projectId=${encodeURIComponent(slug)}`, {

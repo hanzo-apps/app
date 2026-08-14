@@ -1090,12 +1090,20 @@ export function AskAI({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Restore the persisted composer height once on mount (client-only, so no
-  // SSR/client style mismatch). A saved value means the user had resized it.
+  // Restore the persisted composer height once on mount. A saved value means the
+  // user had resized it.
+  //
+  // AFTER the commit, deliberately, and this is the one case where the effect is
+  // the answer rather than the smell: the height is read from localStorage, which
+  // the server cannot see. Seeding the state during render would make the server
+  // send one height and the first client render another — a hydration mismatch on
+  // the textarea's inline style. So the first paint agrees with the server, and
+  // the saved height lands immediately after it.
   useEffect(() => {
     if (savedComposerH && savedComposerH > 0) {
       manualResizeRef.current = true;
       composerHRef.current = savedComposerH;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setComposerH(savedComposerH);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
