@@ -5,10 +5,11 @@ import { YStack, Paragraph, H2, XStack, SizableText, Image } from '@hanzo/ui';
 // same way it drops the GuiElement type. Tracked; everything else in this
 // file comes from @hanzo/ui.
 import { Anchor } from '@hanzo/gui';
-// "One API, 400+ models" — the real Hanzo AI. The endpoint shown is real
-// (api.hanzo.ai/v1, OpenAI-compatible); the model value is illustrative.
+// "One API, 400+ models" — the real Hanzo AI. The request panel is the shared
+// `Quickstart`, which /docs renders too: one endpoint, one model id, one copy.
 
 import Reveal from "./reveal";
+import { Quickstart } from "@/components/quickstart";
 
 // Every mark is the provider's OWN, from @hanzoai/icons (packages/static-svg) —
 // colour where the brand has one, which is most of them. OpenAI, xAI and Groq
@@ -90,22 +91,8 @@ export default function ModelsStrip() {
           </Anchor>
         </Reveal>
 
-        <Reveal delay={100} alignSelf="stretch" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$5">
-          <XStack marginBottom="$4" alignItems="center" gap="$1.5">
-            <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
-            <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
-            <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
-          </XStack>
-          <SizableText fontFamily="$mono" fontSize="$1" lineHeight="1.625" color="$color" overflow="scroll" whiteSpace="pre">
-{`POST https://api.hanzo.ai/v1/chat/completions
-Authorization: Bearer $HANZO_KEY
-
-{
-  "model": "zen5",
-  "messages": [{ "role": "user", "content": "…" }],
-  "stream": true
-}`}
-          </SizableText>
+        <Reveal delay={100} alignSelf="stretch">
+          <Quickstart />
         </Reveal>
 
         {/* Its own block rather than a hairline inside the card: a mark with a

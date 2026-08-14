@@ -76,6 +76,24 @@ if (typeof globalThis.crypto?.randomUUID !== 'function') {
   Object.defineProperty(globalThis.crypto, 'randomUUID', { value: randomUUID, configurable: true });
 }
 
+// @hanzogui/tabs observes its own strip on mount, to know how wide the active
+// tab is, and jsdom implements no ResizeObserver — so `render()` of anything
+// containing @hanzo/ui Tabs threw "ResizeObserver is not defined" from inside a
+// passive effect. React reports that as an AggregateError with no message,
+// which names neither the API nor the component and reads like a broken test.
+//
+// It observes and never fires, which is the truthful answer: jsdom performs no
+// layout, so no element ever changes size and there is nothing to report. A
+// stub that invented a box would hand every measurement-driven component the
+// same fictitious width and make a real regression unfindable.
+if (typeof globalThis.ResizeObserver !== 'function') {
+  globalThis.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
 // @hanzogui/select calls window.matchMedia while its MODULE is evaluating, not
 // on render, so every suite that so much as imported @hanzo/ui died at import
 // time with "window.matchMedia is not a function" — six unrelated suites, and

@@ -24,6 +24,7 @@ import {
 import Header from "@/components/layout/header";
 import SiteFooter from "@/components/landing/site-footer";
 import Reveal from "@/components/landing/reveal";
+import { Quickstart } from "@/components/quickstart";
 
 interface Dest {
   icon: React.ReactNode;
@@ -255,7 +256,11 @@ export default function DocsPage() {
 
         {/* ── API ──────────────────────────────────────────────── */}
         <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
-          <YStack alignSelf="center" maxWidth={1152} alignItems="center" gap="$8" $lg={{ gap: "$10" }} className="shrink-cells">
+          {/* `width="100%"`, or this column is shrink-to-fit inside its centred
+              parent and `maxWidth` caps a width it never claims — it measured
+              542px on a 1280 row, sized by the 448px paragraph above. The
+              landing's own strip already claims its width; this one did not. */}
+          <YStack alignSelf="center" width="100%" maxWidth={1152} alignItems="center" gap="$8" $lg={{ gap: "$10" }} className="shrink-cells">
             <Reveal>
               <Paragraph fontFamily="$mono" fontSize="$1" color="$color11">
                 API
@@ -265,7 +270,7 @@ export default function DocsPage() {
               </H2>
               <Paragraph marginTop="$4" maxWidth={448} fontSize="$4" color="$color11">
                 Every app you build can call any frontier model — Hanzo&apos;s own
-                Zen and Enso families included — through a single OpenAI-compatible
+                Enso family included — through a single OpenAI-compatible
                 endpoint. Swap models with one string.
               </Paragraph>
               <Anchor display="inline-flex"
@@ -279,22 +284,8 @@ export default function DocsPage() {
               </Anchor>
             </Reveal>
 
-            <Reveal delay={100} borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$5">
-              <XStack marginBottom="$4" alignItems="center" gap="$1.5">
-                <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
-                <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
-                <SizableText height={10} width={10} borderRadius="$10" backgroundColor="$color4" />
-              </XStack>
-              <SizableText fontFamily="$mono" fontSize="$1" lineHeight="1.625" color="$color" overflow="scroll" whiteSpace="pre">
-{`POST https://api.hanzo.ai/v1/chat/completions
-Authorization: Bearer $HANZO_KEY
-
-{
-  "model": "zen5",
-  "messages": [{ "role": "user", "content": "…" }],
-  "stream": true
-}`}
-              </SizableText>
+            <Reveal delay={100} alignSelf="stretch">
+              <Quickstart />
             </Reveal>
           </YStack>
         </YStack>
