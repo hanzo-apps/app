@@ -402,20 +402,38 @@ function NewProjectInner() {
             <YStack marginRight="$-2" maxHeight={420} rowGap="$2" paddingRight="$2" overflow="scroll" className="thin-scrollbar">
               {galleryLoading
                 ? Array.from({ length: 5 }).map((_, i) => (
+                    /* 60 is the row's real height — the skeleton and the row it
+                       stands in for must be the same box, or the list jumps. */
                     <YStack
                       key={i}
-                      height={68} borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3"
+                      height={60} borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3"
   />
                   ))
                 : filteredTemplates.map((t) => (
-                    <Button
+                    /* A ROW, not a control — the same clickable stack /templates
+                       uses. As a `Button` this measured 36px (the size variant's
+                       band) around 52px of text, so the title floated 8px ABOVE
+                       the row's own border and the subtitle 8px below it, into
+                       the next row; `justify: center` on the button frame also
+                       centred both lines. Anatomy now matches the repo rows in
+                       the panel above: icon left, name over subtitle left, the
+                       affordance right. */
+                    <XStack
                       key={t.slug}
-                      type="button"
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Open the ${t.title} template`}
                       onClick={() => handleTemplate(t.source)}
-                      group width="100%" alignItems="center" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$3" hoverStyle={{ y: -1, borderColor: "$color06", backgroundColor: "$color4" }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleTemplate(t.source);
+                        }
+                      }}
+                      cursor="pointer" group alignItems="center" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$2.5" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color4" }}
                     >
                       <XStack height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color4">
-                        <FileCode2 size={18} />
+                        <FileCode2 size={16} />
                       </XStack>
                       <YStack minWidth={0} flex={1}>
                         <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{t.title}</SizableText>
@@ -431,7 +449,7 @@ function NewProjectInner() {
                         </SizableText>
                       </YStack>
                       <ArrowRight size={16} />
-                    </Button>
+                    </XStack>
                   ))}
               {!galleryLoading && filteredTemplates.length === 0 && (
                 <SizableText paddingVertical="$7" textAlign="center" fontSize="$3" color="$color11">

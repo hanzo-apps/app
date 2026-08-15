@@ -104,6 +104,37 @@ test.describe('/new — deploy hub', () => {
     await expect(importBtn).toBeEnabled();
   });
 
+  test('a template row holds its own words', async ({ page }) => {
+    await page.goto('/new');
+    await expect(page.getByRole('heading', { name: 'Clone a Template' })).toBeVisible();
+    const rows = page.getByRole('button', { name: /^Open the .+ template$/ });
+    await expect(rows.first()).toBeVisible({ timeout: 30000 });
+
+    // As a `Button` this row measured 36px — the size variant's band — around
+    // 52px of text, so the title floated above the row's own border and the
+    // subtitle below it, into the row beneath. Nothing errored and the build was
+    // green; only measuring says so. Assert both halves of what broke: the text
+    // is inside its row, and it reads from the left rather than the centre.
+    const escaped = await rows.evaluateAll((els) =>
+      els.flatMap((el) => {
+        const box = el.getBoundingClientRect();
+        return Array.from(el.querySelectorAll('*'))
+          .filter((n) => n.children.length === 0 && (n.textContent || '').trim())
+          .filter((n) => {
+            const b = n.getBoundingClientRect();
+            return b.top < box.top - 0.5 || b.bottom > box.bottom + 0.5;
+          })
+          .map((n) => `${(n.textContent || '').trim()} escapes its row`);
+      }),
+    );
+    expect(escaped).toEqual([]);
+
+    const centred = await rows.evaluateAll((els) =>
+      els.filter((el) => getComputedStyle(el).textAlign === 'center').length,
+    );
+    expect(centred).toBe(0);
+  });
+
   test('prompt → Build submits toward the builder (never a dead click)', async ({ page }) => {
     await page.goto('/new');
     // Cold-start tolerance: on the in-cluster runner the first /new hit can

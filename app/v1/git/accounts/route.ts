@@ -6,45 +6,54 @@
  *   - `accounts` is the aggregate of every linked provider (GitHub user + orgs,
  *     GitLab user). Empty ⇒ nothing linked (drives the honest "Connect" CTA —
  *     NEVER fabricated rows).
- *   - `providers` reports which providers can be connected right now. GitHub is
- *     always live; GitLab is `connectable: false, reason: 'needs-setup'` until
- *     its OAuth app + IAM provider are configured (operator flips
- *     `GITLAB_CONNECT_ENABLED`). No dead clicks.
+ *   - `providers` reports which providers can be connected right now, asked of
+ *     IAM — the one thing that knows which it can drive. A provider IAM does not
+ *     offer reports `connectable: false, reason: 'needs-setup'`, so the UI says
+ *     so instead of opening a chooser the provider is missing from.
  *
- * Provider tokens are resolved from IAM server-side (the user's own bearer) and
- * used only here — never returned to the browser. Per-user data ⇒ no-store.
+ * No provider credential exists in this process: git.hanzo.ai is read with the
+ * forge credential and GitHub/GitLab through the org's connectors, where cloud
+ * holds the sealed token. Per-user data ⇒ no-store.
  */
 import { type NextRequest, NextResponse } from 'next/server';
 
 import type { GitAccount, GitProviderStatus } from '@/lib/api/git';
-import { resolveAllConnections, listAccounts, gitlabConnectable } from '@/lib/git/server';
+import { resolveSources, listAccounts, connectableProviders } from '@/lib/git/server';
 
 export const runtime = 'nodejs';
 
 const NO_STORE = { 'Cache-Control': 'no-store' } as const;
 
-function providerStatuses(): GitProviderStatus[] {
+/**
+ * Which providers a Connect button can actually complete on. Our own git needs
+ * no OAuth link, so it is always connectable for a signed-in user; GitHub and
+ * GitLab are whatever the connector plane says this deployment can connect —
+ * one answer, one place, no per-provider special case and no flag to keep in step.
+ */
+async function providerStatuses(req: NextRequest): Promise<GitProviderStatus[]> {
+  const live = await connectableProviders(req);
   return [
-    // Our own git leads — always connectable for a signed-in user, no OAuth link.
     { provider: 'hanzo', connectable: true },
-    { provider: 'github', connectable: true },
-    gitlabConnectable()
-      ? { provider: 'gitlab', connectable: true }
-      : { provider: 'gitlab', connectable: false, reason: 'needs-setup' },
+    ...(['github', 'gitlab'] as const).map(
+      (provider): GitProviderStatus =>
+        live.has(provider)
+          ? { provider, connectable: true }
+          : { provider, connectable: false, reason: 'needs-setup' },
+    ),
   ];
 }
 
 export async function GET(req: NextRequest) {
-  const providers = providerStatuses();
-  const conns = await resolveAllConnections(req);
-  if (conns.length === 0) {
+  const providers = await providerStatuses(req);
+  const sources = await resolveSources(req);
+  if (sources.length === 0) {
     return NextResponse.json({ connected: false, accounts: [], providers }, { headers: NO_STORE });
   }
 
   const accounts: GitAccount[] = [];
-  for (const conn of conns) {
+  for (const src of sources) {
     try {
-      const list = await listAccounts(conn);
+      const list = await listAccounts(src);
       // A 401 (revoked token) yields null — skip that provider, keep the rest.
       if (list) accounts.push(...list);
     } catch {

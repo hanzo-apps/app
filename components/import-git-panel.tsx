@@ -2,7 +2,7 @@
 
 import { sends } from '@hanzo/ui/chat';
 import { YStack, XStack, H2, Paragraph, Image, SizableText, H3 } from '@hanzo/ui';
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useIam } from "@hanzo/iam/react";
 import {
   ArrowRight,
@@ -39,7 +39,7 @@ import {
   type GitProviderStatus,
   type GitRepo,
 } from "@/lib/api/git";
-import { linkProvider } from "@/lib/hanzo/iam";
+import { connectProvider } from "@/lib/connectors";
 import { isGitUrl } from "@/lib/git/url";
 import { useRepoImport } from "@/lib/import/use-repo-import";
 import { Spinner } from "@/components/ui/spinner";
@@ -59,15 +59,16 @@ const PROVIDER_META: Record<GitProvider, { label: string; Icon: typeof Github }>
 /**
  * Import Git Repository — the real, connected-account import panel.
  *
- * Lists the signed-in user's IAM-linked GitHub and GitLab accounts (self + orgs)
- * and their live repositories via the same-origin `/v1/git/*` BFF. Selecting an
+ * Lists every git account the signed-in user can import from — git.hanzo.ai, and
+ * the GitHub and GitLab accounts the org has CONNECTED — with their live
+ * repositories, via the same-origin `/v1/git/*` BFF. Selecting an
  * account loads its repos; a row and the paste box perform the SAME import
  * (`useRepoImport`) — the repo is cloned onto git.hanzo.ai with its history and
  * opened as a project. When nothing is connected it shows an HONEST "Connect"
  * CTA (never fabricated rows), and pasting a URL always works without one.
  */
 export function ImportGitPanel() {
-  const { sdk, isAuthenticated, login } = useIam();
+  const { isAuthenticated, login } = useIam();
 
   // Sign in and come back here — the one path for every control on this panel
   // that needs an account it does not have.
@@ -92,19 +93,17 @@ export function ImportGitPanel() {
   const [search, setSearch] = useState("");
 
   const [pasteUrl, setPasteUrl] = useState("");
+  // The provider whose consent screen we are navigating to, so the button says so.
+  const [connecting, setConnecting] = useState<"" | "github" | "gitlab">("");
 
   // A row's Import and the paste box are the SAME action — clone the repo onto
   // git.hanzo.ai with its history, then open it in the builder.
   const { importing, importRepo } = useRepoImport(signIn);
 
-  // True while the user is off linking GitHub in the hanzo.id account tab, so a
-  // return to this tab re-checks the connection (idle refocus stays a no-op).
-  const linkPendingRef = useRef(false);
-
-  // Load (or reload) the connected accounts; resolves to whether GitHub is
+  // Load (or reload) the connected accounts; resolves to whether anything is
   // connected. A not-connected/unauthenticated response yields the honest
   // Connect CTA (fetchGitAccounts never throws). The active selection is
-  // preserved across reloads so a post-link refetch never resets the user.
+  // preserved across reloads so a refetch never resets the user.
   const refreshAccounts = useCallback(async () => {
     const r = await fetchGitAccounts();
     setConnected(r.connected);
@@ -125,24 +124,6 @@ export function ImportGitPanel() {
     };
   }, [refreshAccounts]);
 
-  // When the user returns from the hanzo.id link tab, re-check the connection
-  // and reveal their repos. Gated on a pending link so idle refocus is a no-op.
-  useEffect(() => {
-    const onReturn = () => {
-      if (document.visibilityState !== "visible") return;
-      if (!linkPendingRef.current) return;
-      void refreshAccounts().then((ok) => {
-        if (ok) linkPendingRef.current = false;
-      });
-    };
-    document.addEventListener("visibilitychange", onReturn);
-    window.addEventListener("focus", onReturn);
-    return () => {
-      document.removeEventListener("visibilitychange", onReturn);
-      window.removeEventListener("focus", onReturn);
-    };
-  }, [refreshAccounts]);
-
   // Load the active account's repositories whenever it changes. The provider is
   // taken from the account itself so a GitLab account queries GitLab, not GitHub.
   useEffect(() => {
@@ -160,60 +141,52 @@ export function ImportGitPanel() {
     };
   }, [connected, active, accounts]);
 
-  // Connect GitHub — two honest paths, one per auth state:
+  // Connect a provider — ONE path for GitHub and GitLab, because there is one
+  // place a git credential lives: the org's connectors. Cloud runs the OAuth leg
+  // and seals the token in KMS, which is what makes repositories readable
+  // afterwards; an IAM identity LINK proves who you are and grants nothing to
+  // read, so this button does not use one.
   //
-  //  • Already signed in (e.g. via Google/password): LINK GitHub to the
-  //    EXISTING hanzo.id account via a POPUP. `login({prompt:"login"})` would
-  //    silently re-SSO the live session back WITHOUT ever showing the GitHub
-  //    chooser, so nothing links. `linkProvider` opens the SDK-built authorize
-  //    URL (`provider=github&method=link`, redirect_uri = the app's REGISTERED
-  //    `/auth/callback`) in a popup that goes straight to GitHub, links to the
-  //    signed-in account, then posts back + closes. We re-fetch on resolve so
-  //    the repos appear without leaving /new.
+  // Not signed in ⇒ sign in first and come back — cloud scopes the connection to
+  // the org the bearer names, so there is nothing to connect to yet.
   //
-  //  • Not signed in: full SSO. Signing in WITH GitHub links it on first
-  //    sign-in (the already-working path), then returns to /new.
-  const connectGithub = useCallback(() => {
-    if (isAuthenticated) {
-      linkPendingRef.current = true;
-      void (async () => {
-        await linkProvider(sdk, "github");
-        await refreshAccounts();
-        linkPendingRef.current = false;
-      })();
-      return;
-    }
-    signIn();
-  }, [isAuthenticated, sdk, signIn, refreshAccounts]);
+  // The authorize URL is a TOP-LEVEL navigation, never a popup: the provider
+  // redirects to cloud's own public callback (api.hanzo.ai), which seals the
+  // token and lands the person back here.
+  const connect = useCallback(
+    (provider: "github" | "gitlab") => {
+      if (!isAuthenticated) {
+        signIn();
+        return;
+      }
+      if (!providers.find((p) => p.provider === provider)?.connectable) {
+        toast.info(
+          `${PROVIDER_META[provider].label} is not configured on this deployment yet, so there is nothing to connect to.`,
+        );
+        return;
+      }
+      setConnecting(provider);
+      void connectProvider(provider).then((r) => {
+        if (r.authorizeUrl) {
+          try {
+            localStorage.setItem("redirectAfterLogin", window.location.pathname);
+          } catch {
+            /* storage unavailable */
+          }
+          window.location.assign(r.authorizeUrl);
+          return;
+        }
+        setConnecting("");
+        toast.error(r.error || `Could not start the ${PROVIDER_META[provider].label} connection.`);
+      });
+    },
+    [isAuthenticated, providers, signIn],
+  );
 
-  const gitlabStatus = providers.find((p) => p.provider === "gitlab");
-  const gitlabConnectable = gitlabStatus?.connectable ?? false;
+  const connectGithub = useCallback(() => connect("github"), [connect]);
+  const connectGitlab = useCallback(() => connect("gitlab"), [connect]);
 
-  // Start the GitLab connect flow — mirrors GitHub exactly (same two honest
-  // paths by auth state). When GitLab isn't set up yet (no OAuth app / IAM
-  // provider) we NEVER dead-click: an honest toast explains what's pending
-  // instead of opening a chooser with no "Continue with GitLab".
-  const connectGitlab = useCallback(() => {
-    if (!gitlabConnectable) {
-      toast.info(
-        "GitLab is not connected on this deployment, so there is nothing to sign in to yet.",
-      );
-      return;
-    }
-    // Signed in already → LINK GitLab to the existing account in a popup (a
-    // silent re-SSO would never show the GitLab chooser). Same canonical flow as
-    // GitHub; re-fetch on resolve so the repos appear without leaving /new.
-    if (isAuthenticated) {
-      linkPendingRef.current = true;
-      void (async () => {
-        await linkProvider(sdk, "gitlab");
-        await refreshAccounts();
-        linkPendingRef.current = false;
-      })();
-      return;
-    }
-    signIn();
-  }, [gitlabConnectable, isAuthenticated, sdk, signIn, refreshAccounts]);
+  const gitlabConnectable = providers.find((p) => p.provider === "gitlab")?.connectable ?? false;
 
   const submitPaste = useCallback(() => {
     void importRepo(pasteUrl);
@@ -229,7 +202,11 @@ export function ImportGitPanel() {
   }, [repos, search]);
 
   return (
-    <YStack borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4.5" $sm={{ padding: "$5" }}>
+    /* $color2 is the panel ground and $color3 the rows on it — one rung apart,
+       the same ladder the Clone a Template panel beside this one uses. At
+       $color3 the panel and its own rows were the same colour, so every row
+       read as a hairline drawn on nothing. */
+    <YStack borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$4.5" $sm={{ padding: "$5" }}>
       <XStack marginBottom="$1" alignItems="center" gap="$2">
         <GitBranch size={18} />
         <H2 fontSize="$4" fontWeight="500">Import Git Repository</H2>
@@ -254,6 +231,7 @@ export function ImportGitPanel() {
           onConnect={connectGithub}
           onConnectGitlab={connectGitlab}
           gitlabConnectable={gitlabConnectable}
+          connecting={connecting}
   />
       ) : (
         <>
@@ -324,11 +302,6 @@ export function ImportGitPanel() {
                   <DropdownMenuItem onSelect={connectGitlab}>
                     <GitlabIcon size={16} />
                     Add GitLab Account
-                    {!gitlabConnectable && (
-                      <XStack marginLeft="auto">
-                        <Badge variant="outline">Needs setup</Badge>
-                      </XStack>
-                    )}
                   </DropdownMenuItem>
                   {/* Stays open: this row reveals the provider list in place, so
                       selecting it must not dismiss the surface it reveals. */}
@@ -395,7 +368,11 @@ export function ImportGitPanel() {
                   key={r.fullName}
                   group alignItems="center" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$2.5" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}
                 >
-                  <XStack height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" {...{ color: "$color11" }}>
+                  {/* 36, not `$6` — that token is 64px here, which put a 16px
+                      glyph in the middle of an empty square and made each row
+                      86px tall, so a scroll box sized for six repos held four.
+                      The template rows next door use the same 36. */}
+                  <XStack height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color4" {...{ color: "$color11" }}>
                     {(() => {
                       const Icon = PROVIDER_META[r.provider]?.Icon ?? Github;
                       return <Icon size={16} />;
@@ -473,32 +450,42 @@ function ConnectCta({
   onConnect,
   onConnectGitlab,
   gitlabConnectable,
+  connecting,
 }: {
   onConnect: () => void;
   onConnectGitlab: () => void;
   gitlabConnectable: boolean;
+  connecting: "" | "github" | "gitlab";
 }) {
   return (
     <YStack alignSelf="center" maxWidth={448} alignItems="center" borderRadius="$6" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$5" paddingVertical="$7">
       <XStack marginBottom="$4" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
-        <Github size={24} />
+        <GitBranch size={24} />
       </XStack>
       <H3 fontSize="$3" fontWeight="500" color="$color" textAlign="center">Connect a Git provider</H3>
       <Paragraph alignSelf="center" marginTop="$1.5" maxWidth={320} fontSize="$3" color="$color11" textAlign="center">
-        Sign in with GitHub or GitLab to import your repositories and deploy them
-        with automatic builds on every push.
+        Connect GitHub or GitLab to import your repositories and deploy them with
+        automatic builds on every push.
       </Paragraph>
       <XStack marginTop="$4.5" flexWrap="wrap" alignItems="center" justifyContent="center" gap="$2">
-        <Button onClick={onConnect}>
-          <Github size={16} />
+        <Button onClick={onConnect} disabled={Boolean(connecting)}>
+          {connecting === "github" ? <Spinner size={16} /> : <Github size={16} />}
           Connect GitHub
         </Button>
-        <Button variant="outline" onClick={onConnectGitlab}>
-          <GitlabIcon size={16} />
+        <Button variant="outline" onClick={onConnectGitlab} disabled={Boolean(connecting)}>
+          {connecting === "gitlab" ? <Spinner size={16} /> : <GitlabIcon size={16} />}
           Connect GitLab
-          {!gitlabConnectable && <Badge variant="outline">Needs setup</Badge>}
         </Button>
       </XStack>
+      {/* A badge INSIDE a button is a control wearing a label, and it read as one
+          — the pill ran into the button's own edge. The state belongs to the
+          section, so it is one sentence under both buttons, and it is gone
+          entirely once the connector is configured. */}
+      {!gitlabConnectable && (
+        <Paragraph alignSelf="center" marginTop="$3" maxWidth={320} fontSize="$1" color="$color11" textAlign="center">
+          GitLab is not configured on this deployment yet.
+        </Paragraph>
+      )}
     </YStack>
   );
 }

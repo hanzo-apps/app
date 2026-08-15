@@ -1,18 +1,21 @@
 /**
- * Server-only Git connection layer — the trust boundary for repository import.
+ * Server-only Git source layer — the trust boundary for repository import.
  *
- * hanzo.app users authenticate via Hanzo IAM (HIP-0111 OIDC). When a user signs
- * in with — or links — a git provider, IAM stores that user's provider
- * OAuth token in their account `Properties["oauth_<Provider>_accessToken"]`. IAM
- * masks per-provider tokens for every caller EXCEPT the user themselves, so
- * calling `GET /v1/iam/get-account` with the user's OWN bearer (which we already
- * hold, verified, from `lib/iam.ts`) returns the token unmasked.
+ * Three git homes, and each keeps its credential in ONE place:
  *
- * This module reads that token SERVER-SIDE and uses it to call the provider's
- * REST API on the user's behalf. The provider token NEVER reaches the browser —
- * the BFF routes return only repository/account metadata. Fail-closed everywhere:
- * no IAM bearer, or no linked provider token, ⇒ `null` (the UI shows an honest
- * "Connect" CTA); a shared service token is NEVER substituted.
+ *   git.hanzo.ai   our own git. The verified IAM username IS the account and the
+ *                  forge admin token does the reading — no OAuth step at all.
+ *   github/gitlab  the org connects once through cloud's CONNECTORS plane, which
+ *                  runs the OAuth leg and seals the token in KMS. Cloud answers
+ *                  ABOUT the provider on the org's behalf and never hands the
+ *                  token out, so this module asks CLOUD and holds no provider
+ *                  credential of its own.
+ *
+ * Nothing here calls github.com or gitlab.com, and nothing here returns a
+ * credential to the browser: the BFF routes carry repository and account
+ * metadata only. Fail-closed everywhere — no session, or nothing connected, ⇒
+ * `null` and the honest Connect CTA; a shared service token is NEVER
+ * substituted for a user's own access.
  */
 import 'server-only';
 
@@ -36,22 +39,85 @@ function iamBase(): string {
   return trim(process.env.IAM_URL || 'https://hanzo.id');
 }
 
-const GITHUB_API = 'https://api.github.com';
+// ── The connector plane — where a third-party git credential actually lives ──
+//
+// IAM authenticates the person; it keeps no provider access token (there is no
+// `oauth_*` property anywhere in it, and a live account read carries none). The
+// token a GitHub or GitLab import needs is custodied by cloud's CONNECTORS
+// plane: the org connects once, cloud runs the OAuth leg and seals the token in
+// KMS, and it answers questions ABOUT the provider on the org's behalf. The
+// token is never handed out — which is why this module asks cloud for the
+// answer instead of asking the provider itself.
 
-/** GitLab API base — gitlab.com by default; self-managed via GITLAB_ENDPOINT. */
-function gitlabApi(): string {
-  return `${trim(process.env.GITLAB_ENDPOINT || 'https://gitlab.com')}/api/v4`;
+/** One connector row as cloud reports it (non-secret metadata only). */
+interface Connector {
+  available: boolean;
+  connected: boolean;
+  account: string;
+}
+
+/** Cloud's API base — the same one every other BFF here forwards to. */
+function cloudApi(): string {
+  return trim(process.env.CLOUD_API_URL || process.env.HANZO_API_URL || 'https://api.hanzo.ai');
 }
 
 /**
- * Is GitLab connect live? GitHub is always connectable; GitLab requires the
- * gitlab.com OAuth app to be registered AND `provider-gitlab` enabled on the
- * `hanzo-app` IAM application. The operator flips `GITLAB_CONNECT_ENABLED=true`
- * once that setup is done — until then the UI shows an honest "needs setup"
- * state instead of a dead click.
+ * Read the org's connector catalog as the signed-in user. Cloud derives the org
+ * from the verified bearer, so a caller can only ever see their own org's
+ * connections. Resolves to an empty map on any failure — the panel then shows an
+ * honest empty state rather than a crash.
  */
-export function gitlabConnectable(): boolean {
-  return process.env.GITLAB_CONNECT_ENABLED === 'true';
+async function connectors(bearer: string): Promise<Map<string, Connector>> {
+  const out = new Map<string, Connector>();
+  let res: Response;
+  try {
+    res = await fetch(`${cloudApi()}/v1/integrations`, {
+      headers: { Authorization: `Bearer ${bearer}`, Accept: 'application/json' },
+      cache: 'no-store',
+    });
+  } catch {
+    return out;
+  }
+  if (!res.ok) return out;
+  let body: { providers?: { id?: string; available?: boolean; connected?: boolean; connection?: { account?: string } }[] };
+  try {
+    body = (await res.json()) as typeof body;
+  } catch {
+    return out;
+  }
+  for (const p of body.providers ?? []) {
+    if (!p?.id) continue;
+    out.set(p.id, {
+      available: p.available === true,
+      connected: p.connected === true,
+      account: p.connection?.account || '',
+    });
+  }
+  return out;
+}
+
+/**
+ * Which providers a Connect button can actually complete on, asked of the plane
+ * that runs the connect: a connector is `available` when this deployment holds
+ * its OAuth credentials. So the answer lives in exactly one place and the button
+ * lights up the moment the credentials land — no flag to remember.
+ *
+ * This replaced `GITLAB_CONNECT_ENABLED`, an env nothing ever set, so the answer
+ * was pinned to "no" however well GitLab was configured.
+ *
+ * With no session there is nobody to ask as, and the button's first act for a
+ * signed-out visitor is to sign them in — which always works — so both are
+ * reported connectable until there is a session to ask with.
+ */
+export async function connectableProviders(req: NextRequest): Promise<Set<OAuthProvider>> {
+  const s = await session(req);
+  if (!s?.token) return new Set(OAUTH_PROVIDERS);
+  const rows = await connectors(s.token);
+  const live = new Set<OAuthProvider>();
+  for (const p of OAUTH_PROVIDERS) {
+    if (rows.get(p)?.available) live.add(p);
+  }
+  return live;
 }
 
 /** A resolved git-provider connection for the signed-in user. */
@@ -174,27 +240,51 @@ export async function resolveConnection(
 }
 
 /**
- * Resolve ALL linked git connections for the signed-in user in one IAM call.
- * Empty array ⇒ unauthenticated or nothing linked.
+ * A git account this panel can LIST repositories for.
+ *
+ * Deliberately not a {@link GitConnection}: `bearer` is OUR OWN IAM bearer, the
+ * credential we ask git.hanzo.ai and the connector plane WITH — never a provider
+ * token, and never anything that leaves for github.com or gitlab.com. Keeping
+ * the two types apart is what makes sending the wrong one a type error.
  */
-export async function resolveAllConnections(req: NextRequest): Promise<GitConnection[]> {
+export interface GitSource {
+  provider: GitProvider;
+  /** The connected account (a forge username, or the provider account cloud holds). */
+  login: string;
+  /** The signed-in user's IAM bearer. */
+  bearer: string;
+}
+
+/**
+ * Every git account the signed-in user can import from.
+ *
+ * git.hanzo.ai leads — it is our own git, so a signed-in user always has it and
+ * there is no OAuth step. GitHub and GitLab come from the org's connectors: a
+ * provider appears once the org has CONNECTED it, which is the same fact cloud
+ * holds the token under. Empty ⇒ unauthenticated or nothing connected, which
+ * draws the honest Connect CTA and never a fabricated row.
+ */
+export async function resolveSources(req: NextRequest): Promise<GitSource[]> {
   const s = await session(req);
   if (!s?.token) return [];
-  const out: GitConnection[] = [];
-  // git.hanzo.ai is the DEFAULT home, so it leads — always present for a signed-in
-  // user, no OAuth link. Only when the forge credential is wired (else there is
-  // nothing to read) and the session names a username to key the account on.
+  const out: GitSource[] = [];
   if (forgeConfigured() && s.name) {
-    out.push({ provider: 'hanzo', token: s.token, login: s.name });
+    out.push({ provider: 'hanzo', login: s.name, bearer: s.token });
   }
-  const account = await fetchIamAccount(s.token);
-  if (account) {
-    for (const provider of OAUTH_PROVIDERS) {
-      const conn = connectionFromAccount(account, provider);
-      if (conn) out.push(conn);
-    }
+  const rows = await connectors(s.token);
+  for (const provider of OAUTH_PROVIDERS) {
+    const row = rows.get(provider);
+    if (row?.connected) out.push({ provider, login: row.account, bearer: s.token });
   }
   return out;
+}
+
+/** One provider's source, or null when this user cannot import from it. */
+export async function resolveSource(
+  req: NextRequest,
+  provider: GitProvider,
+): Promise<GitSource | null> {
+  return (await resolveSources(req)).find((s) => s.provider === provider) ?? null;
 }
 
 /** A connected Git account (the user, or an org/group they belong to). */
@@ -219,160 +309,99 @@ export interface GitRepo {
   provider: GitProvider;
 }
 
-// ── GitHub ──────────────────────────────────────────────────────────────────
+// ── GitHub + GitLab, through the connector plane ─────────────────────────────
+//
+// We never call github.com or gitlab.com from here. The org's token is sealed in
+// KMS by cloud and cloud answers ABOUT the provider on the org's behalf, so this
+// module asks cloud with the user's own IAM bearer and the credential stays where
+// it was sealed. One rule for both providers; adding a third is a route name.
 
-async function gh(token: string, path: string): Promise<Response> {
-  return fetch(`${GITHUB_API}${path}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      'User-Agent': 'hanzo-app',
-    },
-    cache: 'no-store',
-  });
+/** Cloud's listing route per provider — the ONE place a provider's noun lives. */
+const CLOUD_REPOS: Record<OAuthProvider, { path: string; key: string }> = {
+  github: { path: '/v1/integrations/github/repos', key: 'repos' },
+  gitlab: { path: '/v1/integrations/gitlab/projects', key: 'projects' },
+};
+
+/** One repository row as cloud reports it (both providers share this shape). */
+interface CloudRepo {
+  name?: string;
+  fullName?: string;
+  private?: boolean;
+  description?: string;
+  defaultBranch?: string;
+  pushedAt?: string;
+  cloneUrl?: string;
+  htmlUrl?: string;
 }
 
-async function githubAccounts(conn: GitConnection): Promise<GitAccount[] | null> {
-  const meRes = await gh(conn.token, '/user');
-  if (meRes.status === 401) return null;
-  if (!meRes.ok) throw new Error(`github /user ${meRes.status}`);
-  const me = (await meRes.json()) as { login: string; avatar_url: string };
-
-  const accounts: GitAccount[] = [
-    { login: me.login, avatarUrl: me.avatar_url || '', provider: 'github', type: 'user' },
-  ];
-  // Orgs are best-effort: a token without org scope simply yields none.
+/**
+ * The repositories the org's connection reaches. `null` when cloud says the
+ * connection is gone (401) or does not serve this provider's listing yet (404),
+ * which the caller reports as not-connected rather than as an empty account.
+ */
+async function cloudRepos(src: GitSource): Promise<GitRepo[] | null> {
+  const route = CLOUD_REPOS[src.provider as OAuthProvider];
+  let res: Response;
   try {
-    const orgRes = await gh(conn.token, '/user/orgs?per_page=100');
-    if (orgRes.ok) {
-      const orgs = (await orgRes.json()) as { login: string; avatar_url: string }[];
-      for (const o of orgs) {
-        accounts.push({ login: o.login, avatarUrl: o.avatar_url || '', provider: 'github', type: 'org' });
-      }
-    }
+    res = await fetch(`${cloudApi()}${route.path}`, {
+      headers: { Authorization: `Bearer ${src.bearer}`, Accept: 'application/json' },
+      cache: 'no-store',
+    });
   } catch {
-    /* orgs are optional */
+    throw new Error(`${src.provider} unreachable`);
   }
-  return accounts;
+  if (res.status === 401 || res.status === 404) return null;
+  if (!res.ok) throw new Error(`${src.provider} repos ${res.status}`);
+  let body: Record<string, unknown>;
+  try {
+    body = (await res.json()) as Record<string, unknown>;
+  } catch {
+    throw new Error(`${src.provider} repos unreadable`);
+  }
+  const rows = body[route.key];
+  if (!Array.isArray(rows)) return null;
+  return (rows as CloudRepo[])
+    .filter((r) => typeof r?.fullName === 'string' && r.fullName)
+    .map((r) => ({
+      name: r.name || (r.fullName as string).split('/').pop() || '',
+      fullName: r.fullName as string,
+      private: r.private === true,
+      description: r.description || '',
+      // Neither listing carries a language, and inventing one from the name
+      // would put a guess where a fact belongs. The row reads "Repository".
+      language: '',
+      pushedAt: r.pushedAt || '',
+      defaultBranch: r.defaultBranch || 'main',
+      cloneUrl: r.cloneUrl || '',
+      htmlUrl: r.htmlUrl || '',
+      provider: src.provider,
+    }));
 }
 
-interface GhRepo {
-  name: string;
-  full_name: string;
-  private: boolean;
-  description: string | null;
-  language: string | null;
-  pushed_at: string | null;
-  updated_at: string | null;
-  default_branch: string;
-  clone_url: string;
-  html_url: string;
-}
-
-function normalizeGithub(r: GhRepo): GitRepo {
-  return {
-    name: r.name,
-    fullName: r.full_name,
-    private: Boolean(r.private),
-    description: r.description || '',
-    language: r.language || '',
-    pushedAt: r.pushed_at || r.updated_at || '',
-    defaultBranch: r.default_branch || 'main',
-    cloneUrl: r.clone_url,
-    htmlUrl: r.html_url,
-    provider: 'github',
-  };
-}
-
-async function githubRepos(
-  conn: GitConnection,
-  account: string,
-  q: string,
-  cap: number,
-): Promise<GitRepo[] | null> {
-  const isSelf = !account || account === conn.login;
-  const path = isSelf
-    ? '/user/repos?per_page=100&sort=pushed&type=owner'
-    : `/orgs/${encodeURIComponent(account)}/repos?per_page=100&sort=pushed&type=all`;
-  const res = await gh(conn.token, path);
-  if (res.status === 401) return null;
-  if (!res.ok) throw new Error(`github repos ${res.status}`);
-  const raw = (await res.json()) as GhRepo[];
-  const needle = q.trim().toLowerCase();
-  return raw
-    .map(normalizeGithub)
-    .filter((r) => (needle ? (r.fullName + ' ' + r.description).toLowerCase().includes(needle) : true))
-    .slice(0, cap);
-}
-
-// ── GitLab ──────────────────────────────────────────────────────────────────
-
-async function gl(token: string, path: string): Promise<Response> {
-  return fetch(`${gitlabApi()}${path}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json',
-      'User-Agent': 'hanzo-app',
-    },
-    cache: 'no-store',
-  });
-}
-
-async function gitlabAccounts(conn: GitConnection): Promise<GitAccount[] | null> {
-  const meRes = await gl(conn.token, '/user');
-  if (meRes.status === 401) return null;
-  if (!meRes.ok) throw new Error(`gitlab /user ${meRes.status}`);
-  const me = (await meRes.json()) as { username: string; avatar_url: string };
-  return [
-    { login: me.username, avatarUrl: me.avatar_url || '', provider: 'gitlab', type: 'user' },
-  ];
-}
-
-interface GlProject {
-  name: string;
-  path: string;
-  path_with_namespace: string;
-  visibility: string;
-  description: string | null;
-  last_activity_at: string | null;
-  default_branch: string | null;
-  http_url_to_repo: string;
-  web_url: string;
-}
-
-function normalizeGitlab(p: GlProject): GitRepo {
-  return {
-    name: p.path || p.name,
-    fullName: p.path_with_namespace,
-    private: p.visibility !== 'public',
-    description: p.description || '',
-    language: '',
-    pushedAt: p.last_activity_at || '',
-    defaultBranch: p.default_branch || 'main',
-    cloneUrl: p.http_url_to_repo,
-    htmlUrl: p.web_url,
-    provider: 'gitlab',
-  };
-}
-
-async function gitlabRepos(
-  conn: GitConnection,
-  q: string,
-  cap: number,
-): Promise<GitRepo[] | null> {
-  const params = new URLSearchParams({
-    membership: 'true',
-    per_page: '100',
-    order_by: 'last_activity_at',
-    sort: 'desc',
-  });
-  if (q.trim()) params.set('search', q.trim());
-  const res = await gl(conn.token, `/projects?${params.toString()}`);
-  if (res.status === 401) return null;
-  if (!res.ok) throw new Error(`gitlab projects ${res.status}`);
-  const raw = (await res.json()) as GlProject[];
-  return raw.map(normalizeGitlab).slice(0, cap);
+/**
+ * The accounts a provider connection reaches, DERIVED from the repositories it
+ * grants — the owner of every `owner/name` it can see. That is the same set the
+ * dropdown needs and it costs no second call; a connection that reaches nothing
+ * still shows the connected account itself, so the panel never goes blank on a
+ * fresh connect.
+ */
+async function cloudAccounts(src: GitSource): Promise<GitAccount[] | null> {
+  const repos = await cloudRepos(src);
+  if (repos === null) return null;
+  const owners = new Set<string>();
+  for (const r of repos) {
+    const owner = r.fullName.split('/')[0];
+    if (owner) owners.add(owner);
+  }
+  if (owners.size === 0 && src.login) owners.add(src.login);
+  return [...owners].sort().map((login) => ({
+    login,
+    avatarUrl: '',
+    provider: src.provider,
+    // The connected account is the user; anything else the connection reaches is
+    // an organisation or group they belong to.
+    type: login === src.login ? 'user' : 'org',
+  }));
 }
 
 // ── Hanzo (git.hanzo.ai — the default home) ───────────────────────────────────
@@ -392,8 +421,8 @@ function normalizeForge(r: ForgeRepoRow): GitRepo {
   };
 }
 
-async function hanzoAccounts(conn: GitConnection): Promise<GitAccount[] | null> {
-  const username = conn.login;
+async function hanzoAccounts(src: GitSource): Promise<GitAccount[] | null> {
+  const username = src.login;
   if (!username) return null;
   const me = await forgeUser(username);
   const accounts: GitAccount[] = [
@@ -411,12 +440,12 @@ async function hanzoAccounts(conn: GitConnection): Promise<GitAccount[] | null> 
 }
 
 async function hanzoRepos(
-  conn: GitConnection,
+  src: GitSource,
   account: string,
   q: string,
   cap: number,
 ): Promise<GitRepo[] | null> {
-  const username = conn.login;
+  const username = src.login;
   if (!username) return null;
   const isSelf = !account || account === username;
   const raw = isSelf ? await forgeUserRepos(username) : await forgeOrgRepos(account);
@@ -432,24 +461,31 @@ async function hanzoRepos(
 
 // ── Provider dispatch ─────────────────────────────────────────────────────────
 
-/** List the connected accounts for a provider (user + orgs on GitHub/Hanzo). */
-export function listAccounts(conn: GitConnection): Promise<GitAccount[] | null> {
-  if (conn.provider === 'hanzo') return hanzoAccounts(conn);
-  return conn.provider === 'gitlab' ? gitlabAccounts(conn) : githubAccounts(conn);
+/** The accounts a source reaches (the user, plus the orgs or groups it grants). */
+export function listAccounts(src: GitSource): Promise<GitAccount[] | null> {
+  return src.provider === 'hanzo' ? hanzoAccounts(src) : cloudAccounts(src);
 }
 
 /**
- * List repositories for one account, newest-activity first, filtered by `q`.
- * A 401 (token revoked/expired) ⇒ `null` so the caller reports "not connected".
+ * Repositories for one account, newest activity first, filtered by `q`.
+ * `null` ⇒ the connection is gone, which the caller reports as not-connected.
  */
-export function listRepos(
-  conn: GitConnection,
+export async function listRepos(
+  src: GitSource,
   account: string,
   q: string,
   cap = 60,
 ): Promise<GitRepo[] | null> {
-  if (conn.provider === 'hanzo') return hanzoRepos(conn, account, q, cap);
-  return conn.provider === 'gitlab'
-    ? gitlabRepos(conn, q, cap)
-    : githubRepos(conn, account, q, cap);
+  if (src.provider === 'hanzo') return hanzoRepos(src, account, q, cap);
+  const repos = await cloudRepos(src);
+  if (repos === null) return null;
+  // Cloud answers with everything the connection reaches, so the account and the
+  // search narrow it here — one filter, applied the same way for both providers.
+  const owner = account.trim().toLowerCase();
+  const needle = q.trim().toLowerCase();
+  return repos
+    .filter((r) => (owner ? r.fullName.toLowerCase().startsWith(owner + '/') : true))
+    .filter((r) => (needle ? (r.fullName + ' ' + r.description).toLowerCase().includes(needle) : true))
+    .sort((a, b) => (b.pushedAt || '').localeCompare(a.pushedAt || ''))
+    .slice(0, cap);
 }
