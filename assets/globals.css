@@ -1314,10 +1314,10 @@ a:hover .thumb-frame { filter: brightness(0.75); }
    black rect. The generated app's iframe paints opaquely on top, so this shows
    around a device-framed (mobile) preview and while the stage is still empty. */
 .preview-stage {
-  /* --background is the ONE token forced per-theme (html.dark / html:not(.dark)),
-     so the stage is reliably layered-black in dark and white in light — never a
-     stale surface token. */
-  background-color: var(--background);
+  /* The GRID only. The stage's fill is its RUNG — `sheet(1)` at the call site
+     (components/editor/index.tsx), which is a tint and the light on it in one
+     value. A background-color here as well would be a second opinion about how
+     high the stage stands, settled by load order rather than by the ladder. */
   background-image:
     linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);

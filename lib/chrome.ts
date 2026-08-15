@@ -1,7 +1,7 @@
 /**
  * The chrome, as values.
  *
- * These eight used to be defined here, each one earned by a defect measured in
+ * These used to be defined here, each one earned by a defect measured in
  * this app's browser. They now live in `@hanzo/ui/glass` — every Hanzo surface
  * wants the same answers, and a copy per app is how they stop being the same
  * answers. The law and the reasoning went with them; what stays below is the
@@ -17,7 +17,7 @@
  * against our .09, a .8 scrim against our .55) and that wants a browser, not a
  * guess.
  */
-export { accent, glass, panel, row, rows, screen, scrim, selected } from "@hanzo/ui/glass";
+export { accent, fold, glass, panel, row, rows, screen, scrim, selected, sheet } from "@hanzo/ui/glass";
 export type { Lift } from "@hanzo/ui/glass";
 
 /**

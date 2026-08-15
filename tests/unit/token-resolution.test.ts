@@ -71,10 +71,13 @@ const stripComments = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "");
 const declared = (): Set<string> => {
   const sheets = [
     readFileSync(join(ROOT, "assets/globals.css"), "utf8"),
-    readFileSync(
-      join(ROOT, "node_modules/@hanzo/brand/styles/variables.css"),
-      "utf8",
-    ),
+    // `@hanzo/brand/styles/variables.css` used to be read here because
+    // app/layout.tsx loaded it as a "baseline layer". It does not any more —
+    // 136 names with no knob under them and a --shadow-* ramp tuned for a white
+    // canvas, ahead of the sheet that owns those names. This list is "the
+    // sheets the browser loads", so a sheet the browser stopped loading cannot
+    // be allowed to keep answering for a token: that is how a name goes on
+    // resolving in the suite and resolves to nothing in the product.
     // app/gui.css is loaded too (`import "./gui.css"` in app/layout.tsx) and is
     // BOTH a declarer and a referencer: the generated @hanzo/gui sheet declares
     // its own `--t###` / `--colorN` scale and then reads it back. Omitting it

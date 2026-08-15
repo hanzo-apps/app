@@ -43,6 +43,7 @@ import { useEditor } from "@/hooks/useEditor";
 import { AskAI } from "@/components/editor/ask-ai";
 import { DeployButton } from "./deploy-button";
 import { Page, Project } from "@/types";
+import { sheet } from "@/lib/chrome";
 import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signal";
 import { SaveButton } from "./save-button";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
@@ -154,6 +155,8 @@ export const AppEditor = ({
    * ask about that element), which disarmed editing again on every use.
    */
   const rightView = rightPane(currentTab);
+  /** The preview stage's rung, read once — it is spread AND merged into a class. */
+  const stage = sheet(1);
   /**
    * BOOT: a project with nothing in it yet — one page still wearing the
    * scaffold. The window is the CONVERSATION alone: no preview card, no pane
@@ -474,8 +477,12 @@ export const AppEditor = ({
           missing, why the chat text clipped, and why the resizer ran full height
           down the middle of the window.
           Base is the mobile case (column); `$lg` restores the row. */}
+      {/* The workspace ground — rung 0, the sheet everything else stands on.
+          Named rather than left to inherit: a pane that means "this is the
+          ground" should say so, and the panes above it are then a step off a
+          stated level instead of a step off whatever happened to be behind. */}
       <XStack
-        backgroundColor="$background" flex={1} minHeight={0} width="100%" position="relative"
+        {...sheet(0)} flex={1} minHeight={0} width="100%" position="relative"
         flexDirection="column"
         $lg={{ flexDirection: "row" }}
       >
@@ -503,7 +510,10 @@ export const AppEditor = ({
           // that read as "I can't even resize it". One authoritative width
           // (style.width, owned by resetLayout + the drag), one flex fill (the
           // preview). Boot is the exception: the conversation IS the window.
-          $lg={{ flexGrow: fresh ? 1 : 0, flexShrink: 0, display: !fresh && sidebarCollapsed ? "none" : "flex" }}
+          // The gutter the sheet inside needs to read as a sheet — the same one
+          // the preview stage takes, on the same three sides, so the two panes
+          // sit on one line and meet the console flush at the bottom.
+          $lg={{ flexGrow: fresh ? 1 : 0, flexShrink: 0, display: !fresh && sidebarCollapsed ? "none" : "flex", paddingTop: fresh ? 0 : "$2", paddingLeft: fresh ? 0 : "$2" }}
         >
           {/* Chat — ALWAYS the left pane (composer/thread live here permanently);
               the history panel OVERLAYS it when toggled from the header icon. */}
@@ -512,7 +522,21 @@ export const AppEditor = ({
               messages spread into giant blobs. 672 matches the composer's own
               maxWidth (ask-ai root) — the two used to disagree (860 vs 672), so
               the thread ran wider than the box beneath it. One column now. */}
-          <YStack minHeight={0} flex={1} {...(fresh ? { width: "100%", maxWidth: 600, alignSelf: "center" } : null)}>
+          {/* The transcript is a SHEET once it is a tool — raised off the
+              workspace beside the preview, the same rung the stage stands on,
+              so the two panes read as two sheets on one ground rather than as
+              two regions of one field.
+
+              Not while `fresh`: there the conversation IS the workspace, so it
+              stays on the ground and lifts at the moment it stops being the
+              whole window. That is the ladder doing its job — the level says
+              what the pane currently IS, and nothing else has to announce it. */}
+          <YStack
+            minHeight={0} flex={1}
+            {...(fresh
+              ? { width: "100%", maxWidth: 600, alignSelf: "center" }
+              : { ...sheet(1), borderRadius: "$5", overflow: "hidden" })}
+          >
             <AskAI
               onToggleHistory={toggleHistory}
               isNew={isNew}
@@ -635,13 +659,18 @@ export const AppEditor = ({
               the elevation are gone — the resizer's hover seam is the only
               boundary, and the canvas runs to the window edges (the console at
               rest is an invisible pull-up edge, so the bottom is the window's). */}
-          {/* A PANEL you can see: one step off true black, hairline edge,
-              rounded — an 8px gutter, not the old padded float. Full-bleed on a
-              black field made the pane's own surface invisible; this keeps the
-              space and restores the shape. */}
-          <YStack position="relative" height="100%" width="100%" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$color02" backgroundColor="$color1" className="preview-stage">
-            {/* Faint top highlight — a crisp edge that reads as raised glass. */}
-            <YStack pointerEvents="none" position="absolute" left="$0" right="$0" top="$0" zIndex={20} height={1} />
+          {/* The stage is a SHEET, raised off the workspace: `sheet(1)` gives it
+              design's paper tint plus the lit top edge and the drop, from one
+              value. It used to carry a hairline as well — a surface a step above
+              its neighbour AND a box drawn round it, which is the wireframe look
+              the ladder exists to end. Raise it or outline it, never both. */}
+          {/* `className` is a PROP, so writing one after the spread replaces the
+              recipe's — and the recipe's is where the rung lives. Measured: the
+              stage took the paper tint and drew no shadow at all, because
+              `.preview-stage` had quietly overwritten `elevation-1`. Merge, or
+              the ladder is silently absent on exactly the surfaces that also
+              need a class of their own. */}
+          <YStack position="relative" height="100%" width="100%" overflow="hidden" borderRadius="$5" {...stage} className={`preview-stage ${stage.className}`}>
             <Preview
               html={currentPageData?.html}
               isResizing={isResizing}

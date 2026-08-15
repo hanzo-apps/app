@@ -6,11 +6,6 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import TanstackProvider from "@/components/providers/tanstack-query-provider";
-// @hanzo/brand monochrome design tokens (--hanzo-*, --font-size-*, --z-*) load
-// FIRST so they're the baseline layer; the app's own :root tokens in globals.css
-// come after and win on any overlap — preserving the tuned palette AND the
-// Tamagui `--background !important` fix. One import, at the root, once.
-import "@hanzo/brand/styles/variables.css";
 import "@/assets/globals.css";
 // THE TOKEN LAYER AND THE MATERIAL, in one import. `@hanzo/ui/theme.css` is
 // @hanzo/design's whole sheet composed with this package's own remainder and
@@ -27,6 +22,14 @@ import "@/assets/globals.css";
 // remaining tokens are the ones design does NOT ship, and before gui.css, whose
 // atomic background it outranks with the !important glass carries for that
 // reason.
+//
+// It is also now the ONLY publisher. `@hanzo/brand/styles/variables.css` used
+// to load ahead of it as a "baseline layer" — 136 names, no knob under any of
+// them, and a --shadow-* ramp tuned for a WHITE canvas (.05/.1 where this one
+// says .40/.55), which is a flat panel wherever load order let it win. Every
+// name it still owned that anything here reads is either declared below in
+// globals.css or belongs to a generated site's own sheet, so it publishes
+// nothing this app uses. Two publishers is how a ramp drifts; there is one.
 import "@hanzo/ui/theme.css";
 // The full @hanzo/gui atomic sheet as a REAL stylesheet (scripts/gen-gui-css.mjs).
 // GuiProvider gets disableInjectCSS so the same 350KB is no longer inlined into

@@ -266,8 +266,12 @@ export const Preview = ({
     pointerEvents: (!visible || isResizing || isAiWorking ? 'none' : 'auto') as 'none' | 'auto',
     backgroundColor: '$background',
     userSelect: 'none' as const,
+    // A device frame is the built app lying ON the stage rather than filling
+    // it, so it is the sheet one rung up and casts the rung's shadow. Spent
+    // only here: at full width the frame IS the stage, and a shadow with no
+    // ground beside it to fall on is decoration.
     ...(device === 'mobile' && !isFullscreen
-      ? { $lg: { maxWidth: 448, alignSelf: 'center' as const, borderRadius: 42, borderWidth: 8, borderColor: '$borderColor', height: '80dvh', maxHeight: 996 } }
+      ? { $lg: { maxWidth: 448, alignSelf: 'center' as const, borderRadius: 42, borderWidth: 8, borderColor: '$borderColor', height: '80dvh', maxHeight: 996, boxShadow: 'var(--shadow-sheet-2)' } }
       : null),
     ...(isFullscreen ? { height: '100%', maxWidth: 'none', borderRadius: 0, borderWidth: 0 } : null),
   })

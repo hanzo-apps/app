@@ -12,6 +12,7 @@ import { Check, ChevronDown, Copy, ThumbsDown, ThumbsUp } from "lucide-react";
 import { useAnalytics } from "@hanzo/event/react";
 import { EVENTS } from "@hanzo/event";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
+import { fold, sheet } from "@/lib/chrome";
 
 // ONE conversation turn as rendered in the builder chat thread. The thread is a
 // pure VIEW concern (kept separate from `prompts`, which is AI context, and
@@ -324,16 +325,29 @@ function CollapsibleSection({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   // A LIVE phase (Generating / Planning) is transient — it reads as an inline
-  // activity log, not a sealed capsule. The rounded box, and especially its
-  // rounded BOTTOM floating mid-thread, is for SETTLED disclosures (Plan ▼ once
-  // written, Generated files ▼) a reader may reopen. The header keeps its 12px
-  // inset either way, so a live title sits directly above where the settled
-  // box's title lands — the disclosure never jumps left when it settles.
+  // activity log. A SETTLED one (Plan ▼ once written, Generated files ▼) is a
+  // thing a reader may reopen, and it used to say so with a box: a hairline, a
+  // fill and a radius round three lines of text, mid-column, so a transcript of
+  // four turns was a stack of cards with the prose trapped inside them.
+  //
+  // It is a ROW now, and what marks it is the FOLD — a corner turned back, the
+  // one mark that means this opens. That is the whole trade the paper system
+  // makes: reach for the fold before the border, so the transcript stays a
+  // column of sentences and only the thing that expands wears a mark.
+  //
+  // The fold needs a corner to turn, so the row takes rung 1 — a wash, not a
+  // box. Live phases wear neither: nothing to open yet.
+  //
+  // And the mark is spent on the CLOSED state alone. Open, the sheet rises a
+  // rung and the corner lies flat, because a fold on something already open is
+  // an affordance describing what you just did.
   const boxed = !live;
   return (
     <YStack
       width="100%"
-      {...(boxed ? { overflow: "hidden", borderRadius: "$6", borderWidth: 1, borderColor: "$borderColor", backgroundColor: "$color2" } : {})}
+      {...(boxed
+        ? { overflow: "hidden", borderRadius: "$6", ...sheet(open ? 2 : 1), ...(open ? null : fold) }
+        : {})}
     >
       <Button
         type="button"
