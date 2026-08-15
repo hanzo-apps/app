@@ -387,6 +387,23 @@
   var lastEl = null;
   var host = document.createElement('div');
   host.setAttribute('data-hanzo-edit', '');
+  // ONE NUMBER, AND IT IS ON AN ELEMENT THE PAGE OWNS.
+  //
+  // The fab and the panel inside the shadow root asked for 2147483000, which is
+  // not a layer so much as a refusal to have one: nothing a page can write beats
+  // it, and shadow content cannot be reached by a page's stylesheet either. So
+  // the widget painted over a nav drawer's primary CTA on hanzo.ai — measured,
+  // 43×32px of "Try Hanzo" unreachable at 390 — and the page had no way to say
+  // otherwise.
+  //
+  // A positioned host with a z-index IS a stacking context, so everything in the
+  // shadow tree is clamped to this one value, and this element is in the page's
+  // own DOM: `[data-hanzo-edit] { z-index: 400 }` is now a rule that works. The
+  // default stays maximal, because this script is embedded on pages it does not
+  // own and most of them will never say anything. Only the page that HAS layers
+  // knows where a guest belongs.
+  host.style.position = 'fixed';
+  host.style.zIndex = '2147483000';
   ['pointerdown', 'click', 'focusin'].forEach(function (t) {
     document.addEventListener(
       t,
