@@ -126,9 +126,39 @@ export default function Header() {
   // the Meet Hanzo menu and a section of /features, and Help is a support link,
   // not a peer of what the product does. Five flat words spent the bar's width on
   // the two nobody arrives for.
+  //
+  // The middle one is RESOURCES, which is what its id has said since the day it
+  // was written — the label had drifted to "Templates", one of the things a
+  // resource IS. So the bar named a page and hid the other six: /games,
+  // /community, /docs, /learn and /help were reachable from this header only by
+  // opening the ecosystem menu, which answers "what is Hanzo", not "where do I
+  // start". The entry keeps `href="/templates"` (the catalog is still the page
+  // behind the word, and the row is a real link before hydration) and now HOLDS
+  // the rest, which is exactly what `HanzoNav.items` is for — data, not a fork.
+  //
+  // Every row names its mark. A menu of six words in one weight is read; a menu
+  // of six marks is scanned, and scanning is what a header is for. The names are
+  // the shell's own (`GlyphName`), so a row draws the same shape here as it does
+  // in the launcher and in both drapes — `spark` is what /resources already
+  // wears in the sidebar rail and in the ⌘K palette.
   const nav = [
     { id: "features", label: "Features", href: "/features" },
-    { id: "resources", label: "Templates", href: "/templates" },
+    {
+      id: "resources",
+      label: "Resources",
+      href: "/templates",
+      glyph: "spark" as const,
+      items: [
+        { id: "templates", label: "Templates", href: "/templates", glyph: "template" as const, hint: "Start from a working app" },
+        // The catalog directly, not `/games`: that route is a redirect to this
+        // very URL, and a menu should name the page it opens.
+        { id: "games", label: "Games", href: "/templates?category=Games", glyph: "gamepad" as const, hint: "Open-source games to fork" },
+        { id: "community", label: "Community", href: "/community", glyph: "users" as const, hint: "What people shipped on Hanzo" },
+        { id: "docs", label: "Documentation", href: "/docs", glyph: "book" as const, hint: "Guides and the API reference" },
+        { id: "learn", label: "Learn", href: "/learn", glyph: "cap" as const, hint: "Build your first app, step by step" },
+        { id: "help", label: "Help", href: "/help", glyph: "ring" as const, hint: "Answers, and how to reach us" },
+      ],
+    },
     { id: "solutions", label: "Enterprise", href: "/enterprise" },
   ];
 
@@ -153,6 +183,11 @@ export default function Header() {
     <HanzoHeader
       surface={{ ...surface, localNav: nav, primaryCTA }}
       currentHref="https://hanzo.app"
+      // This app brought its own palette (HeaderSearch → components/command-palette),
+      // and it holds what the shared one cannot know: the visitor's projects and
+      // every operation the cloud answers. Two ⌕⌘K controls in one bar, both on
+      // the same key, is a choice a reader cannot make.
+      search={false}
       identitySlot={
         <XStack alignItems="center" gap="$2">
           <HeaderSearch />
