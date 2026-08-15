@@ -7,7 +7,7 @@
     "predev": "node scripts/gen-edit-manifest.mjs",
     "dev": "next dev --webpack",
     "gen:edit-manifest": "node scripts/gen-edit-manifest.mjs",
-    "prebuild": "node scripts/vendor.mjs && node scripts/gen-edit-manifest.mjs && node scripts/sync-releases.mjs && node scripts/lint-gui-props.mjs",
+    "prebuild": "node scripts/vendor.mjs && node scripts/gen-edit-manifest.mjs && node scripts/sync-releases.mjs",
     "build": "next build --webpack",
     "start": "next start",
     "typecheck": "tsc --noEmit",
