@@ -1,6 +1,8 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 
+import { tagEnd as jsxTagEnd } from '../jsx'
+
 /**
  * An icon-only Button must say `size="icon"`.
  *
@@ -45,31 +47,21 @@ const SKIP = new Set([
   // the composer's model chip: the current model name (a dynamic expression the
   // scanner strips) sits beside a chevron — a labeled control, not an icon box.
   'components/editor/ask-ai/settings.tsx',
+  // the same chip on the landing composer: `{Shown.label}` — Build or Plan —
+  // beside a chevron. It reads as an offender only because the label is an
+  // expression. Reachable at all from the day the tag walker learned to skip
+  // comments; its `aria-label` sits behind one, so the old scan stopped short of
+  // the prop and never asked about this control. Its other three icon buttons
+  // are `size="icon"` or `.hz-round`, so the file hides nothing.
+  'components/build-composer/index.tsx',
   // a switch track
   'components/usage/smart-routing-card.tsx',
 ])
 
-/**
- * Index just past the `>` closing the tag that opens at `s[i]`.
- *
- * Brace- and quote-aware, and that is the whole point: `onClick={() => run()}`
- * contains a `>`, so a regex that treats the first `>` as the tag end stops in
- * the middle of the props and reports the wrong answer. A scan written that way
- * missed a third of these — including every one on the landing page.
- */
+/** Index just PAST the `>`, where `tests/jsx` answers with the `>` itself. */
 function tagEnd(s: string, i: number): number {
-  let brace = 0
-  let quote = ''
-  for (let j = i; j < s.length; j++) {
-    const c = s[j]
-    if (quote) {
-      if (c === quote && s[j - 1] !== '\\') quote = ''
-    } else if (c === '"' || c === "'") quote = c
-    else if (c === '{') brace++
-    else if (c === '}') brace--
-    else if (c === '>' && brace === 0) return j + 1
-  }
-  return -1
+  const end = jsxTagEnd(s, i)
+  return end < 0 ? -1 : end + 1
 }
 
 function closeOf(s: string, from: number): number {

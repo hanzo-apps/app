@@ -79,6 +79,25 @@ logged-in projects logic in `page.tsx`; elevate design only.
   simulated client-side — the landing is pre-auth and calls no API. Reduced
   motion gets the settled final frame and no animation.
 
+  **The body row owns the gutter, and the panes own none.** Each pane used to
+  declare its own — `$2.5` in the chat rail, `$3` in the previews — so the two
+  never agreed: the rail's content started 2px above the preview card and ran
+  2px below it, and a hard `borderRight` sat 11px from one and 12px from the
+  other. One `padding="$3"` on the row and the panes are flush, equal and even
+  on all four sides. The seam between them is the REAL builder's resizer
+  (`components/editor/index.tsx`), reused whole — a transparent 10px track with
+  a hairline that is invisible at rest and lifts under the pointer. There is no
+  second splitter language, and a permanent 1px rule is not one: it reads as
+  structure, and the workspace is one surface.
+
+  **Every control in the chrome answers a pointer**, on the ladder the rest of
+  the app uses — bare controls take `$color3`, a fill goes one rung up
+  (`$color3`→`$color4`, `$color4`→`$color5`, `$color5`→`$color6`). The tabs,
+  the clock, Share and Publish had none at all, so the mock whose whole claim
+  is "this is the product" went dead under the mouse.
+  `scripts/proof/hero-panes.mjs` measures the geometry and every hover, and
+  fails on a single dead one.
+
   **It floats.** The frame is a device mockup on the page's own black — no card
   behind it — and its depth is TWO things, because a plain drop shadow cannot
   work here: black on `#000` is invisible. So `.idm .window` pairs a wide soft
@@ -113,6 +132,36 @@ logged-in projects logic in `page.tsx`; elevate design only.
   to `hanzo.ai/<product>`. No invented features/metrics.
 - **`models-strip.tsx`** — real `api.hanzo.ai/v1` endpoint + real provider logos.
 - **`how-it-works.tsx`** / **`site-footer.tsx`** — 3-step + multi-column footer.
+- **`walkthrough.tsx`** — `/features`' tour. Six stops, each opening the builder
+  pane that really does the thing (Files for the editor, More › Database for the
+  data plane, More › Analytics for the traffic; the tab set is `lib/panes`, read
+  the same way the hero reads it). It replaced six full-bleed prose cards — a
+  card can assert there is a database, a pane shows one. HTML for the reasons
+  the hero is HTML, and the motion is CSS only: the frame's body carries the
+  stop's `key`, so arriving remounts it and replays the staggered rise. No
+  timers, no animation runtime.
+
+  **Sticky is the mechanism, and it costs two things nothing warns about.**
+  Every gui stack is `position: relative`, so the steps are positioned siblings
+  at z-auto and DOM order alone decided the paint — they drew straight through a
+  frame whose background measured `rgb(10,10,10)`. The stage needs `zIndex`.
+  And the observer's reading line sits at **55%**, not the middle: below `$lg`
+  the frame is pinned over the TOP of the viewport, and a centred line made
+  current a stop whose heading was still behind it. At 55% a stop turns on with
+  its whole block clear of the frame — checked at every switch point at 390,
+  768 and 1440, not at one parked scroll position.
+
+  **`flex` belongs to the row, and only to the row.** The two columns stack
+  below `$lg`, and there `flex={1}` sets the HEIGHT basis to 0 in gui's model:
+  the stage measured **0px tall at 768 and at 390** — a walkthrough with no
+  frame in it, painting nothing, erroring nowhere, typechecking clean. Declare
+  flex inside `$lg` only. Same class as the `flex: 1` collapses in the root
+  CLAUDE.md, reached from the other direction.
+
+  The dim on an inactive stop is **0.62 because of contrast**, not taste: at 0.5
+  the body text composited to 3.72:1 against this ground, under AA's 4.5. 0.62
+  measures 5.17. The current stop is marked twice regardless — full ink, and its
+  rule.
 
 Honesty rule: REAL logos + REAL integration claims only. If a claim can't be
 truthful, omit it.

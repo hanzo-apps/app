@@ -489,7 +489,8 @@ export default function HeroPreview({ ask }: { ask: (prompt: string) => void }) 
               return (
                 <XStack
                   key={tabItem.value}
-                  height={22} alignItems="center" justifyContent="center" gap="$1" borderRadius="$3" paddingHorizontal={on ? "$2" : "$1.5"} {...{ backgroundColor: on ? "$color5" : "transparent" }}
+                  cursor="pointer"
+                  height={22} alignItems="center" justifyContent="center" gap="$1" borderRadius="$3" paddingHorizontal={on ? "$2" : "$1.5"} {...{ backgroundColor: on ? "$color5" : "transparent", hoverStyle: { backgroundColor: on ? "$color6" : "$color3" } }}
                 >
                   <SizableText color={on ? "$color12" : "$color11"}><tabItem.icon size={11} /></SizableText>
                   {on && (
@@ -517,7 +518,7 @@ export default function HeroPreview({ ask }: { ask: (prompt: string) => void }) 
             >
               <SizableText color="$color11"><RotateCcw size={11} /></SizableText>
             </XStack>
-            <XStack display="none" height={22} width={22} alignItems="center" justifyContent="center" borderRadius={999} $sm={{ display: "flex" }}>
+            <XStack display="none" cursor="pointer" height={22} width={22} alignItems="center" justifyContent="center" borderRadius={999} hoverStyle={{ backgroundColor: "$color3" }} $sm={{ display: "flex" }}>
               <SizableText color="$color11"><Clock size={11} /></SizableText>
             </XStack>
             {/* Device toggle — the real header's OTHER grouped control: a $color4
@@ -533,7 +534,7 @@ export default function HeroPreview({ ask }: { ask: (prompt: string) => void }) 
                 onClick={() => setDevice("desktop")}
                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDevice("desktop"); } }}
                 cursor="pointer"
-                height={22} width={22} minHeight={22} minWidth={22} alignItems="center" justifyContent="center" borderRadius="$3" {...{ backgroundColor: device === "desktop" ? "$color3" : "transparent" }}
+                height={22} width={22} minHeight={22} minWidth={22} alignItems="center" justifyContent="center" borderRadius="$3" {...{ backgroundColor: device === "desktop" ? "$color3" : "transparent", hoverStyle: { backgroundColor: device === "desktop" ? "$color4" : "$color3" } }}
               >
                 <SizableText color={device === "desktop" ? "$color12" : "$color11"}><Monitor size={11} /></SizableText>
               </XStack>
@@ -545,7 +546,7 @@ export default function HeroPreview({ ask }: { ask: (prompt: string) => void }) 
                 onClick={() => setDevice("mobile")}
                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDevice("mobile"); } }}
                 cursor="pointer"
-                height={22} width={22} minHeight={22} minWidth={22} alignItems="center" justifyContent="center" borderRadius="$3" {...{ backgroundColor: device === "mobile" ? "$color3" : "transparent" }}
+                height={22} width={22} minHeight={22} minWidth={22} alignItems="center" justifyContent="center" borderRadius="$3" {...{ backgroundColor: device === "mobile" ? "$color3" : "transparent", hoverStyle: { backgroundColor: device === "mobile" ? "$color4" : "$color3" } }}
               >
                 <SizableText color={device === "mobile" ? "$color12" : "$color11"}><Smartphone size={11} /></SizableText>
               </XStack>
@@ -553,14 +554,14 @@ export default function HeroPreview({ ask }: { ask: (prompt: string) => void }) 
             {/* Share — the real header's quiet secondary beside Publish (editor/
                 index.tsx): the SAME 999 pill as Publish, differing only in fill
                 ($color4 quiet vs the accent), a Share2 glyph + label. */}
-            <XStack alignItems="center" gap="$1" height={22} borderRadius={999} paddingHorizontal="$2" backgroundColor="$color4">
+            <XStack cursor="pointer" alignItems="center" gap="$1" height={22} borderRadius={999} paddingHorizontal="$2" backgroundColor="$color4" hoverStyle={{ backgroundColor: "$color5" }}>
               <Share2 size={10} color="var(--foreground)" />
               <SizableText display="none" fontSize="$1" fontWeight="600" color="$color" $sm={{ display: "inline" }}>Share</SizableText>
             </XStack>
             {/* A text host cannot row-lay mixed children (the check rendered as
                 a block ABOVE its label, and the unsized inner text ballooned the
                 chip) — the XStack is the chip, one sized label inside. */}
-            <XStack alignItems="center" gap="$1" height={22} borderRadius={999} paddingHorizontal="$2" {...{ backgroundColor: live ? "$color3" : "$color5" }}>
+            <XStack cursor="pointer" alignItems="center" gap="$1" height={22} borderRadius={999} paddingHorizontal="$2" {...{ backgroundColor: live ? "$color3" : "$color5", hoverStyle: { backgroundColor: live ? "$color4" : "$color6" } }}>
               {live ? (
                 <Check size={10} strokeWidth={3} color="var(--foreground)" />
               ) : phase === "publishing" ? (
@@ -575,8 +576,13 @@ export default function HeroPreview({ ask }: { ask: (prompt: string) => void }) 
 
         {/* ── Body: chat rail + previews — ONE row at every width. This used to
             stack (chat above preview) below $md, which read as a broken layout
-            at laptop and phone alike; the rail simply narrows instead. ── */}
-        <XStack height={340} $md={{ height: 360 }}>
+            at laptop and phone alike; the rail simply narrows instead.
+            The GUTTER is declared HERE, once, and both panes sit flush inside
+            it. They used to carry their own — $2.5 in the rail, $3 in the
+            previews — so the chat content started 2px above the preview card
+            and ended 2px below it, and the two panes read as unequal heights
+            either side of a hard border. ── */}
+        <XStack height={340} $md={{ height: 360 }} padding="$3">
           {/* Chat rail — transcript + the rounded composer input.
               Phones get the PREVIEW only. 36% of a 358px frame clamps to the
               120px floor, and at that width the rail's own composer rendered
@@ -586,18 +592,15 @@ export default function HeroPreview({ ask }: { ask: (prompt: string) => void }) 
               demo, so what the mock has left to show on a phone is the OUTPUT.
               display:none is the BASE and $sm switches it back on, because these
               media queries are min-width. */}
-          <YStack display="none" $sm={{ display: "flex" }} width="36%" minWidth={120} maxWidth={220} flexShrink={0} borderRightWidth={1} borderColor="$borderColor" backgroundColor="$background">
-            <XStack alignItems="center" gap="$2" paddingHorizontal="$2.5" paddingTop="$2.5">
+          <YStack display="none" $sm={{ display: "flex" }} width="36%" minWidth={120} maxWidth={220} flexShrink={0} gap="$2.5">
+            <XStack alignItems="center" gap="$2">
               <Sparkles size={12} />
               <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
                 Agent chat
               </SizableText>
             </XStack>
 
-            <YStack
-              ref={chatRef}
-              minHeight={0} flex={1} gap="$1.5" overflow="hidden" paddingHorizontal="$2.5" paddingVertical="$2.5"
-            >
+            <YStack ref={chatRef} minHeight={0} flex={1} gap="$1.5" overflow="hidden">
               {bubbles.map((b, i) =>
                 b.role === "user" ? (
                   <YStack
@@ -626,34 +629,46 @@ export default function HeroPreview({ ask }: { ask: (prompt: string) => void }) 
                 and send are the same circle pair the builder draws (send
                 filled, mic outlined), because the demo's whole claim is "this
                 is the product". */}
-            <YStack paddingHorizontal="$2.5" paddingBottom="$2.5">
-              <YStack gap="$1.5" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingTop="$1.5" paddingBottom="$1.5">
-                <SizableText minWidth={0} numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
-                  {typed || (busy ? "…" : "Ask Hanzo to change anything…")}
-                  {phase === "typing" && (
-                    <SizableText marginLeft="$0.25" height="$3" width={1} y={1} backgroundColor="$color" verticalAlign="middle" className="caret" />
-                  )}
-                </SizableText>
-                <XStack alignItems="center" gap="$1.5">
-                  <Plus size={11} opacity={0.6} />
-                  <XStack alignItems="center" gap="$0.5" height={16} borderRadius={999} backgroundColor="$color3" paddingHorizontal="$1.5">
-                    <SizableText fontSize={9} color="$color11">Build</SizableText>
-                    <ChevronDown size={8} opacity={0.7} />
-                  </XStack>
-                  <XStack flex={1} />
-                  <XStack height={16} width={16} alignItems="center" justifyContent="center" borderRadius={999} backgroundColor="$color3">
-                    <Mic size={9} opacity={0.7} />
-                  </XStack>
-                  <XStack height={16} width={16} alignItems="center" justifyContent="center" borderRadius={999} backgroundColor="$color5">
-                    <ArrowUp size={9} />
-                  </XStack>
+            <YStack gap="$1.5" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingTop="$1.5" paddingBottom="$1.5">
+              <SizableText minWidth={0} numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
+                {typed || (busy ? "…" : "Ask Hanzo to change anything…")}
+                {phase === "typing" && (
+                  <SizableText marginLeft="$0.25" height="$3" width={1} y={1} backgroundColor="$color" verticalAlign="middle" className="caret" />
+                )}
+              </SizableText>
+              <XStack alignItems="center" gap="$1.5">
+                <Plus size={11} opacity={0.6} />
+                <XStack alignItems="center" gap="$0.5" height={16} borderRadius={999} backgroundColor="$color3" paddingHorizontal="$1.5">
+                  <SizableText fontSize={9} color="$color11">Build</SizableText>
+                  <ChevronDown size={8} opacity={0.7} />
                 </XStack>
-              </YStack>
+                <XStack flex={1} />
+                <XStack height={16} width={16} alignItems="center" justifyContent="center" borderRadius={999} backgroundColor="$color3">
+                  <Mic size={9} opacity={0.7} />
+                </XStack>
+                <XStack height={16} width={16} alignItems="center" justifyContent="center" borderRadius={999} backgroundColor="$color5">
+                  <ArrowUp size={9} />
+                </XStack>
+              </XStack>
             </YStack>
           </YStack>
 
+          {/* The seam — the REAL builder's resizer (components/editor/index.tsx),
+              same track and same hairline, so the two surfaces say "these panes
+              divide here" in one voice. A transparent 10px grab with a hairline
+              that is invisible at rest and lifts under the pointer, which is
+              what replaced the hard border the rail used to draw: a permanent
+              1px rule reads as structure, and the workspace is one surface. */}
+          <XStack
+            role="separator"
+            position="relative" width={10} height="100%" flexShrink={0} cursor="col-resize" alignItems="center" justifyContent="center"
+            display="none" $sm={{ display: "flex" }} group
+          >
+            <YStack pointerEvents="none" position="absolute" top="$3" bottom="$3" left="50%" width={1} x="-50%" borderRadius="$10" backgroundColor="transparent" $group-hover={{ backgroundColor: "$color06" }} $group-press={{ backgroundColor: "$color8" }} />
+          </XStack>
+
           {/* Previews: rounded browser frame (desktop) + phone frame (mobile). */}
-          <XStack position="relative" minWidth={0} flex={1} alignItems="stretch" gap="$3" backgroundColor="$background" padding="$3">
+          <XStack position="relative" minWidth={0} flex={1} alignItems="stretch" gap="$3" backgroundColor="$background">
             {/* Desktop browser frame */}
             <YStack
               minWidth={0} flex={1} overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" {...{ display: device === "desktop" ? undefined : "none" }}
@@ -776,7 +791,9 @@ function Generating(): ReactElement {
 }
 
 /* ── Inline Hanzo mark (currentColor) ───────────────────────────────────────*/
-function HMark({ size = 14, color }: { size?: number; color?: string }) {
+/** Exported so the walkthrough's frame wears the SAME mark as this one. Two
+ *  copies of a logo is two logos the day one of them is redrawn. */
+export function HMark({ size = 14, color }: { size?: number; color?: string }) {
   return (
     <svg viewBox="0 0 67 67" width={size} height={size} color={color} fill="currentColor" aria-hidden>
       <path d="M22.21 67V44.64H0V67h22.21ZM66.72 22.32H22.25L.09 44.64h44.37l22.26-22.32ZM22.21 0H0v22.32h22.21V0ZM66.72 0H44.51v22.32h22.21V0ZM66.72 67V44.64H44.51V67h22.21Z" />

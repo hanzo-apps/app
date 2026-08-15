@@ -27,6 +27,7 @@ const FILES = [
   "components/landing/logo-wall.tsx",
   "components/landing/how-it-works.tsx",
   "components/landing/models-strip.tsx",
+  "components/landing/walkthrough.tsx",
 ];
 
 describe("a landing band's vertical rhythm", () => {
@@ -38,7 +39,7 @@ describe("a landing band's vertical rhythm", () => {
         (m) => ({ f, base: m[1], md: m[2] }),
       ),
     );
-    expect(bands.length).toBe(8);
+    expect(bands.length).toBe(9);
     for (const b of bands) expect(b.base).toBe("$11");
   });
 

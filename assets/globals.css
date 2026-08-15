@@ -1161,9 +1161,42 @@ kbd {
      standing — the models section's two cards sat 372px wide against the left
      edge with a third empty column beside them. auto-fit collapses the empty
      track so the items share the row. With enough items to fill every column
-     (cloud-integration's six, /templates') the two are identical. */
+     (cloud-integration's six) the two are identical. */
   grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
   gap: 18px;
+  align-items: start;
+}
+
+/* The template showcase — the SAME auto-fit mechanics as `.card-grid`, one
+   number apart, and that number is the whole reason it is a second class.
+   `.card-grid` sizes an icon-and-two-lines card, where 280px is generous;
+   /templates sizes a PICTURE, where 280 gave four 295px columns and a 184px
+   preview — a contact sheet, not a showcase. 340 is the largest floor that
+   still lands three columns inside the page's 1232px measure (340·3 + 20·2 =
+   1060 ≤ 1232, and four would need 1420), so a card is ~397px wide with a
+   248px shot: +35% on the edge, +82% on the area of the thing a visitor is
+   actually looking at. It steps to two from ~740 and one below ~620.
+
+   `min(340px, 100%)` is what keeps a phone honest — a bare 340 floor cannot
+   shrink under a 350px content box, so the track would push the DOCUMENT wide.
+   Measured at 390: one 350px column, zero horizontal overflow.
+
+   `auto-fill`, where `.card-grid` uses `auto-fit`, and the filter is why. The
+   two differ only when the grid holds fewer items than it has room for: auto-fit
+   collapses the spare tracks and the survivors stretch across them. That is
+   right for a fixed set of text cards and wrong here — searching "synapse"
+   narrows 94 tiles to 1, and auto-fit blew that one card up to the full 1232px
+   measure, painting a picture cropped for 397 at three times the size. A tile
+   holds a photograph at a fixed aspect, so it must keep its SIZE as the set
+   shrinks. auto-fill leaves the empty tracks standing, which is exactly the
+   result-list behaviour a filter wants.
+
+   Not a `.card-grid` modifier, because there is nothing to modify — every
+   declaration would be overridden. Two jobs, two names, same idiom. */
+.shot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+  gap: 20px;
   align-items: start;
 }
 

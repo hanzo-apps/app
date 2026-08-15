@@ -8,13 +8,13 @@
  *
  * Two real sources, mapped to one `ResourceItem`:
  *   - Site templates: `lib/gallery-catalog` (live gallery.hanzo.ai, snapshot
- *     fallback) — carry real screenshots + a fork slug.
+ *     fallback) — carry a fork slug, which is all a preview needs.
  *   - Games: `data/games-catalog` — license-verified OSS Unity/Unreal titles;
- *     no screenshot in the catalog, so they render as a schematic engine tile
- *     and open their existing `/games/:id` detail (play / fork / studio).
+ *     they render an engine tile and open their existing `/games/:id` detail
+ *     (play / fork / studio).
  *
- * Never fabricate a field: a template with no screenshot renders a fallback
- * tile; a game keeps its honest engine/genre/license metadata.
+ * Never fabricate a field: a game keeps its honest engine/genre/license
+ * metadata, and a template's picture is `TemplateThumb`'s to resolve.
  */
 
 import type { GalleryTemplate } from '@/lib/gallery-catalog';
@@ -30,9 +30,6 @@ export interface ResourceItem {
   title: string;
   description: string;
   category: string;
-  /** Template screenshot URL, or '' for games (rendered as a schematic tile). */
-  image: string;
-  hasImage: boolean;
   /** Template framework (e.g. "Next.js") or a game engine label (e.g. "Unity"). */
   framework: string;
   rating?: number;
@@ -53,13 +50,11 @@ function templateToResource(t: GalleryTemplate): ResourceItem {
     title: t.displayName || t.name,
     description: t.description || t.useCase || `${t.framework} template`,
     category: t.category,
-    image: t.screenshotUrl,
-    // The URL is the fact; hasScreenshot is a second copy of it that can — and
-    // does — disagree. gallery.hanzo.ai currently serves every screenshot 200
-    // while stamping hasScreenshot:false on all 66 records, which is why the
-    // gallery drew a glyph for each one. Trust the URL. A dead URL still costs
-    // nothing: the card's onError hides the image and the tile falls back.
-    hasImage: Boolean(t.screenshotUrl),
+    // No picture field. The catalog's `screenshotUrl` points at
+    // gallery.hanzo.ai, which serves none of them — every card was an empty box.
+    // The slug is the only thing a preview needs: `TemplateThumb` resolves it to
+    // the self-hosted shot or draws the schematic, and it is the ONE place that
+    // decision is made.
     framework: t.framework,
     rating: t.rating,
     templateSlug: t.slug,
@@ -79,8 +74,6 @@ function gameToResource(g: GameEntry): ResourceItem {
     title: g.name,
     description: g.description,
     category: GAMES_CATEGORY,
-    image: '',
-    hasImage: false,
     framework: ENGINE_LABEL[g.engine],
     href: `/games/${g.id}`,
     meta: `${g.genre} · ${g.license}`,

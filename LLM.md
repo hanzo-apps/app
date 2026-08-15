@@ -709,6 +709,57 @@ Four things that are load-bearing and non-obvious:
 `tests/unit/vendor.test.ts` fails if a third-party host returns to a prompt or
 to the policy; both mutations are checked, so this cannot quietly regress.
 
+### A template's picture comes from us too — `TemplateThumb`, one decision
+
+The same law one layer up, and it was broken on the surface the nav points at.
+`components/template-thumb.tsx` is the ONE component that answers "what does
+this template look like": the self-hosted shot at `public/templates/<slug>.webp`
+when the slug has one (77 files, 44 of them in the catalog), the drawn
+`TemplateSchematic` when it does not. A card is therefore always a picture of an
+app and never a hole.
+
+`/templates` and its preview modal did not ask it. They rendered
+`item.image` — the catalog's `screenshotUrl`, on a host the app does not own —
+and hid the `<img>` on error. That host serves none of them: measured on the
+running page, **0 of 66 loaded, 48 confirmed broken, 94 cards**, every one an
+empty box with its alt text showing through. Nothing anywhere said so. The route
+answered 200, the types were clean, the build was green, and `onError` turned
+the only visible symptom into a blank rectangle that reads as a dark design.
+
+So the field is gone rather than fixed. `ResourceItem` carries no `image` or
+`hasImage`; the slug is all a preview needs, and games branch on `kind` —
+the question actually being asked — instead of on whether a URL happened to be
+truthy. `tests/unit/template-preview.test.ts` pins both halves (every surface
+imports `TemplateThumb`; none reads `screenshotUrl`), mutation-checked in both
+directions. It strips comments before scanning, because the comments explaining
+the fix necessarily name the host it stopped using.
+
+**A picture grid is not a card grid.** `.card-grid`'s 280px floor is right for an
+icon and two lines and wrong for a screenshot — it gave four 295px columns and a
+184px preview. `.shot-grid` (assets/globals.css) is the same auto-fit idiom on a
+340px floor: three ~397px columns with a 247px shot inside the page's 1232px
+measure, two from ~740, one below ~620, and `min(340px, 100%)` so a phone gets
+one 350px column with zero document overflow. It uses **`auto-fill`** where
+`.card-grid` uses `auto-fit`, and that is the filter: narrowing 94 tiles to 1
+under auto-fit stretched that one card across the full measure and painted a
+shot cropped for 397 at three times the size. A tile holds a photograph at a
+fixed aspect, so it keeps its size as the set shrinks.
+
+The landing strip (`app/page.tsx`) is 360×225 for the same reason — at 280×175 a
+whole website was a thumbnail of a thumbnail. 16:10 both places, so one shot is
+cropped one way everywhere.
+
+**Three test suites hand-rolled the same JSX tag walker**, and none skipped
+comments. `tests/jsx.ts` is now the one `tagEnd`, used by `card-not-button`,
+`control-scale` and `icon-button`. A block comment is legal between props and
+this app writes long ones there; an apostrophe in that prose is not a string
+delimiter, but a walker that has not been told about comments reads it as one and
+inverts every quote after it — a tag then runs past its end (a loud false
+accusation) or stops short of it (a silent miss). It hid for as long as
+`/templates` happened to hold a second apostrophe that put the count back, and
+deleting an unrelated `'none'` exposed it. Teaching the walker about comments
+immediately reached a call site the old scan had never asked about.
+
 ### The ten dependabot alerts: transitive, and none reachable
 
 Every push prints "10 vulnerabilities (7 high, 3 moderate)". Triaged

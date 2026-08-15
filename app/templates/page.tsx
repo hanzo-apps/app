@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * /resources — "Start from a template to build your next project."
+ * /templates — "Start from a template to build your next project."
  *
  * The rich template gallery, sourced from the real catalog (lib/gallery-catalog
  * live/snapshot) merged with the games catalog (lib/resources-catalog — the
@@ -12,7 +12,7 @@
  * provision + seed) → the builder. Game cards open their existing detail page.
  */
 
-import { SizableText, YStack, XStack, H1, Paragraph, Image, H3 } from '@hanzo/ui';
+import { SizableText, YStack, XStack, H1, Paragraph, H3 } from '@hanzo/ui';
 import { glass } from "@/lib/chrome";
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -28,6 +28,7 @@ import {
   type ResourceItem,
 } from '@/lib/resources-catalog';
 import { bySpectrum, tint } from '@/lib/template-hues';
+import { TemplateThumb } from '@/components/template-thumb';
 import { TemplatePreviewModal } from '@/components/remix/template-preview-modal';
 import { RemixDialog } from '@/components/remix/remix-dialog';
 import { RemixProgress } from '@/components/remix/remix-progress';
@@ -143,13 +144,16 @@ function ResourcesBrowser() {
               <XStack height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color3">
                 <Sparkles size={24} />
               </XStack>
-              <H1 fontSize="$8" $md={{ fontSize: "$10" }} fontWeight="500">Resources</H1>
+              {/* "Templates" — the word on the nav, on the URL and in the page
+                  title. `/resources` already redirects here for exactly that
+                  reason; the H1 was the last place the synonym survived. */}
+              <H1 fontSize="$8" $md={{ fontSize: "$10" }} fontWeight="500">Templates</H1>
               {/* ONE child, not two. A Badge lays its children out as a COLUMN, so
                   `{n} resources` — which JSX hands over as two children — stacks the
                   count above the word and the pill, sized for one line, crops the
                   second. Measured on /templates: clientHeight 24, scrollHeight 34,
                   two block spans of 16px. One interpolated string is one child. */}
-              <Badge variant="secondary">{`${items.length} resources`}</Badge>
+              <Badge variant="secondary">{`${items.length} templates`}</Badge>
             </XStack>
             <Paragraph maxWidth={672} color="$color11">
               Start from a template to build your next project. Every template forks into the
@@ -169,7 +173,7 @@ function ResourcesBrowser() {
                 widths. */}
             <YStack width="100%" $sm={{ width: "auto" }}>
               <Input
-                placeholder="Search resources…"
+                placeholder="Search templates…"
                 value={query}
                 onChangeText={(v: string) => setQuery(v)}
                 startAdornment={<Search size={16} />}
@@ -220,13 +224,15 @@ function ResourcesBrowser() {
           </XStack>
         </YStack>
 
-        {/* Grid — a real one. `.card-grid` is auto-fill/minmax, so the column
-            count follows the width with no breakpoints to keep in sync. */}
+        {/* Grid — `.shot-grid`, the showcase measure: auto-fit/minmax like
+            `.card-grid` but on a 340px floor, so the column count still follows
+            the width with no breakpoints and the tile is big enough to read the
+            design in it. */}
         <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$6">
           {/* A plain div, like `.hiw-grid`: `.is_View` on a YStack also sets
               `display`, at the same specificity, so which one won would come
               down to sheet order. The grid owns its own box. */}
-          <div className="card-grid">
+          <div className="shot-grid">
             {filtered.map((item) => (
               <ResourceCard
                 key={item.id}
@@ -351,17 +357,20 @@ function ResourceCard({
       }}
       cursor="pointer" group className="zoom-scope" flexDirection="column" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor={hairline} backgroundColor="$background" hoverStyle={{ y: "$-1", borderColor: lit }}
     >
+      {/* `TemplateThumb` is the app's ONE template preview: the self-hosted shot
+          at public/templates/<slug>.webp when there is one, the drawn schematic
+          when there is not. This card used to point at
+          gallery.hanzo.ai/screenshots/<slug>.png and hide the <img> on error —
+          measured on /templates, 0 of 66 loaded and 48 were confirmed broken, so
+          every card was an empty box with its alt text showing through. A remote
+          origin the app does not own cannot be the picture of the product. */}
       <YStack position="relative" overflow="hidden" aspectRatio={16 / 10} backgroundColor="$background">
-        {item.hasImage ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <Image
-            src={item.image}
-            alt={`${item.title} preview`}
-            loading="lazy"
-            height="100%" width="100%" objectFit="cover" objectPosition="top" className="zoom-target"
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).style.display = 'none';
-            }}
+        {item.kind === 'template' ? (
+          <TemplateThumb
+            name={item.title}
+            category={item.category}
+            slug={item.templateSlug}
+            className="zoom-target"
   />
         ) : (
           <YStack height="100%" alignItems="center" justifyContent="center" gap="$1.5">

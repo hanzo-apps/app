@@ -9,7 +9,7 @@
  * and link straight to their existing detail page instead.
  */
 
-import { XStack, YStack, H2, Paragraph, Image, SizableText } from '@hanzo/ui';
+import { XStack, YStack, H2, Paragraph, SizableText } from '@hanzo/ui';
 // `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
 // same way it drops the GuiElement type. Tracked; everything else in this
 // file comes from @hanzo/ui.
@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogTitle, Button } from '@hanzo/ui';
 import { ExternalLink, Sparkles, Gamepad2 } from 'lucide-react';
 import Link from 'next/link';
 import type { ResourceItem } from '@/lib/resources-catalog';
+import { TemplateThumb } from '@/components/template-thumb';
 
 export function TemplatePreviewModal({
   item,
@@ -68,12 +69,11 @@ export function TemplatePreviewModal({
         {/* Preview body */}
         <YStack padding="$4.5">
           <YStack position="relative" overflow="hidden" aspectRatio={16 / 10} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
-            {item.hasImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <Image
-                src={item.image}
-                alt={`${item.title} preview`}
-                height="100%" width="100%" objectFit="cover" objectPosition="top"
+            {item.kind === 'template' ? (
+              <TemplateThumb
+                name={item.title}
+                category={item.category}
+                slug={item.templateSlug}
   />
             ) : (
               <YStack height="100%" alignItems="center" justifyContent="center" gap="$2">

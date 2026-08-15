@@ -1,6 +1,8 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
+import { tagEnd } from "../jsx";
+
 /**
  * ONE control scale.
  *
@@ -89,21 +91,7 @@ const calls: Call[] = (() => {
     const open = /<Button\b/g;
     let m: RegExpExecArray | null;
     while ((m = open.exec(src))) {
-      // Walk to the end of the opening tag, ignoring `>` inside braces or quotes.
-      let depth = 0;
-      let quote: string | null = null;
-      let end = -1;
-      for (let i = m.index + 7; i < src.length; i++) {
-        const c = src[i];
-        if (quote) {
-          if (c === quote && src[i - 1] !== "\\") quote = null;
-          continue;
-        }
-        if (c === '"' || c === "'" || c === "`") quote = c;
-        else if (c === "{") depth++;
-        else if (c === "}") depth--;
-        else if (c === ">" && depth === 0) { end = i; break; }
-      }
+      const end = tagEnd(src, m.index + 7);
       if (end < 0) continue;
       const tag = src.slice(m.index, end);
       out.push({

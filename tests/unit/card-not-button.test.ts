@@ -15,6 +15,8 @@
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 
+import { tagEnd } from '../jsx';
+
 const root = join(__dirname, '..', '..');
 
 function sources(dir: string, out: string[] = []): string[] {
@@ -31,16 +33,8 @@ function sources(dir: string, out: string[] = []): string[] {
 function buttonTags(src: string): string[] {
   const tags: string[] = [];
   for (const m of src.matchAll(/<Button\b/g)) {
-    // Walk to the end of the opening tag, ignoring `>` inside braces/strings.
-    let depth = 0, quote = '';
-    for (let i = m.index! + 7; i < src.length; i++) {
-      const c = src[i];
-      if (quote) { if (c === quote) quote = ''; continue; }
-      if (c === '"' || c === "'" || c === '`') { quote = c; continue; }
-      if (c === '{') depth++;
-      else if (c === '}') depth--;
-      else if (c === '>' && depth === 0) { tags.push(src.slice(m.index!, i)); break; }
-    }
+    const end = tagEnd(src, m.index! + 7);
+    if (end >= 0) tags.push(src.slice(m.index!, end));
   }
   return tags;
 }

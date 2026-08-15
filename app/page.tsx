@@ -324,9 +324,15 @@ export default function LandingPage() {
                                 startFromTemplate(t);
                               }
                             }}
-                            cursor="pointer" width={280} flexShrink={0} group className="zoom-scope hz-strip-card" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" hoverStyle={{ borderColor: "$color02", backgroundColor: "$color005" }}
+                            /* 360×225, not 280×175. The lane scrolls, so its
+                               card width is free of the layout and answers only
+                               to "can you see the design in it" — a 175px shot
+                               of a whole website is a thumbnail of a thumbnail.
+                               225 keeps the 16:10 the gallery card already uses,
+                               so one shot is cropped one way everywhere. */
+                            cursor="pointer" width={360} flexShrink={0} group className="zoom-scope hz-strip-card" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" hoverStyle={{ borderColor: "$color02", backgroundColor: "$color005" }}
                           >
-                            <YStack position="relative" overflow="hidden" height={175} backgroundColor="$color002">
+                            <YStack position="relative" overflow="hidden" height={225} backgroundColor="$color002">
                               <TemplateThumb
                                 name={t.displayName}
                                 category={t.category}
