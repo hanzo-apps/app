@@ -8,6 +8,14 @@ import type { MetadataRoute } from "next";
 // The mark is ONE set of bytes across the estate, rendered from the vector by
 // hanzo.ai/scripts/gen-favicons.mjs. A tab is where a reader recognizes us, so
 // two hosts drawing two generations of the same H is the one drift that shows.
+//
+// The installer sizes are listed TWICE, once per purpose. The manifest spec
+// makes `purpose` a space-separated set, so one entry can say "any maskable";
+// Next types it as a single value (`'any' | 'maskable' | 'monochrome'`), and
+// the string form is a type error that stops the release before it builds. Two
+// entries naming the same src say the same thing to a user agent — it picks by
+// purpose — and say it in the shape the type accepts. Collapsing them back is
+// the edit that reopens the hole.
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Hanzo — describe an app and it gets built",
@@ -21,8 +29,10 @@ export default function manifest(): MetadataRoute.Manifest {
     icons: [
       { src: "/icon.svg", type: "image/svg+xml", sizes: "any" },
       { src: "/apple-icon.png", type: "image/png", sizes: "180x180" },
-      { src: "/icon-192.png", type: "image/png", sizes: "192x192", purpose: "any maskable" },
-      { src: "/icon-512.png", type: "image/png", sizes: "512x512", purpose: "any maskable" },
+      { src: "/icon-192.png", type: "image/png", sizes: "192x192", purpose: "any" },
+      { src: "/icon-192.png", type: "image/png", sizes: "192x192", purpose: "maskable" },
+      { src: "/icon-512.png", type: "image/png", sizes: "512x512", purpose: "any" },
+      { src: "/icon-512.png", type: "image/png", sizes: "512x512", purpose: "maskable" },
     ],
   };
 }
