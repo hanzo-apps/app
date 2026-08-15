@@ -1341,9 +1341,16 @@ export function AskAI({
         <XStack
           alignItems="center" gap="$2" width="100%" zIndex={0}
           marginBottom={-14} paddingBottom={22}
-          paddingTop="$2" paddingLeft="$3" paddingRight="$2"
-          borderTopLeftRadius="$4" borderTopRightRadius="$4"
-          backgroundColor="$color3" borderWidth={1} borderBottomWidth={0} borderColor="$color04">
+          paddingTop="$2.5" paddingLeft="$3.5" paddingRight="$2.5"
+          borderTopLeftRadius="$8" borderTopRightRadius="$8"
+          backgroundColor="$color3" borderWidth={1} borderBottomWidth={0} borderColor="$color04"
+          /* The collar wears the composer's OWN radius ($8, the shell below) —
+             at $4 it read as a different, squarer object stacked on a rounder
+             one. And it lightens toward the top: a flat fill under a lit
+             composer looks like a slab someone parked there, where a fill that
+             falls away downward sits the notice UNDER the thing it belongs to.
+             Degrades to the flat token wherever a gradient does not paint. */
+          style={{ backgroundImage: 'linear-gradient(to bottom, rgba(255,255,255,0.055), rgba(255,255,255,0))' }}>
             <SizableText color="$color11"><Bell size={14} /></SizableText>
             <SizableText flex={1} minWidth={0} fontSize="$2" color="$color">
               Get notified when a build finishes
