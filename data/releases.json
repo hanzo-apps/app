@@ -85,9 +85,51 @@
         "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-windsurf-v1.9.31.vsix",
         "size": 1569869
       },
+      "Antigravity": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-antigravity-v1.9.31.vsix",
+        "size": 1569869
+      },
       "JetBrains": {
         "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-jetbrains-v1.9.31.zip",
         "size": 3250063
+      }
+    }
+  },
+  "host": {
+    "repo": "hanzoai/extension",
+    "version": "v1.9.31",
+    "platforms": {
+      "Office": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-office-v1.9.31.zip",
+        "size": 36096
+      },
+      "Outlook": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-outlook-v1.9.31.zip",
+        "size": 37247
+      },
+      "Figma": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-figma-v1.9.31.zip",
+        "size": 9880
+      },
+      "Sketch": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-sketch-v1.9.31.zip",
+        "size": 9634
+      },
+      "Teams": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-teams-v1.9.31.zip",
+        "size": 1694
+      },
+      "Zendesk": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-zendesk-v1.9.31.zip",
+        "size": 31933
+      },
+      "Claude Desktop": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-claude-v1.9.31.dxt",
+        "size": 1333486
+      },
+      "JupyterLab": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo_jupyter-1.9.31-py3-none-any.whl",
+        "size": 27189
       }
     }
   }

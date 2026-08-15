@@ -1,5 +1,9 @@
 /**
- * Resolve every download on /download against the releases that actually exist.
+ * Resolve every artifact the site offers against the releases that actually exist.
+ *
+ * Two pages read what this writes — `/download` through `data/downloads.ts` and
+ * `/install` through `data/app-catalog.ts` — so a build either page names is
+ * resolved once, here, and the two cannot drift into disagreeing about a URL.
  *
  * The page names a PLATFORM and an asset PATTERN; this writes the URL. That
  * split exists because half our repos version the filename — the extension
@@ -70,7 +74,24 @@ const SURFACES = {
       'VS Code': /^hanzo-ai-vscode-v[\d.]+\.vsix$/,
       Cursor: /^hanzo-ai-cursor-v[\d.]+\.vsix$/,
       Windsurf: /^hanzo-ai-windsurf-v[\d.]+\.vsix$/,
+      Antigravity: /^hanzo-ai-antigravity-v[\d.]+\.vsix$/,
       JetBrains: /^hanzo-ai-jetbrains-v[\d.]+\.zip$/,
+    },
+  },
+  // Apps that Hanzo installs INTO, the same way browser/editor/desktop are.
+  // `office-localhost` is a sideload build for development and is not one of
+  // these — the version anchor in each pattern is what keeps it out.
+  host: {
+    repo: 'hanzoai/extension',
+    assets: {
+      Office: /^hanzo-ai-office-v[\d.]+\.zip$/,
+      Outlook: /^hanzo-ai-outlook-v[\d.]+\.zip$/,
+      Figma: /^hanzo-ai-figma-v[\d.]+\.zip$/,
+      Sketch: /^hanzo-ai-sketch-v[\d.]+\.zip$/,
+      Teams: /^hanzo-ai-teams-v[\d.]+\.zip$/,
+      Zendesk: /^hanzo-ai-zendesk-v[\d.]+\.zip$/,
+      'Claude Desktop': /^hanzo-ai-claude-v[\d.]+\.dxt$/,
+      JupyterLab: /^hanzo_jupyter-[\d.]+-py3-none-any\.whl$/,
     },
   },
 }

@@ -1,18 +1,27 @@
 /**
- * Hanzo app & extension catalog — the single source of truth for /apps.
+ * The Hanzo app catalog — the one list behind /install.
  *
  * Every surface a user can reach shares ONE foundation: the @hanzo/ai gateway
  * and @hanzo/iam identity. Sign in once, mint one `hk-` key, and every app
  * below is authenticated — no per-app credentials.
  *
  * Each entry declares its `action`:
- *   - install → a downloadable extension / app (browser, IDE, Office, desktop …)
+ *   - install → an artifact you add to a host you already run
  *   - connect → a hosted / OAuth app you link to your Hanzo account
  *
- * The action alone determines where a card links (ACTION_URL) and the verb it
- * shows (ACTION_LABEL) — one rule, no per-entry URLs. The catalog is a flat
- * list; the view groups it by (action, category). Add a surface by appending
- * one row here and it renders everywhere.
+ * No URL is written in this file. An install card names the ARTIFACT it
+ * installs — a surface and a platform in `data/releases.json`, which
+ * `scripts/sync-releases.mjs` resolves against the real releases on every build
+ * — and a card whose artifact did not publish never reaches the page. So the
+ * catalog cannot offer a build that does not exist, and cannot go stale when
+ * the next release renames a file.
+ *
+ * The coordinates are plain strings rather than keys typed off that JSON on
+ * purpose: releases.json is data, and a platform that stops publishing should
+ * drop one card, not fail the build. `tests/unit/releases.test.ts` is what
+ * catches a coordinate that resolves to nothing.
+ *
+ * The catalog is a flat list; the view groups it by category.
  */
 
 import {
@@ -57,13 +66,19 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import releases from "./releases.json";
+
 // =============================================================================
 // TYPES
 // =============================================================================
 
 export type AppAction = "install" | "connect";
 
-export interface AppEntry {
+/** Where a card's bytes are: a surface in releases.json, and a platform in it. */
+export type Asset = [surface: string, platform: string];
+
+/** What a card says, before it knows where it points. */
+interface Card {
   /** Product / surface name shown on the card. */
   name: string;
   /** One line on what Hanzo does here. */
@@ -72,31 +87,22 @@ export interface AppEntry {
   icon: LucideIcon;
   /** Grouping bucket within a section (e.g. "Browser", "Verticals"). */
   category: string;
-  /** Drives the card's LABEL, and its link when no per-app `href` is set. */
-  action: AppAction;
-  /**
-   * The exact download / listing this surface installs from, when it has its
-   * own published destination (a store listing or a per-OS release asset). When
-   * omitted the card falls back to the action's generic URL (ACTION_URL). Only
-   * REAL, verified URLs live here — the same links the Hanzo extension site uses.
-   */
-  href?: string;
 }
 
-/** The one link a card opens: its own `href` if published, else the action URL. */
-export function appUrl(app: AppEntry): string {
-  return app.href ?? ACTION_URL[app.action];
-}
+/** A card as declared: an install names its artifact, a connect names none. */
+type Declared =
+  | (Card & { action: "install"; asset: Asset })
+  | (Card & { action: "connect" });
+
+/** A card as rendered: its link resolved. There is no card without one. */
+export type AppEntry = Card & { action: AppAction; url: string };
 
 // =============================================================================
-// ACTION → destination + verb (one rule per action, DRY)
+// WHERE A CARD POINTS
 // =============================================================================
 
-/** Install links to the unified extension bundle; connect links to the docs. */
-export const ACTION_URL: Record<AppAction, string> = {
-  install: "https://github.com/hanzoai/extension/releases/latest",
-  connect: "https://docs.hanzo.ai",
-};
+/** A connect is a hosted app you link to your account, so it opens the docs. */
+const DOCS = "https://docs.hanzo.ai";
 
 /** The verb every card in a section shows. */
 export const ACTION_LABEL: Record<AppAction, string> = {
@@ -104,44 +110,58 @@ export const ACTION_LABEL: Record<AppAction, string> = {
   connect: "Connect",
 };
 
+/**
+ * What a screen reader hears on the link. The two actions are different
+ * sentences: an install card is named for its HOST ("macOS", "Chrome"), so the
+ * verb alone would announce installing an operating system.
+ */
+export const actionName = (app: AppEntry): string =>
+  app.action === "install" ? `Install Hanzo for ${app.name}` : `Connect ${app.name}`;
+
+type Resolved = Record<string, { platforms: Record<string, { url: string }> }>;
+const R = releases as Resolved;
+
+const resolve = ([surface, platform]: Asset): string | undefined =>
+  R[surface]?.platforms[platform]?.url;
+
 // =============================================================================
 // CATALOG — one flat, ordered list (grouped by the view)
 // =============================================================================
 
-export const appCatalog: AppEntry[] = [
+const CATALOG: Declared[] = [
   // ── Install: browser ──────────────────────────────────────────────────────
-  { name: "Chrome", category: "Browser", action: "install", icon: Chrome, href: "https://chrome.google.com/webstore/detail/hanzo-ai", blurb: "Ask Hanzo about any page, capture context, and run agents from the toolbar." },
-  { name: "Edge", category: "Browser", action: "install", icon: AppWindow, href: "https://microsoftedge.microsoft.com/addons/detail/hanzo-ai", blurb: "The full Hanzo assistant for Microsoft Edge with the Chromium feature set." },
-  { name: "Firefox", category: "Browser", action: "install", icon: Flame, href: "https://addons.mozilla.org/addon/hanzo-ai", blurb: "Privacy-first Hanzo add-on for Mozilla Firefox." },
-  { name: "Safari", category: "Browser", action: "install", icon: Compass, href: "https://apps.apple.com/app/hanzo-ai", blurb: "Native Hanzo extension for Safari on macOS and iOS." },
+  { name: "Chrome", category: "Browser", action: "install", icon: Chrome, asset: ["browser", "Chrome"], blurb: "Ask Hanzo about any page, capture context, and run agents from the toolbar." },
+  { name: "Edge", category: "Browser", action: "install", icon: AppWindow, asset: ["browser", "Edge"], blurb: "The full Hanzo assistant for Microsoft Edge with the Chromium feature set." },
+  { name: "Firefox", category: "Browser", action: "install", icon: Flame, asset: ["browser", "Firefox"], blurb: "Privacy-first Hanzo add-on for Mozilla Firefox." },
+  { name: "Safari", category: "Browser", action: "install", icon: Compass, asset: ["browser", "Safari"], blurb: "Native Hanzo extension for Safari on macOS and iOS." },
 
   // ── Install: IDEs & editors ───────────────────────────────────────────────
-  { name: "VS Code", category: "IDEs & editors", action: "install", icon: Code, href: "https://marketplace.visualstudio.com/items?itemName=hanzo-ai.hanzo-ai", blurb: "Inline completions, chat, and agentic edits inside Visual Studio Code." },
-  { name: "Cursor", category: "IDEs & editors", action: "install", icon: MousePointer2, href: "https://open-vsx.org/namespace/hanzo-ai", blurb: "Wire Hanzo models and MCP tools into the Cursor editor." },
-  { name: "Windsurf", category: "IDEs & editors", action: "install", icon: Wind, href: "https://open-vsx.org/namespace/hanzo-ai", blurb: "Hanzo agents and gateway models in the Windsurf editor." },
-  { name: "Antigravity", category: "IDEs & editors", action: "install", icon: Orbit, href: "https://open-vsx.org/namespace/hanzo-ai", blurb: "Connect Hanzo to the Antigravity agentic IDE." },
-  { name: "JetBrains", category: "IDEs & editors", action: "install", icon: Braces, blurb: "One plugin for IntelliJ, PyCharm, GoLand, WebStorm, and the rest." },
+  { name: "VS Code", category: "IDEs & editors", action: "install", icon: Code, asset: ["editor", "VS Code"], blurb: "Inline completions, chat, and agentic edits inside Visual Studio Code." },
+  { name: "Cursor", category: "IDEs & editors", action: "install", icon: MousePointer2, asset: ["editor", "Cursor"], blurb: "Wire Hanzo models and MCP tools into the Cursor editor." },
+  { name: "Windsurf", category: "IDEs & editors", action: "install", icon: Wind, asset: ["editor", "Windsurf"], blurb: "Hanzo agents and gateway models in the Windsurf editor." },
+  { name: "Antigravity", category: "IDEs & editors", action: "install", icon: Orbit, asset: ["editor", "Antigravity"], blurb: "Connect Hanzo to the Antigravity agentic IDE." },
+  { name: "JetBrains", category: "IDEs & editors", action: "install", icon: Braces, asset: ["editor", "JetBrains"], blurb: "One plugin for IntelliJ, PyCharm, GoLand, WebStorm, and the rest." },
 
   // ── Install: Office ───────────────────────────────────────────────────────
-  { name: "Word, Excel & PowerPoint", category: "Office", action: "install", icon: FileText, blurb: "Draft, analyze, and generate slides with Hanzo inside Microsoft Office." },
-  { name: "Outlook", category: "Office", action: "install", icon: Mail, blurb: "Summarize threads and draft replies from your Outlook inbox." },
+  { name: "Word, Excel & PowerPoint", category: "Office", action: "install", icon: FileText, asset: ["host", "Office"], blurb: "Draft, analyze, and generate slides with Hanzo inside Microsoft Office." },
+  { name: "Outlook", category: "Office", action: "install", icon: Mail, asset: ["host", "Outlook"], blurb: "Summarize threads and draft replies from your Outlook inbox." },
 
   // ── Install: design ───────────────────────────────────────────────────────
-  { name: "Figma", category: "Design", action: "install", icon: Figma, blurb: "Generate copy, components, and design specs from inside Figma." },
-  { name: "Sketch", category: "Design", action: "install", icon: PenTool, blurb: "Bring Hanzo assistance into your Sketch design workflow." },
+  { name: "Figma", category: "Design", action: "install", icon: Figma, asset: ["host", "Figma"], blurb: "Generate copy, components, and design specs from inside Figma." },
+  { name: "Sketch", category: "Design", action: "install", icon: PenTool, asset: ["host", "Sketch"], blurb: "Bring Hanzo assistance into your Sketch design workflow." },
 
   // ── Install: team apps ────────────────────────────────────────────────────
-  { name: "Microsoft Teams", category: "Team apps", action: "install", icon: Users, blurb: "Chat with Hanzo and run agents without leaving Teams." },
-  { name: "Zendesk", category: "Team apps", action: "install", icon: Headset, blurb: "Draft, triage, and resolve support tickets with Hanzo in Zendesk." },
+  { name: "Microsoft Teams", category: "Team apps", action: "install", icon: Users, asset: ["host", "Teams"], blurb: "Chat with Hanzo and run agents without leaving Teams." },
+  { name: "Zendesk", category: "Team apps", action: "install", icon: Headset, asset: ["host", "Zendesk"], blurb: "Draft, triage, and resolve support tickets with Hanzo in Zendesk." },
 
   // ── Install: desktop app ──────────────────────────────────────────────────
-  { name: "macOS", category: "Desktop app", action: "install", icon: Command, href: "https://github.com/hanzoai/desktop/releases/latest/download/hanzo-macos.dmg", blurb: "Menubar app with a global hotkey — Hanzo anywhere on your Mac." },
-  { name: "Windows", category: "Desktop app", action: "install", icon: AppWindow, href: "https://github.com/hanzoai/desktop/releases/latest/download/hanzo-windows.exe", blurb: "System-tray app with a global hotkey for Hanzo on Windows." },
-  { name: "Linux", category: "Desktop app", action: "install", icon: Terminal, href: "https://github.com/hanzoai/desktop/releases/latest/download/hanzo-linux.AppImage", blurb: "Native desktop app with a global hotkey for Hanzo on Linux." },
+  { name: "macOS", category: "Desktop app", action: "install", icon: Command, asset: ["desktop", "macOS"], blurb: "Menubar app with a global hotkey — Hanzo anywhere on your Mac." },
+  { name: "Windows", category: "Desktop app", action: "install", icon: AppWindow, asset: ["desktop", "Windows"], blurb: "System-tray app with a global hotkey for Hanzo on Windows." },
+  { name: "Linux", category: "Desktop app", action: "install", icon: Terminal, asset: ["desktop", "Linux (AppImage)"], blurb: "Native desktop app with a global hotkey for Hanzo on Linux." },
 
   // ── Install: AI hosts & notebooks ─────────────────────────────────────────
-  { name: "Claude Desktop", category: "AI hosts & notebooks", action: "install", icon: Bot, blurb: "One-click .dxt bundle that adds Hanzo tools to Claude Desktop." },
-  { name: "JupyterLab", category: "AI hosts & notebooks", action: "install", icon: Notebook, blurb: "pip-installable extension bringing Hanzo into your notebooks." },
+  { name: "Claude Desktop", category: "AI hosts & notebooks", action: "install", icon: Bot, asset: ["host", "Claude Desktop"], blurb: "One-click .dxt bundle that adds Hanzo tools to Claude Desktop." },
+  { name: "JupyterLab", category: "AI hosts & notebooks", action: "install", icon: Notebook, asset: ["host", "JupyterLab"], blurb: "pip-installable extension bringing Hanzo into your notebooks." },
 
   // ── Connect: communication ────────────────────────────────────────────────
   { name: "Slack", category: "Communication", action: "connect", icon: Slack, blurb: "Summarize channels, answer in-thread, and run agents from Slack." },
@@ -173,3 +193,14 @@ export const appCatalog: AppEntry[] = [
   { name: "Workday", category: "Verticals", action: "connect", icon: Briefcase, blurb: "HR — automate onboarding, approvals, and reporting in Workday." },
   { name: "iManage", category: "Verticals", action: "connect", icon: Gavel, blurb: "Legal — search, summarize, and draft against your iManage vault." },
 ];
+
+/**
+ * The catalog as the page sees it — every card carrying a link that resolved.
+ * An install whose artifact is absent from this build's releases.json is
+ * dropped rather than pointed somewhere generic, because a card that lands on
+ * a page without the build on it is the failure this file exists to prevent.
+ */
+export const appCatalog: AppEntry[] = CATALOG.flatMap((card) => {
+  const url = card.action === "connect" ? DOCS : resolve(card.asset);
+  return url ? [{ ...card, url }] : [];
+});

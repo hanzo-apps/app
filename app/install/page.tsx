@@ -2,13 +2,14 @@
 
 import { Button } from '@hanzo/ui';
 import { Anchor, XStack, SizableText, Paragraph, YStack, H1, H2, type GuiElement } from '@hanzo/gui';
-// /apps — the Hanzo apps & integrations catalog. True-black monochrome to match
-// the rest of the site. The surfaces are laid out as a horizontal filmstrip that
-// is PINNED while you scroll: scrolling the page down pans left→right through
-// every surface in order (Browser → Editors → Desktop → Office → Business →
-// Verticals), so you pass through all of them before the page continues. Every
-// card is a REAL surface from the ONE typed catalog in @/data/app-catalog, and
-// each links to its own verified install/connect destination via `appUrl`.
+// /install — the Hanzo apps & integrations catalog. True-black monochrome to
+// match the rest of the site. The surfaces are laid out as a horizontal
+// filmstrip that is PINNED while you scroll: scrolling the page down pans
+// left→right through every surface in order (Browser → Editors → Desktop →
+// Office → Business → Verticals), so you pass through all of them before the
+// page continues. Every card comes from the ONE catalog in @/data/app-catalog,
+// which resolves each install against the release that published it — so this
+// page renders whatever exists and can render nothing else.
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -17,7 +18,7 @@ import Header from "@/components/layout/header";
 import {
   appCatalog,
   ACTION_LABEL,
-  appUrl,
+  actionName,
   type AppEntry,
 } from "@/data/app-catalog";
 
@@ -32,15 +33,15 @@ const CATEGORIES: { label: string; cats: string[] }[] = [
 ];
 
 // One catalog cell: the app's mark + name lockup, its real blurb, and the action
-// verb linking to that surface's own install/connect destination (`appUrl`).
+// verb linking to the artifact the catalog resolved for that surface.
 function AppCell({ app }: { app: AppEntry }) {
   const Icon = app.icon;
   return (
     <Anchor
-      href={appUrl(app)}
+      href={app.url}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`${ACTION_LABEL[app.action]} ${app.name}`}
+      aria-label={actionName(app)}
       group
     >
       <XStack alignItems="center" gap="$2.5">
@@ -118,7 +119,7 @@ export default function AppsPage() {
 
       {/* ── Intro: editorial title + surface nav (jumps into the pinned strip) ── */}
       <YStack paddingHorizontal="$4" paddingTop="$7" $md={{ paddingHorizontal: "$6", paddingTop: "$10" }}>
-        <YStack alignSelf="center" maxWidth={1152}>
+        <YStack alignSelf="center" width="100%" maxWidth={1152}>
           <H1 fontSize="$12" fontWeight="500" lineHeight="1.02" letterSpacing={-0.4} $md={{ fontSize: 64 }}>
             Runs
           </H1>
@@ -158,8 +159,12 @@ export default function AppsPage() {
       </YStack>
 
       {/* ── The pinned filmstrip: N screens tall; scrolling pans through all N ── */}
+      {/* The pinned child must be ONE viewport tall. `height="100%"` resolves
+          against the N-screen wrapper, and a sticky box as tall as its own
+          containing block has no room to slide — it never pins, and centring
+          then puts every card ~1700px below the fold. */}
       <YStack ref={wrapRef} position="relative" style={{ height: `${N * 90}vh` }}>
-        <XStack position="sticky" top="$0" height="100%" alignItems="center" overflow="hidden">
+        <XStack position="sticky" top="$0" height="100vh" alignItems="center" overflow="hidden">
           <XStack
             ref={trackRef}
           >
@@ -210,7 +215,7 @@ export default function AppsPage() {
 
       {/* ── CTA — the page's real conversion ────────────────────────────────── */}
       <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$12" $md={{ paddingHorizontal: "$6" }}>
-        <YStack alignSelf="center" maxWidth={1152}>
+        <YStack alignSelf="center" width="100%" maxWidth={1152}>
           <H2 fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }} lineHeight="1.1">
             Start with one key.
           </H2>
