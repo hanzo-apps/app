@@ -1,0 +1,94 @@
+{
+  "cli": {
+    "repo": "hanzoai/cli",
+    "version": "v1.9.53",
+    "platforms": {
+      "macOS (Apple Silicon)": {
+        "url": "https://github.com/hanzoai/cli/releases/download/v1.9.53/hanzo-darwin-arm64.tar.gz",
+        "size": 4727158
+      },
+      "macOS (Intel)": {
+        "url": "https://github.com/hanzoai/cli/releases/download/v1.9.53/hanzo-darwin-amd64.tar.gz",
+        "size": 4955298
+      },
+      "Windows": {
+        "url": "https://github.com/hanzoai/cli/releases/download/v1.9.53/hanzo-windows-amd64.tar.gz",
+        "size": 6043646
+      },
+      "Linux (x86_64)": {
+        "url": "https://github.com/hanzoai/cli/releases/download/v1.9.53/hanzo-linux-amd64.tar.gz",
+        "size": 4672998
+      },
+      "Linux (arm64)": {
+        "url": "https://github.com/hanzoai/cli/releases/download/v1.9.53/hanzo-linux-arm64.tar.gz",
+        "size": 4441145
+      }
+    }
+  },
+  "desktop": {
+    "repo": "hanzoai/extension",
+    "version": "v1.9.31",
+    "platforms": {
+      "macOS": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-desktop-macos-v1.9.31.dmg",
+        "size": 1695477
+      },
+      "Windows": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-desktop-windows-v1.9.31.exe",
+        "size": 1277272
+      },
+      "Linux (AppImage)": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-desktop-linux-v1.9.31.AppImage",
+        "size": 76839416
+      },
+      "Linux (deb)": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-desktop-linux-v1.9.31.deb",
+        "size": 1953624
+      }
+    }
+  },
+  "browser": {
+    "repo": "hanzoai/extension",
+    "version": "v1.9.31",
+    "platforms": {
+      "Chrome": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-chrome-v1.9.31.zip",
+        "size": 999880
+      },
+      "Firefox": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-firefox-v1.9.31.zip",
+        "size": 978433
+      },
+      "Safari": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-safari-v1.9.31.zip",
+        "size": 317316
+      },
+      "Edge": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-edge-v1.9.31.zip",
+        "size": 999880
+      }
+    }
+  },
+  "editor": {
+    "repo": "hanzoai/extension",
+    "version": "v1.9.31",
+    "platforms": {
+      "VS Code": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-vscode-v1.9.31.vsix",
+        "size": 1569869
+      },
+      "Cursor": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-cursor-v1.9.31.vsix",
+        "size": 1569869
+      },
+      "Windsurf": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-windsurf-v1.9.31.vsix",
+        "size": 1569869
+      },
+      "JetBrains": {
+        "url": "https://github.com/hanzoai/extension/releases/download/v1.9.31/hanzo-ai-jetbrains-v1.9.31.zip",
+        "size": 3250063
+      }
+    }
+  }
+}

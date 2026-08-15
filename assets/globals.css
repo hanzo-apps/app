@@ -1200,6 +1200,31 @@ kbd {
   align-items: start;
 }
 
+/* /download's surfaces — the SAME auto-fit idiom as `.card-grid`, one number
+   apart, which is the same reason `.shot-grid` above is its own class. A
+   download card is not an icon and two lines: it carries a paragraph and up to
+   five platform rows, each a name on the left and a Download on the right. At
+   `.card-grid`'s 280px floor the 1152px measure yields four ~276px tracks, and
+   a row at 276px puts "macOS (Apple Silicon)" and its button in the same
+   16 characters — the button wraps under the name and the card goes ragged.
+
+   460 is the largest floor that still lands TWO columns inside the measure
+   (460·2 + 20 = 940 ≤ 1152; three would need 1400), giving a ~566px card whose
+   longest row label sits well clear of its action. It steps to one below
+   ~940. `min(460px, 100%)` is what keeps a phone honest — a bare 460 floor
+   cannot shrink under a 358px content box, so the track would push the
+   DOCUMENT wide, which is the one thing a phone layout may never do.
+
+   `auto-fit`, like `.card-grid` and unlike `.shot-grid`: this is a fixed set
+   of five cards, never filtered, so there is no empty track to leave standing
+   and a survivor stretching across one is the correct behaviour. */
+.surface-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
 /* The recent-projects grid — vertical cards, the thumbnail on top at its own
    aspect and the meta below, so the card is the SIZE of the image with nothing
    stranded beside it. Deliberately NOT `.card-grid`: auto-fit/minmax(280px)
