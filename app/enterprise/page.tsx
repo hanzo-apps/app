@@ -11,7 +11,7 @@ export default function EnterprisePage() {
     {
       icon: <Shield className="w-6 h-6" />,
       title: "Enterprise Security",
-      description: "SOC 2 Type II certified with end-to-end encryption, SAML SSO, and advanced access controls"
+      description: "Controls aligned to the SOC 2 Type II control set — encryption in transit and at rest, role-based access control, and audit logging."
     },
     {
       icon: <Users className="w-6 h-6" />,
@@ -153,8 +153,8 @@ export default function EnterprisePage() {
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <div className="font-medium mb-1">SOC 2 Type II Certified</div>
-                    <div className="text-sm text-white/60">Annual audits ensure the highest security standards</div>
+                    <div className="font-medium mb-1">SOC 2 Type II controls</div>
+                    <div className="text-sm text-white/60">Encryption in transit and at rest, role-based access control, and audit logging</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -167,8 +167,8 @@ export default function EnterprisePage() {
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <div className="font-medium mb-1">ISO 27001 Certified</div>
-                    <div className="text-sm text-white/60">International standard for information security</div>
+                    <div className="font-medium mb-1">Certification scoped per engagement</div>
+                    <div className="text-sm text-white/60">Formal certification — SOC 2 Type II, ISO 27001, HIPAA with a BAA — is scoped per enterprise engagement. Tell us what your procurement needs.</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">

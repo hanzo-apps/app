@@ -63,7 +63,7 @@ export default function FeaturesPage() {
       icon: <Shield className="w-6 h-6 text-purple-400" />,
       title: "Enterprise Security",
       description: "Bank-grade security with encryption, compliance, and access controls",
-      features: ["End-to-end encryption", "SOC 2 compliance", "Role-based access", "Audit logging"]
+      features: ["End-to-end encryption", "SOC 2 Type II controls", "Role-based access", "Audit logging"]
     },
     {
       icon: <Database className="w-6 h-6 text-orange-400" />,
@@ -519,7 +519,7 @@ export default function FeaturesPage() {
             </div>
 
             <div className="text-center mt-12">
-              <p className="text-white/60 mb-4">All plans include free SSL certificates and 99.9% uptime SLA</p>
+              <p className="text-white/60 mb-4">All plans include free SSL certificates and multi-region redundancy with automated failover</p>
               <Link href="/pricing" className="text-violet-400 hover:text-violet-300 text-sm font-medium">
                 View detailed pricing comparison →
               </Link>

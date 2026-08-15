@@ -123,7 +123,7 @@ export default function SignupPage() {
               <div className="flex items-center justify-center gap-6 pt-2">
                 <div className="flex items-center gap-2">
                   <Shield className="w-4 h-4 text-white/60" />
-                  <span className="text-xs text-white/60">SOC 2 Compliant</span>
+                  <span className="text-xs text-white/60">SOC 2 Type II controls</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Shield className="w-4 h-4 text-white/60" />
