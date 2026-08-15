@@ -613,6 +613,18 @@ compose's), then moves the universe pin through `charts/app/pin.sh`.
   credentials were never the problem — which is where the obvious investigation
   goes first. Green again reads `ingest key resolved (40 chars)`.
 
+- **A REPO gate cannot run inside the image build, and `prebuild` is inside it.**
+  `pnpm run build` runs in the builder stage: node:20-alpine with libc6-compat,
+  python3, make and g++ — no git — over a `COPY . .` that carries no `.git`. So a
+  `prebuild` step that sweeps the tree with `git ls-files` dies there with
+  `spawnSync git ENOENT`, and because `test` and `build-amd64` are separate jobs it
+  reads as a green gate beside a red build. `scripts/lint-gui-props.mjs` did exactly
+  that for a day. Its sweep already runs where the repo is —
+  `tests/unit/gui-prop-values.test.ts` drives the same `run()` over the whole tree
+  under `pnpm test` — so the prebuild copy was a second home for one gate, in the one
+  place it could only fail. `prebuild` is for what the BUILD needs (vendoring, the
+  edit manifest, the release list); a check on the repo belongs in the test job.
+
 - **`[skip ci]` works, and a run on your sha is not proof it did not.** The
   forge honours `[skip ci]` / `[ci skip]` / `[no ci]` / `[skip actions]` on
   **push and pull_request only** — that is upstream's rule, and correctly so: a
