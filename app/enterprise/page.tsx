@@ -1,5 +1,23 @@
 "use client";
 
+// Every CTA on this page pointed nowhere: four buttons with no handler and a
+// form whose submit discarded what someone had just typed. A control that looks
+// live and does nothing is worse than no control, and on this page it is a lost
+// lead rather than a cosmetic bug.
+const SALES = "https://hanzo.ai/contact-sales";
+
+function sendToSales() {
+  const read = (n: string) =>
+    (document.querySelector(`[name="${n}"]`) as HTMLInputElement | HTMLTextAreaElement | null)?.value?.trim() || "";
+  const line = (v: string, label: string) => (v ? `${label}: ${v}\n` : "");
+  const body =
+    line(read("company"), "Company") +
+    line(read("email"), "Work email") +
+    line(read("size"), "Company size") +
+    "\n" + read("detail");
+  window.location.href = `mailto:sales@hanzo.ai?subject=${encodeURIComponent("Enterprise enquiry")}&body=${encodeURIComponent(body)}`;
+}
+
 import { SizableText, YStack, H1, Paragraph, H2, H3, XStack } from '@hanzo/ui';
 import { Button, Badge, Input, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Shield, Lock, Users, Zap, Globe, HeadphonesIcon, ArrowRight, CheckCircle2, Building } from "lucide-react";
@@ -64,11 +82,11 @@ export default function EnterprisePage() {
             One organization, as many seats as you need, with single sign-on, role-based access and an audit trail. Your own compute, and a person to call.
           </Paragraph>
           <YStack alignItems="center" gap="$4" justifyContent="center" $sm={{ flexDirection: "row" }}>
-            <Button size="lg" width="100%" backgroundColor="$color5" borderWidth={1} borderColor="$color6" $sm={{ width: "auto" }} hoverStyle={{ backgroundColor: "$color6" }}>
+            <Button size="lg" width="100%" backgroundColor="$color5" borderWidth={1} borderColor="$color6" $sm={{ width: "auto" }} hoverStyle={{ backgroundColor: "$color6" }} onPress={() => { window.location.href = SALES }}>
               Schedule a demo
               <ArrowRight size={20} />
             </Button>
-            <Button size="lg" variant="outline" width="100%" borderColor="$borderColor" $sm={{ width: "auto" }} hoverStyle={{ backgroundColor: "$color3" }}>
+            <Button size="lg" variant="outline" width="100%" borderColor="$borderColor" $sm={{ width: "auto" }} hoverStyle={{ backgroundColor: "$color3" }} onPress={() => { window.location.href = SALES }}>
               Talk to sales
             </Button>
           </YStack>
@@ -162,9 +180,9 @@ export default function EnterprisePage() {
                   neutralises to a grey barely distinct from the resting border. All
                   five are now the ONE control. */}
               <YStack rowGap="$4">
-                <Input type="text" placeholder="Company name" />
-                <Input type="email" placeholder="Work email" />
-                <Select>
+                <Input type="text" name="company" placeholder="Company name" />
+                <Input type="email" name="email" placeholder="Work email" />
+                <Select name="size">
                   <SelectTrigger>
                     <SelectValue placeholder="Company size" />
                   </SelectTrigger>
@@ -175,14 +193,14 @@ export default function EnterprisePage() {
                     <SelectItem value="1000+">1000+ employees</SelectItem>
                   </SelectContent>
                 </Select>
-                <Textarea placeholder="What you want to build, and how many people will work on it" rows={4} />
+                <Textarea name="detail" placeholder="What you want to build, and how many people will work on it" rows={4} />
                 {/* The fill is the variant's to choose, not this call site's. It
                     used to hand-paint a violet->purple gradient; the monochrome
                     sweep neutralises those decorative hues to a mid grey, but the
                     Button kept the near-black foreground that was picked for its
                     WHITE default fill — leaving the page's primary CTA at 1.10:1.
                     Its sibling, which never hand-painted, measures 19.80:1. */}
-                <Button width="100%">Send this to sales</Button>
+                <Button width="100%" onPress={sendToSales}>Send this to sales</Button>
               </YStack>
             </YStack>
           </YStack>
@@ -198,7 +216,7 @@ export default function EnterprisePage() {
           <Paragraph fontSize="$7" color="$color11" marginBottom="$6" lineHeight="1.4">
             Tell us what you need and we will show you how it works on your own code.
           </Paragraph>
-          <Button size="lg" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}>
+          <Button size="lg" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }} onPress={() => { window.location.href = SALES }}>
             Schedule a demo
             <ArrowRight size={20} />
           </Button>
