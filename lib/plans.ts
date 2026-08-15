@@ -31,6 +31,17 @@ export interface Plan {
   perSeat: boolean;
   /** Not self-serve: talk to sales. Never send these to checkout. */
   contactSales: boolean;
+  /**
+   * Every price this plan is sold at, USD cents, ascending, `prices[0] === price`.
+   * Empty for a plan sold at a single price, which is most of them.
+   *
+   * Checkout names the INDEX into this list (`level`), never a price — commerce
+   * holds the prices and refuses a level it did not publish. So a surface that
+   * lets someone choose renders a control over this array and passes back where
+   * it landed; it never sends an amount, and it never knows one that did not
+   * come from here.
+   */
+  prices: number[];
 }
 
 interface RawPlan {
@@ -43,6 +54,7 @@ interface RawPlan {
   features?: unknown;
   perSeat?: boolean;
   contactSales?: boolean;
+  prices?: unknown;
 }
 
 function normalize(p: RawPlan): Plan | null {
@@ -57,7 +69,26 @@ function normalize(p: RawPlan): Plan | null {
     features: Array.isArray(p.features) ? p.features.filter((f): f is string => typeof f === 'string') : [],
     perSeat: Boolean(p.perSeat),
     contactSales: Boolean(p.contactSales),
+    prices: ladder(p),
   };
+}
+
+/**
+ * The ladder, taken only when the whole of it is sound: every entry a finite
+ * positive number, and the first one the plan's own price.
+ *
+ * A partly-read ladder is worse than none. The index into it is what checkout
+ * sends, so a list this app filtered or reordered would point at a different
+ * price than the one it drew — and the customer would be charged the server's
+ * reading of an index taken from ours. Dropping the whole ladder falls back to
+ * the single price, which is exactly what every plan without one does.
+ */
+function ladder(p: RawPlan): number[] {
+  if (!Array.isArray(p.prices) || p.prices.length === 0) return [];
+  const rows = p.prices as unknown[];
+  if (!rows.every((n): n is number => typeof n === 'number' && Number.isFinite(n) && n > 0)) return [];
+  if (rows[0] !== p.price) return [];
+  return rows as number[];
 }
 
 /** Fetch the live catalog. Throws on transport/HTTP failure — never guesses.

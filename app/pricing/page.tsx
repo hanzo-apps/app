@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from '@hanzo/ui';
-import { SizableText, YStack, XStack, H1, Paragraph, H3 } from '@hanzo/ui';
+import { SizableText, YStack, XStack, H1, Paragraph, H3, Slider } from '@hanzo/ui';
 // Canonical plans page. One subscription = shared AI usage across every Hanzo
 // app (builder, Hanzo Chat, the API at api.hanzo.ai). Monochrome design system:
 // Header + SiteFooter + Reveal, true-black, Geist. Honest feature lists — no
@@ -19,7 +19,7 @@ import Reveal from "@/components/landing/reveal";
 import FaqSection from "@/components/marketing/faq-section";
 import { billingFaq } from "@/components/marketing/faq-data";
 import { useUser } from "@/hooks/useUser";
-import { usePlans, usd } from "@/lib/plans";
+import { usePlans, usd, type Plan } from "@/lib/plans";
 import { goToCheckout } from "@/lib/pay";
 
 // Presentation only. Name, pitch, PRICE and features all come from commerce's
@@ -32,11 +32,28 @@ const GROUPS = {
 } as const;
 type GroupId = keyof typeof GROUPS;
 
+// The price a card is showing. A plan sold at one price shows it; a plan sold at
+// a chosen level shows the level the customer moved to.
+//
+// It is read HERE and nowhere else, so the number on the card, the number the
+// button hands to checkout and the level that reaches commerce are one answer
+// rather than three that have to be kept in step. The clamp is for the reading,
+// not the control: the slider cannot leave the ladder, and a price of `undefined`
+// would render as "$NaN".
+function priceAt(p: Plan, level: number): number {
+  if (p.prices.length === 0) return p.price;
+  return p.prices[Math.min(Math.max(level, 0), p.prices.length - 1)] ?? p.price;
+}
+
 // Honest, differentiated tiers. The differentiator is the size of the shared
 export default function PricingPage() {
   const analytics = useAnalytics();
   const { isAuthenticated, login } = useUser();
   const [group, setGroup] = useState<GroupId>("personal");
+  // Where each ladder-priced plan's control is sitting, by slug. Keyed by slug
+  // rather than held as one number because it belongs to a card, not to the page
+  // — two plans sold at a level would otherwise move together.
+  const [levels, setLevels] = useState<Record<string, number>>({});
 
   useEffect(() => {
     analytics.capture(EVENTS.PRICING_VIEWED);
@@ -53,8 +70,8 @@ export default function PricingPage() {
   // /billing — which is what it did on every single click, because that route
   // 503s without a webhook secret and the Commerce endpoint behind it (
   // /v1/checkout/charge) does not exist. Hence "the buttons do nothing".
-  const choosePlan = (planId: string) => {
-    analytics.capture(EVENTS.PLAN_CLICKED, { plan: planId });
+  const choosePlan = (planId: string, level: number) => {
+    analytics.capture(EVENTS.PLAN_CLICKED, { plan: planId, level });
     if (!isAuthenticated) {
       login("/pricing", { signup: true });
       return;
@@ -62,9 +79,14 @@ export default function PricingPage() {
     const priced = catalog.get(planId);
     // Refuse rather than guess: no catalog price ⇒ no checkout.
     if (!priced || priced.contactSales || priced.price <= 0) return;
+    // The level goes with the amount. Checkout re-derives the price from the
+    // level server-side, so the amount here is what the customer is shown and the
+    // level is what they are charged for — send one without the other and the two
+    // disagree.
     goToCheckout({
-      amountUsd: priced.price / 100,
+      amountUsd: priceAt(priced, level) / 100,
       plan: planId,
+      level,
       returnUrl: `${window.location.origin}/billing`,
     });
   };
@@ -148,6 +170,7 @@ export default function PricingPage() {
                       .filter((p): p is NonNullable<typeof p> => Boolean(p))
                       .map((p) => {
                         const highlighted = p.slug === GROUPS[group].highlight;
+                        const level = levels[p.slug] ?? 0;
                         return (
                           <YStack
                             key={p.slug}
@@ -169,7 +192,7 @@ export default function PricingPage() {
                             {/* Price straight from the catalog that will be charged. */}
                             <XStack marginTop="$4.5" alignItems="baseline" gap="$1.5">
                               <SizableText fontFamily="$mono" fontSize="$11" fontWeight="500" letterSpacing={-0.4}>
-                                {p.contactSales ? "Custom" : usd(p.price)}
+                                {p.contactSales ? "Custom" : usd(priceAt(p, level))}
                               </SizableText>
                               {!p.contactSales && (
                                 <SizableText fontSize="$3" color="$color11">
@@ -177,6 +200,28 @@ export default function PricingPage() {
                                 </SizableText>
                               )}
                             </XStack>
+
+                            {/* A plan sold at a chosen level gets the control that
+                                chooses it. One decision, and the price above is its
+                                only readout — a scale, a legend or a second number
+                                would each be another thing to read on a card whose
+                                job is to be read at a glance. Rendered off the
+                                catalog, so the tier that has a ladder is the tier
+                                that shows one. */}
+                            {p.prices.length > 1 && (
+                              <Slider
+                                value={[level]}
+                                onValueChange={([v]: number[]) =>
+                                  setLevels((s) => ({ ...s, [p.slug]: v }))
+                                }
+                                min={0}
+                                max={p.prices.length - 1}
+                                step={1}
+                                width="100%"
+                                marginTop="$4"
+                                aria-label={`${p.name} monthly price`}
+                              />
+                            )}
 
                             {p.contactSales ? (
                               <Link
@@ -187,7 +232,7 @@ export default function PricingPage() {
                               </XStack></Link>
                             ) : (
                               <Button
-                                onClick={() => choosePlan(p.slug)}
+                                onClick={() => choosePlan(p.slug, level)}
                                 disabled={isAuthenticated && catalogLoading}
                                 title={catalogError ?? undefined}
                                 variant={highlighted ? 'default' : 'outline'}

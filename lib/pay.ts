@@ -40,6 +40,17 @@ export interface CheckoutIntent {
    * subscription. Absent ⇒ a one-off top-up of `amountUsd`.
    */
   plan?: string;
+  /**
+   * Which of the plan's published prices was chosen — the INDEX into the
+   * catalog's `prices`, never an amount. 0 (the default) is the plan's base
+   * price and is not sent.
+   *
+   * It travels exactly as the seat count does, and for the same reason: it is a
+   * CHOICE, not money. commerce holds every price and refuses a level it did not
+   * publish, so a hand-edited `level` can only ever select a different published
+   * price — never invent one.
+   */
+  level?: number;
   /** Where pay returns the customer afterwards. Must be an allowlisted host. */
   returnUrl?: string;
 }
@@ -49,7 +60,7 @@ export interface CheckoutIntent {
  * non-finite amount: an ambiguous amount must refuse rather than send the
  * customer to a card form for an unknown sum.
  */
-export function checkoutUrl({ amountUsd, plan, returnUrl }: CheckoutIntent): string {
+export function checkoutUrl({ amountUsd, plan, level, returnUrl }: CheckoutIntent): string {
   if (!Number.isFinite(amountUsd) || amountUsd <= 0) {
     throw new RangeError(`checkout amount must be a positive dollar amount, got ${amountUsd}`);
   }
@@ -57,6 +68,12 @@ export function checkoutUrl({ amountUsd, plan, returnUrl }: CheckoutIntent): str
   const url = new URL('/confirm/card', PAY_ORIGIN);
   url.searchParams.set('amount', amountUsd.toFixed(2));
   if (plan) url.searchParams.set('plan', plan);
+  // Only a real choice is sent. Level 0 is the base price, which is what a
+  // missing level already means, so sending it would put a parameter on every
+  // checkout URL that changes nothing.
+  if (level !== undefined && Number.isInteger(level) && level > 0) {
+    url.searchParams.set('level', String(level));
+  }
   if (returnUrl) url.searchParams.set('returnUrl', returnUrl);
   return url.toString();
 }
