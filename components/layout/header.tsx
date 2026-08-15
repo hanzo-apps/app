@@ -101,6 +101,13 @@ export default function Header() {
   // to `theme="light"` so fill and label move together; naming a colour here
   // instead breaks the rule that a Button carries a variant or a recipe, and
   // re-spelling a foreground on a filled label is how a label goes invisible.
+  //
+  // It does NOT currently match the shell's own CTA in that row — measured at
+  // 1440, every other header item is 34px tall on the row's baseline and this
+  // one is 44, with a different radius, weight and fill. The answer is not a
+  // local restyle: the shell exports `cta()` for exactly this slot, and the
+  // canonical header that owns all of it is being built there. This waits for
+  // that version rather than growing a fifth spelling of one pill.
   const signedOutCTAs = (
     <PrimaryButton onClick={getStarted}>Get started</PrimaryButton>
   );
@@ -138,7 +145,16 @@ export default function Header() {
         { id: "help", label: "Help", href: "/help", glyph: "ring" as const, hint: "Answers, and how to reach us" },
       ],
     },
-    { id: "solutions", label: "Enterprise", href: "/enterprise" },
+    // "Business", not "Enterprise", on the same page: the word names WHO it is
+    // for rather than a procurement tier, which is what a reader is actually
+    // deciding when they look at this row.
+    { id: "business", label: "Business", href: "/enterprise" },
+    // Pricing is a row again, and it is THIS site's pricing. It had been folded
+    // into the Meet Hanzo menu and into a section of /features on the reasoning
+    // that a peer of "what the product does" it is not — but it is the second
+    // question every visitor has, and hanzo.app publishes its own page for it
+    // (the builder's plans, not the cloud's).
+    { id: "pricing", label: "Pricing", href: "/pricing" },
   ];
 
   // No primary action here: the create action lives in the page and in the
