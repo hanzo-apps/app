@@ -22,6 +22,7 @@ import 'server-only';
 import type { NextRequest } from 'next/server';
 
 import { session } from '@/lib/iam';
+import { cloudBase } from '@/lib/org/server';
 import type { GitProvider } from '@/lib/api/git';
 import {
   forgeConfigured,
@@ -56,11 +57,6 @@ interface Connector {
   account: string;
 }
 
-/** Cloud's API base — the same one every other BFF here forwards to. */
-function cloudApi(): string {
-  return trim(process.env.CLOUD_API_URL || process.env.HANZO_API_URL || 'https://api.hanzo.ai');
-}
-
 /**
  * Read the org's connector catalog as the signed-in user. Cloud derives the org
  * from the verified bearer, so a caller can only ever see their own org's
@@ -71,7 +67,7 @@ async function connectors(bearer: string): Promise<Map<string, Connector>> {
   const out = new Map<string, Connector>();
   let res: Response;
   try {
-    res = await fetch(`${cloudApi()}/v1/integrations`, {
+    res = await fetch(`${cloudBase()}/v1/integrations`, {
       headers: { Authorization: `Bearer ${bearer}`, Accept: 'application/json' },
       cache: 'no-store',
     });
@@ -343,7 +339,7 @@ async function cloudRepos(src: GitSource): Promise<GitRepo[] | null> {
   const route = CLOUD_REPOS[src.provider as OAuthProvider];
   let res: Response;
   try {
-    res = await fetch(`${cloudApi()}${route.path}`, {
+    res = await fetch(`${cloudBase()}${route.path}`, {
       headers: { Authorization: `Bearer ${src.bearer}`, Accept: 'application/json' },
       cache: 'no-store',
     });
