@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
 import { useIam, useIamIdentity, resolveIdentity } from "@hanzo/iam/react";
 
@@ -21,7 +20,6 @@ import { User } from "@/types";
  *   the SDK callback handler (kept for back-compat with the OAuth bridge).
  */
 export const useUser = () => {
-  const router = useRouter();
   const {
     user: rawIamUser,
     isAuthenticated,
@@ -113,13 +111,22 @@ export const useUser = () => {
     [completeLogin]
   );
 
+  /**
+   * Sign out — which is ending the session at hanzo.id as well as clearing this
+   * browser. The SDK's logout is both, and it finishes by NAVIGATING to the
+   * issuer's end-session endpoint, because that is the only way the issuer's
+   * `SameSite=Lax` cookie is ever presented to it.
+   *
+   * So nothing may navigate after it. Pushing a route and then reloading on a
+   * timer landed AFTER the issuer hop and superseded it: the session at
+   * hanzo.id survived, the next sign-in minted a code with no prompt, and the
+   * person was signed straight back in — signing out appeared to do nothing.
+   * Awaiting is the whole gesture; if the issuer cannot be reached the SDK has
+   * already cleared this machine and published it, and the UI follows from that.
+   */
   const logout = useCallback(async () => {
-    iamLogout();
-    router.push("/");
-    if (typeof window !== "undefined") {
-      setTimeout(() => window.location.reload(), 300);
-    }
-  }, [iamLogout, router]);
+    await iamLogout();
+  }, [iamLogout]);
 
   return {
     user,
