@@ -14,7 +14,7 @@
  *   enumerate() — targets come from the LIVE APIs, never a checked-in list, so
  *                 a demo that ships tomorrow is covered tomorrow:
  *                   GET /v1/catalog        (public, paginated) kind=site
- *                   GET /v1/sites          (X-Org-Id + bearer) status=live
+ *                   GET /v1/projects       (X-Org-Id + bearer) status=live
  *                   GET hanzo.app/templates → every /templates/<slug> detail
  *                 plus SURFACES below: the first-party product/marketing hosts,
  *                 which are NOT in the catalog (the catalog indexes lux/zoo
@@ -151,10 +151,14 @@ async function enumerate() {
   }
   for (const r of cat) if (r.kind === 'site' && r.url) add(r.name, r.url, 'site-demo', r.org || 'hanzo');
 
-  // /v1/sites: org-scoped, authed. Superset of the catalog in practice.
+  // /v1/projects: org-scoped, authed. Superset of the catalog in practice. This was
+  // GET /v1/sites, which cloud deleted: it read the SAME rows from the SAME table
+  // (ListProjects) under a second name, so the entity now answers at its own address.
+  // The project view is a strict superset of the old site view — the pretty URL is
+  // `liveUrl` and the live filter is the same `status`.
   if (TOKEN) {
-    const sites = await j(`${API}/v1/sites`, { 'X-Org-Id': ORG, Authorization: 'Bearer ' + TOKEN });
-    for (const s of sites) if (s.status === 'live' && s.url) add(s.slug, s.url, 'site-demo');
+    const projects = await j(`${API}/v1/projects`, { 'X-Org-Id': ORG, Authorization: 'Bearer ' + TOKEN });
+    for (const s of projects) if (s.status === 'live' && s.liveUrl) add(s.slug, s.liveUrl, 'site-demo');
   }
 
   // hanzo.app core pages + every template detail page it links
