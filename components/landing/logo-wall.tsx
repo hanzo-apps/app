@@ -27,7 +27,7 @@ const partners = [
 // One copy of the set. Rendered twice inside the track: the marquee scrolls by
 // exactly one copy's width, so the second lands where the first was and the seam
 // is invisible. The second copy is decorative — `aria-hidden`, empty alts — so a
-// screen reader hears each partner once, and desktop drops it entirely.
+// screen reader hears each partner once.
 function LogoRow({ dup = false }: { dup?: boolean }) {
   return (
     <XStack className="hz-logo-group" {...(dup ? { "aria-hidden": true } : {})}>
@@ -59,12 +59,13 @@ export default function LogoWall() {
           </Paragraph>
         </Reveal>
 
-        {/* ONE row. On desktop the nine marks fit under 1152 and center, static.
-            On a phone the row overflows — and a static overflow just clips (the
-            marks past the edge are a swipe nobody takes). So there it AUTO-scrolls
-            to the right: a seamless marquee of the duplicated set. Motion and
-            overflow are CSS's to own (`.hz-logo-*` in assets/globals.css); reduced
-            motion stops it and the row falls back to a static, swipeable strip. */}
+        {/* ONE row, ONE behaviour: the marks AUTO-scroll to the right at every
+            width — a seamless marquee of the duplicated set. Nine marks are
+            1987px wide and no container here is; a static row therefore just
+            clips, and clipping is what shipped from 768 up until it was
+            measured. Motion and overflow are CSS's to own (`.hz-logo-*` in
+            assets/globals.css); reduced motion stops it and the row falls back
+            to a static, swipeable strip. */}
         <YStack marginTop="$7" width="100%" className="hz-logo-marquee">
           <XStack className="hz-logo-track">
             <LogoRow />

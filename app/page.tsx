@@ -246,18 +246,26 @@ export default function LandingPage() {
               </Reveal>
 
               <Reveal delay={60}>
-                {/* 17px is the largest size that keeps the WHOLE sentence on one
-                    line at 390: measured, 358px of room and 17.5px renders 354 —
-                    so this is the fit with the slack a webfont's metrics need.
-                    At 30.4px it wrapped to three lines with "it." alone on the
-                    last. $sm and up are untouched, where the <br> below splits it
-                    into two deliberate lines. */}
-                <H1 fontSize={17} fontWeight="600" textAlign="center" lineHeight="1.05" letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: 48 }} $lg={{ textAlign: "left" }}>
-                  {/* The space is explicit: JSX drops the whitespace around the <br>,
-                      and the <br> is hidden below sm — without it the mobile heading
-                      reads "Describe your app.Hanzo builds and ships it." */}
+                {/* Two sentences, two lines, at every width — the <br> is the
+                    break, so nothing is left to chance and nothing is orphaned.
+                    It used to be hidden below sm, which forced the phone to hold
+                    the whole sentence on ONE line: 17px, the largest that fits
+                    358px, and a hero that read smaller than the 32px H2 three
+                    sections down. 30px is the largest that keeps the longer
+                    sentence unwrapped once it has a line of its own (measured at
+                    390: 365px of glyphs less 26 × 0.4px of tracking = 355 in 358
+                    of room). A phone is not ONE width, though: at 30px flat the
+                    same sentence wraps on a 360px screen and orphans "it." again,
+                    so the size is fluid. The longer sentence is 11.8em wide, the
+                    room is 100vw − 32px of padding, so 8.45vw − 2.7px is the
+                    exact fit and 7.9vw − 2.5px keeps 6% of slack for the metrics
+                    of a fallback face. */}
+                <H1 fontSize="clamp(22px, 7.9vw - 2.5px, 34px)" fontWeight="600" textAlign="center" lineHeight="1.05" letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: 48 }} $lg={{ textAlign: "left" }}>
+                  {/* The space is explicit: JSX drops the whitespace around the
+                      <br>, and it is what separates the sentences for a reader
+                      who gets the text without the line break. */}
                   Describe your app.{' '}
-                  <br className="break-sm" />
+                  <br />
                   Hanzo builds and ships it.
                 </H1>
               </Reveal>

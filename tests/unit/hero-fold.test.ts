@@ -23,11 +23,17 @@ describe("the hero is a sentence beside the product", () => {
     expect(landing).toContain("Describe your app.");
     expect(landing).toContain("Hanzo builds and ships it.");
     expect(landing).toContain("One prompt becomes a live app");
-    // The headline's break is CSS, not a second heading: `.break-sm` hides it
-    // below 640 so a phone reads one sentence. Delete the rule and the mobile
-    // heading silently becomes "Describe your app.Hanzo builds and ships it."
-    expect(landing).toContain('<br className="break-sm" />');
-    expect(css).toContain(".break-sm");
+    // The break is UNCONDITIONAL: two sentences, two lines, at every width.
+    // It used to be hidden below 640 by `.break-sm`, and that rule is what
+    // forced the phone to hold both sentences on one line — 17px, a hero
+    // smaller than the H2 three sections down. Re-adding a hider brings the
+    // tiny heading back with it, so the absence is the thing to guard.
+    expect(landing).toContain("<br />");
+    expect(landing).not.toContain("break-sm");
+    expect(css).not.toContain(".break-sm");
+    // And the size is fluid, because a phone is not ONE width: at any fixed
+    // size the longer sentence wraps on some screen and orphans "it.".
+    expect(landing).toMatch(/<H1 fontSize="clamp\([^"]+\)"/);
   });
 
   it("stands the two columns side by side only from $lg", () => {

@@ -152,8 +152,17 @@ function ResourcesBrowser() {
                   `{n} resources` — which JSX hands over as two children — stacks the
                   count above the word and the pill, sized for one line, crops the
                   second. Measured on /templates: clientHeight 24, scrollHeight 34,
-                  two block spans of 16px. One interpolated string is one child. */}
-              <Badge variant="secondary">{`${items.length} templates`}</Badge>
+                  two block spans of 16px. One interpolated string is one child.
+
+                  `alignSelf: center` because @hanzo/ui's Badge frame hard-codes
+                  `alignSelf: flex-start` to keep itself from stretching in a
+                  flex parent — which also overrides this row's alignItems and
+                  hangs the pill off the cap-height of the title like a
+                  superscript (measured: row centre 137, badge centre 113).
+                  Through `style`, since Badge is a plain <span>: a style PROP
+                  type-errors, and untyped it would reach the DOM as an
+                  attribute React drops. */}
+              <Badge variant="secondary" style={{ alignSelf: 'center' }}>{`${items.length} templates`}</Badge>
             </XStack>
             <Paragraph maxWidth={672} color="$color11">
               Start from a template to build your next project. Every template forks into the
@@ -188,7 +197,12 @@ function ResourcesBrowser() {
                 never had a reason to wrap and `overflow="scroll"` never had
                 anything to scroll: the box was never smaller than its content.
                 Letting it shrink is what turns both of those back on. */}
-            <XStack flexWrap="nowrap" alignItems="center" gap="$1.5" flexShrink={1} overflow="scroll" $sm={{ flexWrap: "wrap" }} className="no-scrollbar">
+            {/* `fade-end` dissolves the trailing 24px on a phone, where this is
+                a nowrap scroller with its scrollbar hidden: the row was sliced
+                mid-glyph at the right edge ("Portfolio" down to a bare "P")
+                with nothing to say there was more. Above $sm it wraps, nothing
+                overflows, and the mask is off. */}
+            <XStack flexWrap="nowrap" alignItems="center" gap="$1.5" flexShrink={1} overflow="scroll" $sm={{ flexWrap: "wrap" }} className="no-scrollbar fade-end">
               {categories.map((cat) => (
                 <Button
                   key={cat}
