@@ -54,7 +54,12 @@ function templateToResource(t: GalleryTemplate): ResourceItem {
     description: t.description || t.useCase || `${t.framework} template`,
     category: t.category,
     image: t.screenshotUrl,
-    hasImage: t.hasScreenshot,
+    // The URL is the fact; hasScreenshot is a second copy of it that can — and
+    // does — disagree. gallery.hanzo.ai currently serves every screenshot 200
+    // while stamping hasScreenshot:false on all 66 records, which is why the
+    // gallery drew a glyph for each one. Trust the URL. A dead URL still costs
+    // nothing: the card's onError hides the image and the tile falls back.
+    hasImage: Boolean(t.screenshotUrl),
     framework: t.framework,
     rating: t.rating,
     templateSlug: t.slug,
