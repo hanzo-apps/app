@@ -417,7 +417,13 @@ function ResourceCard({
           never below the words. */}
       <YStack flexGrow={1} flexBasis="auto" flexShrink={0} padding="$4">
         <H3 fontWeight="500" color="$color">{item.title}</H3>
-        <Paragraph marginTop="$1" numberOfLines={2} minHeight="2.5rem" fontSize="$1" color="$color11">{item.description}</Paragraph>
+        {/* `$3` is the base rung (14px), and this line is the card's SENTENCE —
+            the one that says what the template is. `$1` is 11px, the caption
+            rung the framework line below and the chips above are right to use;
+            on a phone it put body copy under the legibility floor on 100 cards
+            at once. The 2.5rem floor still holds two lines at this size, so no
+            card changes height. */}
+        <Paragraph marginTop="$1" numberOfLines={2} minHeight="2.5rem" fontSize="$3" color="$color11">{item.description}</Paragraph>
         {/* The picture is a promise, and for 43 of the 72 on this page the
             platform cannot keep it: it publishes no source for them, so opening
             one gets a fresh build from the description rather than the design in

@@ -271,11 +271,17 @@ export default function LandingPage() {
               </Reveal>
 
               <Reveal delay={120}>
-                {/* 12 on a phone, and the media queries are MIN-width, so that is the
-                    BASE and $md is the desktop branch. Written the other way round it
-                    reads as "small on phones" and does the exact opposite. $4 measured
-                    15px here, which wrapped the sentence to three lines at 390. */}
-                <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize={12} textAlign="center" color="$color11" $md={{ fontSize: "$6" }} $lg={{ alignSelf: "flex-start", textAlign: "left" }} lineHeight="1.5">
+                {/* The media queries are MIN-width, so the bare value is the PHONE
+                    branch and $md is the desktop one. Written the other way round it
+                    reads as "small on phones" and does the exact opposite.
+
+                    `$3` (14px) is the base rung and the legibility floor. This sat at
+                    12 to keep the sentence on two lines, which is the wrong thing to
+                    buy: the first sentence a visitor reads was the smallest text in
+                    the fold. Measured at 390 — 12px is 2 lines ending at y 291 in an
+                    844 viewport, so a third line spends 27 of the 553px still free
+                    below it. */}
+                <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$3" textAlign="center" color="$color11" $md={{ fontSize: "$6" }} $lg={{ alignSelf: "flex-start", textAlign: "left" }} lineHeight="1.5">
                   One prompt becomes a live app on Hanzo Cloud — UI, database,
                   auth, and 400+ AI models, wired in and deployed.
                 </Paragraph>

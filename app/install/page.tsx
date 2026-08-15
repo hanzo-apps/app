@@ -179,11 +179,16 @@ export default function AppsPage() {
               const apps = appCatalog.filter((a) => c.cats.includes(a.category));
               const on = active === i;
               return (
+                /* The dim on a panel you are not on is 0.62, the same contrast
+                   floor the walkthrough carries: a neighbouring panel is on
+                   screen through the whole pan, so it still has to be read. At
+                   0.4 the $color11 body text composited to 2.8:1 against this
+                   ground, well under AA's 4.5 — 0.62 measures 5.2. */
                 <YStack
                   key={c.label}
                   data-panel
                   aria-label={c.label}
-                  height="100vh" width="100vw" flexShrink={0} justifyContent="center" paddingHorizontal="$4" $md={{ paddingHorizontal: "$8" }} opacity={on ? 1 : 0.4} style={{ transition: "opacity 0.5s" }}
+                  height="100vh" width="100vw" flexShrink={0} justifyContent="center" paddingHorizontal="$4" $md={{ paddingHorizontal: "$8" }} opacity={on ? 1 : 0.62} style={{ transition: "opacity 0.5s" }}
                 >
                   <YStack alignSelf="center" width="100%" maxWidth={1152}>
                     <XStack marginBottom="$2" alignItems="baseline" gap="$3">
