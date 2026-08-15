@@ -11,8 +11,8 @@
  * of one arrangement, all wrong the same way, because the arrangement was
  * retyped instead of shared.
  *
- * Distinct from `components/layout/header-search.tsx`, which is the ⌘K palette
- * trigger — that one opens a switcher, this one filters a list in place.
+ * Distinct from the header's ⌘K control, which opens a switcher; this one
+ * filters a list in place.
  */
 import { Input } from '@hanzo/ui';
 import { YStack } from '@hanzo/ui';

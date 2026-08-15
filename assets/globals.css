@@ -2218,18 +2218,6 @@ html:root .hz-providers {
   }
 }
 
-/* No "+ New project" button in the marketing menu header (owner call).
-   The header is the shared @hanzogui/shell `HanzoHeader`, which REQUIRES
-   `surface.primaryCTA` and renders it through a `CTA` that reads `link.href`
-   UNGUARDED — so the app cannot drop the button by passing null, and the 8.x
-   shell is not locally shippable to add the guard. The header
-   (`[data-hanzo-shell]`) is the ONLY shell surface that links to /new (set in
-   `components/layout/header.tsx`), so this hides exactly that one CTA; /new is
-   still reached from the hero and the account menu. */
-[data-hanzo-shell] a[href="/new"] {
-  display: none !important;
-}
-
 /* "Meet Hanzo" sat 10px right of every row under it. The shell gives the mobile
    sheet's disclosure `padding: 0 22px` while the nav links below it get 12px, so
    the label started at 35px against their 25px and the one BOLD row in the menu
