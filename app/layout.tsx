@@ -6,6 +6,11 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import TanstackProvider from "@/components/providers/tanstack-query-provider";
+// The composer's material — the lit ring around the builder's prompt box. The
+// same package hanzo.ai and hanzo.chat draw, which is the point: it was copied
+// into all three stylesheets and the copies drifted. Loaded BEFORE globals.css
+// so this app's sheet is the one that can override it.
+import "@hanzo/composer/composer.css";
 import "@/assets/globals.css";
 // THE TOKEN LAYER AND THE MATERIAL, in one import. `@hanzo/ui/theme.css` is
 // @hanzo/design's whole sheet composed with this package's own remainder and

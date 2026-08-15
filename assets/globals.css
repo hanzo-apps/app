@@ -184,60 +184,6 @@ a {
   animation: threadShimmer 1.8s linear infinite;
 }
 
-/* ── Build-composer living gradient ──────────────────────────────────────────
-   A slow-drifting conic ring + soft glow on the "Ask Hanzo to build…" bubble,
-   ~10s loop. The composer is where you talk to Hanzo, so it is the thing that
-   should look alive — but it earns that with MOTION and LIGHT, not with hue.
-   There is no saturated exemption here: a violet ring, and later a full-wheel
-   rainbow, each made this the only colour on any Hanzo surface.
-
-   The stops are declared ONCE in --hz-spectrum and referenced by both the ring
-   and the glow. They were duplicated, which meant every palette change had to be
-   made twice and could silently drift apart.
-   Reduced-motion → the gradient holds a static frame (still lit, no drift).
-
-   Structure (see components/build-composer): a padded `.hz-composer` hosts the
-   conic ring (::before, fills the box) + the blurred glow (::after, extends past
-   the box); an opaque inner panel (`> *`, z-1) covers the center so only a
-   ~1.5px ring shows around it. `@property` lets the conic angle animate; where
-   it is unsupported the ring is simply static. */
-@property --hz-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-
-:root {
-  /* The one sweep, declared once and closing on the stop it opened with — a
-     conic gradient whose first and last stop differ shows a hard seam.
-     PRISMATIC by design (owner-directed): the chrome everywhere else stays
-     monochrome ninja-stealth, and the composer ring is the ONE deliberate
-     spectrum — the Apple-Intelligence iridescence (blue → violet → pink →
-     amber and home again), moderated so it glows instead of shouting. */
-  /* LUMINANCE, NOT HUE — and the same stops hanzo.chat declares, because the
-     note above is right that these two must not drift.
-
-     Four saturated stops at 0.40-0.48 alpha, swept around a rounded RECTANGLE,
-     do not distribute evenly: the long top and bottom edges each take a wide
-     angular slice and the short sides take almost none, so one edge wore a
-     bright pink while the opposite wore a dim blue. That reads as a ring that
-     highlights half the box and sits slightly off — and no amount of nudging
-     the geometry fixes it, because an uneven ring cannot look aligned.
-
-     White at two close alphas removes the bright arc entirely, drops the peak
-     from 0.48 to 0.18, and keeps the slow drift as a sheen. */
-  --hz-spectrum: rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.18),
-    rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.18),
-    rgba(255, 255, 255, 0.1);
-
-}
-
-@keyframes hzComposerSpin {
-  to {
-    --hz-angle: 360deg;
-  }
-}
-
 @keyframes hzComposerGlow {
   0%,
   100% {
@@ -246,29 +192,6 @@ a {
   50% {
     opacity: 0.8;
   }
-}
-
-.hz-composer {
-  position: relative;
-  isolation: isolate;
-  /* Equals the ring band below — two halves of one measurement. */
-  padding: 1px;
-}
-
-/* The composer's + and send are circles, not the library's rounded squares.
- * @hanzo/ui gives every Button `[data-variant][data-size]{ border-radius:
- * var(--control-radius) !important }` — specificity (0,3,0), so a Tamagui prop
- * or an inline style loses to it. This clears (0,3,0) by scoping the class under
- * `.hz-composer` → (0,3,1), the same `html:root`-for-weight trick the `.hz-dense`
- * block below uses, and carries the whole shape here rather than inline: a 36px
- * square (so width matches the row's height) with a radius past half of it. */
-html:root .hz-composer .hz-round {
-  width: 36px !important;
-  height: 36px !important;
-  min-width: 36px !important;
-  min-height: 36px !important;
-  padding: 0 !important;
-  border-radius: 9999px !important;
 }
 
 /* The composer grows with what you type; it is never dragged.
@@ -464,8 +387,17 @@ html:root .hz-shot {
   outline-offset: -1px;
 }
 
+/* Two knobs differ from @hanzo/composer's defaults. This composer is a
+   paragraph box with its controls in a row UNDERNEATH, so its corner is a
+   radius rather than a pill and its round controls are the row's full height —
+   30 is right for hanzo.ai, where they sit INSIDE a single line. The package
+   derives the halo's wider corner from the radius. */
+.hz-composer {
+  --hz-composer-radius: 1.5rem;
+  --hz-composer-control: 36px;
+}
+
 .hz-composer textarea {
-  resize: none;
   max-height: var(--hz-composer-max, 40vh);
   overflow-y: auto;
 }
@@ -499,94 +431,10 @@ html:root .hz-shot {
   }
 }
 
-/* The ring DRAWS A RING. It used to draw a filled DISC and rely on the panel
-   above it being opaque to cover the middle — which made the panel's opacity
-   load-bearing for something that was never about the panel. The moment the
-   composer became glass the whole spectrum washed up through it, and that is
-   exactly what happened here: the builder's composer is glass, and its interior
-   came out a blue-to-orange smear.
-
-   `padding` is the ring's own thickness; the two-layer mask keeps paint outside
-   it — `content-box` is the hole, the full box is the plate, `exclude` leaves
-   the lip. So the ring is a rim BY CONSTRUCTION and the panel is free to be any
-   material at all.
-
-   hanzo.chat fixed this and hanzo.app's copy never got it, which is the whole
-   argument for the two not being copies: the same class, declared twice, drifted
-   until one of them was simply wrong. */
-.hz-composer::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  padding: 1px;
-  /* Quiet at rest, lifts on attention: at full strength the spectrum reads as
-     a hard white edge, louder than the control it draws around. */
-  opacity: 0.5;
-  transition: opacity 200ms ease;
-  border-radius: inherit;
-  background: conic-gradient(from var(--hz-angle), var(--hz-spectrum));
-  animation: hzComposerSpin 10s linear infinite;
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  /* After the standard shorthand: WebKit aliases `mask` onto `-webkit-mask`, so
-     declaring this first lets the shorthand reset it to `source-over` — the
-     filled disc again, on exactly the browsers too old to have `mask-composite`
-     at all. */
-  -webkit-mask-composite: xor;
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* The glow is a HALO, masked like the ring so it lights the air around the box
-   and nothing behind it. The LOUD version — 0.5 resting, pulsing via
-   hzComposerGlow — was killed in chat on purpose: over an animated backdrop it
-   read as a purple wash. A fifth of the alpha, a tighter spread, and no opacity
-   pulse; only the same slow spin the ring runs, so the two stay in phase. */
-.hz-composer::after {
-  content: "";
-  position: absolute;
-  inset: -5px;
-  padding: 5px;
-  /* Concentric with the box, NOT `inherit`: the halo lives 6px outside the
-     composer, so an inherited corner on this larger box curves too tight and
-     reads as a second, mismatched rounding just outside the panel. */
-  border-radius: calc(1.5rem + 6px);
-  background: conic-gradient(from var(--hz-angle), var(--hz-spectrum));
-  filter: blur(14px);
-  opacity: 0.1;
-  transition: opacity 200ms ease;
-  animation: hzComposerSpin 10s linear infinite;
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  -webkit-mask-composite: xor;
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* Direct children (the inner panel) sit above the ring + glow. */
-.hz-composer > * {
-  position: relative;
-  z-index: 1;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .thread-shimmer-text {
     animation: none;
     color: rgba(255, 255, 255, 0.72);
-  }
-  .hz-composer::before,
-  .hz-composer::after {
-    animation: none;
   }
 }
 
@@ -2386,13 +2234,32 @@ html:root #hanzo-products-menu > div {
   pointer-events: none;
 }
 
-/* Attention lifts both ring layers together, so the control answers the
-   pointer without changing character. */
-.hz-composer:hover::before,
-.hz-composer:focus-within::before {
-  opacity: 0.8;
+/* ── A textarea in this app does not carry a drag grip ────────────────────────
+   Six call sites wrote `className="resize-none"` on an @hanzo/ui Textarea. This
+   app has no Tailwind — no `tailwindcss` dependency, no config, no `@tailwind`
+   directive — so that class matched no rule and every one of those fields WAS
+   resizable. A dead string is worse than no string: it reads as a decision that
+   has already been made.
+
+   It is stated once, against the component, rather than six times against the
+   call sites. Every one of these boxes either auto-grows with its content or
+   sits in a fixed pane, and a user-dragged height fights both — the grip offers
+   a control that immediately disagrees with the layout around it. Scoped to the
+   slot and not to the element, so a textarea this app does not own is untouched. */
+[data-slot="textarea"] {
+  resize: none;
 }
-.hz-composer:hover::after,
-.hz-composer:focus-within::after {
-  opacity: 0.16;
+
+/* ── A note the editor writes into the DOM by hand ────────────────────────────
+   Two forked copies of the multi-tab editor build an error line imperatively
+   (`div.className = …`), so there is no component to give props to. The string
+   they carried named five Tailwind utilities against an app with no Tailwind, so
+   the line rendered at body size in body colour with no icon gap — the one
+   moment a reader needs it to look like a notice. */
+.hz-note {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
 }
