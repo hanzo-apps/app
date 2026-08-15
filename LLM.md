@@ -560,12 +560,27 @@ The icon library needs no decision: both surfaces are already lucide (this app
 `@hanzogui/lucide-icons-2`), so parity here is a matter of picking the same
 NAMES, never of adding a dependency.
 
-### The release lane: two things that stop an image existing
+### The release lane: three things that stop an image existing
 
 `.hanzo/workflows/release.yml` builds **`Dockerfile.production`** (not the root
 `Dockerfile`, which nothing references, nor `docker/Dockerfile`, which is
 compose's), then moves the universe pin through `charts/app/pin.sh`.
 
+- **`tsc --noEmit` is the FIRST gate, and it stops everything behind it.**
+  `build-amd64` declares `needs: test`, so a type error cuts no image at all —
+  the build job reads `skipped`, not `failure`, and nothing in the run says
+  "deploy". Thirteen commits reached main that way over five hours —
+  `/features` and `/templates` among them — while the pin sat at v1.42.543 and
+  hanzo.app served none of them. The whole error was two lines in
+  `app/manifest.ts`: the manifest spec makes an icon's `purpose` a
+  space-separated set, so `"any maskable"` is valid there and is NOT valid in
+  Next's `MetadataRoute.Manifest`, which types it as one of
+  `'any' | 'maskable' | 'monochrome'`. Say it as two entries on the same src.
+  **Run `pnpm exec tsc --noEmit` before pushing** — it is ~40s locally and it is
+  the difference between a release and a fortnight of silence. Read the release
+  lane by JOB, never by run status: `test: success` beside `build-amd64:
+  skipped` is the signature, and a red run whose only red job is `test` has
+  shipped nothing.
 - **`patches/` must be copied with the manifest.** `package.json`'s
   `pnpm.patchedDependencies` names a file inside it and pnpm hashes that file
   during RESOLUTION, not at a later patch step. From `167cb522` (when the first
