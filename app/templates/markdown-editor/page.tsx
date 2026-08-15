@@ -250,7 +250,7 @@ Start writing your content above!
                 id="markdown-input"
                 value={markdown}
                 onChangeText={(t) => setMarkdown(t)}
-                minHeight="100%" padding="$5" borderWidth={0} fontFamily="$mono" fontSize="$3" className="resize-none"
+                minHeight="100%" padding="$5" borderWidth={0} fontFamily="$mono" fontSize="$3"
                 placeholder="Start writing in markdown..."
   />
             </ScrollArea>

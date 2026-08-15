@@ -355,6 +355,57 @@ export function withBase(html: string, url: string | null | undefined): string {
 }
 
 /**
+ * The contexts in which `<script>` is not a tag.
+ *
+ * HTML has five elements whose content is RAWTEXT or escapable RAWTEXT: inside
+ * one of them a `<` starts no element, and the ONLY thing that ends it is that
+ * element's own end tag. A document still streaming from the model ends inside
+ * one of these constantly — a half-written `<script>` is the common case.
+ */
+const RAWTEXT = ['script', 'style', 'textarea', 'title'] as const
+
+/**
+ * Close whatever the streamed document left open, so an appended tag is a tag.
+ *
+ * THIS IS THE BUG THE USER SAW. `withBridge` appends `<script>…</script>`, and
+ * when the stream ended inside the model's own `<script>`, our opening tag was
+ * text, our `</script>` closed THEIR script, and every line of the bridge after
+ * it — `xpathFor`, `infoFor`, the `preview:console` forwarder — was parsed as
+ * BODY TEXT and painted, in order, over the app being built. It reads as the
+ * preview dumping its own source, which is exactly what it was doing.
+ *
+ * A comment is the same shape and is closed the same way. Neither repair
+ * changes a finished document: a balanced one has nothing open to close.
+ */
+function seal(html: string): string {
+  let out = html
+
+  // A HALF-WRITTEN TAG FIRST, because the two repairs below both read tags and
+  // a tag that has not been closed is not one yet. A stream that stopped at
+  // `<div class="ca` leaves the tokenizer inside an attribute VALUE: it consumes
+  // until the next quote, so the bridge's first `"` ends the attribute and the
+  // rest of its source becomes attributes and then text. Close the quote if one
+  // is open, then close the tag.
+  const lt = out.lastIndexOf('<')
+  if (lt !== -1 && out.indexOf('>', lt) === -1) {
+    const frag = out.slice(lt)
+    for (const q of ['"', "'"]) if ((frag.split(q).length - 1) % 2 === 1) out += q
+    out += '>'
+  }
+
+  // An unterminated comment swallows every tag after it, ours included.
+  const open = out.lastIndexOf('<!--')
+  if (open !== -1 && out.indexOf('-->', open) === -1) out += '-->'
+
+  for (const tag of RAWTEXT) {
+    const starts = (out.match(new RegExp(`<${tag}[\\s>]`, 'gi')) || []).length
+    const ends = (out.match(new RegExp(`</${tag}\\s*>`, 'gi')) || []).length
+    for (let i = ends; i < starts; i++) out += `</${tag}>`
+  }
+  return out
+}
+
+/**
  * Put the bridge into a document that is about to be shown.
  *
  * Appended rather than prepended: a `srcDoc` is often mid-stream from the model
@@ -373,7 +424,7 @@ export function withBridge(html: string, siteUrl?: string | null): string {
   // this every site built before today would preview as unstyled markup, having
   // rendered correctly the day before. `rewrite` is idempotent, so a document
   // already pointing at us passes through untouched.
-  return `${withBase(rewrite(html), siteUrl)}<style>${BRIDGE_STYLES}</style><script>${BRIDGE_SCRIPT}</script>`;
+  return `${seal(withBase(rewrite(html), siteUrl))}<style>${BRIDGE_STYLES}</style><script>${BRIDGE_SCRIPT}</script>`;
 }
 
 /** True when a message is from our own frame and speaks this protocol. */

@@ -1,4 +1,3 @@
-import { cn } from '@/lib/utils';
 describe('Performance Benchmarks', () => {
   // Helper to measure function execution time
   const measurePerformance = <T>(
@@ -24,30 +23,6 @@ describe('Performance Benchmarks', () => {
   };
 
   describe('Utility Functions', () => {
-    test('cn function performance', () => {
-      const testCases = [
-        ['px-4', 'py-2', 'mt-4'],
-        ['bg-red-500', 'hover:bg-red-600', 'text-white'],
-        [{ 'px-4': true, 'py-2': false }, 'mt-4'],
-        ['base', undefined, null, 'active'],
-      ];
-
-      const results = testCases.map(testCase => {
-        const perf = measurePerformance(() => cn(...testCase), 10000);
-        return {
-          input: testCase,
-          ...perf,
-        };
-      });
-
-      results.forEach(result => {
-        // cn function should be very fast - under 0.1ms average
-        expect(result.averageTime).toBeLessThan(0.1);
-      });
-
-      console.log('cn function performance:', results);
-    });
-
     test('array operations performance', () => {
       const largeArray = Array.from({ length: 10000 }, (_, i) => ({
         id: i,

@@ -373,7 +373,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
         </XStack>
         <YStack marginTop="$2" rowGap="$2">
         {focusContext.domPath && (
-          <YStack className="break-all">
+          <YStack style={{ wordBreak: "break-all" }}>
             <SizableText fontSize="$1" fontFamily="$mono" color="$color11" lineHeight="1.375">{focusContext.domPath}</SizableText>
           </YStack>
         )}

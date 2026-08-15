@@ -54,8 +54,22 @@ function useProjectSlug(): string {
   return slug;
 }
 
-const linkClass =
-  "inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground";
+/** The link's shape, as props. It was a Tailwind class string against an app
+ *  with no Tailwind, so these two links rendered as bare underlined anchors —
+ *  no box, no padding, no hover ground. */
+const LINK = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "$1.5",
+  borderRadius: "$3",
+  paddingHorizontal: "$2",
+  paddingVertical: "$1.5",
+  fontSize: "$3",
+  fontWeight: "500",
+  color: "$color11",
+  textDecorationLine: "none",
+  hoverStyle: { backgroundColor: "$color3", color: "$color" },
+} as const;
 
 /** Compact "Chat" + "Console" links for the linked project, shown in the
  *  builder header only when the builder was opened for a project. */
@@ -69,7 +83,7 @@ export function CrossSurfaceLinks() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat about this project in hanzo.chat"
-        className={`${linkClass}`}
+        {...LINK}
       >
         <MessageSquare size={16} />
         <SizableText display="none" $lg={{ display: "inline" }}>Chat</SizableText>
@@ -79,7 +93,7 @@ export function CrossSurfaceLinks() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Manage this project in console.hanzo.ai"
-        className={`${linkClass}`}
+        {...LINK}
       >
         <LayoutGrid size={16} />
         <SizableText display="none" $lg={{ display: "inline" }}>Console</SizableText>

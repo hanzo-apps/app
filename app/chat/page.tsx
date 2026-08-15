@@ -566,7 +566,7 @@ export default function ChatPage() {
                   }}
                   placeholder="Message Hanzo…"
                   rows={1}
-                  minHeight={48} maxHeight={200} className="resize-none" paddingRight="$8" backgroundColor="$background" borderColor="$borderColor" color="$color" placeholderTextColor="$color11"
+                  minHeight={48} maxHeight={200} paddingRight="$8" backgroundColor="$background" borderColor="$borderColor" color="$color" placeholderTextColor="$color11"
                   data-testid="composer"
   />
                 {streaming ? (

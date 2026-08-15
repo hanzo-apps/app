@@ -41,7 +41,6 @@ import {
   Copy,
   Gift,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { accent, selected, glass, scrim } from '@/lib/chrome';
 import { OrgProvider } from '@/lib/org/client';
 import { OrgSwitcher } from '@/components/org-switcher';

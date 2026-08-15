@@ -217,7 +217,6 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                 }}
                 rows={2}
                 placeholder="e.g. rename the brand to Bean & Bloom and rewrite the hero copy…"
-                className="resize-none"
                 width="100%" backgroundColor="transparent" paddingHorizontal="$3.5" paddingVertical="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" borderWidth={0}
   />
             </YStack>

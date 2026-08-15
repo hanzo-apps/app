@@ -1,19 +1,20 @@
 "use client";
 
-import { XStack, YStack, H1, Paragraph, H3, Image } from '@hanzo/ui';
+import { XStack, YStack, H1, Paragraph, H3 } from '@hanzo/ui';
 import { useState, useEffect } from "react";
 import {
-  Sparkles,
   Zap,
   Github,
-  Upload,
+  GitBranch,
   FolderOpen,
   Brain,
   Palette,
   Database,
   Globe,
 } from "lucide-react";
-import { Button, Textarea, Card, Badge } from '@hanzo/ui';
+import { Button, Card, Badge } from '@hanzo/ui';
+import { BuildComposer } from '@/components/build-composer';
+import { TemplateThumb } from '@/components/template-thumb';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -28,6 +29,10 @@ import { isGitUrl } from "@/lib/git/url";
 function forkHref(t: GalleryTemplate) {
   return `/dev?template=hanzo-apps/${t.slug}&action=edit`;
 }
+
+/** The two hosts this screen offers by name. Every other remote still imports —
+ *  `isGitUrl` recognises any git host — these are just the two worth a row. */
+const LABEL = { github: "GitHub", gitlab: "GitLab" } as const;
 
 interface DevOnboardingProps {
   initialPrompt?: string;
@@ -58,7 +63,7 @@ const features = [
 ];
 
 export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingProps) {
-  const [prompt, setPrompt] = useState(initialPrompt);
+  // No local draft: BuildComposer owns the text it is holding.
   const router = useRouter();
 
   // Real "popular" templates from the gallery catalog. Seed from the bundled
@@ -98,14 +103,9 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
   // Import a real repository: collect the URL, then hand it to the shared /dev
   // import wire (repoImportLink → parseGitUrl / TemplateLoader / hanzo matcher).
   // Only a real URL navigates — an empty or cancelled prompt is a no-op.
-  const handleImportProject = (source: "github" | "hanzo") => {
-    const url = window.prompt(
-      source === "github"
-        ? "Paste a public GitHub repository URL"
-        : "Paste a Hanzo project URL",
-    )?.trim();
-    if (!url) return;
-    if (source === "github" && !isGitUrl(url)) return;
+  const handleImportProject = (source: "github" | "gitlab") => {
+    const url = window.prompt(`Paste a public ${LABEL[source]} repository URL`)?.trim();
+    if (!url || !isGitUrl(url)) return;
     router.push(repoImportLink(url));
   };
 
@@ -128,25 +128,22 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
 
           {/* Quick Start Options */}
           <YStack gap="$5" marginBottom="$6">
-            <Card backgroundColor="$background" borderColor="$borderColor" padding="$5">
-              <H3 fontSize="$6" fontWeight="500" color="$color" marginBottom="$4">
-                Describe it
-              </H3>
-              <Textarea
-                placeholder="An internal admin dashboard with logins and a table of orders"
-                backgroundColor="$color3" borderColor="$borderColor" color="$color" marginBottom="$4" minHeight={100}
-                value={prompt}
-                onChangeText={(t) => setPrompt(t)}
-  />
-              <Button
-                width="100%" gap="$2" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}
-                onClick={() => prompt && onComplete(prompt)}
-                disabled={!prompt.trim()}
-              >
-                <Sparkles size={16} />
-                Start building
-              </Button>
-            </Card>
+            {/* THE COMPOSER, and it is the one the landing and the dashboard
+                already use. This card used to be a Textarea and a "Start
+                building" button — a form, on the screen whose whole subject is a
+                conversation, and the sixth hand-rolled Enter handler in a repo
+                that documents the cost of the other five: none of them checked
+                `isComposing`, so an open IME candidate submitted the turn
+                instead of accepting the word. `BuildComposer` carries `sends()`
+                from @hanzo/ui/chat, the model picker, attachments and the
+                build/plan modes, so this screen gains all of them by asking for
+                the component rather than by growing a second one. */}
+            <BuildComposer
+              showPill={false}
+              subline={false}
+              autoFocus
+              onSubmit={(text) => text.trim() && onComplete(text)}
+            />
 
             <Card backgroundColor="$background" borderColor="$borderColor" padding="$5">
               <H3 fontSize="$6" fontWeight="500" color="$color" marginBottom="$4">
@@ -161,13 +158,23 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                   <Github size={16} />
                   Import from GitHub
                 </Button>
+                {/* GitLab, which was missing while the wire behind it already
+                    worked: `repoImportLink` takes any git remote and
+                    `parseGitUrl` already names gitlab as a provider, so the only
+                    thing absent was the row offering it.
+
+                    "Import from Hanzo" is gone rather than joined by it. A
+                    project on git.hanzo.ai is already IN the projects list —
+                    offering to import what you already have is a door onto the
+                    room you are standing in, and the prompt behind it asked for
+                    a URL nobody would have to type. */}
                 <Button
                   variant="outline"
                   width="100%" justifyContent="flex-start" gap="$2"
-                  onClick={() => handleImportProject("hanzo")}
+                  onClick={() => handleImportProject("gitlab")}
                 >
-                  <Upload size={16} />
-                  Import from Hanzo
+                  <GitBranch size={16} />
+                  Import from GitLab
                 </Button>
                 <Button
                   variant="outline"
@@ -218,16 +225,24 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                   cursor="pointer" flexDirection="column" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" group className="zoom-scope" hoverStyle={{ borderColor: "$color", y: "$-0.5" }}
                 >
                   <YStack position="relative" overflow="hidden" aspectRatio={16 / 10} backgroundColor="$background">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <Image
-                      src={template.screenshotUrl}
-                      alt={`${template.displayName} preview`}
-                      loading="lazy"
-                      width="100%" height="100%" objectFit="cover" objectPosition="top" className="zoom-target"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).style.display = "none";
-                      }}
-  />
+                    {/* `TemplateThumb`, which is the ONE component that answers
+                        "what does this template look like". This card asked a
+                        host we do not own instead — `template.screenshotUrl` —
+                        and then hid the failure: `onError` set display:none, so
+                        a broken image became a silent blank rectangle that reads
+                        as a dark design rather than a defect. Measured on
+                        /templates before it was converted: 0 of 66 loaded.
+                        /dev was simply never converted with it.
+
+                        The thumb is self-hosted first (`/templates/<slug>.webp`)
+                        and falls through to the drawn `TemplateSchematic`, so
+                        the tile is always a picture of an app and never a hole. */}
+                    <TemplateThumb
+                      slug={template.slug}
+                      name={template.displayName}
+                      category={template.category}
+                      className="zoom-target"
+                    />
                     <YStack position="absolute" top="$1.5" right="$1.5">
                       <Badge variant="tags">{template.category}</Badge>
                     </YStack>

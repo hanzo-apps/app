@@ -54,7 +54,17 @@ export type Build = {
   verify: string;
 };
 
-const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground";
+/** The eyebrow, as props. It was a Tailwind class string, and this app has no
+ *  Tailwind — no dependency, no config, no directive — so all five utilities
+ *  matched nothing and every "eyebrow" rendered as ordinary body copy. Spread it
+ *  rather than name a class: these are five values the token layer already has. */
+const EYEBROW = {
+  fontFamily: "$mono",
+  fontSize: "$1",
+  textTransform: "uppercase",
+  letterSpacing: 2.2,
+  color: "$color11",
+} as const;
 
 // A turn's body is MARKDOWN — the agent writes it, so it arrives with headings,
 // emphasis, code fences and lists. It goes through the app's one renderer at its
@@ -130,7 +140,7 @@ export function BuildTranscript({ build }: { build: Build }) {
 
             {/* The claim and how to check it, side by side. */}
             <YStack marginTop="$6" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$4">
-              <Paragraph className={`${EYEBROW}`}>Verify</Paragraph>
+              <Paragraph {...EYEBROW}>Verify</Paragraph>
               <Paragraph marginTop="$2" fontSize="$3" lineHeight="1.625" color="$color11">
                 Every commit below is bound to its turn by a git trailer or note on the
                 commit itself — not by a table on our side. Re-derive all of them:
@@ -201,7 +211,7 @@ export function BuildTranscript({ build }: { build: Build }) {
                         </XStack>
                         {cmd ? (
                           <>
-                            <Paragraph marginTop="$3" className={`${EYEBROW}`}>Fork from here</Paragraph>
+                            <Paragraph marginTop="$3" {...EYEBROW}>Fork from here</Paragraph>
                             <SizableText marginTop="$1.5" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$2.5" fontFamily="$mono" fontSize="$1" color="$color11" overflow="scroll" whiteSpace="pre">
                               {cmd}
                             </SizableText>

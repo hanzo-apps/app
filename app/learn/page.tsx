@@ -180,7 +180,7 @@ export default function LearnPage() {
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
                 variant={selectedCategory === cat ? "default" : "outline"}
-                paddingHorizontal="$4" paddingVertical="$2" borderRadius="$6" className="whitespace-nowrap"
+                paddingHorizontal="$4" paddingVertical="$2" borderRadius="$6" style={{ whiteSpace: "nowrap" }}
               >
                 {cat}
               </Button>

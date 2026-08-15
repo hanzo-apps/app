@@ -234,7 +234,7 @@ export function ProjectCard({
                         if (e.key === 'Escape') cancelEdit();
                       }}
                       placeholder="What this project is for"
-                      minHeight={60} fontSize="$3" className="resize-none"
+                      minHeight={60} fontSize="$3"
                       maxLength={200}
   />
                     <SizableText fontSize="$1" color="$color11">{editedDescription.length}/200</SizableText>
@@ -544,7 +544,7 @@ export function ProjectCard({
                 if (e.key === 'Escape') cancelEdit();
               }}
               placeholder="What this project is for"
-              minHeight={60} fontSize="$3" className="resize-none"
+              minHeight={60} fontSize="$3"
               maxLength={200}
   />
             <XStack alignItems="center" justifyContent="space-between" marginTop="$1">

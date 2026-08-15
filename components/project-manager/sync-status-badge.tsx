@@ -79,7 +79,7 @@ export function SyncStatusBadge({ status, showLabel = true, className }: SyncSta
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Badge variant="outline" className={['cursor-help', className].filter(Boolean).join(' ')}>
+        <Badge variant="outline" style={{ cursor: "help" }} className={className}>
           <Icon size={14} className={status === 'syncing' ? 'spin' : undefined} />
           {showLabel && config.label}
         </Badge>

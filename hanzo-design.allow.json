@@ -1,0 +1,12 @@
+{
+  "_": "What this surface still owes the design system, per hanzo-design-lint rule. It may only SHRINK — a fix deletes its own exemption in the same commit, and a violation written today fails the build. `pnpm lint:design` is the gate; @hanzo/design's LLM.md documents the four layers (values→design, structure→gui, chrome→shell, components→ui) and every rule.",
+  "_zero": "local-token-table, second-publisher, raw-font-size, icon-set and wrong-package are absent, which means ZERO. The two that mattered were closed by the paper commit: there is no local createGui table, and @hanzo/brand no longer publishes over @hanzo/design.",
+  "_backlog": "raw-color is overwhelmingly the generated-site skills and prompt decks — copy that TEACHES a model to write CSS, which is data and not chrome — plus the code editor's own syntax palette. unresolved-token names custom properties nothing declares (the landing's `caret`/`rise`/`wt-*` family is the visible half). shell-owned-chrome is four local surfaces that should compose @hanzogui/shell instead.",
+  "unresolved-token": 96,
+  "raw-color": 1182,
+  "raw-z-index": 68,
+  "all-caps": 1,
+  "inline-style": 6,
+  "redeclared-token": 15,
+  "shell-owned-chrome": 4
+}

@@ -490,7 +490,7 @@ export function Console({
                   {entry.source === "you" ? "$" : entry.source === "sandbox" ? "›" : "·"}
                 </SizableText>
                 <Paragraph
-                  className="break-words"
+                  style={{ wordBreak: "break-word" }}
                   flex={1}
                   fontFamily="$mono" fontSize="$1" lineHeight="1.625"
                   whiteSpace="pre-wrap" {...{ color: entry.level === "error" ? "var(--destructive)" : entry.level === "warn" || entry.source === "you"

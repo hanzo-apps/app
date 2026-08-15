@@ -696,7 +696,15 @@ export const AppEditor = ({
                 }
               }}
   />
-            {rightView === "preview" && (
+            {/* THERE HAS TO BE SOMETHING TO EDIT, AND NOBODY MID-SENTENCE.
+                This mounted on `rightView === "preview"` alone, so its floating
+                control sat over an EMPTY stage before a single page existed and
+                stayed there through the whole generation — a tool offered for a
+                document that is still being written, over the one thing the
+                person is actually watching. Both conditions are the same fact
+                said twice from different sides: a page exists, and it is not
+                changing under you. */}
+            {rightView === "preview" && !isAiWorking && !!currentPageData?.html && (
               <VisualEditor
                 iframeRef={iframeRef}
                 editorRef={editorRef}

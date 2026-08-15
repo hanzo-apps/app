@@ -12,7 +12,6 @@ import { toast, Button } from '@hanzo/ui';
 import { Maximize2, Minimize2 } from "lucide-react";
 import { useThrottleFn } from "react-use";
 
-import { cn } from "@/lib/utils";
 import { GridPattern } from "@/components/magic-ui/grid-pattern";
 import { htmlTagToText } from "@/lib/html-tag-to-text";
 import { isTheSameHtml } from "@/lib/compare-html-diff";

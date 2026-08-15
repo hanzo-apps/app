@@ -49,6 +49,21 @@ jobs:
         run: pnpm exec tsc --noEmit
       - name: Unit + integration + security suites (jest)
         run: pnpm test
+      # ONE design system, and this is what keeps it one. `hanzo-design-lint`
+      # ships in @hanzo/design and every Hanzo surface runs the same twelve
+      # rules: eight about writing a VALUE that should have been a token, and
+      # four about OWNING a layer that should have been imported — a second
+      # `createGui` table, a second publisher of a name design declares, a local
+      # header or search control. The layers are values→@hanzo/design,
+      # structure→@hanzo/gui, chrome→@hanzogui/shell, components→@hanzo/ui; a
+      # surface holds data and layout and nothing else.
+      #
+      # `hanzo-design.allow.json` is the ratchet: what this app still owes per
+      # rule, shrinking only. A violation written today fails here. A count UNDER
+      # its allowance fails too, so a fix deletes its own exemption in the same
+      # commit rather than leaving room for the next author to regress into.
+      - name: One design system (ratchet — hanzo-design.allow.json)
+        run: pnpm lint:design
 
   build-amd64:
     needs: test
