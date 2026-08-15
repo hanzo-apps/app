@@ -2,34 +2,28 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 /**
- * The most action-oriented control on the marketing page must start something.
+ * This header carries no primary action, and it has to say so.
  *
  * `@hanzogui/shell`'s registry describes hanzo.app from the OUTSIDE, so its
  * `primaryCTA` href is `U.app` — this site's own root. Everywhere else that is a
- * link TO the builder; here it is a self-link, and "+ New project" reloaded the
- * marketing page. Measured on production HTML before the fix:
- * `<a href="https://hanzo.app" …>+ New project</a>`.
- *
- * The header already overrides `localNav` for exactly this reason. This asserts
- * the CTA is overridden too, and that the target is a LOCAL route — an absolute
- * hanzo.app URL is how the bug looked in the first place.
+ * link TO the builder; here it is a self-link, so the most action-oriented
+ * control on the page reloaded the marketing page. Inheriting it is the failure
+ * this asserts against, and passing `undefined` is what refuses it: creating
+ * lives in the page and in the account menu.
  */
 const header = readFileSync(join(process.cwd(), 'components/layout/header.tsx'), 'utf8');
+const surface = header.match(/surface=\{\{[^}]*\}\}/)?.[0] ?? '';
 
 describe('header primary CTA', () => {
   it('is overridden rather than inherited from the shared registry', () => {
-    expect(header).toMatch(/surface=\{\{[^}]*primaryCTA/);
+    expect(surface).toMatch(/primaryCTA/);
   });
 
-  it('targets a local route, never this site by absolute URL', () => {
-    const cta = header.match(/const primaryCTA = \{[^}]*\}/)?.[0] ?? '';
-    expect(cta).not.toBe('');
+  it('is none — a header with no primary action renders none', () => {
+    expect(surface).toMatch(/primaryCTA:\s*undefined/);
+  });
 
-    const href = cta.match(/href:\s*"([^"]*)"/)?.[1];
-    expect(href).toBeDefined();
-    expect(href!.startsWith('/')).toBe(true);
-    expect(href).not.toMatch(/hanzo\.app/);
-    // "/" is the self-link this exists to prevent.
-    expect(href).not.toBe('/');
+  it('links nowhere by absolute URL, which is how the self-link looked', () => {
+    expect(header).not.toMatch(/href:\s*"https:\/\/hanzo\.app"/);
   });
 });

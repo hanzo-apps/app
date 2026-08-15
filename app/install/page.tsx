@@ -44,23 +44,30 @@ function AppCell({ app }: { app: AppEntry }) {
       aria-label={actionName(app)}
       group
     >
-      <XStack alignItems="center" gap="$2.5">
-        <Icon
-          size={24}
-          strokeWidth={1.5}
-          aria-hidden
-  />
-        <SizableText fontSize="$6" fontWeight="600" letterSpacing={-0.4} color="$color" $group-hover={{ textDecorationLine: "underline" }} $md={{ fontSize: "$7" }}>
-          {app.name}
-        </SizableText>
-      </XStack>
-      <Paragraph marginTop="$4" maxWidth="30ch" fontSize="$4" lineHeight="1.625" color="$color11">
-        {app.blurb}
-      </Paragraph>
-      <SizableText marginTop="$4" fontSize="$3" fontWeight="500" color="$color11" $group-hover={{ color: "$color" }}>
-        {ACTION_LABEL[app.action]}
-        <ArrowUpRight size={14} aria-hidden />
-      </SizableText>
+      {/* Paragraph and SizableText are TEXT primitives and render INLINE, so the
+          blurb and the action verb run together on one line and the arrow wraps
+          off the end. Only a flex column stacks them — see CLAUDE.md. */}
+      <YStack>
+        <XStack alignItems="center" gap="$2.5">
+          <Icon
+            size={24}
+            strokeWidth={1.5}
+            aria-hidden
+          />
+          <SizableText fontSize="$6" fontWeight="600" letterSpacing={-0.4} color="$color" $group-hover={{ textDecorationLine: "underline" }} $md={{ fontSize: "$7" }}>
+            {app.name}
+          </SizableText>
+        </XStack>
+        <Paragraph marginTop="$4" maxWidth="30ch" fontSize="$4" lineHeight="1.625" color="$color11">
+          {app.blurb}
+        </Paragraph>
+        <XStack marginTop="$4" alignItems="center" gap="$1.5">
+          <SizableText fontSize="$3" fontWeight="500" color="$color11" $group-hover={{ color: "$color" }}>
+            {ACTION_LABEL[app.action]}
+          </SizableText>
+          <ArrowUpRight size={14} aria-hidden />
+        </XStack>
+      </YStack>
     </Anchor>
   );
 }
