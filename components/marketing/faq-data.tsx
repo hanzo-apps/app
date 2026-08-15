@@ -34,15 +34,20 @@ export const billingFaq: QA[] = [
     ),
   },
   {
-    q: "What is the difference between Pro, Team, and Max?",
+    q: "What is the difference between the plans?",
     a: (
       <>
         They are the same product with a larger monthly shared-usage allowance
-        as you go up: <SizableText color="$color">Pro ($20)</SizableText> for
-        individuals, <SizableText color="$color">Team ($100)</SizableText> adds an
-        organization with multiple seats and shared billing, and{" "}
-        <SizableText color="$color">Max ($200)</SizableText> gives your org the
-        largest allowance with priority support.
+        as you go up. <SizableText color="$color">Go</SizableText>,{" "}
+        <SizableText color="$color">Dev</SizableText>,{" "}
+        <SizableText color="$color">Pro</SizableText> and{" "}
+        <SizableText color="$color">Max</SizableText> are for one person.{" "}
+        <SizableText color="$color">Team</SizableText> adds an organization with
+        multiple seats and shared billing, and Enterprise is a conversation.{" "}
+        <Link href="/pricing"><SizableText color="$color" textDecorationLine="underline" hoverStyle={{ color: "$color" }}>
+          See the current prices
+        </SizableText></Link>, which come from the billing catalog rather than
+        from this page.
       </>
     ),
   },
