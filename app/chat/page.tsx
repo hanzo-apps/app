@@ -9,6 +9,12 @@
  * /v1/chat/conversations BFF (NOT a local store), zen-only model picker,
  * markdown rendering, stop + regenerate. No simulated responses — a signed-out
  * visitor gets an honest sign-in prompt.
+ *
+ * When the paid route cannot serve — an overdrawn balance or every paid
+ * provider refusing — the turn is offered on Enso Free rather than dropped.
+ * Free shares data, so it is served only after the reader agrees to that once
+ * (@hanzo/ai owns the predicate, the words and the consent record; this page
+ * renders them).
  */
 import { XStack, YStack, Paragraph, SizableText, H1 } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
@@ -24,7 +30,26 @@ import {
 } from 'lucide-react';
 
 import {
+  FREE_MODEL,
+  FREE_MODEL_LABEL,
+  dataCollected,
+  freeCopy,
+  grantConsent,
+  hasConsent,
+  isFree,
+  paidUnavailable,
+  servedByFallback,
+} from '@hanzo/ai';
+// `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it.
+import { Anchor } from '@hanzo/gui';
+import {
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   Input,
   ScrollArea,
   Select,
@@ -95,6 +120,12 @@ export default function ChatPage() {
   const [streaming, setStreaming] = useState(false);
   const [signedOut, setSignedOut] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  // A paid outage takes two shapes and both offer Free: `switch` when the turn
+  // was refused and Free would answer it, `keep` when the gateway already
+  // answered it on Free. `consenting` is the one-time data-sharing agreement
+  // Free is served under.
+  const [offer, setOffer] = useState<'switch' | 'keep' | null>(null);
+  const [consenting, setConsenting] = useState(false);
   // SSR-stable default (closed); opens on mount at lg+ — reading matchMedia in
   // the initializer would render server/client differently and break hydration.
   const [railOpen, setRailOpen] = useState(false);
@@ -104,11 +135,26 @@ export default function ChatPage() {
   const abortRef = useRef<AbortController | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  // The turn the paid route refused, held so Free can replay it verbatim.
+  const pendingRef = useRef<{ history: Message[]; convId: string | null } | null>(null);
 
-  // Keep the selected model valid once the live zen list lands.
+  // The model this page serves on: a remembered free switch wins, and otherwise
+  // a selection the live house list does not carry is corrected onto it. Free
+  // is chosen deliberately, so it is never corrected away.
   useEffect(() => {
-    if (models.length && !models.some((m) => m.value === model)) setModel(models[0].value);
+    if (isFree(model)) return;
+    const saved = window.localStorage.getItem('model');
+    const stale = models.length > 0 && !models.some((m) => m.value === model);
+    const next = saved && isFree(saved) ? saved : stale ? models[0].value : model;
+    if (next !== model) setModel(next);
   }, [models, model]);
+
+  /** Select a model. Free is remembered, a paid pick forgets it. */
+  const pick = useCallback((id: string) => {
+    setModel(id);
+    if (isFree(id)) window.localStorage.setItem('model', id);
+    else window.localStorage.removeItem('model');
+  }, []);
 
   // Conversation list from cloud (via the BFF). 401 → honest signed-out state.
   useEffect(() => {
@@ -134,6 +180,7 @@ export default function ChatPage() {
   const openConversation = useCallback((id: string) => {
     setActiveId(id);
     setNotice(null);
+    setOffer(null);
     api<{ messages: Message[] }>(`/v1/chat/conversations/${encodeURIComponent(id)}`)
       .then((b) => setMessages(b.messages))
       .catch(() => setNotice('That conversation would not load. Pick it again, or start a new chat.'));
@@ -147,6 +194,7 @@ export default function ChatPage() {
     setActiveId(null);
     setMessages([]);
     setNotice(null);
+    setOffer(null);
   }, []);
 
   /** Persist one turn to the cloud log; history failures never break the stream. */
@@ -159,20 +207,29 @@ export default function ChatPage() {
     }).catch(() => {});
   }, []);
 
-  /** Stream a completion for `history` and append the assistant turn. */
+  /**
+   * Stream a completion for `history` on model `id` and append the assistant
+   * turn. `id` is a parameter, not the state read, so a switch can serve the
+   * next turn immediately instead of waiting a render for the state to land.
+   */
   const complete = useCallback(
-    async (history: Message[], convId: string | null) => {
+    async (history: Message[], convId: string | null, id: string = model) => {
       setStreaming(true);
       setNotice(null);
-      setMessages([...history, { role: 'assistant', content: '', model, streaming: true }]);
+      setOffer(null);
+      pendingRef.current = null;
+      setMessages([...history, { role: 'assistant', content: '', model: id, streaming: true }]);
 
       const controller = new AbortController();
       abortRef.current = controller;
       let text = '';
+      // What is answering. The turn is labelled with this, so a reply the
+      // gateway moved to another model is not signed with the one asked for.
+      let serving = id;
       const paint = (streamingNow: boolean, error = false) =>
         setMessages([
           ...history,
-          { role: 'assistant', content: text, model, streaming: streamingNow, error },
+          { role: 'assistant', content: text, model: serving, streaming: streamingNow, error },
         ]);
 
       try {
@@ -181,38 +238,47 @@ export default function ChatPage() {
           credentials: 'same-origin',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            model,
+            model: id,
             messages: history.map(({ role, content }) => ({ role, content })),
           }),
           signal: controller.signal,
         });
         if (!res.ok || !res.body) {
           const body = await res.json().catch(() => ({}) as { message?: string });
+          setMessages(history);
           if (res.status === 401) {
             setSignedOut(true);
-            setMessages(history);
+          } else if (paidUnavailable({ status: res.status, ...body })) {
+            // The family has no free route of its own, so the outage is a hard
+            // refusal. Keep the turn: a reader who takes Free loses nothing.
+            pendingRef.current = { history, convId };
+            setOffer('switch');
           } else {
-            text = '';
-            setNotice(
-              res.status === 402
-                ? body.message || "You have used this month's allowance. Change plan from Billing to keep going."
-                : body.message || 'The model did not answer. Send the message again.',
-            );
-            setMessages(history);
+            setNotice(body.message || 'The model did not answer. Send the message again.');
           }
           return;
         }
-        await readSseDeltas(res.body, (delta) => {
+        serving = (await readSseDeltas(res.body, (delta) => {
           text += delta;
           paint(true);
-        });
+        })) || id;
         paint(false);
-        if (convId && text) persist(convId, { role: 'assistant', content: text, model });
+        if (convId && text) persist(convId, { role: 'assistant', content: text, model: serving });
+        // The other shape of the outage: a 200 the gateway moved to Free. Said
+        // only when the gateway says it — the data-collection header it sets on
+        // a data-shared reply, or a served id that is itself a free route. A
+        // served id that merely differs is the gateway naming a model
+        // canonically, and calling a private turn shared would be a lie. It is
+        // also news only to a reader who asked for a paid model.
+        const onFree =
+          dataCollected(res.headers) ||
+          (servedByFallback(id, { model: serving }) && isFree(serving));
+        if (onFree && !isFree(id)) setOffer('keep');
       } catch (err) {
         if ((err as Error).name === 'AbortError') {
           // Stopped by the user — keep the partial turn, honestly persisted.
           paint(false);
-          if (convId && text) persist(convId, { role: 'assistant', content: text, model });
+          if (convId && text) persist(convId, { role: 'assistant', content: text, model: serving });
         } else {
           paint(false, true);
           setNotice('The stream was interrupted.');
@@ -224,6 +290,21 @@ export default function ChatPage() {
     },
     [model, persist],
   );
+
+  /** Take the offer: serve on Free, replaying the refused turn if one is held. */
+  const goFree = useCallback(() => {
+    pick(FREE_MODEL);
+    const turn = pendingRef.current;
+    pendingRef.current = null;
+    if (turn) void complete(turn.history, turn.convId, FREE_MODEL);
+    else setOffer(null);
+  }, [pick, complete]);
+
+  /** Free is data-shared, so the first switch asks; later ones go straight. */
+  const switchFree = useCallback(() => {
+    if (hasConsent(window.localStorage)) goFree();
+    else setConsenting(true);
+  }, [goFree]);
 
   const send = useCallback(async () => {
     const content = input.trim();
@@ -265,6 +346,14 @@ export default function ChatPage() {
   const filtered = conversations.filter((c) =>
     c.title.toLowerCase().includes(search.toLowerCase()),
   );
+
+  // What the picker offers: the house families, plus Free while Free is what is
+  // serving — so the trigger can name it and a paid model stays one pick away.
+  const picker = isFree(model)
+    ? [...models, { value: FREE_MODEL, label: FREE_MODEL_LABEL }]
+    : models.length
+      ? models
+      : [{ value: CHAT_DEFAULT, label: 'Zen 5' }];
 
   return (
     <AppShell currentView="chat">
@@ -337,15 +426,17 @@ export default function ChatPage() {
                 <PanelLeft size={16} />
               </SizableText>
             </Button>
-            <Select value={model} onValueChange={setModel}>
+            <Select value={model} onValueChange={pick}>
               <SelectTrigger
                 width={160} minWidth={0} backgroundColor="$background" borderColor="$borderColor"
                 data-testid="model-picker"
               >
-                <SelectValue />
+                {/* Named from the list itself, so the trigger and the options
+                    cannot disagree about what is serving. */}
+                <SelectValue>{picker.find((m) => m.value === model)?.label ?? model}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {(models.length ? models : [{ value: CHAT_DEFAULT, label: 'Zen 5' }]).map((m) => (
+                {picker.map((m) => (
                   <SelectItem key={m.value} value={m.value}>
                     {m.label}
                   </SelectItem>
@@ -378,6 +469,31 @@ export default function ChatPage() {
                   <Paragraph fontSize="$3" color="$color11">{notice}</Paragraph>
                 </YStack>
               )}
+              {offer && (
+                <YStack
+                  marginBottom="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4"
+                  data-testid="free-offer"
+                >
+                  {offer === 'switch' ? (
+                    <>
+                      <Paragraph fontSize="$3" color="$color">{freeCopy.paidTitle}</Paragraph>
+                      <Paragraph marginTop="$1" fontSize="$3" color="$color11">{freeCopy.paidBody}</Paragraph>
+                    </>
+                  ) : (
+                    <Paragraph fontSize="$3" color="$color11">{freeCopy.fallbackBody}</Paragraph>
+                  )}
+                  <XStack marginTop="$3" gap="$2">
+                    {/* Staying on Free is the reader's call, never automatic —
+                        it is data-shared, and nobody can opt in for them. */}
+                    <Button {...accent} size="sm" onClick={switchFree} data-testid="free-switch">
+                      {offer === 'switch' ? freeCopy.switchCta : freeCopy.keepCta}
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => setOffer(null)} data-testid="free-dismiss">
+                      {freeCopy.dismissCta}
+                    </Button>
+                  </XStack>
+                </YStack>
+              )}
               {!messages.length && !signedOut && (
                 <YStack alignItems="center" justifyContent="center" paddingVertical={96}>
                   <H1 fontSize="$8" fontWeight="500" color="$color" textAlign="center">What can I help with?</H1>
@@ -400,7 +516,9 @@ export default function ChatPage() {
                       <XStack alignItems="center" gap="$2" paddingBottom="$1">
                         <SizableText fontSize="$3" fontWeight="500" color="$color">Hanzo</SizableText>
                         {m.model && (
-                          <SizableText fontSize="$1" color="$color11">{m.model}</SizableText>
+                          <SizableText fontSize="$1" color="$color11">
+                            {isFree(m.model) ? FREE_MODEL_LABEL : m.model}
+                          </SizableText>
                         )}
                       </XStack>
                       <MarkdownRenderer content={m.content} compact />
@@ -480,6 +598,55 @@ export default function ChatPage() {
             </YStack>
           </YStack>
         </YStack>
+
+        {/* Mounted only while open: @hanzo/ui's Dialog runs useMedia even when
+            closed, which throws during prerender (see components/usage). */}
+        {consenting && (
+          <Dialog open onOpenChange={setConsenting}>
+            <DialogContent
+              borderColor="$borderColor" backgroundColor="$background" $sm={{ maxWidth: 448 }}
+              data-testid="free-consent"
+            >
+              <DialogHeader>
+                <DialogTitle fontSize="$7" fontWeight="500" letterSpacing={-0.4}>{freeCopy.consentTitle}</DialogTitle>
+                <DialogDescription color="$color11">{freeCopy.consentBody}</DialogDescription>
+              </DialogHeader>
+              <YStack gap="$2">
+                {freeCopy.consentPoints.map((point) => (
+                  <SizableText key={point} fontSize="$1" lineHeight={18} color="$color11">{point}</SizableText>
+                ))}
+              </YStack>
+              {/* The terms live on hanzo.ai and are linked, not copied — this
+                  app has no /terms route (see /signup). */}
+              <Paragraph fontSize="$1" color="$color11">
+                <Anchor
+                  href="https://hanzo.ai/terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  textDecorationLine="underline"
+                >
+                  {freeCopy.termsText}
+                </Anchor>
+              </Paragraph>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setConsenting(false)} data-testid="free-cancel">
+                  {freeCopy.consentCancelCta}
+                </Button>
+                <Button
+                  {...accent}
+                  onClick={() => {
+                    grantConsent(window.localStorage);
+                    setConsenting(false);
+                    goFree();
+                  }}
+                  data-testid="free-agree"
+                >
+                  {freeCopy.consentAgreeCta}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </XStack>
     </AppShell>
   );

@@ -1,4 +1,12 @@
 import { test, expect, type Page } from '@playwright/test';
+import {
+  DATA_COLLECTION_HEADER,
+  FREE_CONSENT_KEY,
+  FREE_CONSENT_VERSION,
+  FREE_MODEL,
+  FREE_MODEL_LABEL,
+  freeCopy,
+} from '@hanzo/ai';
 
 /**
  * Chat mode — the ported hanzo.chat product at /chat.
@@ -20,8 +28,19 @@ const SSE_CHUNKS = [
   ' works.',
 ];
 
-/** Mock the network: timed SSE for completions, JSON for the conversation BFF. */
-async function mockChatBackend(page: Page) {
+/** The models the page actually asked for, in order — recorded by the stub. */
+type Asked = { asked?: string[] };
+
+/**
+ * Mock the network: timed SSE for completions, JSON for the conversation BFF.
+ *
+ * A paid outage reaches a client in two shapes, and both are here: `refusePaid`
+ * answers a paid model 402 (the family has no free route), `serveFree` answers
+ * it 200 on the free route instead (a fallback the gateway made). A stream is
+ * always tagged with the model that served it, and a free serving carries the
+ * data-collection header, exactly as the gateway sends them.
+ */
+async function mockChatBackend(page: Page, { refusePaid = false, serveFree = false } = {}) {
   // A decodable (unsigned) session: the edge middleware gates /chat on cookie
   // PRESENCE, and IamCookieBridge keeps/clears that cookie from the SDK's
   // localStorage token — so both must exist and carry a future exp, or the
@@ -77,18 +96,30 @@ async function mockChatBackend(page: Page) {
 
   // Timed SSE — emitted from inside the page so deltas arrive over real time.
   await page.addInitScript(
-    ({ chunks }) => {
+    ({ chunks, free, refuse, fallback, collection }) => {
       const original = window.fetch.bind(window);
+      const w = window as Window & Asked;
+      w.asked = [];
       window.fetch = async (input, init) => {
         const url = typeof input === 'string' ? input : (input as Request).url;
         if (!url.includes('/v1/chat/completions')) return original(input, init);
+        const model = String(JSON.parse(String(init?.body ?? '{}')).model ?? '');
+        w.asked?.push(model);
+        const paid = model !== free;
+        if (refuse && paid) {
+          return new Response(
+            JSON.stringify({ ok: false, needCredits: true, message: "You're out of credits." }),
+            { status: 402, headers: { 'Content-Type': 'application/json' } },
+          );
+        }
+        const served = fallback && paid ? free : model;
         const encoder = new TextEncoder();
         const stream = new ReadableStream<Uint8Array>({
           async start(controller) {
             for (const delta of chunks) {
               controller.enqueue(
                 encoder.encode(
-                  `data: ${JSON.stringify({ choices: [{ delta: { content: delta } }] })}\n\n`,
+                  `data: ${JSON.stringify({ model: served, choices: [{ delta: { content: delta } }] })}\n\n`,
                 ),
               );
               await new Promise((r) => setTimeout(r, 150));
@@ -99,11 +130,20 @@ async function mockChatBackend(page: Page) {
         });
         return new Response(stream, {
           status: 200,
-          headers: { 'Content-Type': 'text/event-stream' },
+          headers: {
+            'Content-Type': 'text/event-stream',
+            ...(served === free ? { [collection]: 'on' } : {}),
+          },
         });
       };
     },
-    { chunks: SSE_CHUNKS },
+    {
+      chunks: SSE_CHUNKS,
+      free: FREE_MODEL,
+      refuse: refusePaid,
+      fallback: serveFree,
+      collection: DATA_COLLECTION_HEADER,
+    },
   );
 }
 
@@ -194,6 +234,94 @@ test.describe('chat mode', () => {
     }
   });
 
+  // A paid outage is not the end of the conversation: Enso Free can serve the
+  // same turn. It is offered, never taken for the reader, because a free answer
+  // is data-shared — @hanzo/ai owns the predicate, the words and the consent
+  // record, and this proves the page renders and obeys all three.
+  test('a paid outage offers Free and continues the turn once consented', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await mockChatBackend(page, { refusePaid: true });
+    await page.goto('/chat');
+
+    await page.getByTestId('composer').fill('Say hello');
+    await page.getByTestId('send').click();
+
+    // The refusal offers Free and keeps the turn. Nothing switched by itself.
+    const offer = page.getByTestId('free-offer');
+    await expect(offer).toContainText(freeCopy.paidTitle);
+    await expect(offer).toContainText(freeCopy.paidBody);
+    await expect(page.getByTestId('message-user')).toContainText('Say hello');
+    await expect(page.getByTestId('model-picker')).not.toContainText(FREE_MODEL_LABEL);
+
+    // Free is data-shared, so the first switch asks — in the shared words.
+    await offer.getByTestId('free-switch').click();
+    const consent = page.getByTestId('free-consent');
+    await expect(consent).toContainText(freeCopy.consentTitle);
+    await expect(consent).toContainText(freeCopy.consentPoints[0]);
+    await expect(consent).toContainText(freeCopy.termsText);
+    await expect(consent.getByRole('link')).toHaveAttribute('href', 'https://hanzo.ai/terms');
+    await consent.getByTestId('free-agree').click();
+
+    // The same turn is answered on Free, and the picker names what served it.
+    await expect(page.getByTestId('message-assistant')).toContainText('Streaming works.');
+    await expect(page.getByTestId('free-offer')).toHaveCount(0);
+    await expect(page.getByTestId('model-picker')).toContainText(FREE_MODEL_LABEL);
+    const asked = await page.evaluate(() => (window as Window & Asked).asked ?? []);
+    expect(asked[0]).not.toBe(FREE_MODEL);
+    expect(asked[1]).toBe(FREE_MODEL);
+
+    // Free is remembered, so a reload keeps serving instead of failing again.
+    await page.reload();
+    await expect(page.getByTestId('model-picker')).toContainText(FREE_MODEL_LABEL);
+  });
+
+  // The other shape: the gateway answers the paid model on Free itself. The
+  // reply is already here, so the offer is to KEEP Free, and nothing is resent.
+  test('a reply served on Free says so and offers to stay there', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await mockChatBackend(page, { serveFree: true });
+    await page.goto('/chat');
+
+    await page.getByTestId('composer').fill('Say hello');
+    await page.getByTestId('send').click();
+
+    const assistant = page.getByTestId('message-assistant');
+    await expect(assistant).toContainText('Streaming works.');
+    // The turn is signed with what answered it, not with what was asked for.
+    await expect(assistant).toContainText(FREE_MODEL_LABEL);
+    await expect(page.getByTestId('free-offer')).toContainText(freeCopy.fallbackBody);
+    await expect(page.getByTestId('free-switch')).toContainText(freeCopy.keepCta);
+
+    await page.getByTestId('free-switch').click();
+    await page.getByTestId('free-agree').click();
+
+    // Kept, not re-asked: one request went out and the picker now names Free.
+    await expect(page.getByTestId('model-picker')).toContainText(FREE_MODEL_LABEL);
+    await expect(page.getByTestId('free-offer')).toHaveCount(0);
+    expect(await page.evaluate(() => (window as Window & Asked).asked ?? [])).toHaveLength(1);
+  });
+
+  test('consent already on record switches without asking again', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await mockChatBackend(page, { refusePaid: true });
+    await page.addInitScript(
+      ({ key, version }) =>
+        localStorage.setItem(
+          key,
+          JSON.stringify({ granted: true, at: new Date().toISOString(), version }),
+        ),
+      { key: FREE_CONSENT_KEY, version: FREE_CONSENT_VERSION },
+    );
+    await page.goto('/chat');
+
+    await page.getByTestId('composer').fill('Say hello');
+    await page.getByTestId('send').click();
+    await page.getByTestId('free-switch').click();
+
+    await expect(page.getByTestId('free-consent')).toHaveCount(0);
+    await expect(page.getByTestId('message-assistant')).toContainText('Streaming works.');
+  });
+
   test('streams at mobile width (390px)', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await mockChatBackend(page);
@@ -227,7 +355,7 @@ test.describe('modes', () => {
     await page.goto('/work');
     await expect(page).toHaveURL(/\/work$/);
     await expect(
-      page.getByRole('heading', { name: 'Work mode is coming soon' }),
+      page.getByRole('heading', { name: 'Work mode is not built yet' }),
     ).toBeVisible();
 
     await page.goto('/chat');

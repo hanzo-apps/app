@@ -11,6 +11,7 @@
  * parser), chat relays the gateway's OpenAI-compatible SSE VERBATIM — the
  * client renders deltas as they arrive and needs nothing re-encoded.
  */
+import { DATA_COLLECTION_HEADER } from '@hanzo/ai';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
@@ -87,19 +88,32 @@ export async function POST(request: NextRequest) {
         { status: 402 },
       );
     }
+    // 503 is the gateway saying no paid provider can serve. It is relayed as
+    // itself rather than flattened into 502, because the client answers an
+    // outage the free route clears differently from one it does not.
+    if (gateway.status === 503) {
+      return NextResponse.json(
+        { ok: false, message: detail || 'No paid model can serve right now.' },
+        { status: 503 },
+      );
+    }
     return NextResponse.json(
       { ok: false, message: detail || `Gateway error (${gateway.status})` },
       { status: 502 },
     );
   }
 
-  // Verbatim SSE passthrough — the gateway's stream IS the response.
+  // Verbatim SSE passthrough — the gateway's stream IS the response. The
+  // data-collection header rides along: the gateway states whether a reply was
+  // served on a data-shared route, and only the client can act on it.
+  const collection = gateway.headers.get(DATA_COLLECTION_HEADER);
   return new NextResponse(gateway.body, {
     headers: {
       'Content-Type': 'text/event-stream; charset=utf-8',
       'Cache-Control': 'no-cache, no-transform',
       Connection: 'keep-alive',
       'X-Accel-Buffering': 'no',
+      ...(collection ? { [DATA_COLLECTION_HEADER]: collection } : {}),
     },
   });
 }
