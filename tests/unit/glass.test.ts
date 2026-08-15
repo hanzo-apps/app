@@ -130,7 +130,6 @@ describe("The material attaches to the slot, not to who remembered", () => {
     "components/markdown-renderer/index.tsx",
     "components/template-gallery.tsx",
     "components/templates/template-detail.tsx",
-    "app/login/page.tsx",
   ];
 
   it("no NEW component hand-rolls a backdrop blur — the material owns it", () => {

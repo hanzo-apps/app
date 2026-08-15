@@ -1,28 +1,49 @@
 'use client';
 
-import { SizableText, YStack, XStack, H1, Paragraph, H2 } from '@hanzo/ui';
+import { SizableText, YStack, XStack, H1, Paragraph } from '@hanzo/ui';
+import { PrimaryButton } from '@hanzo/ui/product';
 // `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
 // same way it drops the GuiElement type. Tracked; everything else in this
 // file comes from @hanzo/ui.
 import { Anchor } from '@hanzo/gui';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useIam } from '@hanzo/iam/react';
 import { HanzoBrand } from '@/components/HanzoLogo';
-import { Sparkles, Zap, Monitor, Apple, Terminal, Smartphone } from 'lucide-react';
+import { Monitor, Apple, Terminal } from 'lucide-react';
 import { Spinner } from '@/components/ui/spinner';
+import HeroPreview from '@/components/landing/hero-preview';
+import LazySection from '@/components/landing/lazy-section';
+
+// Below the fold, the same two sections the landing page uses and by the same
+// mechanism: code-split, mounted on approach. A visitor who stays long enough
+// to scroll gets the proof and the three steps; one who is redirected in
+// 300ms never pays for either chunk.
+const LogoWall = dynamic(() => import('@/components/landing/logo-wall'), { ssr: false });
+const HowItWorks = dynamic(() => import('@/components/landing/how-it-works'), { ssr: false });
+
+const RELEASES = 'https://github.com/hanzoai/app/releases/latest';
+const DESKTOP = [
+  { Icon: Monitor, label: 'Windows' },
+  { Icon: Apple, label: 'macOS' },
+  { Icon: Terminal, label: 'Linux' },
+];
 
 /**
  * /login — HIP-0111 canonical. There is no local credential form: Hanzo IAM
  * owns every credential interaction. On mount we start the OAuth2 PKCE redirect
  * to IAM via the `@hanzo/iam` SDK (`login()`), exactly like hanzo.ai / chat /
- * console. The right-hand panel and the local-runtime download links are
- * app-specific chrome, not auth.
+ * console. Everything else on the page is product, not auth.
+ *
+ * The redirect is instant when IAM is reachable and this page is a flash. When
+ * it is slow — or refused, which is what a blocked host or a stale client looks
+ * like — the visitor lands here and stays, so the page states the one action in
+ * a control they can press (the SAME `login()`) rather than leaving them
+ * watching a spinner with nothing to do.
  */
 export default function LoginPage() {
   const { login } = useIam();
-  const [currentIdea, setCurrentIdea] = useState(0);
-  const [isTyping, setIsTyping] = useState(true);
 
   useEffect(() => {
     // Honor a `?redirect=<path>` deep link (middleware stamps it when bouncing
@@ -40,186 +61,76 @@ export default function LoginPage() {
     login();
   }, [login]);
 
-  const ideas = [
-    'Build a SaaS dashboard with realtime analytics',
-    'Create an AI support chatbot trained on my docs',
-    'Build a storefront with a cart and checkout',
-    'Build a social post scheduler',
-    'Build a crypto price dashboard',
-    'Create a video library with playlists',
-    'Build a project tracker with boards and due dates',
-    'Build a marketplace with listings and checkout',
-    'Build a course site with lessons and progress',
-    'Build a workout tracker with charts',
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsTyping(false);
-      setTimeout(() => {
-        setCurrentIdea((prev) => (prev + 1) % ideas.length);
-        setIsTyping(true);
-      }, 500);
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [ideas.length]);
-
   return (
     <YStack minHeight="100%" backgroundColor="$background">
-      {/* Navigation */}
-      <YStack position="absolute" top="$0" left="$0" right="$0" zIndex={50}>
-        <XStack maxWidth={1400} alignSelf="center" paddingHorizontal="$5" paddingVertical="$4.5" alignItems="center" justifyContent="space-between">
-          <Link href="/"><XStack alignItems="center">
-            <HanzoBrand color="var(--foreground)" markSize={32} />
-          </XStack></Link>
-        </XStack>
-      </YStack>
+      <XStack width="100%" maxWidth={1200} alignSelf="center" paddingHorizontal="$5" paddingVertical="$4.5">
+        <Link href="/"><HanzoBrand color="var(--foreground)" markSize={32} /></Link>
+      </XStack>
 
-      {/* Main Content */}
-      <XStack minHeight="100%">
-        {/* Left Side - Redirecting to IAM */}
-        <XStack width="100%" alignItems="center" justifyContent="center" paddingHorizontal="$5" paddingVertical="$11" $lg={{ width: "50%" }}>
-          <YStack width="100%" maxWidth={448}>
-            <XStack justifyContent="center" marginBottom="$7">
-              <HanzoBrand
-                color="var(--foreground)"
-                markSize={44}
-                wordmarkSize={30}
-  />
+      {/* The fold, laid out the way the landing's is: the sentence and the one
+          action on the left, the product on the right. A phone stacks them, so
+          the sign-in control is above the demo rather than beside it. */}
+      <YStack paddingHorizontal="$4" paddingTop="$6" paddingBottom="$10" $md={{ paddingHorizontal: "$6" }}>
+        <YStack alignSelf="center" width="100%" maxWidth={768} gap="$7" $lg={{ flexDirection: "row", alignItems: "center", maxWidth: 1200, gap: "$8" }}>
+          <YStack alignSelf="center" width="100%" maxWidth={448} $lg={{ flex: 1, maxWidth: 480 }}>
+            <H1 fontSize="$9" $md={{ fontSize: "$11" }} fontWeight="500" letterSpacing={-0.4} textAlign="center" $lg={{ textAlign: "left" }}>
+              Welcome back
+            </H1>
+            <Paragraph marginTop="$3" fontSize="$5" color="$color11" lineHeight="1.5" textAlign="center" $lg={{ textAlign: "left" }}>
+              Hanzo ID signs you in — one account for the builder, Hanzo Chat
+              and the API.
+            </Paragraph>
+
+            {/* The one white, high-emphasis action, wearing the same recipe as
+                the header's "Get started" — it is the same door. */}
+            <PrimaryButton onClick={() => login()} size="lg" width="100%" marginTop="$6">
+              Continue to Hanzo ID
+            </PrimaryButton>
+
+            <XStack marginTop="$3" alignItems="center" justifyContent="center" gap="$2">
+              <Spinner size={14} />
+              <Paragraph fontSize="$1" color="$color11">Redirecting to secure sign in…</Paragraph>
             </XStack>
 
-            <H1 fontSize="$9" $md={{ fontSize: "$11" }} fontWeight="500" marginBottom="$4" letterSpacing={-0.4} textAlign="center">Welcome back</H1>
-            <Paragraph color="$color11" fontSize="$6" marginBottom="$7" textAlign="center">Taking you to Hanzo ID to sign in</Paragraph>
+            <Paragraph marginTop="$5" fontSize="$3" color="$color11" textAlign="center">
+              New here?{' '}
+              <Link href="/signup"><SizableText fontSize="$3" color="$color" textDecorationLine="underline">Create an account</SizableText></Link>
+            </Paragraph>
 
-            <XStack alignItems="center" justifyContent="center" gap="$2" marginBottom="$8">
-              <Spinner size={20} />
-              <Paragraph fontSize="$3" color="$color11">Redirecting to secure sign in…</Paragraph>
-            </XStack>
-
-            {/* Desktop App Options */}
-            <YStack rowGap="$4">
-              <Paragraph fontSize="$3" color="$color11" textAlign="center">Or run Hanzo on your own machine</Paragraph>
-
-              <YStack gap="$3">
-                <Anchor display="flex"
-                  href="https://github.com/hanzoai/app/releases/latest"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" group hoverStyle={{ borderColor: "$color06", backgroundColor: "$color4" }}
-                >
-                  <Monitor size={16} />
-                  <SizableText fontSize="$3" color="$color11" $group-hover={{ color: "$color" }}>Windows</SizableText>
-                </Anchor>
-
-                <Anchor display="flex"
-                  href="https://github.com/hanzoai/app/releases/latest"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" group hoverStyle={{ borderColor: "$color06", backgroundColor: "$color4" }}
-                >
-                  <Apple size={16} />
-                  <SizableText fontSize="$3" color="$color11" $group-hover={{ color: "$color" }}>macOS</SizableText>
-                </Anchor>
-
-                <Anchor display="flex"
-                  href="https://github.com/hanzoai/app/releases/latest"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" group hoverStyle={{ borderColor: "$color06", backgroundColor: "$color4" }}
-                >
-                  <Terminal size={16} />
-                  <SizableText fontSize="$3" color="$color11" $group-hover={{ color: "$color" }}>Linux</SizableText>
-                </Anchor>
-
-                <XStack alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" opacity={0.4} cursor="not-allowed">
-                  <Smartphone size={16} />
-                  <SizableText fontSize="$3" color="$color11">Mobile</SizableText>
-                </XStack>
-              </YStack>
-
-              <Paragraph fontSize="$1" color="$color11" textAlign="center">
-                No mobile build yet — the desktop app is Windows, macOS and Linux.
+            <YStack marginTop="$8" paddingTop="$6" borderTopWidth={1} borderColor="$borderColor" gap="$3">
+              <Paragraph fontFamily="$mono" fontSize="$1" color="$color11" textAlign="center" $lg={{ textAlign: "left" }}>
+                Or run Hanzo on your own machine
               </Paragraph>
+              <XStack gap="$2">
+                {DESKTOP.map(({ Icon, label }) => (
+                  <Anchor
+                    key={label}
+                    display="flex"
+                    href={RELEASES}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    flexGrow={1} flexBasis={0} minWidth={0} alignItems="center" justifyContent="center" gap="$2" paddingVertical="$2.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" group hoverStyle={{ borderColor: "$color06", backgroundColor: "$color4" }}
+                  >
+                    <Icon size={14} />
+                    <SizableText fontSize="$1" color="$color11" $group-hover={{ color: "$color" }}>{label}</SizableText>
+                  </Anchor>
+                ))}
+              </XStack>
             </YStack>
           </YStack>
-        </XStack>
 
-        {/* Right Side - Animated Ideas */}
-        <YStack display="none" $lg={{ display: "flex" }} width="50%" alignItems="center" justifyContent="center" paddingHorizontal="$5" paddingVertical="$11" position="relative" overflow="hidden">
-          <YStack position="absolute" top={0} right={0} bottom={0} left={0} opacity={0.2}>
-            <YStack
-              position="absolute" top={0} right={0} bottom={0} left={0}
-              style={{
-                backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 1px)`,
-                backgroundSize: '40px 40px',
-              }}
-  />
-          </YStack>
-
-          <YStack position="absolute" top="25%" right="$-14" width={384} height={384} backgroundColor="$color005" borderRadius="$10" filter="blur(130px)" />
-          <YStack
-            position="absolute" bottom="25%" left="$-14" width={384} height={384} backgroundColor="$color005" borderRadius="$10" filter="blur(130px)"
-            style={{ animationDelay: '2s' }}
-  />
-
-          <YStack position="relative" zIndex={10} maxWidth={576} width="100%">
-            <YStack marginBottom="$6">
-              <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" backgroundColor="$color3" backdropFilter="blur(4px)" borderRadius="$10" borderWidth={1} borderColor="$borderColor" marginBottom="$5">
-                <Sparkles size={16} />
-                <SizableText fontSize="$3" color="$color">Hanzo · App builder</SizableText>
-              </XStack>
-
-              <H2 fontSize="$8" $md={{ fontSize: "$10" }} fontWeight="500" marginBottom="$4">Describe an app. Watch it get built.</H2>
-
-              <Paragraph color="$color11" marginBottom="$6">
-                Type a sentence into the builder and the files start appearing.
-              </Paragraph>
-            </YStack>
-
-            <YStack backgroundColor="$color3" backdropFilter="blur(4px)" borderRadius="$8" borderWidth={1} borderColor="$borderColor" padding="$5">
-              <XStack alignItems="flex-start" gap="$3">
-                <YStack width="$2" height="$2" backgroundColor="$color" borderRadius="$10" marginTop="$2" />
-                <YStack flex={1}>
-                  <Paragraph color="$color11" fontSize="$1" marginBottom="$3">Try something like</Paragraph>
-                  <YStack minHeight={60}>
-                    <Paragraph
-                      fontSize="$7" color="$color" fontWeight="300" {...{ opacity: isTyping ? 1 : 0 }}
-                     lineHeight="1.4">
-                      {ideas[currentIdea]}
-                      <SizableText width="$0.5" height="$5" backgroundColor="$color" marginLeft="$1" />
-                    </Paragraph>
-                  </YStack>
-                </YStack>
-              </XStack>
-
-              <YStack marginTop="$5" paddingTop="$5" borderTopWidth={1} borderColor="$borderColor">
-                <XStack alignItems="center" justifyContent="flex-end">
-                  <XStack alignItems="center" gap="$2" paddingHorizontal="$4.5" paddingVertical="$2.5" backgroundColor="$color5" borderWidth={1} borderColor="$color6" borderRadius="$6">
-                    <Zap size={14} />
-                    <SizableText color="$background" fontWeight="500" fontSize="$3">Generate</SizableText>
-                  </XStack>
-                </XStack>
-              </YStack>
-            </YStack>
-
-            <YStack gap="$5" marginTop="$7">
-              <YStack>
-                <Paragraph fontSize="$10" fontWeight="300" color="$color" textAlign="center">Enso</Paragraph>
-                <Paragraph fontSize="$1" color="$color11" marginTop="$1" textAlign="center">Our frontier model</Paragraph>
-              </YStack>
-              <YStack>
-                <Paragraph fontSize="$10" fontWeight="300" color="$color" textAlign="center">Base</Paragraph>
-                <Paragraph fontSize="$1" color="$color11" marginTop="$1" textAlign="center">A database in every app</Paragraph>
-              </YStack>
-              <YStack>
-                <Paragraph fontSize="$10" fontWeight="300" color="$color" textAlign="center">Cloud</Paragraph>
-                <Paragraph fontSize="$1" color="$color11" marginTop="$1" textAlign="center">Where it goes live</Paragraph>
-              </YStack>
-            </YStack>
+          {/* The builder, building — the landing's own frame, not a picture of
+              it and not a second mock composer. There is no composer here to
+              fill, and to build you sign in, so its "Build <app> →" link opens
+              the same door the button does. */}
+          <YStack alignSelf="center" width="100%" minWidth={0} $lg={{ flex: 1, minWidth: 0 }}>
+            <HeroPreview ask={() => login()} />
           </YStack>
         </YStack>
-      </XStack>
+      </YStack>
+
+      <LazySection minHeight={180}><LogoWall /></LazySection>
+      <LazySection minHeight={320}><HowItWorks /></LazySection>
     </YStack>
   );
 }
