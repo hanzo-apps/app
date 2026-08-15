@@ -16,10 +16,15 @@
  * the editor through it at all, and a caller that gets null knows it has nothing
  * and is expected to SAY so rather than invent a replacement.
  *
- * Two sources, in order of fidelity:
+ * Three sources, in order of fidelity:
  *   1. a document we ship for the slug (`template-previews`) — self-contained and
  *      known-good, so it costs no network and needs no rebasing;
- *   2. the template's own deployed site (`template-demos`), fetched and anchored
+ *   2. the template's own REPOSITORY on git.hanzo.ai (`hanzo-apps/<slug>`), which
+ *      is the source itself rather than a rendering of it. This was missing, and
+ *      it is the one that actually exists for most of the catalog: a slug with
+ *      markup sitting in git and no verified demo answered "no source" and got an
+ *      imitation written from its description;
+ *   3. the template's own deployed site (`template-demos`), fetched and anchored
  *      so its relative assets still resolve once the markup is lifted out of the
  *      origin it was served from, then made to carry its own styles and faces
  *      (see `embed` below) so it does not depend on that origin for the things
@@ -28,9 +33,11 @@
  * Both therefore hand back the SAME shape — one self-contained document — which
  * is the reason there is nothing further downstream to teach about assets.
  *
- * A slug with neither has no published source, and that is still most of the
- * catalog: `template-demos` is a hand-verified allowlist, and a slug earns a
- * place in it only once its deployment has been seen to render its own design.
+ * A slug with none of the three has no published source. `template-demos` is a
+ * hand-verified allowlist and a slug earns a place in it only once its deployment
+ * has been seen to render its own design; the repository needs no allowlist,
+ * because "does it contain a document that parses" is a question about the bytes
+ * rather than about anyone's judgement.
  * Nothing here papers over the rest — a caller that gets null is expected to say
  * it is recreating the template rather than opening it.
  */
@@ -38,6 +45,7 @@
 import type { Page } from '@/types';
 import { demoUrl, lifts } from './template-demos';
 import { getLocalTemplatePreview } from './template-previews';
+import { forgeConfigured, forgeCommitPages, getRepo, listForgeCommits } from './git/forge';
 
 /**
  * Anchor a document at the origin it came from, so `css/main.css` and friends
@@ -212,12 +220,62 @@ async function embed(html: string, base: string, signal: AbortSignal): Promise<s
  * source is the same as no source, because a half-loaded template is indistinguishable
  * from a broken one to the person looking at it.
  */
+/** The gallery's home. Every catalog slug is a repo here. */
+const GALLERY = 'hanzo-apps';
+
+/**
+ * THE TEMPLATE'S OWN REPOSITORY — the source, rather than a photograph of it or
+ * a lift of what it deployed.
+ *
+ * This was the missing source and it is the one that actually exists. The module
+ * knew two: a document we ship, and a site we can fetch. Neither asks GIT, so a
+ * template whose markup is sitting in `hanzo-apps/<slug>` — with no shipped
+ * preview and no verified demo — resolved to null, and the builder told the user
+ * "<name> doesn't publish its source yet" and generated an imitation of it.
+ * Measured: `hanzo-apps/soar` is a real, non-empty repository on git.hanzo.ai
+ * (private, default branch `main`) while `/v1/templates/soar/pages` answered
+ * `no source for slug` and the editor wrote a fresh Soar-ish app instead.
+ *
+ * IT STILL RETURNS ONLY DOCUMENTS. A repo can hold a framework project whose
+ * `/src/*.tsx` has never been compiled, and handing that to a preview that
+ * renders `srcdoc` is how a template opens as a blank page — the failure this
+ * module exists to make impossible. So the tree is filtered to HTML that parses
+ * AS a document, `index` first; a repo with none of that is not a source, and
+ * the deployed demo below is still the answer for it.
+ *
+ * Never throws: the forge being unreachable is the same as no source, exactly as
+ * an unreachable demo already is.
+ */
+async function repoPages(slug: string): Promise<Page[] | null> {
+  if (!forgeConfigured()) return null;
+  try {
+    const repo = await getRepo(GALLERY, slug);
+    if (!repo) return null;
+    const [head] = await listForgeCommits(GALLERY, slug, repo.default_branch || 'main', 1);
+    if (!head?.sha) return null;
+
+    const docs = (await forgeCommitPages(GALLERY, slug, head.sha))
+      .filter((f) => /\.html?$/i.test(f.path) && isDocument(f.html))
+      // `index` is the front door; everything else keeps the order the tree gave.
+      .sort((a, b) => Number(/(^|\/)index\.html?$/i.test(b.path)) - Number(/(^|\/)index\.html?$/i.test(a.path)));
+
+    return docs.length ? docs.map((d) => ({ path: d.path, html: d.html })) : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function templatePages(slug: string): Promise<Page[] | null> {
   const clean = (slug || '').trim();
   if (!clean) return null;
 
   const shipped = getLocalTemplatePreview(clean);
   if (shipped) return [{ path: 'index.html', html: shipped }];
+
+  // The repository before the deployment: one is the source and the other is a
+  // rendering of it, and a person who clicked "edit" asked for the source.
+  const source = await repoPages(clean);
+  if (source) return source;
 
   // A demo we can frame is not automatically a demo we can OPEN — see `lifts`.
   const demo = lifts(clean) ? demoUrl(clean) : null;
