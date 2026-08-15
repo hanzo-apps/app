@@ -38,7 +38,18 @@ describe("boot: conversation first", () => {
   });
 
   it("the resizer only exists between two panes", () => {
-    expect(editor).toMatch(/\$lg=\{\{ display: fresh \? "none" : "flex" \}\} className="group\/resizer"/);
+    expect(editor).toMatch(/\$lg=\{\{ display: fresh \? "none" : "flex" \}\} group\b/);
+  });
+
+  it("the resizer declares its group as a PROP, so the hairline has a rule", () => {
+    // Tailwind's className spelling registers nothing in gui: the hairline
+    // carried the atomic class and the sheet carried no rule of that name, so
+    // the splitter was transparent at rest AND under the pointer — the one
+    // affordance between the panes did not exist, and nothing errored.
+    // Comment-stripped, so the note above cannot satisfy its own check.
+    const code = editor.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+    expect(code).not.toMatch(/className="group\//);
+    expect(code).toMatch(/\$group-hover=\{\{ backgroundColor: "\$color06" \}\}/);
   });
 
   it("the chat column narrows to the composer's own reading measure in boot", () => {

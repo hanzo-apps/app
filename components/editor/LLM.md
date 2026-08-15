@@ -411,3 +411,23 @@ open, so a sandbox id in the body is not a capability.
 sandbox answers with `›` and the preview with `·`, both dimmed. Without it a
 transcript gives a command and its output the same weight and you cannot find
 where you were.
+
+### `group` is a prop, and Tailwind's spelling silently draws nothing
+
+The splitter between chat and preview asked for its hairline with
+`$group-resizer-hover`, and declared the group as `className="group/resizer"`.
+That is Tailwind's syntax. gui registers a group from the **`group` prop**, so
+it never registered one: the hairline carried
+`_bg-_groupresizer-hover_color06` and the sheet carried no rule of that name.
+Nothing errored, the class was present in the DOM, and the divider was
+transparent at rest and transparent under the pointer — the one affordance
+between the two panes did not exist. Measured: transparent →
+`rgba(255,255,255,.6)` the moment the prop replaced the class.
+
+Unnamed (`group` + `$group-hover`), which is also what the console dock uses:
+gui types `group` as a boolean, so `group="resizer"` is a type error, and
+`assets/globals.css` neutralizes the container-type collapse for `t_group_true`
+only — a NAMED group emits `t_group_resizer` and keeps the containment.
+
+**A style prop that compiles to a class is not proof of a rule.** Read the
+computed value under a real pointer; the class name alone tells you nothing.

@@ -597,7 +597,15 @@ export const AppEditor = ({
           position="relative" width={10} height="100%" flexShrink={0} cursor="col-resize" alignItems="center" justifyContent="center"
           // Only where there are two panes to divide: hidden on mobile, shown on
           // desktop. It was exactly inverted.
-          display="none" $lg={{ display: fresh ? "none" : "flex" }} className="group/resizer"
+          // `group` is a PROP, and it has to be: `className="group/resizer"` is
+          // Tailwind's spelling, so gui never registered the container and the
+          // `$group-*` rule below matched nothing. The hairline carried the
+          // class and no rule — invisible at rest AND under the pointer, so the
+          // splitter had no affordance at all. Measured: transparent →
+          // rgba(255,255,255,.6) once the prop replaced the class. Unnamed,
+          // because gui types `group` as a boolean and globals.css neutralizes
+          // the container-type landmine for `t_group_true` only.
+          display="none" $lg={{ display: fresh ? "none" : "flex" }} group
         >
           {/* macOS split view: NO visible divider at rest — the panes simply
               meet. The wide (w-3) hit target still grabs from either edge, and a
@@ -606,7 +614,7 @@ export const AppEditor = ({
               otherwise. The old always-on grip pill (a fat gray lozenge down the
               middle) is gone: it read as a heavy structural divider, which is the
               opposite of the one-continuous-surface the workspace wants. */}
-          <YStack pointerEvents="none" position="absolute" top="$3" bottom="$3" left="50%" width={1} x="-50%" borderRadius="$10" backgroundColor="transparent" $group-resizer-hover={{ backgroundColor: "$color06" }} $group-resizer-press={{ backgroundColor: "$color8" }} />
+          <YStack pointerEvents="none" position="absolute" top="$3" bottom="$3" left="50%" width={1} x="-50%" borderRadius="$10" backgroundColor="transparent" $group-hover={{ backgroundColor: "$color06" }} $group-press={{ backgroundColor: "$color8" }} />
         </XStack>
         {/* RIGHT — Preview OR Code as a RAISED, rounded card that fills the whole
             remaining width to the viewport's right edge (flex-1, min-w-0). The
