@@ -14,7 +14,7 @@ import { weigh, type Build, type Surface } from '@/data/downloads'
  */
 
 /** A platform, and the artifact it takes. The row pattern, once. */
-function BuildRow({ build }: { build: Build }) {
+function BuildRow({ build, surface }: { build: Build; surface: string }) {
   const Icon = build.icon
   return (
     <XStack
@@ -38,7 +38,10 @@ function BuildRow({ build }: { build: Build }) {
         <Anchor
           className="hz-tap"
           href={build.url}
-          aria-label={`Download ${build.name}`}
+          // The surface is in the name because the platform alone is not
+          // unique: the CLI and the desktop app both publish a Windows build,
+          // and two links reading "Download Windows" are two different files.
+          aria-label={`Download ${surface} for ${build.name}`}
           display="flex"
           alignItems="center"
           gap="$1.5"
@@ -139,7 +142,7 @@ export function SurfaceCard({ surface, lead = false }: { surface: Surface; lead?
       {builds?.length ? (
         <YStack>
           {builds.map((b) => (
-            <BuildRow key={b.name} build={b} />
+            <BuildRow key={b.name} build={b} surface={name} />
           ))}
         </YStack>
       ) : null}
