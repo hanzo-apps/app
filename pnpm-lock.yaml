@@ -77,8 +77,8 @@ importers:
         specifier: ^0.1.0
         version: 0.1.1
       '@hanzo/control':
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: ^0.3.0
+        version: 0.3.0
       '@hanzo/design':
         specifier: ^0.5.11
         version: 0.5.11
@@ -859,8 +859,8 @@ packages:
   '@hanzo/composer@0.1.1':
     resolution: {integrity: sha512-+eC1gbT872zcKMoD+JD4tb4CVBQBq7dv6G0NRCT5d+PAfD2dAuqlDF3J5zzywQi55LZazbsip5zWOcbs31uJZg==}
 
-  '@hanzo/control@0.2.0':
-    resolution: {integrity: sha512-auAioMTEB/dHXzJR1Ai4jY1+Kj4SemOkQXKBIfj8+VQ0GYPPU3lDr93p8/ZQ/AagVjb2K1AXcaXvXVHB7m5tkA==}
+  '@hanzo/control@0.3.0':
+    resolution: {integrity: sha512-GfcDbBlmpdKz0jYcxHy2RixByxSDBpBPPFTWfDrgBrZLlMYjSdMcRoYc0kAbYuUdy2UL2ndrUjgwTQh1oPnrfg==}
 
   '@hanzo/data@1.2.2':
     resolution: {integrity: sha512-hgLGGnsfZqyBmSzCPL2nsnON6jXbUKVNKDnzeIAPCJEkF5SXw4lzCTEtJRHYmrRb01lU0LlQfZxZXrvBd85ZMA==}
@@ -8076,7 +8076,7 @@ snapshots:
 
   '@hanzo/composer@0.1.1': {}
 
-  '@hanzo/control@0.2.0': {}
+  '@hanzo/control@0.3.0': {}
 
   '@hanzo/data@1.2.2(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8)':
     dependencies:

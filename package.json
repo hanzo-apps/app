@@ -35,7 +35,7 @@
     "@hanzo/appearance": "^0.1.6",
     "@hanzo/base": "^0.2.1",
     "@hanzo/composer": "^0.1.0",
-    "@hanzo/control": "^0.2.0",
+    "@hanzo/control": "^0.3.0",
     "@hanzo/design": "^0.5.11",
     "@hanzo/event": "^0.3.28",
     "@hanzo/gui": "^8.1.0",
@@ -149,7 +149,7 @@
       "better-sqlite3"
     ]
   },
-  "description": "Hanzo App \u2014 AI web & app builder on Hanzo Cloud",
+  "description": "Hanzo App — AI web & app builder on Hanzo Cloud",
   "author": "Hanzo AI, Inc.",
   "repository": {
     "type": "git",
