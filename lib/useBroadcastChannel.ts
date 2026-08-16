@@ -38,9 +38,37 @@ export function useBroadcastChannel(
 
 const channelInstances: { [key: string]: BroadcastChannel } = {};
 
+/** A channel that carries nothing, for a browser that will not open one. */
+function inert(name: string): BroadcastChannel {
+  return {
+    name,
+    onmessage: null,
+    onmessageerror: null,
+    close: () => {},
+    postMessage: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  } as unknown as BroadcastChannel;
+}
+
+/**
+ * The channel of that name, one per name.
+ *
+ * `new BroadcastChannel` THROWS where a browser refuses storage access —
+ * Safari's block-all-cookies, a phone's anti-tracking, an enterprise policy.
+ * This runs in a `useMemo` inside the root layout's tree, so the throw is a
+ * render error under the app-level boundary and every route, on every path,
+ * becomes the error screen. A browser that refuses the channel has no second
+ * tab to reach through it either, so nothing is lost by carrying nothing.
+ */
 export const getSingletonChannel = (name: string): BroadcastChannel => {
   if (!channelInstances[name]) {
-    channelInstances[name] = new BroadcastChannel(name);
+    try {
+      channelInstances[name] = new BroadcastChannel(name);
+    } catch {
+      channelInstances[name] = inert(name);
+    }
   }
   return channelInstances[name];
 };
