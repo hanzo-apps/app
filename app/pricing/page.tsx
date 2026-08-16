@@ -151,6 +151,9 @@ export default function PricingPage() {
                         return (
                           <YStack
                             key={p.slug}
+                            // The card says which plan it is, so a test can press
+                            // the one it means rather than the third one along.
+                            data-testid={`plan-${p.slug}`}
                             position="relative" flexBasis={252} flexGrow={1} minWidth={240} maxWidth={360} borderRadius="$8" borderWidth={1} padding={28} {...{ borderColor: highlighted ? "$color" : "$borderColor", backgroundColor: highlighted ? "$color2" : "$color002", hoverStyle: highlighted ? undefined : {"borderColor":"$color06"} }}
                           >
                             {highlighted && (
