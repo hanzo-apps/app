@@ -20,6 +20,8 @@ interface State {
   errorInfo: ErrorInfo | null;
   errorCount: number;
   lastErrorTime: number;
+  /** The reference the logger minted for this error — the one shown and stored. */
+  reference: string | null;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
@@ -35,6 +37,7 @@ export class ErrorBoundary extends Component<Props, State> {
       errorInfo: null,
       errorCount: 0,
       lastErrorTime: 0,
+      reference: null,
     };
   }
 
@@ -52,7 +55,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
     // Log the error
     const severity = this.getSeverityByLevel(level);
-    errorLogger.logError(error, severity, {
+    const reference = errorLogger.logError(error, severity, {
       component: errorInfo.componentStack?.split('\n')[1]?.trim() || 'Unknown',
       action: 'ComponentError',
       metadata: {
@@ -68,6 +71,7 @@ export class ErrorBoundary extends Component<Props, State> {
       errorInfo,
       errorCount: newErrorCount,
       lastErrorTime: currentTime,
+      reference,
     });
 
     // Call custom error handler
@@ -139,11 +143,12 @@ export class ErrorBoundary extends Component<Props, State> {
       errorInfo: null,
       errorCount: 0,
       lastErrorTime: 0,
+      reference: null,
     });
   };
 
   render(): ReactNode {
-    const { hasError, error, errorCount } = this.state;
+    const { hasError, error, errorCount, reference } = this.state;
     const { fallback, children, isolate, level = 'component' } = this.props;
 
     if (hasError && error) {
@@ -157,6 +162,7 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <ErrorFallback
           error={error}
+          reference={reference}
           resetErrorBoundary={this.resetErrorBoundary}
           level={level}
           isPermanent={isPermanent}

@@ -8,6 +8,14 @@ import { screen } from '@/lib/chrome';
 
 interface ErrorFallbackProps {
   error: Error;
+  /**
+   * The reference the logger minted when the boundary caught this error, so the
+   * string shown here is the string in the stored record. It used to be built
+   * inline in this file's JSX, which produced a FRESH value on every re-render:
+   * the card asked people to quote a number that matched nothing on our side
+   * and had already changed by the time they read it out.
+   */
+  reference?: string | null;
   resetErrorBoundary: () => void;
   level?: 'page' | 'component' | 'app';
   isPermanent?: boolean;
@@ -16,6 +24,7 @@ interface ErrorFallbackProps {
 
 export function ErrorFallback({
   error,
+  reference,
   resetErrorBoundary,
   level = 'component',
   isPermanent = false,
@@ -29,9 +38,11 @@ export function ErrorFallback({
   };
 
   const handleReportBug = () => {
-    // Open bug report form or redirect to support
-    const bugReportUrl = `/support?error=${encodeURIComponent(error.message)}`;
-    router.push(bugReportUrl);
+    // Carry BOTH halves the card names: the message a person can read, and the
+    // reference that joins their report to the stored record.
+    const params = new URLSearchParams({ error: error.message });
+    if (reference) params.set('ref', reference);
+    router.push(`/support?${params.toString()}`);
   };
 
   // Component-level error - small inline error
@@ -114,14 +125,16 @@ export function ErrorFallback({
             {!isDevelopment && (
               <YStack marginBottom="$5">
                 <Paragraph color="$color11">
-                  The error was reported to us automatically. If it keeps happening, use
-                  Report this issue below — it carries the error message with it.
+                  If it keeps happening, use Report this issue below — it carries the
+                  error message{reference ? ' and the reference' : ''} with it.
                 </Paragraph>
-                <YStack marginTop="$4" padding="$3" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" borderRadius="$5">
-                  <Paragraph fontSize="$3" color="$color">
-                    <strong>Error ID:</strong> {generateErrorId()}
-                  </Paragraph>
-                </YStack>
+                {reference && (
+                  <YStack marginTop="$4" padding="$3" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" borderRadius="$5">
+                    <Paragraph fontSize="$3" color="$color">
+                      <strong>Reference:</strong> {reference}
+                    </Paragraph>
+                  </YStack>
+                )}
               </YStack>
             )}
 
@@ -177,9 +190,3 @@ export function ErrorFallback({
   );
 }
 
-function generateErrorId(): string {
-  return `ERR_${Date.now().toString(36).toUpperCase()}_${Math.random()
-    .toString(36)
-    .substring(2, 7)
-    .toUpperCase()}`;
-}

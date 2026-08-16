@@ -22,6 +22,22 @@ export interface ErrorContext {
 type Reporter = (error: Error, severity: ErrorSeverity, context?: ErrorContext) => void;
 let reporter: Reporter | null = null;
 
+/**
+ * The reference a person can quote back to us.
+ *
+ * Minted ONCE per logged error and returned by {@link ErrorLogger.logError}, so
+ * the string on screen is the string in the stored record and in the reported
+ * context. The crash screens used to build this inline in their own JSX, which
+ * made a fresh value on every re-render — a number we asked people to send us
+ * that matched nothing on our side and nothing on theirs.
+ */
+function mintReference(): string {
+  return `ERR_${Date.now().toString(36).toUpperCase()}_${Math.random()
+    .toString(36)
+    .slice(2, 7)
+    .toUpperCase()}`;
+}
+
 /** Wire the error reporter (called by AnalyticsRoot with the authed client). */
 export function setErrorReporter(fn: Reporter): void {
   reporter = fn;
@@ -56,12 +72,15 @@ class ErrorLogger {
     }
   }
 
+  /** Log an error and return the reference to show the person it happened to. */
   logError(
     error: Error | string,
     severity: ErrorSeverity = ErrorSeverity.MEDIUM,
     context?: ErrorContext
-  ): void {
+  ): string {
     const errorObj = typeof error === 'string' ? new Error(error) : error;
+    const reference = mintReference();
+    context = { ...context, metadata: { ...context?.metadata, reference } };
 
     // Console logging for development
     if (this.isDevelopment) {
@@ -82,16 +101,19 @@ class ErrorLogger {
     }
 
     // Store in localStorage for debugging
-    this.storeErrorLocally(errorObj, severity, context);
+    this.storeErrorLocally(errorObj, severity, context, reference);
+    return reference;
   }
 
   private storeErrorLocally(
     error: Error,
     severity: ErrorSeverity,
-    context?: ErrorContext
+    context: ErrorContext | undefined,
+    reference: string
   ): void {
     try {
       const errorLog = {
+        reference,
         timestamp: new Date().toISOString(),
         message: error.message,
         stack: error.stack,
