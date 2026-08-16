@@ -501,6 +501,10 @@ export function groupByFamily(
 // "Claude Opus 4.8" while the live path rendered the same model "Claude Opus 4 8",
 // so the picker looked correct offline and broken signed in.
 export const FALLBACK_MODELS: ModelOption[] = buildModelsFrom([
+  // The free rung leads the offline ladder, because the offline ladder is what a
+  // caller is handed when the live list cannot be reached, and a ladder whose
+  // every rung charges leaves a $0 account nothing it can run.
+  { id: "enso-free" },
   { id: "enso" },
   { id: "enso-flash" },
   { id: "enso-ultra" },
