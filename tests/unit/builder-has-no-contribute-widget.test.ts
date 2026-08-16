@@ -20,7 +20,7 @@
  * launcher may never be free to draw over the customer's app. Easy to undo by
  * accident, so it is pinned from both ends.
  */
-import { ENSO_MARK } from "@hanzo/logo/logos";
+import { MARK_PATHS, MARK_VIEWBOX } from "@hanzo/logo/logos";
 import { widget } from "../widget";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
@@ -80,27 +80,34 @@ describe("the builder Enso launcher never floats over the preview", () => {
     expect(src).toMatch(/document\.body\.appendChild\(host\)/);
   });
 
-  it("the launcher draws the app's OWN ensō, not a second one", () => {
-    // One thick weight everywhere. The launcher used to draw a 1.25px
-    // `vector-effect` hairline while `components/model-icon.tsx` — the mark
-    // @hanzo/logo and the hanzo.ai models page carry — drew r 8.88 / stroke
-    // 2.64 with round caps, so the same glyph had two weights depending on
-    // where you met it.
+  it("the launcher draws the app's OWN mark, not a second one", () => {
+    // Assert AGREEMENT rather than either literal: a test that pins only the
+    // widget is satisfied by changing the widget alone, which is exactly the
+    // drift being prevented.
     //
-    // Assert AGREEMENT rather than either literal: a test that pins only
-    // edit.js is satisfied by changing edit.js alone, which is exactly the
-    // drift being prevented. The circle is byte-identical in both files, so
-    // compare it.
     // Read the mark from @hanzo/logo, which is where it lives now — asserting a
     // literal, or comparing against components/model-icon.tsx, both stop meaning
-    // anything the moment the canonical source moves (it just did: model-icon
-    // stopped inlining the circle and now re-exports ENSO_MARK).
+    // anything the moment the canonical source moves.
     //
-    // edit.js cannot import it: it is a standalone widget served to third-party
-    // pages, so it MUST carry the path data inline. That is exactly why this
-    // check exists — an inline copy is the one thing that can silently drift.
+    // The widget cannot import it: it is a standalone widget served to
+    // third-party pages, so it MUST carry the path data inline. That is exactly
+    // why this check exists — an inline copy is the one thing that can silently
+    // drift.
+    //
+    // GEOMETRY, not bytes. The launcher wears the block-H now (the glyph
+    // @hanzogui/shell draws, so one shape means one thing in one corner), and it
+    // wears the MONOCHROME cut: `fill="currentColor"` on the svg and the five
+    // structural paths, where @hanzo/logo's canonical export carries two `shade`
+    // paths more for the two-tone version. Comparing the whole string would fail
+    // on that difference, which is a colour decision and not drift. Every path
+    // the widget draws must be one the canonical mark draws.
     const src = widget();
-    expect(src).toContain(ENSO_MARK);
+    const paths = (s: string) => [...s.matchAll(/d="([^"]+)"/g)].map((m) => m[1]);
+    const canonical = new Set(paths(MARK_PATHS));
+    const drawn = paths(src.slice(src.indexOf("var MARK ="), src.indexOf("var fab =")));
+    expect(drawn.length).toBeGreaterThan(0);
+    expect(drawn.filter((d) => !canonical.has(d))).toEqual([]);
+    expect(src).toContain(MARK_VIEWBOX);
     // The hairline is gone on purpose; `vector-effect` would re-split the weight.
     // Match the ATTRIBUTE, not the word: edit.js names it in a comment saying it
     // deliberately has none, and a bare /vector-effect/ fails on that sentence.

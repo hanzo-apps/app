@@ -1,11 +1,13 @@
 /** @jest-environment jsdom */
 
 /**
- * The launcher IS the ensō. One circle, drawn once.
+ * The launcher IS the mark, drawn once.
  *
- * A plate behind the mark — filled disc, border, shadow — reads as a second
- * ring wrapped around the first. This pins the trigger to the bare mark so the
- * plate can never come back.
+ * A plate behind it — filled disc, border, shadow — reads as a second shape
+ * wrapped around the first. This pins the trigger to the bare mark so the plate
+ * can never come back. Which glyph the mark IS belongs to @hanzo/control, not
+ * here (see tests/widget.ts); what this app depends on is that there is exactly
+ * one of it and nothing behind it.
  */
 
 import { widget } from '../widget';
@@ -47,8 +49,13 @@ describe('edit widget mark', () => {
     jest.restoreAllMocks();
   });
 
-  it('draws one circle — the mark, not a mark inside a plate', () => {
-    expect(trigger(mount()).querySelectorAll('circle')).toHaveLength(1);
+  it('draws one mark — the glyph, not a glyph inside a plate', () => {
+    const fab = trigger(mount());
+    expect(fab.querySelectorAll('svg')).toHaveLength(1);
+    expect(fab.querySelectorAll('path').length).toBeGreaterThan(0);
+    // A plate is a shape BEHIND the glyph. The mark is paths; anything drawn
+    // around them is the thing this exists to keep out.
+    expect(fab.querySelectorAll('circle, rect, ellipse')).toHaveLength(0);
   });
 
   it('gives the trigger no ring, no plate and no shadow of its own', () => {
@@ -58,7 +65,7 @@ describe('edit widget mark', () => {
     expect(style.getPropertyValue('box-shadow')).toBe('');
   });
 
-  it('lights in white — the ensō carries no hue of its own', () => {
+  it('lights in white — the mark carries no hue of its own', () => {
     // It used to light from --hz-spectrum, the composer's iridescence. That
     // sweep is owner-directed and stays where it is; the mark is a different
     // surface and simply inherited it because the token was in scope. A colour
