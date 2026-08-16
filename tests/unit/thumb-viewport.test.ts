@@ -42,6 +42,11 @@ describe("the framed site lays out at a desktop viewport", () => {
     expect(src).toMatch(/maxWidth: ['"]none['"]/);
   });
 
+  it("keeps signed-in Hanzo pages out of public thumbnails", () => {
+    expect(src).toContain('"console.hanzo.ai", "hanzo.id"');
+    expect(src).toMatch(/const showLive = canPreview\(liveUrl\) && !failed/);
+  });
+
   it("scales to the box rather than resizing the viewport", () => {
     // The shrinking is a TRANSFORM. Resizing the iframe instead would change
     // what the framed site lays out against, which is the same defect wearing

@@ -17,7 +17,7 @@ import { glass } from "@/lib/chrome";
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Badge, Input, Button } from '@hanzo/ui';
-import { Search, Star, Sparkles, Gamepad2 } from 'lucide-react';
+import { Search, Star, Gamepad2 } from 'lucide-react';
 import Header from '@/components/layout/header';
 import SiteFooter from '@/components/landing/site-footer';
 import { snapshotCatalog } from '@/lib/gallery-catalog';
@@ -27,7 +27,7 @@ import {
   resourceCategories,
   type ResourceItem,
 } from '@/lib/resources-catalog';
-import { bySpectrum, tint } from '@/lib/template-hues';
+import { bySpectrum } from '@/lib/template-hues';
 import { TemplateThumb } from '@/components/template-thumb';
 import { TemplatePreviewModal } from '@/components/remix/template-preview-modal';
 import { RemixDialog } from '@/components/remix/remix-dialog';
@@ -127,81 +127,43 @@ function ResourcesBrowser() {
           height: 5,600px of grid mounted invisible, on prod. The shell's
           scroll region belongs to signed-in surfaces only. */}
       <YStack backgroundColor="$background">
-        {/* Hero */}
-        <YStack borderBottomWidth={1} borderColor="$borderColor">
-          <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$7">
-            {/* The badge carries shrink-0 and this row did not wrap, so at 375px
-                the count was pushed past the right edge and clipped mid-word —
-                the document overflowed by 14px, and by 69px at 320. Neither the
-                title nor the badge can give, so the row has to.
-
-                Via `style`, not the `flexWrap` prop: measured in a production
-                build, the prop does not reach the DOM here (the row still
-                computed `flex-wrap: nowrap` and the overflow was unchanged to
-                the pixel). A raw style is the one form that survives. */}
-            <XStack marginBottom="$2" alignItems="center" gap="$3" style={{ flexWrap: 'wrap' }}>
-              <XStack height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color3">
-                <Sparkles size={24} />
-              </XStack>
-              {/* "Templates" — the word on the nav, on the URL and in the page
-                  title. `/resources` already redirects here for exactly that
-                  reason; the H1 was the last place the synonym survived. */}
-              <H1 fontSize="$8" $md={{ fontSize: "$10" }} fontWeight="500">Templates</H1>
-              {/* ONE child, not two. A Badge lays its children out as a COLUMN, so
-                  `{n} resources` — which JSX hands over as two children — stacks the
-                  count above the word and the pill, sized for one line, crops the
-                  second. Measured on /templates: clientHeight 24, scrollHeight 34,
-                  two block spans of 16px. One interpolated string is one child.
-
-                  `alignSelf: center` because @hanzo/ui's Badge frame hard-codes
-                  `alignSelf: flex-start` to keep itself from stretching in a
-                  flex parent — which also overrides this row's alignItems and
-                  hangs the pill off the cap-height of the title like a
-                  superscript (measured: row centre 137, badge centre 113).
-                  Through `style`, since Badge is a plain <span>: a style PROP
-                  type-errors, and untyped it would reach the DOM as an
-                  attribute React drops. */}
-              <Badge variant="secondary" style={{ alignSelf: 'center' }}>{`${items.length} templates`}</Badge>
-            </XStack>
-            <Paragraph maxWidth={672} color="$color11">
-              Start from a template to build your next project. Every template forks into the
-              builder and deploys to a live <SizableText color="$color11">*.hanzo.app</SizableText>{' '}
-              URL — including a growing library of open-source games.
+        <YStack borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
+          <YStack width="100%" maxWidth={896} alignSelf="center" alignItems="center">
+            <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
+              {`${items.length} starting points`}
+            </SizableText>
+            <H1 marginTop="$4" textAlign="center" fontSize="$11" fontWeight="500" letterSpacing={-1} lineHeight="1.05" $md={{ fontSize: "$13" }}>
+              Start closer to done.
+            </H1>
+            <Paragraph marginTop="$4" maxWidth={672} textAlign="center" fontSize="$5" color="$color11" lineHeight="1.55" $md={{ fontSize: "$6" }}>
+              Choose a polished starting point, make it yours with a prompt, and publish it on Hanzo Cloud.
             </Paragraph>
           </YStack>
         </YStack>
 
         {/* Filters */}
         <YStack {...glass(2)} position="sticky" top="$0" zIndex={30} borderBottomWidth={1}>
-          <XStack width="100%" maxWidth={1280} alignSelf="center" flexWrap="wrap" alignItems="flex-start" gap="$3" paddingHorizontal="$5" paddingVertical="$3">
+          <YStack width="100%" maxWidth={1280} alignSelf="center" gap="$2.5" paddingHorizontal="$5" paddingVertical="$3">
+            <XStack alignItems="center" gap="$3">
             {/* The glyph goes IN the field, which is what `startAdornment` is
                 for. As a plain sibling it was never positioned, so it stacked
                 above the box and the 36px gutter held a space nothing sat in —
                 measured on prod, icon bottom 291 against field top 291 at both
                 widths. */}
-            <YStack width="100%" $sm={{ width: "auto" }}>
+            <YStack flex={1} maxWidth={320}>
               <Input
                 placeholder="Search templates…"
                 value={query}
                 onChangeText={(v: string) => setQuery(v)}
                 startAdornment={<Search size={16} />}
-                width="100%" borderColor="$borderColor" backgroundColor="$background" color="$color" $sm={{ width: 256 }}
+                width="100%" borderColor="$borderColor" backgroundColor="$background" color="$color"
   />
             </YStack>
-            {/* `flexShrink={1}` is load-bearing. gui's base rule gives every
-                View `flex-shrink: 0`, so this row sat at its max-content
-                1380px inside a 1232px content box and pushed the DOCUMENT
-                wide at every width — +1014px at 390, +44px at 1440. Nothing
-                could shrink it, so `flexWrap: wrap` (already on from 640 up)
-                never had a reason to wrap and `overflow="scroll"` never had
-                anything to scroll: the box was never smaller than its content.
-                Letting it shrink is what turns both of those back on. */}
-            {/* `fade-end` dissolves the trailing 24px on a phone, where this is
-                a nowrap scroller with its scrollbar hidden: the row was sliced
-                mid-glyph at the right edge ("Portfolio" down to a bare "P")
-                with nothing to say there was more. Above $sm it wraps, nothing
-                overflows, and the mask is off. */}
-            <XStack flexWrap="nowrap" alignItems="center" gap="$1.5" flexShrink={1} overflow="scroll" $sm={{ flexWrap: "wrap" }} className="no-scrollbar fade-end">
+              <SizableText marginLeft="auto" flexShrink={0} fontFamily="$mono" fontSize="$1" color="$color11">
+                {`${filtered.length} shown${loading ? ' · syncing…' : ''}`}
+              </SizableText>
+            </XStack>
+            <XStack flexWrap="nowrap" alignItems="center" gap="$1.5" flexShrink={1} overflow="scroll" className="no-scrollbar veil">
               {categories.map((cat) => (
                 <Button
                   key={cat}
@@ -225,16 +187,7 @@ function ResourcesBrowser() {
                 </Button>
               ))}
             </XStack>
-            {/* `className="ml-auto"` here matched no rule in any stylesheet —
-                Tailwind is gone, so the count was never right-aligned. A Badge
-                is typed as span props and takes no layout of its own, so the
-                margin belongs to a stack around it. */}
-            <YStack marginLeft="auto">
-              <Badge variant="secondary">
-                {`${filtered.length} shown${loading ? ' · syncing…' : ''}`}
-              </Badge>
-            </YStack>
-          </XStack>
+          </YStack>
         </YStack>
 
         {/* Grid — `.shot-grid`, the showcase measure: auto-fit/minmax like
@@ -336,21 +289,6 @@ function ResourceCard({
   /** This template publishes no source, so opening it recreates it. */
   rebuilt?: boolean;
 }) {
-  // The card's hairline carries the shot's own colour at low alpha — enough to
-  // make the spectrum order legible as you scan, not enough to be chrome. Cards
-  // with no dominant colour keep the monochrome border, which is the whole point
-  // of having measured one.
-  //
-  // Hover brightens that same hue rather than going white. Partly because the
-  // spectrum should survive being pointed at, and partly because rest and hover
-  // then come from ONE expression: a dynamic value and a theme token are placed
-  // by different paths in gui, and the runtime-inserted rule for the dynamic one
-  // carries the same specificity as the pseudo-state rule it would have to lose
-  // to (`:root ._btc-x._btc-x` against `:root ._btc-hover:hover`, both 0,3,0), so
-  // which one won came down to insertion order. That is not a thing to build on.
-  const colour = tint(item.templateSlug);
-  const hairline = colour ? `hsl(${colour.hue} 65% 55% / 0.35)` : "$borderColor";
-  const lit = colour ? `hsl(${colour.hue} 75% 62% / 0.8)` : "$color";
   return (
     /* A CARD, not a control. @hanzo/ui's Button pins its size variant's height
        over anything the caller passes, and overflow="hidden" then crops the
@@ -368,7 +306,7 @@ function ResourceCard({
           onOpen(item);
         }
       }}
-      cursor="pointer" group className="zoom-scope" flexDirection="column" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor={hairline} backgroundColor="$background" hoverStyle={{ y: "$-1", borderColor: lit }}
+      cursor="pointer" group className="zoom-scope" flexDirection="column" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" hoverStyle={{ y: "$-1", borderColor: "$color06", backgroundColor: "$color3" }}
     >
       {/* `TemplateThumb` is the app's ONE template preview: the self-hosted shot
           at public/templates/<slug>.webp when there is one, the drawn schematic

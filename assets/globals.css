@@ -87,6 +87,11 @@ a {
   display: none;
 }
 
+.veil {
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+}
+
 /* A hidden scrollbar hides the fact that there is more. `.fade-end` dissolves
    the trailing 24px so the cut reads as "swipe on" instead of as damage — the
    chip row on /resources was sliced mid-glyph at the right edge ("Portfolio"
@@ -1036,6 +1041,19 @@ kbd {
      `alignItems: "stretch"`; that patch is gone with this line. */
 }
 
+.matrix {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 48px;
+}
+@media (min-width: 640px) {
+  .matrix { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .matrix { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
 /* The template showcase — the SAME auto-fit mechanics as `.card-grid`, one
    number apart, and that number is the whole reason it is a second class.
    `.card-grid` sizes an icon-and-two-lines card, where 280px is generous;
@@ -1343,36 +1361,6 @@ button:not([data-slot]):not([class*="rounded-xl"]):not([class*="rounded-2xl"]):n
 .md.md-compact pre { padding: 0.75rem; font-size: 12px; }
 .md.md-compact hr { margin: 0.75rem 0; }
 .md.md-compact blockquote { margin: 0.5rem 0; padding: 0.25rem 0.75rem; border-left-width: 2px; background: none; border-radius: 0; }
-
-/* The comparison matrix's mobile accordion is a native <details> — another
-   element gui cannot render — so its chrome is CSS: card surface, quiet
-   summary row, marker hidden, chevron flips when open. */
-.cmp-fold {
-  overflow: hidden;
-  border-radius: 1rem;
-  border: 1px solid var(--border);
-  background-color: var(--muted);
-}
-.cmp-fold > summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  /* More room on the right than the left: the right cluster (the weak-area
-     count + its chevron) sat hard against the card edge. */
-  padding: 1rem 1.75rem 1rem 1.25rem;
-  cursor: pointer;
-  list-style: none;
-}
-.cmp-fold > summary::-webkit-details-marker {
-  display: none;
-}
-.cmp-fold > summary svg {
-  color: var(--muted-foreground);
-  transition: transform 0.2s;
-}
-.cmp-fold[open] > summary svg {
-  transform: rotate(180deg);
-}
 
 /* Card-thumbnail hover zoom: the card is the scope, the picture is the target.
    ONE pair of classes for every gallery/related/dashboard card. */

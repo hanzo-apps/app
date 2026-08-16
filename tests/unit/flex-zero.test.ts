@@ -1,4 +1,3 @@
-import { readFileSync } from "fs";
 import { join } from "path";
 import { execSync } from "child_process";
 
@@ -41,14 +40,5 @@ describe("flex shorthand never carries a zero basis", () => {
         return !/^(\*|\/\/|\{?\/\*)/.test(code);
       });
     expect(hits).toEqual([]);
-  });
-
-  it("the comparison fold's right cluster keeps its content width", () => {
-    const src = readFileSync(
-      join(ROOT, "components/landing/comparison.tsx"),
-      "utf8",
-    );
-    // The cluster holding "N weak areas" + the open/close chevron.
-    expect(src).toMatch(/<XStack flexShrink=\{0\} alignItems="center" gap="\$3">/);
   });
 });

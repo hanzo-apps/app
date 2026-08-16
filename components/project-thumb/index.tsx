@@ -3,10 +3,9 @@
 /**
  * ProjectThumb — the ONE honest live-site thumbnail.
  *
- * Anything with a live URL renders its REAL deployed site as a scaled-down
- * desktop preview inside a sandboxed, inert iframe (no navigation, no pointer
- * events). Used for published projects AND for the template gallery's live
- * demos; without a live URL it renders `fallback` (default: a monogram tile).
+ * A public live URL renders its REAL deployed site as a scaled-down desktop
+ * preview inside a sandboxed, inert iframe. Signed-in Hanzo surfaces and
+ * projects without a live URL render `fallback` (default: a monogram tile).
  *
  * CRITICAL layout contract: the iframe is ABSOLUTELY positioned at a fixed
  * logical desktop size and scaled with a CSS transform. Absolute positioning
@@ -28,6 +27,18 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 // The logical viewport the site is rendered at before scaling — a desktop width
 // so the thumbnail shows the desktop layout, then scaled down to fit the box.
 const LOGICAL_W = 1280;
+
+const AUTH_HOSTS = new Set(["console.hanzo.ai", "hanzo.id"]);
+
+export function canPreview(value?: string | null): boolean {
+  if (!value) return false;
+  try {
+    const host = new URL(value).hostname.toLowerCase();
+    return ![...AUTH_HOSTS].some((auth) => host === auth || host.endsWith(`.${auth}`));
+  } catch {
+    return false;
+  }
+}
 
 export function ProjectThumb({
   name,
@@ -72,7 +83,7 @@ export function ProjectThumb({
     return () => ro.disconnect();
   }, []);
 
-  const showLive = !!liveUrl && !failed;
+  const showLive = canPreview(liveUrl) && !failed;
 
   // The monogram tile: the honest no-preview state, AND the cover that hides the
   // iframe's white background until it paints — a dark product must never flash a

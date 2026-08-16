@@ -54,27 +54,26 @@ export default function FeaturesPage() {
               measured 794px inside a 1440 viewport, which is why nothing on this
               page could ever lay out more than one card per row. */}
           <YStack maxWidth={1024} width="100%" alignSelf="center" alignItems="center">
-            <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" marginBottom="$5" backgroundColor="$color002" borderWidth={1} borderColor="$borderColor" borderRadius="$10" $md={{ marginBottom: "$6" }}>
-              <Sparkles size={16} />
-              <SizableText fontSize="$3" color="$color11">What you get</SizableText>
-            </XStack>
+            <SizableText marginBottom="$5" fontFamily="$mono" fontSize="$1" color="$color11" $md={{ marginBottom: "$6" }}>
+              The full app stack
+            </SizableText>
 
-            <H1 fontSize="$11" fontWeight="500" marginBottom="$4" textAlign="center" $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13", marginBottom: "$5" }} lineHeight="1.1">
+            <H1 fontSize="$11" fontWeight="500" marginBottom="$4" textAlign="center" letterSpacing={-1} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13", marginBottom: "$5" }} lineHeight="1.05">
               {/* Plain ink. This was backgroundClip="text" + color transparent
                   over a gradient a codemod deleted — two invisible words in the
                   page's one headline. Monochrome law: emphasis is weight, not
                   paint. */}
-              What comes with every app you build
+              Everything your app needs. Already connected.
             </H1>
             <Paragraph fontSize="$6" color="$color11" marginBottom="$8" maxWidth={768} alignSelf="center" textAlign="center" $md={{ fontSize: "$7" }} lineHeight="1.5">
-              Hanzo writes the code, runs it, and hosts it. The database, the sign-in, the AI calls and the file storage are connected the first time the app runs.
+              Hanzo writes the code and runs it. Data, sign-in, AI, storage, and deployment are ready from the first build.
             </Paragraph>
 
             <YStack gap="$4" justifyContent="center" alignItems="center" $sm={{ flexDirection: "row" }}>
               <Button
                 onClick={() => user ? router.push('/dev') : openLoginWindow()}
                 {...accent}
-                paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6"
+                paddingHorizontal="$6" paddingVertical="$3" borderRadius="$10"
               >
                 <Zap size={20} />
                 <SizableText color="$color12" fontWeight="500" fontSize="$6">Start building</SizableText>
@@ -82,7 +81,7 @@ export default function FeaturesPage() {
               <Button
                 onClick={() => router.push('/docs')}
                 variant="outline"
-                borderColor="$borderColor" paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color005" }}
+                borderColor="$borderColor" paddingHorizontal="$6" paddingVertical="$3" borderRadius="$10" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color005" }}
               >
                 <SizableText color="$color" fontWeight="500" fontSize="$6">Read the docs</SizableText>
                 <ArrowRight size={20} />
