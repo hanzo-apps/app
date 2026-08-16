@@ -19,8 +19,11 @@
  *   403  PERMISSION. The credential is real and the service is fine, this
  *        identity simply is not allowed. Retrying cannot help, so we never
  *        suggest it.
- *   402  CREDIT. Already had a home; kept here so all four live together.
- *   else the SERVICE. The ONLY case where "try again" is honest.
+ *   402  CREDIT. Already had a home; kept here so all five live together.
+ *   429  RATE. The one status where waiting is the whole remedy.
+ *   else the MODEL. The gateway answers 502 for ids it lists but cannot reach,
+ *        so this names the model and offers the move that works — picking
+ *        another one — rather than promising a minute will fix it.
  *
  * `openLogin` still belongs to the genuinely-unauthenticated case — no session
  * at all — which each route checks before it ever calls the gateway.
@@ -74,21 +77,29 @@ export function reason(detail: string): string {
   return clean.length > LIMIT ? `${clean.slice(0, LIMIT).trimEnd()}…` : clean;
 }
 
-const CREDENTIAL =
+export const CREDENTIAL =
   "Your API credential was rejected. Mint a new key at https://cloud.hanzo.ai/keys";
-const FORBIDDEN =
+export const FORBIDDEN =
   "Your account doesn't have access to this model.";
 /** Exported so the client's fallback and the server's are one string. */
 export const CREDIT = "You're out of credits.";
 
 /**
- * The one sentence that promises the user waiting will help — so it is the one
- * sentence that must never be shown for a credential or a permission. The
- * client imports it for the failures it detects itself (a dead socket, a
- * bodyless response) so both sides of the boundary say this in one voice.
+ * The one sentence that promises waiting is the whole remedy, so it belongs to
+ * the one status where that is true.
+ */
+export const BUSY = "Too many requests right now — try again in a minute.";
+
+/**
+ * A 5xx names the MODEL, because that is what the reader can act on. The
+ * gateway answers 502 for ids it lists but cannot reach — every `:batch` route,
+ * and the retired upstream snapshots — and for those a minute changes nothing
+ * while picking another model works immediately. The client imports this for the
+ * failures it detects itself (a dead socket, a bodyless response) so both sides
+ * of the boundary say it in one voice.
  */
 export const UNAVAILABLE =
-  "The AI service is unavailable — try again in a minute.";
+  "That model didn't respond. Try another model, or try again shortly.";
 
 /**
  * Translate a refused gateway response into what the client should be told.
@@ -107,10 +118,12 @@ export function refusal(
   if (status === 403) return { body: { ok: false, message: stated || FORBIDDEN }, status: 403 };
   if (status === 402)
     return { body: { ok: false, needCredits: true, message: stated || CREDIT }, status: 402 };
+  if (status === 429) return { body: { ok: false, message: stated || BUSY }, status: 429 };
 
-  // Anything else is the service failing, not the caller. One status (502) and
-  // one sentence, because the client cannot act on the difference between a
-  // gateway 500 and a gateway 504.
+  // Anything else is upstream failing, not the caller. One status (502) and one
+  // sentence, because the client cannot act on the difference between a gateway
+  // 500 and a gateway 504 — but it CAN act on the model, which is the commonest
+  // cause: the catalog lists ids the gateway cannot reach.
   return { body: { ok: false, message: stated || UNAVAILABLE }, status: 502 };
 }
 

@@ -6,6 +6,7 @@
  * streams / fetch Response).
  */
 import { runAgent, InMemoryProjectFs, executeAgentTool, type AgentEvent } from "@/lib/agent";
+import { BUSY, CREDENTIAL, CREDIT, UNAVAILABLE } from "@/lib/gateway";
 
 /** Build an SSE `Response` from OpenAI-style chunk objects. */
 function sseResponse(chunks: unknown[]): Response {
@@ -175,9 +176,10 @@ describe("runAgent", () => {
    * screen as raw JSON indistinguishable from an internal fault.
    */
   it.each([
-    [502, /unavailable/i],
-    [402, /credit/i],
-    [401, /credential was rejected/i],
+    [502, UNAVAILABLE],
+    [429, BUSY],
+    [402, CREDIT],
+    [401, CREDENTIAL],
   ])("turns a gateway %i into the sentence the rest of the app uses", async (status, expected) => {
     global.fetch = jest.fn(
       async () => new Response("boom", { status })
@@ -192,7 +194,9 @@ describe("runAgent", () => {
     const last = events.at(-1);
     expect(last?.type).toBe("error");
     if (last?.type === "error") {
-      expect(last.message).toMatch(expected);
+      // The exported sentence, not a word inside it: a substring passes while
+      // the two sides drift apart, which is the whole thing this pins.
+      expect(last.message).toBe(expected);
       // The status code is not a message. It leaked into one before.
       expect(last.message).not.toMatch(/gateway \d/);
     }

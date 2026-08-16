@@ -65,11 +65,26 @@ export const DEFAULT_MODEL = "enso";
 // broken. This is the ONE predicate for "a dead id we must never send", shared by
 // the client model state (components/editor/ask-ai) and the server BFF
 // (app/v1/generate). `auto` (smart routing) and every real gateway id pass through.
-export const isDeadModelId = (id?: string | null): boolean =>
-  !!id &&
-  /^(o[13]($|-)|text-davinci|davinci|cushman|code-(davinci|cushman)|gpt-3|gpt-4($|-))/i.test(
-    id.trim()
+// The family is what follows the provider prefix. The gateway serves one model
+// under both `gpt-3.5-turbo` and `openai/gpt-3.5-turbo`, and a pattern anchored
+// at the start of the string only ever saw the first — so every dead family
+// reached the picker again the moment it wore a prefix.
+const family = (id: string): string => id.slice(id.lastIndexOf("/") + 1);
+
+// `:batch` is the Batch API route rather than a chat one: it takes no streaming
+// completion, and the gateway answers 502 to every one of them.
+const isBatchRoute = (id: string): boolean => /:batch$/i.test(id);
+
+export const isDeadModelId = (id?: string | null): boolean => {
+  if (!id) return false;
+  const m = id.trim();
+  return (
+    isBatchRoute(m) ||
+    /^(o[13]($|-)|text-davinci|davinci|cushman|code-(davinci|cushman)|gpt-3|gpt-4($|-))/i.test(
+      family(m)
+    )
   );
+};
 
 // Coerce a possibly-stale/blank model id to a servable one. Used server-side to
 // harden the BFF and client-side to sanitize a persisted selection on read.

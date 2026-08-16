@@ -362,8 +362,22 @@ stays a pure function the tests read directly:
 - **403 — permission.** Real credential, healthy service, this identity is not
   allowed. Retrying cannot help, so it never suggests it.
 - **402 — credit.** Keeps `needCredits` so the usage modal still opens.
-- **anything else — the service.** The only case where "try again" is honest,
-  and the only user of `UNAVAILABLE`.
+- **429 — rate.** The one status where waiting IS the remedy, so it owns the
+  sentence that says so (`BUSY`). It used to share the 5xx one.
+- **anything else — the model.** `UNAVAILABLE`, and it names the model rather
+  than the service, because the commonest cause is an id the catalog lists and
+  the gateway cannot reach: measured against production, 67 of the first 141
+  models the picker offered answered 502, and 49 of those were every `:batch`
+  route it carried. For those a minute changes nothing and another model works
+  at once, so promising a wait was the wrong half of the advice.
+
+**A model the gateway cannot serve must never reach the picker.**
+`isDeadModelId` is that guard and it had two holes, both invisible: it anchored
+at `^`, so a provider prefix carried every dead family straight past it
+(`openai/gpt-3.5-turbo` matched nothing while the bare `gpt-3.5-turbo` matched),
+and nothing excluded `:batch` — the Batch API route, which takes no streaming
+completion. The id is now tested after its prefix is stripped, `:batch` is dead
+by construction, and `tests/unit/dead-model.test.ts` pins both.
 
 `openLogin` still belongs to the genuinely-unauthenticated case, which each
 route checks before it ever calls the gateway. Those two conditions sharing one

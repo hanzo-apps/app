@@ -85,3 +85,51 @@ test("resolveModelId remaps dead ids to the default, preserves live ids and auto
   assert.equal(resolveModelId("  zen5-pro  "), "zen5-pro");
   assert.equal(resolveModelId("  gpt-4-turbo "), DEFAULT_MODEL);
 });
+
+/**
+ * The gateway serves the SAME family under a bare id and a provider-prefixed one
+ * (`gpt-3.5-turbo` and `openai/gpt-3.5-turbo`). The guard anchored at the start
+ * of the string, so a prefix carried every dead family straight past it and into
+ * the picker, where the gateway answers 502 and the builder reports the AI
+ * service as unavailable.
+ */
+test("a provider prefix does not smuggle a dead family past the guard", () => {
+  for (const id of [
+    "openai/gpt-3.5-turbo",
+    "openai/gpt-3.5-turbo-16k",
+    "openai/gpt-4-turbo",
+    "openai/gpt-4-turbo-preview",
+    "openai/o1-preview",
+    "openai/text-davinci-003",
+  ]) {
+    assert.equal(isDeadModelId(id), true, `${id} should be dead`);
+  }
+});
+
+/**
+ * `:batch` is the Batch API route, not a chat route: it takes no streaming
+ * completion, and the gateway answers 502 for every one. Measured against
+ * production, all 49 of the `:batch` ids the picker offered failed this way.
+ */
+test("a :batch route is never a chat model", () => {
+  for (const id of [
+    "anthropic/claude-opus-4.8:batch",
+    "anthropic/claude-sonnet-4.6:batch",
+    "anthropic/claude-haiku-4.5:batch",
+  ]) {
+    assert.equal(isDeadModelId(id), true, `${id} should be dead`);
+  }
+});
+
+/** A prefix must not make a LIVE id look dead either. */
+test("provider-prefixed live ids still pass", () => {
+  for (const id of [
+    "openai/gpt-4o",
+    "openai/gpt-5.2",
+    "openai/gpt-5.1-codex",
+    "anthropic/claude-opus-4.8",
+    "anthropic/claude-sonnet-4.6",
+  ]) {
+    assert.equal(isDeadModelId(id), false, `${id} should be servable`);
+  }
+});

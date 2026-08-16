@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 
-import { reason, refusal, UNAVAILABLE } from "../../lib/gateway";
+import { reason, refusal, BUSY, UNAVAILABLE } from "../../lib/gateway";
 
 /**
  * The gateway's refusal, translated once (lib/gateway.ts).
@@ -111,4 +111,23 @@ test("a runaway upstream message is capped, not truncated mid-escape", () => {
   const long = reason(JSON.stringify({ msg: "x".repeat(5000) }));
   assert.ok(long.length <= 301, `capped, got ${long.length}`);
   assert.ok(long.endsWith("…"));
+});
+
+/**
+ * A 429 is the one refusal where waiting is the whole remedy, and it used to
+ * share a sentence with 5xx. The 5xx sentence has to cover an unroutable model
+ * — the gateway answers 502 for a model it lists but cannot reach — where
+ * waiting never helps and switching model does. Two conditions, two sentences.
+ */
+test("a rate limit is a wait; a 5xx is not necessarily", () => {
+  const busy = refusal(429, "");
+  assert.equal(busy.status, 429);
+  assert.equal(busy.body.message, BUSY);
+  assert.notEqual(busy.body.message, UNAVAILABLE);
+});
+
+test("the 5xx sentence does not promise that a minute fixes it", () => {
+  const { body } = refusal(502, "");
+  assert.equal(body.message, UNAVAILABLE);
+  assert.ok(!/try again in a minute/i.test(UNAVAILABLE), UNAVAILABLE);
 });
