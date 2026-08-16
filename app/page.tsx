@@ -291,9 +291,20 @@ export default function LandingPage() {
                     the fold. Measured at 390 — 12px is 2 lines ending at y 291 in an
                     844 viewport, so a third line spends 27 of the 553px still free
                     below it. */}
+                {/* 500+, the figure hanzo.ai and cloud.hanzo.ai both publish.
+                    This said 400+ — the same catalog, in first-viewport copy,
+                    off by a hundred against the two surfaces a reader most
+                    likely arrived from.
+
+                    It is TYPED here and derived there: hanzo.ai reads the
+                    registry at build and rounds down to the hundred, so its
+                    number cannot drift. This one can, and did. Deriving it
+                    needs a catalog read this app does not have yet; until it
+                    does, the number has to be checked against the ones next
+                    door rather than trusted. */}
                 <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$3" textAlign="center" color="$color11" $md={{ fontSize: "$6" }} $lg={{ alignSelf: "flex-start", textAlign: "left" }} lineHeight="1.5">
                   One prompt becomes a live app on Hanzo Cloud — UI, database,
-                  auth, and 400+ AI models, wired in and deployed.
+                  auth, and 500+ AI models, wired in and deployed.
                 </Paragraph>
               </Reveal>
 
