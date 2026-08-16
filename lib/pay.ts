@@ -56,6 +56,30 @@ export interface CheckoutIntent {
 }
 
 /**
+ * Whether a level is a real choice. Level 0 is the base price, which is what a
+ * missing level already means, so sending it would put a parameter on every
+ * checkout URL that changes nothing.
+ */
+function moved(level?: number): boolean {
+  return level !== undefined && Number.isInteger(level) && level > 0;
+}
+
+/**
+ * The in-app address of a plan the buyer has chosen: `/checkout?plan=pro`.
+ *
+ * A choice is a plan and a level — never an amount. That is what lets it ride
+ * through sign-in in the open: it names nothing about money, nothing about the
+ * person, and it means the same thing before and after. `/checkout` reads the
+ * price from the catalog when the buyer arrives, so the address cannot go stale
+ * and cannot be edited into a discount.
+ */
+export function checkoutPath({ plan, level }: { plan: string; level?: number }): string {
+  const params = new URLSearchParams({ plan });
+  if (moved(level)) params.set('level', String(level));
+  return `/checkout?${params}`;
+}
+
+/**
  * Build the checkout URL for an intent. Throws on a non-positive or
  * non-finite amount: an ambiguous amount must refuse rather than send the
  * customer to a card form for an unknown sum.
@@ -68,12 +92,7 @@ export function checkoutUrl({ amountUsd, plan, level, returnUrl }: CheckoutInten
   const url = new URL('/confirm/card', PAY_ORIGIN);
   url.searchParams.set('amount', amountUsd.toFixed(2));
   if (plan) url.searchParams.set('plan', plan);
-  // Only a real choice is sent. Level 0 is the base price, which is what a
-  // missing level already means, so sending it would put a parameter on every
-  // checkout URL that changes nothing.
-  if (level !== undefined && Number.isInteger(level) && level > 0) {
-    url.searchParams.set('level', String(level));
-  }
+  if (moved(level)) url.searchParams.set('level', String(level));
   if (returnUrl) url.searchParams.set('returnUrl', returnUrl);
   return url.toString();
 }

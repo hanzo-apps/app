@@ -7,7 +7,7 @@
  * amount. Both halves of that are how the number on the card and the number on
  * the card form come to be the same number.
  */
-import { checkoutUrl } from '@/lib/pay';
+import { checkoutPath, checkoutUrl } from '@/lib/pay';
 
 // normalize is module-private, so the ladder is exercised through fetchPlans —
 // which is also the only way it is ever reached in the app.
@@ -105,5 +105,41 @@ describe('handing the choice to checkout', () => {
       const url = new URL(checkoutUrl({ amountUsd: 99, plan: 'max', level }));
       expect(url.searchParams.has('level')).toBe(false);
     }
+  });
+});
+
+/**
+ * The choice has to survive sign-in, because a buyer sent back to the price
+ * list chooses again — and a second choice is a fresh one.
+ */
+describe('the address a choice is carried to', () => {
+  it('names the plan, so the destination after signing in is that plan', () => {
+    expect(checkoutPath({ plan: 'pro' })).toBe('/checkout?plan=pro');
+  });
+
+  it('carries the level with it', () => {
+    expect(checkoutPath({ plan: 'max', level: 2 })).toBe('/checkout?plan=max&level=2');
+  });
+
+  it('reads the same as the pay URL about which levels are a real choice', () => {
+    for (const level of [0, undefined, 1.5, Number.NaN, -1]) {
+      expect(checkoutPath({ plan: 'max', level })).toBe('/checkout?plan=max');
+    }
+  });
+
+  // No amount, no identity — just which plan. That is what makes it safe to put
+  // in a URL that goes through IAM and back.
+  it('says nothing about money or the person', () => {
+    const path = checkoutPath({ plan: 'pro', level: 3 });
+    expect(path).not.toMatch(/amount|price|\$|email|token|user/i);
+  });
+
+  // Same-origin, single-slash: a stored destination is checked before it is
+  // followed, and this is the shape that passes.
+  it('is an in-app path the login redirect will accept', () => {
+    const path = checkoutPath({ plan: 'pro' });
+    expect(path.startsWith('/')).toBe(true);
+    expect(path.startsWith('//')).toBe(false);
+    expect(path.startsWith('/\\')).toBe(false);
   });
 });

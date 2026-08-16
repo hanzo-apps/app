@@ -153,6 +153,21 @@ export function usePlans(): PlanCatalog {
   return { plans, loading, error };
 }
 
+/**
+ * The price a plan is being sold at. A plan sold at one price shows it; a plan
+ * sold at a chosen level shows the level the customer moved to.
+ *
+ * It is read HERE and nowhere else, so the number on the card, the number the
+ * button hands to checkout and the level that reaches commerce are one answer
+ * rather than three that have to be kept in step. The clamp is for the reading,
+ * not the control: the slider cannot leave the ladder, and a price of
+ * `undefined` would render as "$NaN".
+ */
+export function priceAt(p: Plan, level: number): number {
+  if (p.prices.length === 0) return p.price;
+  return p.prices[Math.min(Math.max(level, 0), p.prices.length - 1)] ?? p.price;
+}
+
 /** Render cents as a whole-dollar string when even, else with cents. */
 export function usd(cents: number): string {
   return cents % 100 === 0 ? `$${cents / 100}` : `$${(cents / 100).toFixed(2)}`;

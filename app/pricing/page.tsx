@@ -10,6 +10,7 @@ import { SizableText, YStack, XStack, H1, Paragraph, H3, Slider } from '@hanzo/u
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Check, ArrowRight } from "lucide-react";
 import { EVENTS } from "@hanzo/event";
 import { useAnalytics } from "@hanzo/event/react";
@@ -19,8 +20,8 @@ import Reveal from "@/components/landing/reveal";
 import FaqSection from "@/components/marketing/faq-section";
 import { billingFaq } from "@/components/marketing/faq-data";
 import { useUser } from "@/hooks/useUser";
-import { usePlans, usd, type Plan } from "@/lib/plans";
-import { goToCheckout } from "@/lib/pay";
+import { usePlans, usd, priceAt } from "@/lib/plans";
+import { checkoutPath } from "@/lib/pay";
 
 // Presentation only. Name, pitch, PRICE and features all come from commerce's
 // catalog (`GET /v1/billing/plans`) — the one authority, and what
@@ -32,22 +33,10 @@ const GROUPS = {
 } as const;
 type GroupId = keyof typeof GROUPS;
 
-// The price a card is showing. A plan sold at one price shows it; a plan sold at
-// a chosen level shows the level the customer moved to.
-//
-// It is read HERE and nowhere else, so the number on the card, the number the
-// button hands to checkout and the level that reaches commerce are one answer
-// rather than three that have to be kept in step. The clamp is for the reading,
-// not the control: the slider cannot leave the ladder, and a price of `undefined`
-// would render as "$NaN".
-function priceAt(p: Plan, level: number): number {
-  if (p.prices.length === 0) return p.price;
-  return p.prices[Math.min(Math.max(level, 0), p.prices.length - 1)] ?? p.price;
-}
-
 // Honest, differentiated tiers. The differentiator is the size of the shared
 export default function PricingPage() {
   const analytics = useAnalytics();
+  const router = useRouter();
   const { isAuthenticated, login } = useUser();
   const [group, setGroup] = useState<GroupId>("personal");
   // Where each ladder-priced plan's control is sitting, by slug. Keyed by slug
@@ -62,33 +51,21 @@ export default function PricingPage() {
   // The live catalog — both the price we SHOW and the price we send to checkout.
   const { plans: catalog, loading: catalogLoading, error: catalogError } = usePlans();
 
-  // Turn a plan choice into a real subscription. A signed-out visitor goes through
-  // the canonical IAM signup funnel first. A signed-in user goes straight to the
-  // ONE live Square surface for a card-on-file subscription at the catalog price.
-  //
-  // This used to POST /api/commerce/checkout and, when that failed, bounce to
-  // /billing — which is what it did on every single click, because that route
-  // 503s without a webhook secret and the Commerce endpoint behind it (
-  // /v1/checkout/charge) does not exist. Hence "the buttons do nothing".
+  // Say which plan was chosen, then leave. This page draws prices and takes a
+  // choice; what a choice costs and where it is paid belong to /checkout, which
+  // reads the catalog itself. A signed-out visitor goes through the canonical
+  // IAM signup funnel on the way, and lands there rather than back here.
   const choosePlan = (planId: string, level: number) => {
     analytics.capture(EVENTS.PLAN_CLICKED, { plan: planId, level });
+    // One destination either way — the checkout for the plan just chosen. A
+    // signed-out buyer signs in first and arrives there afterwards, rather than
+    // back at this page with the choice to make again.
+    const next = checkoutPath({ plan: planId, level });
     if (!isAuthenticated) {
-      login("/pricing", { signup: true });
+      login(next, { signup: true });
       return;
     }
-    const priced = catalog.get(planId);
-    // Refuse rather than guess: no catalog price ⇒ no checkout.
-    if (!priced || priced.contactSales || priced.price <= 0) return;
-    // The level goes with the amount. Checkout re-derives the price from the
-    // level server-side, so the amount here is what the customer is shown and the
-    // level is what they are charged for — send one without the other and the two
-    // disagree.
-    goToCheckout({
-      amountUsd: priceAt(priced, level) / 100,
-      plan: planId,
-      level,
-      returnUrl: `${window.location.origin}/billing`,
-    });
+    router.push(next);
   };
 
   return (

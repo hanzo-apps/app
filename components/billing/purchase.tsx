@@ -28,10 +28,11 @@
  * the current scope differs. Fail closed beats a confident guess about money.
  */
 
+import { useRouter } from 'next/navigation';
 import { Paragraph, YStack, SizableText } from '@hanzo/ui';
 import { useOrg } from '@/lib/org/client';
 import { currentOrg, titleCase } from '@/lib/org-scope';
-import { goToCheckout, billingReturnUrl } from '@/lib/pay';
+import { goToCheckout, billingReturnUrl, checkoutPath } from '@/lib/pay';
 import { usePlans, usd } from '@/lib/plans';
 
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@hanzo/ui';
@@ -149,10 +150,10 @@ export function TopUp() {
  * The price shown is the catalog price commerce will actually charge.
  */
 export function Subscribe({ slug, label }: { slug: string; label?: string }) {
+  const router = useRouter();
   const { org, loading: orgLoading } = usePayer();
   const { plans, loading: plansLoading, error } = usePlans();
   const plan = plans.get(slug);
-  const returnUrl = billingReturnUrl();
 
   if (orgLoading || plansLoading) {
     return (
@@ -173,9 +174,9 @@ export function Subscribe({ slug, label }: { slug: string; label?: string }) {
 
   return (
     <Button
-      onClick={() =>
-        goToCheckout({ amountUsd: plan.price / 100, plan: plan.slug, returnUrl })
-      }
+      // The same door every other plan choice goes through, so the price and
+      // the funnel row are read in one place rather than two.
+      onClick={() => router.push(checkoutPath({ plan: plan.slug }))}
       title={`Billed to ${titleCase(org)}`}
       width="100%" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}
       size="sm"
