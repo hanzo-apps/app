@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useIam } from "@hanzo/iam/react";
 import { read, write, apply, type Preference } from "@hanzo/appearance/state";
 
 /**
@@ -22,12 +23,24 @@ import { read, write, apply, type Preference } from "@hanzo/appearance/state";
  * package emits — @hanzo/appearance mutates `<html>`'s inline style on every
  * change (accent, type and density all land there). This is the same signal
  * AccentSync observes.
+ *
+ * It carries the SDK's token itself rather than riding the session cookie. The
+ * cookie is written by `IamCookieBridge`, an effect in a component ABOVE this
+ * one — and React runs child effects first, so on a fresh session this fetch
+ * always went out before the credential existed and the account read came back
+ * 401. Nothing failed loudly; appearance just quietly stayed per-device every
+ * first load. `lib/iam.ts` reads `Authorization: Bearer` ahead of the cookie, so
+ * holding the token removes the ordering question instead of racing it.
  */
 const ENDPOINT = "/v1/me/appearance";
 const DEBOUNCE_MS = 800;
 
 export function AppearanceSync() {
+  const { accessToken } = useIam();
+
   useEffect(() => {
+    if (!accessToken) return; // guest, or the session has not resolved yet
+    const auth = { Authorization: `Bearer ${accessToken}` };
     let live = true;
     let account = false; // is there an account to sync to?
     let synced = ""; // JSON of the preference last known equal to the account
@@ -37,13 +50,13 @@ export function AppearanceSync() {
       synced = JSON.stringify(p);
       fetch(ENDPOINT, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...auth, "Content-Type": "application/json" },
         body: synced,
       }).catch(() => {});
     };
 
     // 1. Adopt the account's stored preference, or seed it from this device.
-    fetch(ENDPOINT, { headers: { Accept: "application/json" } })
+    fetch(ENDPOINT, { headers: { ...auth, Accept: "application/json" } })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (!live || !data?.ok) return; // guest / unconfigured → localStorage only
@@ -89,7 +102,7 @@ export function AppearanceSync() {
       clearTimeout(timer);
       observer.disconnect();
     };
-  }, []);
+  }, [accessToken]);
 
   return null;
 }
