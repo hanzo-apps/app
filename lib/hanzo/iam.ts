@@ -58,26 +58,44 @@ function memoryStorage(): Storage {
 }
 
 /**
- * The browser's own store when it is reachable, the shim when it is not.
+ * The browser's own store, or null where there is none.
  *
- * `typeof window` answers "is there a DOM"; it does not answer "may I store
- * anything". Reading `window.localStorage` THROWS a SecurityError when storage
- * is denied — Safari's block-all-cookies, an enterprise policy, an opaque-origin
- * frame — and this value is built while the ROOT LAYOUT's chunk is still
+ * Only a WRITE answers the question, because three different things all mean
+ * "no store" and they do not look alike: a server has no DOM at all, a privacy
+ * mode can hand back `null` in place of the store, and a denied origin THROWS a
+ * SecurityError on the property read — Safari's block-all-cookies, a phone's
+ * anti-tracking, an enterprise policy. `typeof window` distinguishes none of
+ * them, and this value is built while the ROOT LAYOUT's chunk is still
  * evaluating, before React exists and therefore above every error boundary. An
  * unguarded read there does not degrade one feature; it takes the whole document
  * to `global-error` and the visitor reads "This page crashed".
- *
- * One question, one answer: no DOM and no permission both mean the same thing —
- * there is no store here, use the shim.
  */
-function usableStorage(): Storage {
+function usableStorage(): Storage | null {
   try {
-    return window.localStorage;
+    const store = window.localStorage;
+    const probe = 'hanzo:probe';
+    store.setItem(probe, '1');
+    store.removeItem(probe);
+    return store;
   } catch {
-    return memoryStorage();
+    return null;
   }
 }
+
+/**
+ * Where a session is kept on this browser — null when it will not keep one.
+ *
+ * Sign-in needs this twice over. The PKCE verifier and state are written before
+ * the full-page redirect to hanzo.id and read back when the browser returns, and
+ * the tokens that exchange yields have to outlive every navigation after it. In
+ * memory both die at the first unload: the callback finds no verifier, the
+ * exchange never reaches the token endpoint, and the person is told their
+ * session could not be established after authenticating perfectly well.
+ *
+ * So null is a thing to say BEFORE the round trip rather than discover after
+ * one — `app/login` reads it and states the condition instead of leaving.
+ */
+export const storage: Storage | null = usableStorage();
 
 export const iamConfig: IAMConfig = {
   serverUrl: SERVER_URL,
@@ -94,7 +112,7 @@ export const iamConfig: IAMConfig = {
   // any reload / new tab, so the session persists after "Go to Dashboard".
   // sessionStorage is per-tab and is the reason the app dropped back to
   // "Sign In" after the OAuth redirect.
-  storage: usableStorage(),
+  storage: storage ?? memoryStorage(),
 };
 
 /* -------------------------------------------------------------------------- */

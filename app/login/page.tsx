@@ -6,10 +6,11 @@ import { PrimaryButton } from '@hanzo/ui/product';
 // same way it drops the GuiElement type. Tracked; everything else in this
 // file comes from @hanzo/ui.
 import { Anchor } from '@hanzo/gui';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useIam } from '@hanzo/iam/react';
+import { storage } from '@/lib/hanzo/iam';
 import { HanzoBrand } from '@/components/HanzoLogo';
 import { Monitor, Apple, Terminal } from 'lucide-react';
 import HeroPreview from '@/components/landing/hero-preview';
@@ -44,7 +45,18 @@ const DESKTOP = [
 export default function LoginPage() {
   const { login } = useIam();
 
-  useEffect(() => {
+  /**
+   * Start sign-in. Every door on this page is this one function — the redirect
+   * on mount, the button, and the demo's own prompt — so they cannot disagree
+   * about when there is a sign-in to start.
+   *
+   * There is not one without somewhere to keep it. The PKCE verifier is written
+   * before the redirect to hanzo.id and read back when the browser returns, so a
+   * browser that keeps nothing sends a person all the way through the IdP to a
+   * callback that has nothing to exchange. Say so here instead.
+   */
+  const start = useCallback(() => {
+    if (!storage) return;
     // Honor a `?redirect=<path>` deep link (middleware stamps it when bouncing
     // a protected route here) so the post-login callback returns the user
     // there. Same-origin absolute paths only — never a protocol-relative /
@@ -52,13 +64,29 @@ export default function LoginPage() {
     try {
       const r = new URLSearchParams(window.location.search).get('redirect');
       if (r && r.startsWith('/') && !r.startsWith('//') && !r.startsWith('/\\')) {
-        window.localStorage.setItem('redirectAfterLogin', r);
+        storage.setItem('redirectAfterLogin', r);
       }
     } catch {
-      /* storage / URL unavailable */
+      /* URL unavailable */
     }
-    login();
+    void login();
   }, [login]);
+
+  /**
+   * Whether this browser keeps anything, as the RENDER may ask it.
+   *
+   * `storage` is null on the server as well — there is no DOM to hold one — so
+   * branching the markup on it directly renders the refusal for everybody and
+   * then contradicts itself at hydration. The first paint is the ordinary one
+   * and the answer arrives on mount, where it is real. Only a browser that
+   * keeps nothing sees the swap, and that is the browser about to stay here.
+   */
+  const [keeps, setKeeps] = useState(true);
+
+  useEffect(() => {
+    setKeeps(storage !== null);
+    start();
+  }, [start]);
 
   return (
     <YStack minHeight="100%" backgroundColor="$background">
@@ -80,16 +108,29 @@ export default function LoginPage() {
               and the API.
             </Paragraph>
 
-            {/* The one white, high-emphasis action, wearing the same recipe as
-                the header's "Get started" — it is the same door. */}
-            <PrimaryButton onClick={() => login()} size="lg" width="100%" marginTop="$6">
-              Continue to Hanzo ID
-            </PrimaryButton>
+            {keeps ? (
+              <>
+                {/* The one white, high-emphasis action, wearing the same recipe as
+                    the header's "Get started" — it is the same door. */}
+                <PrimaryButton onClick={start} size="lg" width="100%" marginTop="$6">
+                  Continue to Hanzo ID
+                </PrimaryButton>
 
-            <XStack marginTop="$3" alignItems="center" justifyContent="center" gap="$2">
-              <Spinner size={14} />
-              <Paragraph fontSize="$1" color="$color11">Redirecting to secure sign in…</Paragraph>
-            </XStack>
+                <XStack marginTop="$3" alignItems="center" justifyContent="center" gap="$2">
+                  <Spinner size={14} />
+                  <Paragraph fontSize="$1" color="$color11">Redirecting to secure sign in…</Paragraph>
+                </XStack>
+              </>
+            ) : (
+              /* The condition, not a dead button. Naming the setting is the
+                 whole value of the sentence — "something went wrong" would send
+                 someone back through the IdP to the same dead end. */
+              <Paragraph marginTop="$6" fontSize="$3" color="$color11" lineHeight="1.5" textAlign="center" $lg={{ textAlign: "left" }}>
+                This browser is blocking site storage, and signing in needs
+                somewhere to keep your session. Allow storage for hanzo.app — or
+                open it outside a private window — and reload this page.
+              </Paragraph>
+            )}
 
             <Paragraph marginTop="$5" fontSize="$3" color="$color11" textAlign="center">
               New here?{' '}
@@ -123,7 +164,7 @@ export default function LoginPage() {
               fill, and to build you sign in, so its "Build <app> →" link opens
               the same door the button does. */}
           <YStack alignSelf="center" width="100%" minWidth={0} $lg={{ flex: 1, minWidth: 0 }}>
-            <HeroPreview ask={() => login()} />
+            <HeroPreview ask={start} />
           </YStack>
         </YStack>
       </YStack>

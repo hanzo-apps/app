@@ -7,21 +7,44 @@ import Link from "next/link";
 
 import { useUser } from "@/hooks/useUser";
 import { loginRedirectDestination } from "@/lib/auth/redirect";
-import { isLinkPopupReturn, finishLinkPopup } from "@/lib/hanzo/iam";
+import { isLinkPopupReturn, finishLinkPopup, storage } from "@/lib/hanzo/iam";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { LoadingScreen } from "@/components/ui/loading-screen";
 import { accent, screen } from "@/lib/chrome";
 
 const REDIRECT_KEY = "redirectAfterLogin";
 
+/** Where this sign-in was headed. Read once — the stash is spent on the way in. */
+function destination(): string {
+  const stored = storage?.getItem(REDIRECT_KEY) ?? null;
+  storage?.removeItem(REDIRECT_KEY);
+  return loginRedirectDestination(stored);
+}
+
 /**
  * OAuth2 PKCE callback.
  *
- * Completes the hanzo.id exchange and redirects to the workspace the instant a
- * session is established — no manual click, no indefinite spinner. The previous
- * screen ran a decorative step timer and only ever navigated via a button the
- * user had to press; this drives the real `completeLogin()` promise and calls
- * `router.replace()` on resolve.
+ * Completes the hanzo.id exchange and leaves for the workspace the instant a
+ * session exists — no manual click, no indefinite spinner.
+ *
+ * ── The exchange and the session are different questions ─────────────────────
+ *
+ * An authorization code is single-use and its PKCE verifier is consumed before
+ * the token POST, so only the FIRST load of a callback address can exchange
+ * anything. Every later one — a pull-to-refresh on the waiting screen, a phone
+ * restoring an evicted tab, any re-entry of that address — arrives at a spent
+ * code and fails before it reaches the wire.
+ *
+ * That failure says nothing about whether the person is signed in, and usually
+ * they are: the exchange it is repeating already worked. So the exchange runs
+ * first, and the session is what decides — `isAuthenticated` covers both the
+ * one this load established and the one an earlier load did. Only when the
+ * provider has finished reading storage and found nothing is there anything
+ * honest to report.
+ *
+ * The waiting is not cosmetic. `useIam` reads the session asynchronously, so
+ * `isAuthenticated` is false on the first commit of every load; concluding from
+ * it at mount is reading an answer from before the question was asked.
  *
  * ── Waiting is `LoadingScreen`, not a second one ─────────────────────────────
  *
@@ -41,63 +64,53 @@ const REDIRECT_KEY = "redirectAfterLogin";
  */
 export default function AuthCallback() {
   const router = useRouter();
-  const { completeLogin, isAuthenticated } = useUser();
-  const [error, setError] = useState(false);
+  const { completeLogin, isAuthenticated, loading } = useUser();
+  const [spent, setSpent] = useState(false);
   const ran = useRef(false);
+  const popup = useRef(false);
+  const left = useRef(false);
 
+  // Attempt the exchange, once.
   useEffect(() => {
     if (ran.current) return;
     ran.current = true;
 
-    const destination = () => {
-      let stored: string | null = null;
-      try {
-        stored = window.localStorage.getItem(REDIRECT_KEY);
-        window.localStorage.removeItem(REDIRECT_KEY);
-      } catch {
-        /* storage unavailable */
-      }
-      return loginRedirectDestination(stored);
-    };
+    // Link-provider popup return: this callback is running INSIDE the popup
+    // opened by `linkProvider()` (child window + our sentinel). The provider
+    // link already happened server-side at IAM; signal the opener and close.
+    // The popup shares the signed-in session, so it also claims this load
+    // against the departure below, which would otherwise navigate the popup to
+    // the dashboard instead of closing it.
+    if (isLinkPopupReturn()) {
+      popup.current = true;
+      finishLinkPopup(!new URLSearchParams(window.location.search).has("error"));
+      return;
+    }
 
-    (async () => {
-      // Link-provider popup return: this callback is running INSIDE the popup
-      // opened by `linkProvider()` (child window + our sentinel). The provider
-      // link already happened server-side at IAM; signal the opener and close.
-      // Must run before the `isAuthenticated` branch — the popup shares the
-      // signed-in session, so that branch would otherwise navigate the popup to
-      // the dashboard instead of closing it.
-      if (isLinkPopupReturn()) {
-        const linkParams = new URLSearchParams(window.location.search);
-        finishLinkPopup(!linkParams.has("error"));
-        return;
-      }
+    const params = new URLSearchParams(window.location.search);
 
-      // Already signed in (revisit / token already exchanged): go straight in.
-      if (isAuthenticated) {
-        router.replace(destination());
-        return;
-      }
+    // Hit directly without an auth response — nothing to complete.
+    if (!params.has("code") && !params.has("access_token")) {
+      router.replace("/login");
+      return;
+    }
 
-      const params = new URLSearchParams(window.location.search);
-      const hasCallback = params.has("code") || params.has("access_token");
+    void completeLogin().then((ok) => {
+      if (!ok) setSpent(true);
+    });
+  }, [completeLogin, router]);
 
-      // Hit directly without an auth response — nothing to complete.
-      if (!hasCallback) {
-        router.replace("/login");
-        return;
-      }
+  // Leave on the session — whichever load established it.
+  useEffect(() => {
+    if (popup.current || left.current || !isAuthenticated) return;
+    left.current = true;
+    router.replace(destination());
+  }, [isAuthenticated, router]);
 
-      const ok = await completeLogin();
-      if (ok) {
-        router.replace(destination());
-      } else {
-        setError(true);
-      }
-    })();
-  }, [completeLogin, isAuthenticated, router]);
-
-  if (!error) return <LoadingScreen>Signing you in…</LoadingScreen>;
+  // Nothing is settled while the provider is still reading storage, and a
+  // session that turns up makes the failed exchange a repeat rather than a
+  // refusal. Both keep the waiting screen; only the third case is a failure.
+  if (!spent || loading || isAuthenticated) return <LoadingScreen>Signing you in…</LoadingScreen>;
 
   return (
     <XStack {...screen} backgroundColor="$background" paddingHorizontal="$5">

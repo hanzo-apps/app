@@ -4,6 +4,8 @@ import { useCallback, useMemo } from "react";
 import { useIam, useIamIdentity, resolveIdentity } from "@hanzo/iam/react";
 
 import { User } from "@/types";
+import { storage } from "@/lib/hanzo/iam";
+import { errorLogger, ErrorSeverity } from "@/lib/error-handling/error-logger";
 
 /**
  * App-wide user hook (HIP-0111).
@@ -61,8 +63,11 @@ export const useUser = () => {
   }, [iamUser, resolved]);
 
   const openLoginWindow = useCallback(async () => {
+    // Through `storage`, which is null where the browser refuses one — a bare
+    // `localStorage` here THROWS before `login()` is ever reached, so the
+    // control does nothing at all rather than starting anything.
     if (typeof window !== "undefined") {
-      localStorage.setItem("redirectAfterLogin", window.location.pathname);
+      storage?.setItem("redirectAfterLogin", window.location.pathname);
     }
     // PKCE S256 redirect to the canonical authorize endpoint (via discovery).
     await login();
@@ -74,9 +79,7 @@ export const useUser = () => {
   // dead end. (Absorbed from the retired useAuth/AuthProvider stack; ONE facade.)
   const loginTo = useCallback(
     (redirectPath?: string, opts?: { signup?: boolean }) => {
-      if (redirectPath && typeof window !== "undefined") {
-        localStorage.setItem("redirectAfterLogin", redirectPath);
-      }
+      if (redirectPath) storage?.setItem("redirectAfterLogin", redirectPath);
       void login(
         opts?.signup ? { additionalParams: { signup: "true" } } : undefined,
       );
@@ -92,7 +95,26 @@ export const useUser = () => {
     try {
       const token = await handleCallback();
       return Boolean(token?.accessToken);
-    } catch {
+    } catch (e) {
+      // Several unrelated faults end on the same sentence — a code already
+      // redeemed, a verifier this browser never kept, a redirect_uri the issuer
+      // refuses, an unreachable token endpoint — and the person is shown none
+      // of it, so a screenshot cannot name one. The SDK says which; ship that.
+      //
+      // Two of those even share the SDK's wording ("OAuth state mismatch"), and
+      // what separates them is whether this browser HAS a store: with one, the
+      // verifier was spent by an earlier load of the same address; without one,
+      // it never survived the redirect. So the store rides along as the fact
+      // that tells the two apart.
+      errorLogger.logError(
+        e instanceof Error ? e : new Error(String(e)),
+        ErrorSeverity.MEDIUM,
+        {
+          component: "auth/callback",
+          action: "completeLogin",
+          metadata: { storage: storage !== null },
+        },
+      );
       return false;
     }
   }, [handleCallback]);
