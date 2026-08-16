@@ -46,6 +46,28 @@ function memoryStorage(): Storage {
   };
 }
 
+/**
+ * The browser's own store when it is reachable, the shim when it is not.
+ *
+ * `typeof window` answers "is there a DOM"; it does not answer "may I store
+ * anything". Reading `window.localStorage` THROWS a SecurityError when storage
+ * is denied — Safari's block-all-cookies, an enterprise policy, an opaque-origin
+ * frame — and this value is built while the ROOT LAYOUT's chunk is still
+ * evaluating, before React exists and therefore above every error boundary. An
+ * unguarded read there does not degrade one feature; it takes the whole document
+ * to `global-error` and the visitor reads "This page crashed".
+ *
+ * One question, one answer: no DOM and no permission both mean the same thing —
+ * there is no store here, use the shim.
+ */
+function usableStorage(): Storage {
+  try {
+    return window.localStorage;
+  } catch {
+    return memoryStorage();
+  }
+}
+
 export const iamConfig: IAMConfig = {
   serverUrl: SERVER_URL,
   clientId: CLIENT_ID,
@@ -60,7 +82,7 @@ export const iamConfig: IAMConfig = {
   // any reload / new tab, so the session persists after "Go to Dashboard".
   // sessionStorage is per-tab and is the reason the app dropped back to
   // "Sign In" after the OAuth redirect.
-  storage: typeof window !== 'undefined' ? window.localStorage : memoryStorage(),
+  storage: usableStorage(),
 };
 
 /* -------------------------------------------------------------------------- */
