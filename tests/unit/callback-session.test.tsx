@@ -91,6 +91,32 @@ test("a failed exchange with no session says so", async () => {
   expect(replace).not.toHaveBeenCalled();
 });
 
+test("a session already here waits for this load's exchange to answer", async () => {
+  // Signed in as one account, authenticating at the issuer as another. The
+  // storage read resolves first — it beats a network round-trip every time —
+  // and departing on it lands the person back in the account they were leaving.
+  let settle: (ok: boolean) => void = () => {};
+  session.completeLogin = jest.fn(
+    () =>
+      new Promise<boolean>((resolve) => {
+        settle = resolve;
+      }),
+  );
+  session.isAuthenticated = true;
+  session.loading = false;
+
+  render(
+    <WithGui>
+      <AuthCallback />
+    </WithGui>,
+  );
+  await waitFor(() => expect(session.completeLogin).toHaveBeenCalled());
+  expect(replace).not.toHaveBeenCalled();
+
+  settle(true);
+  await waitFor(() => expect(replace).toHaveBeenCalledWith("/dashboard"));
+});
+
 test("a live exchange is what the happy path still runs on", async () => {
   session.completeLogin = jest.fn(async () => true);
   const view = render(

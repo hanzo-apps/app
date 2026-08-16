@@ -65,7 +65,18 @@ function destination(): string {
 export default function AuthCallback() {
   const router = useRouter();
   const { completeLogin, isAuthenticated, loading } = useUser();
-  const [spent, setSpent] = useState(false);
+  /**
+   * This load's own exchange, which outranks any session already here.
+   *
+   * Someone signed in as one account can authenticate at the issuer as another,
+   * and then TWO answers exist at once: the session in storage, read on mount,
+   * and the code in the address, still being redeemed. The session resolves
+   * first — it is a storage read against a network round-trip — so leaving on
+   * it would land the person back in the account they were trying to leave.
+   * The code in hand is the newer statement of who this is, so nothing departs
+   * until it has spoken.
+   */
+  const [exchange, setExchange] = useState<"running" | "done" | "failed">("running");
   const ran = useRef(false);
   const popup = useRef(false);
   const left = useRef(false);
@@ -95,22 +106,22 @@ export default function AuthCallback() {
       return;
     }
 
-    void completeLogin().then((ok) => {
-      if (!ok) setSpent(true);
-    });
+    void completeLogin().then((ok) => setExchange(ok ? "done" : "failed"));
   }, [completeLogin, router]);
 
-  // Leave on the session — whichever load established it.
+  // Leave on the session — whichever load established it, once this load's own
+  // exchange has had its say.
   useEffect(() => {
-    if (popup.current || left.current || !isAuthenticated) return;
+    if (popup.current || left.current || exchange === "running" || !isAuthenticated) return;
     left.current = true;
     router.replace(destination());
-  }, [isAuthenticated, router]);
+  }, [exchange, isAuthenticated, router]);
 
   // Nothing is settled while the provider is still reading storage, and a
   // session that turns up makes the failed exchange a repeat rather than a
   // refusal. Both keep the waiting screen; only the third case is a failure.
-  if (!spent || loading || isAuthenticated) return <LoadingScreen>Signing you in…</LoadingScreen>;
+  if (exchange !== "failed" || loading || isAuthenticated)
+    return <LoadingScreen>Signing you in…</LoadingScreen>;
 
   return (
     <XStack {...screen} backgroundColor="$background" paddingHorizontal="$5">
