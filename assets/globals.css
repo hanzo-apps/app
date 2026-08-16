@@ -1779,7 +1779,7 @@ html:root [aria-label="Start building"] {
   height: 14px;
 }
 
-/* Enso's anchor, the mic's neighbour in the console control row. public/edit.js
+/* Enso's anchor, the mic's neighbour in the console control row. public/control.js
    injects its host into #enso-dock at runtime and marks it data-hanzo-edit, so
    the host is a descendant this app never draws — one rule here, the same way
    the mic above is one rule. */
@@ -1788,7 +1788,7 @@ html:root [aria-label="Start building"] {
 }
 
 /* The Enso contribute-launcher docks into #enso-dock (above) on desktop. On a
-   phone the console is collapsed, so #enso-dock is not laid out and edit.js
+   phone the console is collapsed, so #enso-dock is not laid out and control.js
    keeps the launcher in its fallback corner — `position: fixed; right/bottom
    16px` — which lands squarely on the composer's send button. The launcher
    opens a change against THIS page's own source (a desktop contributor tool),

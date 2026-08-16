@@ -120,7 +120,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   // Match all routes except static assets: _next internals AND public/ files
-  // (template .webp thumbnails, logos, fonts, esbuild.wasm, edit.js …). Without
+  // (template .webp thumbnails, logos, fonts, esbuild.wasm, control.js …). Without
   // the extension guard every public/ asset burned the per-IP rate-limit budget —
   // one gallery page view ≈ dozens of "requests", so browsing (or the nightly
   // e2e) tripped 429s on pages that had loaded fine moments before.

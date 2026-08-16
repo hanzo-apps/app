@@ -103,7 +103,7 @@ const nextConfig: NextConfig = {
 
   // The Enso/edit widget is a MUTABLE script dropped into every Hanzo app, but
   // the origin set no Cache-Control, so Cloudflare stamped its default 4h browser
-  // TTL — and a fix to edit.js sat stale in every open tab for up to four hours
+  // TTL — and a fix to control.js sat stale in every open tab for up to four hours
   // (an owner "checked" the enso fix and still saw the pre-fix hairline floating
   // over the preview). A widget we reship must revalidate, not linger: 5-minute
   // freshness with a background stale-while-revalidate window, so an update
@@ -114,7 +114,7 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/edit.js',
+        source: '/control.js',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=300, stale-while-revalidate=3600' },
         ],

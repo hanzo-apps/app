@@ -7,7 +7,7 @@
     "predev": "node scripts/gen-edit-manifest.mjs",
     "dev": "next dev --webpack",
     "gen:edit-manifest": "node scripts/gen-edit-manifest.mjs",
-    "prebuild": "node scripts/vendor.mjs && node scripts/gen-edit-manifest.mjs && node scripts/sync-releases.mjs",
+    "prebuild": "cp node_modules/@hanzo/control/src/control.js public/control.js && node scripts/vendor.mjs && node scripts/gen-edit-manifest.mjs && node scripts/sync-releases.mjs",
     "build": "next build --webpack",
     "start": "next start",
     "typecheck": "tsc --noEmit",
@@ -15,7 +15,7 @@
     "lint:gui": "node scripts/lint-gui-props.mjs",
     "test": "jest",
     "test:watch": "jest --watch",
-    "postinstall": "cp node_modules/esbuild-wasm/esbuild.wasm public/esbuild.wasm 2>/dev/null || true; node scripts/vendor.mjs || true",
+    "postinstall": "cp node_modules/@hanzo/control/src/control.js public/control.js 2>/dev/null || true; cp node_modules/esbuild-wasm/esbuild.wasm public/esbuild.wasm 2>/dev/null || true; node scripts/vendor.mjs || true",
     "test:e2e": "playwright test",
     "test:e2e:auth": "playwright test --project=authenticated",
     "test:e2e:public": "playwright test --project=public",
@@ -35,6 +35,7 @@
     "@hanzo/appearance": "^0.1.6",
     "@hanzo/base": "^0.2.1",
     "@hanzo/composer": "^0.1.0",
+    "@hanzo/control": "^0.2.0",
     "@hanzo/design": "^0.5.11",
     "@hanzo/event": "^0.3.28",
     "@hanzo/gui": "^8.1.0",
@@ -148,7 +149,7 @@
       "better-sqlite3"
     ]
   },
-  "description": "Hanzo App — AI web & app builder on Hanzo Cloud",
+  "description": "Hanzo App \u2014 AI web & app builder on Hanzo Cloud",
   "author": "Hanzo AI, Inc.",
   "repository": {
     "type": "git",

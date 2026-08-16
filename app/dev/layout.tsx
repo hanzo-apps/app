@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 /**
  * The Enso launcher is ANCHORED into the console, not floating over the preview.
  *
- * `public/edit.js` is a viewport-corner control: `position: fixed; right: 16px;
+ * `public/control.js` is a viewport-corner control: `position: fixed; right: 16px;
  * bottom: 16px`. Measured on this route at 1430x832, that 56px box lands at
  * x 1358-1414, y 760-816 — and the builder owns every pixel of it. The preview
  * card runs x 404-1418, y 62-792 with an 8px corner, and the console dock bar is

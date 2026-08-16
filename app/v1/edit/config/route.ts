@@ -1,7 +1,7 @@
 /**
  * /v1/edit/config — the widget's runtime configuration.
  *
- * `public/edit.js` is a STATIC asset served byte-identically to every Hanzo
+ * `public/control.js` is a STATIC asset served byte-identically to every Hanzo
  * property, so anything that varies by environment, or that must be rotatable
  * without a redeploy of every site, cannot live inside it. That is exactly the
  * Insights ingest key: it reaches the browser either way (it is a publishable,

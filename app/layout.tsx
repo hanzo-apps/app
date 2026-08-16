@@ -164,22 +164,25 @@ const ACCENT_BOOT =
   "if(typeof a==='string'&&a){var s=document.documentElement.style;" +
   "s.setProperty('--primary',a);s.setProperty('--accent',a);s.setProperty('--hanzo-accent',a);}}catch(e){}})()";
 
-// edit.js is a stable-URL public asset behind Cloudflare's 4h Browser-Cache-TTL,
+// control.js is @hanzo/control, copied out of node_modules into public/ on
+// install and before build, so the bytes served are whatever package.json pins
+// rather than a second copy of the widget kept here. It is a stable-URL public
+// asset behind Cloudflare's 4h Browser-Cache-TTL,
 // which OVERRIDES the origin's max-age — so a fix to the widget sits stale in a
 // browser for hours (the fix is live at origin+edge, but the tab keeps the old
 // bytes). Version the URL by the file's own CONTENT hash: the query changes ONLY
-// when edit.js changes, so a deploy that touches it is a cache MISS in every
+// when control.js changes, so a deploy that touches it is a cache MISS in every
 // browser (a new URL the 4h TTL can't cover), while an unchanged file keeps its
 // cache. Read once at module load; if the file can't be read, fall back to the
 // bare URL — never break render over a cache-busting nicety. (A CF Cache Rule
-// scoping /edit.js to "Respect origin" would make this unnecessary AND cover the
+// scoping /control.js to "Respect origin" would make this unnecessary AND cover the
 // cross-app embeds; this covers hanzo.app's own load without CF access.)
-const EDIT_JS_SRC = (() => {
+const CONTROL_JS_SRC = (() => {
   try {
-    const body = readFileSync(path.join(process.cwd(), "public", "edit.js"));
-    return `/edit.js?v=${createHash("sha256").update(body).digest("hex").slice(0, 8)}`;
+    const body = readFileSync(path.join(process.cwd(), "public", "control.js"));
+    return `/control.js?v=${createHash("sha256").update(body).digest("hex").slice(0, 8)}`;
   } catch {
-    return "/edit.js";
+    return "/control.js";
   }
 })();
 
@@ -245,9 +248,9 @@ export default async function RootLayout({
         {/* Hanzo Edit — the ever-present "contribute to this page" widget. Reads
             the hanzo:repo/path/branch/provider metas above, then offers Suggest
             (anyone) or a real fork→edit→PR (admin free, credit-holders debited).
-            Served by hanzo.app at /edit.js; any Hanzo app drops in the same tag:
-            <script async src="https://hanzo.app/edit.js"></script>. */}
-        <script async src={EDIT_JS_SRC} />
+            Served by hanzo.app at /control.js; any Hanzo app drops in the same tag:
+            <script async src="https://hanzo.app/control.js"></script>. */}
+        <script async src={CONTROL_JS_SRC} />
         {/* Speculation Rules — progressive: browsers that don't know the script
             type ignore it entirely. Top nav routes prefetch on hover/pointerdown
             (moderate); the static marketing pages additionally prerender on

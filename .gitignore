@@ -118,3 +118,6 @@ tests/e2e/test-results.json
 # Copied out of node_modules by scripts/vendor.mjs — pinned in package.json,
 # rebuilt on install and before build. Same treatment as public/esbuild.wasm.
 public/vendor/
+
+# @hanzo/control, copied in on install and before build
+public/control.js
