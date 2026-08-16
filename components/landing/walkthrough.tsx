@@ -280,7 +280,7 @@ const STOPS: readonly Stop[] = [
     icon: <Shield size={18} />,
     title: "Keys and access",
     body: "API keys live in Hanzo KMS and never in the code. Sign-in and org-scoped access come from Hanzo IAM",
-    points: ["Secrets in Hanzo KMS", "Sign-in through Hanzo IAM", "Role-based access", "SOC 2 Type II audit in progress"],
+    points: ["Secrets in Hanzo KMS", "Sign-in through Hanzo IAM", "Role-based access", "Compatible with SOC 2 Type II"],
     pane: "more",
     scene: (
       <More on="Secrets">

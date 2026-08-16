@@ -30,7 +30,7 @@ export default function EnterprisePage() {
     {
       icon: <Shield size={24} />,
       title: "Single sign-on and access control",
-      description: "SAML single sign-on, role-based access, and encryption at rest and in transit. SOC 2 Type II audit in progress."
+      description: "SAML single sign-on, role-based access, and encryption at rest and in transit. Controls compatible with SOC 2 Type II."
     },
     {
       icon: <Users size={24} />,
@@ -140,8 +140,8 @@ export default function EnterprisePage() {
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle2 size={24} />
                   <div>
-                    <YStack marginBottom="$1"><SizableText fontWeight="500">SOC 2 Type II audit in progress</SizableText></YStack>
-                    <YStack><SizableText fontSize="$3" color="$color11">Independent Type II audit underway; report available under NDA on completion</SizableText></YStack>
+                    <YStack marginBottom="$1"><SizableText fontWeight="500">Compatible with SOC 2 Type II</SizableText></YStack>
+                    <YStack><SizableText fontSize="$3" color="$color11">Controls built to the framework and audited continually. Report available on request.</SizableText></YStack>
                   </div>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
