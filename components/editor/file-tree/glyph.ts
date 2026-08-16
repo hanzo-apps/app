@@ -1,3 +1,4 @@
+import { createElement, type ReactElement } from 'react';
 import {
   Braces,
   FileCode2,
@@ -8,6 +9,7 @@ import {
   Image,
   Settings2,
   type LucideIcon,
+  type LucideProps,
 } from 'lucide-react';
 
 /**
@@ -51,10 +53,27 @@ const BY_EXTENSION: Record<string, LucideIcon> = {
   env: Settings2,
 };
 
-export function glyphFor(name: string): LucideIcon {
+/**
+ * A file's icon, DRAWN.
+ *
+ * This handed back the component and left each caller to render it —
+ * `const Glyph = glyphFor(name)` and then `<Glyph size={14} />`, in both places
+ * that used it. A capitalized local bound during render is a component TYPE
+ * created during render as far as React can tell, and React reconciles by type:
+ * when the type is genuinely new each render the child unmounts, remounts and
+ * loses its state. Here the type came from the fixed table above and was stable,
+ * so nothing was visibly wrong — which is exactly why the shape would have been
+ * copied to a call site where the factory was not stable.
+ *
+ * Returning the ELEMENT keeps the decision in this module and leaves callers
+ * with an ordinary value. `createElement` rather than JSX because this file is
+ * `.ts`: the table is data, and giving it a `.tsx` extension to write one tag
+ * would be the tail wagging the dog.
+ */
+export function glyph(name: string, size: number): ReactElement<LucideProps> {
   // `dotfiles` have no extension in the usual sense — `.env` splits to
   // `['', 'env']`, so reading the LAST segment is what makes it a settings file
   // rather than an unknown one.
   const ext = name.split('.').pop()?.toLowerCase() ?? '';
-  return BY_EXTENSION[ext] ?? FileText;
+  return createElement(BY_EXTENSION[ext] ?? FileText, { size });
 }

@@ -18,7 +18,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, ChevronRight, Folder, FolderOpen, Plus, Trash2, Check, Pencil, Search } from "lucide-react";
 
 import { Page } from "@/types";
-import { glyphFor } from "./glyph";
+import { glyph } from "./glyph";
 import { ancestors, buildTree, type Node } from "./tree";
 
 export function FileTree({
@@ -222,8 +222,6 @@ function Row({
 
   const active = node.path === currentPage;
   const isRenaming = renaming === node.path;
-  const Glyph = glyphFor(node.name);
-
   return (
     <XStack
       group
@@ -236,7 +234,7 @@ function Row({
       backgroundColor={active ? "$color3" : undefined}
       hoverStyle={active ? undefined : { backgroundColor: "$color2" }}
     >
-      <SizableText color={active ? "$color" : "$color11"}><Glyph size={14} /></SizableText>
+      <SizableText color={active ? "$color" : "$color11"}>{glyph(node.name, 14)}</SizableText>
       {isRenaming ? (
         <Input
           autoFocus

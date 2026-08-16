@@ -6,7 +6,7 @@ import { Download, FileText, LayoutGrid, List, PanelRight, RefreshCcw, Search } 
 
 import { panel } from '@/lib/chrome';
 import { useSandbox } from '@/components/editor/console/log';
-import { glyphFor } from '@/components/editor/file-tree/glyph';
+import { glyph } from '@/components/editor/file-tree/glyph';
 import { artifactUrl, artifacts, previewable } from './artifacts';
 import type { Page } from '@/types';
 
@@ -301,7 +301,6 @@ function ArtifactRow({
   open: boolean;
   onOpen: () => void;
 }) {
-  const Glyph = glyphFor(path.split('/').pop() ?? path);
   return (
     <XStack
       role="button"
@@ -316,7 +315,7 @@ function ArtifactRow({
       backgroundColor={open ? '$color3' : 'transparent'}
       hoverStyle={open ? undefined : { backgroundColor: '$color2' }}
     >
-      <SizableText color="$color11"><Glyph size={14} /></SizableText>
+      <SizableText color="$color11">{glyph(path.split('/').pop() ?? path, 14)}</SizableText>
       <SizableText flex={1} minWidth={0} numberOfLines={1} fontFamily="$mono" fontSize="$1" color={open ? '$color' : '$color11'}>
         {path}
       </SizableText>

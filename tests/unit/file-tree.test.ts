@@ -1,5 +1,5 @@
 import { ancestors, buildTree, type DirNode } from "@/components/editor/file-tree/tree";
-import { glyphFor } from "@/components/editor/file-tree/glyph";
+import { glyph } from "@/components/editor/file-tree/glyph";
 
 const page = (path: string) => ({ path, html: "" });
 
@@ -69,11 +69,17 @@ describe("ancestors", () => {
   });
 });
 
-describe("glyphFor", () => {
+describe("glyph", () => {
+  // It returns the drawn ELEMENT now, so the identity these assertions are
+  // about — which icon a name resolves to — is the element's `type`. React
+  // reconciles by that same field, so asserting it is asserting the thing that
+  // decides whether a row redraws or remounts.
+  const iconOf = (name: string) => glyph(name, 14).type;
+
   it("gives different types different glyphs", () => {
     // The whole point: one icon for everything carried no information.
     const seen = new Set(
-      ["a.html", "a.css", "a.ts", "a.json", "a.md", "a.png"].map((n) => glyphFor(n)),
+      ["a.html", "a.css", "a.ts", "a.json", "a.md", "a.png"].map(iconOf),
     );
     expect(seen.size).toBeGreaterThanOrEqual(5);
   });
@@ -81,11 +87,17 @@ describe("glyphFor", () => {
   it("reads a dotfile's last segment, not its first", () => {
     // `.env`.split('.') is ['', 'env'] — taking the first segment would make
     // every dotfile unknown.
-    expect(glyphFor(".env")).toBe(glyphFor("config.env"));
+    expect(iconOf(".env")).toBe(iconOf("config.env"));
   });
 
   it("falls back rather than throwing on an unknown type", () => {
-    expect(glyphFor("LICENSE")).toBeTruthy();
-    expect(glyphFor("")).toBeTruthy();
+    expect(iconOf("LICENSE")).toBeTruthy();
+    expect(iconOf("")).toBeTruthy();
+  });
+
+  it("draws at the size it is asked for", () => {
+    // The size moved from the call site's `<Glyph size={14} />` into the
+    // argument, so it is now this module's job to pass it on.
+    expect(glyph("a.ts", 14).props.size).toBe(14);
   });
 });
