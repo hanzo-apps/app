@@ -45,9 +45,25 @@ const read = (f: string) => readFileSync(join(root, f), "utf8");
 const SIGNED_OUT = [
   "components/login-modal/index.tsx",
   "components/pro-modal/index.tsx",
-  "components/layout/header.tsx",
   "app/signup/page.tsx",
 ];
+
+/**
+ * The header is no longer on that list, because it no longer OWNS a control.
+ *
+ * It used to render the signed-out action itself, and the rule above is what
+ * kept that control from going quiet. `@hanzogui/shell` 8.1.20 took the whole
+ * identity cluster: the surface passes `auth` — a user and two callbacks, never
+ * a session — and the shell draws one hanzo.id action, at the same height,
+ * radius and weight as every other control in that bar, on every Hanzo
+ * property at once. That is strictly better than each surface naming its own
+ * emphasis correctly, because it removes the chance to name it wrongly.
+ *
+ * So the invariant moves rather than disappearing: the header must keep
+ * delegating, and must not grow a second, local control beside the shell's —
+ * which is exactly how the grey 106×44 pill came to sit in a row of 34px ones.
+ */
+const HEADER = "components/layout/header.tsx";
 
 /**
  * Checked against the whole file, not per `<Button>` tag. Tempting to parse the
@@ -97,6 +113,15 @@ describe("the signed-out flow names its emphasis", () => {
       /\{\.\.\.accent\}[\s\S]{0,600}?<SizableText[\s\S]{0,200}?<\/Button>/.test(read(f)),
     );
     expect(wrapped).toEqual([]);
+  });
+
+  it("the header delegates its identity control instead of drawing one", () => {
+    const src = read(HEADER);
+    // It hands the shell data and callbacks…
+    expect(src).toMatch(/auth=\{/);
+    // …and draws no control of its own. `PrimaryButton` here is what rendered
+    // the audited pill: 106×44 at an 8px radius, in a row of 34px 999px ones.
+    expect(src).not.toMatch(/<PrimaryButton|\{\.\.\.accent\}|<Button\b/);
   });
 
   it("never spells a foreground on an accent label", () => {

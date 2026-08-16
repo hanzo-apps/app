@@ -43,7 +43,7 @@ overrides:
   brace-expansion@2: '>=2.1.2'
   axios: '>=1.18.0'
   '@hanzogui/web': 8.1.0
-  '@hanzo/ui': 8.0.83
+  '@hanzo/ui': 8.0.95
 
 importers:
 
@@ -86,8 +86,8 @@ importers:
         specifier: ^8.1.0
         version: 8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8)
       '@hanzo/iam':
-        specifier: ^0.21.6
-        version: 0.21.6(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        specifier: ^0.21.13
+        version: 0.21.13(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@hanzo/logo':
         specifier: ^1.0.17
         version: 1.0.17(react@19.2.8)
@@ -95,8 +95,8 @@ importers:
         specifier: ^0.1.6
         version: 0.1.6(react@19.2.8)
       '@hanzo/ui':
-        specifier: 8.0.83
-        version: 8.0.83(d34e077889466c577c1365fa870eccd8)
+        specifier: 8.0.95
+        version: 8.0.95(d34e077889466c577c1365fa870eccd8)
       '@hanzo/usage':
         specifier: ^0.1.6
         version: 0.1.6(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(@hanzogui/lucide-icons-2@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8))(react@19.2.8)
@@ -110,8 +110,8 @@ importers:
         specifier: ^8.1.0
         version: 8.1.0(next@16.2.12(@babel/core@7.29.7)(@opentelemetry/api@1.9.0)(@playwright/test@1.62.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
       '@hanzogui/shell':
-        specifier: ^8.1.19
-        version: 8.1.19(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        specifier: ^8.1.21
+        version: 8.1.21(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@hanzogui/telemetry':
         specifier: ^8.1.1
         version: 8.1.1(react@19.2.8)
@@ -880,8 +880,8 @@ packages:
     peerDependencies:
       react: '>=19'
 
-  '@hanzo/iam@0.21.6':
-    resolution: {integrity: sha512-vPYSu47BCdIvKMmBIkkd0LBeh9qfc6noS39rdLO8BtMXj8Q4zt1YuK0Vy8dAGueMmbrct/53OA0zuU2pmYVNMA==}
+  '@hanzo/iam@0.21.13':
+    resolution: {integrity: sha512-d4BTwJh7VFsj+OIEDPTCP5nZuyp2Tbz1FTOE3lkq67eugYglXqlNWTrJ/h2EhFJDfTFcLq2tfjT9AENxDaoIXQ==}
     engines: {node: '>=18'}
     peerDependencies:
       react: '>=17'
@@ -919,8 +919,8 @@ packages:
       react:
         optional: true
 
-  '@hanzo/ui@8.0.83':
-    resolution: {integrity: sha512-RviRQNIQGsi39l3QCouWt9OmBru7fZbUFXCb7s8qWn6ywtLgSJjUnYxJNk/LXne9ajLox8h0EzZMukzhYi6yxQ==}
+  '@hanzo/ui@8.0.95':
+    resolution: {integrity: sha512-jmrLrHnn3Afx+W8VXuSvhTUnWtHxiRism2gmnTJpcEZSXjoKKkjiP/rc//s9OujPmlHoWCIT0EjOXQs/Acsu/Q==}
     peerDependencies:
       '@hanzo/canvas': '>=0.1.0'
       '@hanzo/cd': '>=0.1.0'
@@ -1384,8 +1384,8 @@ packages:
     peerDependencies:
       react: '>=19'
 
-  '@hanzogui/shell@8.1.19':
-    resolution: {integrity: sha512-BakNtJaWYEEeKsUJC342oGNtPnkx+KM9Rtlx6UXgX7YHNckQ8hZVgBdA7k4EZtoyQAHyANpk1HQDTTxJdC0N9Q==}
+  '@hanzogui/shell@8.1.21':
+    resolution: {integrity: sha512-otH4uJL5csKeSTvjOmMx/G9eBilNanIDz87u6T/Jddj6ccyjbuw3zEgj6haJRp3k86dG1RFMVGNanfyddqd51g==}
     peerDependencies:
       react: '*'
       react-dom: '*'
@@ -8147,7 +8147,7 @@ snapshots:
       - react-dom
       - react-native
 
-  '@hanzo/iam@0.21.6(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@hanzo/iam@0.21.13(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       jose: 6.2.8
       libphonenumber-js: 1.13.9
@@ -8171,7 +8171,7 @@ snapshots:
       '@hanzogui/lucide-icons-2': 8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8)
       react: 19.2.8
 
-  '@hanzo/ui@8.0.83(d34e077889466c577c1365fa870eccd8)':
+  '@hanzo/ui@8.0.95(d34e077889466c577c1365fa870eccd8)':
     dependencies:
       '@hanzo/appearance': 0.1.4(react@19.2.8)
       '@hanzo/data': 1.2.2(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8)
@@ -9109,7 +9109,7 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@hanzogui/shell@8.1.19(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@hanzogui/shell@8.1.21(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
