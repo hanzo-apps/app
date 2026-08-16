@@ -32,6 +32,37 @@ import { useCloudBalance, spendableCents } from '@/lib/billing/live-balance';
 
 const fmtUsd = (cents: number): string => `$${(cents / 100).toFixed(2)}`;
 
+/**
+ * The CAUSE the refusal gave, without the instruction it gave with it.
+ *
+ * A gateway sentence is written for a caller that has no UI: "Insufficient
+ * balance. Add credits to your wallet at https://pay.hanzo.ai". This modal is
+ * the UI, and it offers both of those as real buttons — so printing that
+ * sentence whole put a THIRD destination in prose above two controls that do
+ * the same job, and ran it straight into "To keep going:" with no break,
+ * because the reason ends in a URL and not a full stop. Measured in production:
+ * "…at https://pay.hanzo.ai To keep going:".
+ *
+ * So the rule is about the sentence's JOB, not about one string: keep what
+ * states the cause, drop what states a way forward, because a way forward is
+ * exactly what the rows below are. A sentence carrying a link is an
+ * instruction; nothing else here is.
+ *
+ * Returns undefined when nothing survives, which is the case the caller already
+ * handles by stating no cause at all rather than inventing the likeliest.
+ */
+export function cause(reason?: string): string | undefined {
+  if (!reason) return undefined;
+  const kept = reason
+    .split(/(?<=[.!?])\s+/)
+    .filter((s) => s.trim() && !/https?:\/\/|\bwww\./i.test(s))
+    .join(' ')
+    .trim();
+  if (!kept) return undefined;
+  // It is about to be followed by another sentence, so it has to end like one.
+  return /[.!?]$/.test(kept) ? kept : `${kept}.`;
+}
+
 export function UsageLimitDialog({
   open,
   onOpenChange,
@@ -58,7 +89,7 @@ export function UsageLimitDialog({
         <DialogHeader>
           <DialogTitle fontSize="$7" fontWeight="500" letterSpacing={-0.4}>Need more usage?</DialogTitle>
           <DialogDescription color="$color11">
-            {reason ? `${reason} To keep going:` : 'To keep going:'}
+            {(() => { const c = cause(reason); return c ? `${c} To keep going:` : 'To keep going:'; })()}
           </DialogDescription>
         </DialogHeader>
 

@@ -12,6 +12,7 @@
  * `said()` must READ the body, and no 402 site may fabricate a message.
  */
 import { said, CREDIT, reason } from "@/lib/gateway";
+import { cause } from "@/components/usage/UsageLimitDialog";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -68,8 +69,22 @@ describe("no 402 site fabricates a message", () => {
 
   it("the modal states no cause when the refusal stated none", () => {
     const code = source("components/usage/UsageLimitDialog.tsx");
-    expect(code).toMatch(/reason \? `\$\{reason\}/);
+    // The cause shown is the one the refusal GAVE, narrowed by `cause()` to the
+    // part that states a cause — never a sentence this component composed. The
+    // fallback is the bare "To keep going:", with no cause at all.
+    expect(code).toMatch(/const c = cause\(reason\)/);
+    expect(code).toMatch(/c \? `\$\{c\} To keep going:` : 'To keep going:'/);
     expect(code).not.toContain("reached your limit");
+  });
+
+  it("and never a second way forward — the rows below ARE the way forward", () => {
+    // The gateway writes for a caller with no UI, so its sentence ends in an
+    // instruction to a third destination. Printed whole it put that URL in
+    // prose above two controls that do the same job, and ran into the next
+    // sentence with no stop: "…at https://pay.hanzo.ai To keep going:".
+    expect(cause("Insufficient balance. Add credits to your wallet at https://pay.hanzo.ai"))
+      .toBe("Insufficient balance.");
+    expect(cause("See https://pay.hanzo.ai to continue.")).toBeUndefined();
   });
 
   it("the raise carries it — a dropped argument is the same bug one layer up", () => {
