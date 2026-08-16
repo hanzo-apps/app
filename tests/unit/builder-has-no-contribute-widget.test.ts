@@ -21,6 +21,7 @@
  * accident, so it is pinned from both ends.
  */
 import { ENSO_MARK } from "@hanzo/logo/logos";
+import { widget } from "../widget";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
@@ -29,7 +30,7 @@ const read = (p: string) => readFileSync(join(ROOT, p), "utf8");
 
 describe("the builder Enso launcher never floats over the preview", () => {
   it("edit.js still treats a missing repo as 'do nothing'", () => {
-    const src = read("public/edit.js");
+    const src = widget();
     // Two facts, checked apart. They used to be one regex requiring the bail to
     // sit on the line AFTER the declaration, which said nothing about the rule
     // and broke the moment edit.js grew a host fallback and moved its bail 250
@@ -64,7 +65,7 @@ describe("the builder Enso launcher never floats over the preview", () => {
   });
 
   it("edit.js honours an anchor and unpins itself when anchored", () => {
-    const src = read("public/edit.js");
+    const src = widget();
     expect(src).toMatch(/meta\('hanzo:anchor'\)/);
     // Anchoring must actually unpin it — a launcher inside the status bar that
     // is still `position: fixed` lands straight back on the preview. Which of
@@ -98,12 +99,12 @@ describe("the builder Enso launcher never floats over the preview", () => {
     // edit.js cannot import it: it is a standalone widget served to third-party
     // pages, so it MUST carry the path data inline. That is exactly why this
     // check exists — an inline copy is the one thing that can silently drift.
-    const widget = read("public/edit.js");
-    expect(widget).toContain(ENSO_MARK);
+    const src = widget();
+    expect(src).toContain(ENSO_MARK);
     // The hairline is gone on purpose; `vector-effect` would re-split the weight.
     // Match the ATTRIBUTE, not the word: edit.js names it in a comment saying it
     // deliberately has none, and a bare /vector-effect/ fails on that sentence.
-    expect(widget).not.toMatch(/vector-effect\s*=/);
+    expect(src).not.toMatch(/vector-effect\s*=/);
   });
 
   it("/dev anchors the launcher by NAMING the key", () => {

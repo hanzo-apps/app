@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { widget } from "../widget";
+
 /**
  * "You have no credits" is a claim about MONEY, and only a balance we actually
  * read may make it.
@@ -24,7 +26,7 @@ import { join } from "node:path";
  * still looks right, and quietly bills the customer for our outage.
  */
 describe("the credits wall names the right remedy", () => {
-  const js = readFileSync(join(__dirname, "../../public/edit.js"), "utf8");
+  const js = widget();
 
   const cta = (() => {
     const at = js.indexOf("function cta()");

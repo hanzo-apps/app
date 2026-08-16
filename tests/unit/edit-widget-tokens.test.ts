@@ -19,10 +19,9 @@
  * tokens. The allowlist is the deliberate exceptions, each of which is a
  * SEMANTIC colour rather than chrome.
  */
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { widget } from "../widget";
 
-const src = readFileSync(join(__dirname, "..", "..", "public", "edit.js"), "utf8");
+const src = widget();
 
 /** The stylesheet, minus the `//` commentary that documents it. */
 function stylesheet(): { tokens: string; rules: string } {

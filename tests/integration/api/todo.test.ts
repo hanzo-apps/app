@@ -1,11 +1,11 @@
 /**
  * @jest-environment node
  *
- * /v1/tracker[/...] — the work-item BFF.
+ * /v1/todo[/...] — the work-item BFF.
  *
  * This route is a catch-all, which is the whole reason it needs its own suite:
  * the thing it forwards is caller-supplied, so the guard that keeps it under
- * `/v1/tracker` IS the trust boundary. Without it, `/v1/tracker/../iam/users`
+ * `/v1/todo` IS the trust boundary. Without it, `/v1/todo/../iam/users`
  * reaches IAM with the caller's bearer attached.
  *
  * The contract asserted here:
@@ -26,9 +26,9 @@ import { clearJwksCache } from "@hanzo/iam/auth";
 import { server } from "../../../jest.setup";
 import { IAM, CLIENT_ID, iamHandlers, mint, forge } from "../../iam-fixture";
 
-import { GET, POST, PATCH } from "@/app/v1/tracker/[[...path]]/route";
+import { GET, POST, PATCH } from "@/app/v1/todo/[[...path]]/route";
 
-const CLOUD = "https://api.hanzo.ai/v1/tracker";
+const CLOUD = "https://api.hanzo.ai/v1/todo";
 
 let AUTH: string;
 
@@ -61,22 +61,22 @@ function req(
 /** The route's params, which Next hands over as a promise. */
 const ctx = (...path: string[]) => ({ params: Promise.resolve({ path }) });
 
-describe("/v1/tracker — identity", () => {
+describe("/v1/todo — identity", () => {
   it("refuses a caller with no session", async () => {
-    const res = await GET(req("/v1/tracker/projects"), ctx("projects"));
+    const res = await GET(req("/v1/todo/projects"), ctx("projects"));
     expect(res.status).toBe(401);
   });
 
   it("refuses a bearer IAM did not sign", async () => {
     const res = await GET(
-      req("/v1/tracker/projects", { token: forge(AUTH) }),
+      req("/v1/todo/projects", { token: forge(AUTH) }),
       ctx("projects"),
     );
     expect(res.status).toBe(401);
   });
 });
 
-describe("/v1/tracker — the prefix is the boundary", () => {
+describe("/v1/todo — the prefix is the boundary", () => {
   it("refuses a traversal without touching the network", async () => {
     let reached = false;
     server.use(
@@ -87,7 +87,7 @@ describe("/v1/tracker — the prefix is the boundary", () => {
     );
 
     const res = await GET(
-      req("/v1/tracker/../iam/users", { token: AUTH }),
+      req("/v1/todo/../iam/users", { token: AUTH }),
       ctx("..", "iam", "users"),
     );
 
@@ -97,13 +97,13 @@ describe("/v1/tracker — the prefix is the boundary", () => {
 
   it("refuses an encoded traversal too", async () => {
     for (const seg of ["%2e%2e", "%2Fiam", "a;b"]) {
-      const res = await GET(req("/v1/tracker/x", { token: AUTH }), ctx(seg));
+      const res = await GET(req("/v1/todo/x", { token: AUTH }), ctx(seg));
       expect(res.status).toBe(400);
     }
   });
 });
 
-describe("/v1/tracker — the forward", () => {
+describe("/v1/todo — the forward", () => {
   it("carries the bearer, sends no X-Org-Id, and does not cache", async () => {
     let seenAuth: string | null = null;
     let seenOrg: string | null = null;
@@ -115,7 +115,7 @@ describe("/v1/tracker — the forward", () => {
       }),
     );
 
-    const res = await GET(req("/v1/tracker/projects", { token: AUTH }), ctx("projects"));
+    const res = await GET(req("/v1/todo/projects", { token: AUTH }), ctx("projects"));
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -135,7 +135,7 @@ describe("/v1/tracker — the forward", () => {
     );
 
     const res = await GET(
-      req("/v1/tracker/projects/ENG/issues?status=todo&source=agent", { token: AUTH }),
+      req("/v1/todo/projects/ENG/issues?status=todo&source=agent", { token: AUTH }),
       ctx("projects", "ENG", "issues"),
     );
 
@@ -154,7 +154,7 @@ describe("/v1/tracker — the forward", () => {
     );
 
     const res = await POST(
-      req("/v1/tracker/projects/ENG/issues", {
+      req("/v1/todo/projects/ENG/issues", {
         token: AUTH,
         body: { title: "ship the board", source: "agent", extRef: "session:s1" },
       }),
@@ -173,7 +173,7 @@ describe("/v1/tracker — the forward", () => {
     );
 
     const res = await PATCH(
-      req("/v1/tracker/projects/ENG/issues/1", { token: AUTH, body: { status: "nope" } }),
+      req("/v1/todo/projects/ENG/issues/1", { token: AUTH, body: { status: "nope" } }),
       ctx("projects", "ENG", "issues", "1"),
     );
 
@@ -182,10 +182,10 @@ describe("/v1/tracker — the forward", () => {
   });
 });
 
-describe("/v1/tracker — cross-origin", () => {
+describe("/v1/todo — cross-origin", () => {
   it("refuses a cross-site write before any identity work", async () => {
     const res = await POST(
-      req("/v1/tracker/projects", {
+      req("/v1/todo/projects", {
         token: AUTH,
         body: { name: "x" },
         origin: "https://evil.example",

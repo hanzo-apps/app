@@ -2,7 +2,7 @@
  * /dev/:org/:project/issues — the work-item board, rendered.
  *
  * A screenshot test with the two upstreams intercepted. That is deliberate, not
- * a shortcut: the board's job is to JOIN two planes — the tracker's issues and
+ * a shortcut: the board's job is to JOIN two planes — the board's issues and
  * the session registry's live agent status — and the only way to prove the join
  * renders (a row whose extRef names a running session shows `running`) is to fix
  * both sides. Against real data the interesting rows may simply not exist today.
@@ -47,7 +47,7 @@ const issue = (
 });
 
 const ISSUES = [
-  issue(14, "Board reads the tracker, not a second table", "in_progress", {
+  issue(14, "Board reads the board, not a second table", "in_progress", {
     assignee: "z@hanzo.ai",
     labels: ["tracker"],
     priority: "high",
@@ -91,10 +91,10 @@ test.beforeEach(async ({ context, page, baseURL }) => {
     },
   ]);
 
-  await page.route("**/v1/tracker/projects", (r) =>
+  await page.route("**/v1/todo/projects", (r) =>
     r.fulfill({ json: BOARD, headers: { "content-type": "application/json" } }),
   );
-  await page.route("**/v1/tracker/projects/ENG/issues*", (r) =>
+  await page.route("**/v1/todo/projects/ENG/issues*", (r) =>
     r.fulfill({ json: ISSUES, headers: { "content-type": "application/json" } }),
   );
   await page.route("**/v1/agents/sessions*", (r) =>
@@ -139,7 +139,7 @@ test("the board renders on a phone", async ({ page }) => {
 });
 
 test("a board that does not exist offers to start one", async ({ page }) => {
-  await page.route("**/v1/tracker/projects", (r) =>
+  await page.route("**/v1/todo/projects", (r) =>
     r.fulfill({ json: [], headers: { "content-type": "application/json" } }),
   );
   await page.setViewportSize({ width: 1440, height: 900 });

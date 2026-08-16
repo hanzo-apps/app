@@ -5,7 +5,7 @@
  *
  * The one board for a project: what is open, who has it, and — for work an agent
  * is doing — the live status of the agent session behind it. Rows come from the
- * cloud tracker (`/v1/tracker`, the ONE work-item primitive); agent status comes
+ * todo board (`/v1/todo`, the ONE work-item primitive); agent status comes
  * from the session registry (`/v1/agents/sessions`, the ONE agent-run plane).
  * This page joins the two for display and stores neither.
  *
@@ -38,7 +38,7 @@ import {
   type Board,
   type Issue,
   type Status,
-} from "@/lib/api/tracker";
+} from "@/lib/api/todo";
 import type { AgentSession, SessionStatus } from "@/lib/sessions";
 
 /** Column colors. Done reads calm, canceled reads spent, the rest read live. */
@@ -235,7 +235,7 @@ export default function ProjectIssuesPage() {
             No board yet
           </SizableText>
           <Paragraph fontSize="$2" color="$color11">
-            Work items for {handle} live on a tracker board. Give it a key — the
+            Work items for {handle} live on a todo board. Give it a key — the
             short handle that prefixes every item, like {key}-1.
           </Paragraph>
           <XStack gap="$2" flexWrap="wrap">

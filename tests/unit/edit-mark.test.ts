@@ -8,10 +8,9 @@
  * plate can never come back.
  */
 
-import fs from 'node:fs';
-import path from 'node:path';
+import { widget } from '../widget';
 
-const script = fs.readFileSync(path.join(process.cwd(), 'public/edit.js'), 'utf8');
+const script = widget();
 
 function mount() {
   global.fetch = jest.fn(async () => ({ ok: false, json: async () => ({}) })) as unknown as typeof fetch;

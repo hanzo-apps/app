@@ -118,7 +118,7 @@ export async function resolveOrgContext(req: NextRequest): Promise<OrgContext | 
  * Forward a request to one org-scoped cloud surface as the user.
  *
  * `prefix` is the cloud surface this call may reach — "/v1/projects",
- * "/v1/tracker" — and it is the ONLY thing that varies between BFFs, so it is a
+ * "/v1/todo" — and it is the ONLY thing that varies between BFFs, so it is a
  * parameter rather than a second copy of this function. The caller passes an
  * already-authorized `subpath` (e.g. "" or "/my-site"); `proxy` below is what
  * authorizes one off the wire.
@@ -174,7 +174,7 @@ export async function forward(
  * invalid, never a 500.
  *
  * This is the guard that keeps a catch-all BFF from being an open relay onto the
- * whole cloud: without it, `/v1/tracker/../iam/users` would reach `/v1/iam`. It
+ * whole cloud: without it, `/v1/todo/../iam/users` would reach `/v1/iam`. It
  * lives here, once, because a security check with two copies is a security check
  * with one stale copy.
  */

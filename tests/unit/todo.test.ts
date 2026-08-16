@@ -2,7 +2,7 @@
  * The work-item client's pure half — the three functions that decide what a
  * value MEANS, with no network under them.
  *
- * Each one exists because the cloud tracker and this app speak slightly
+ * Each one exists because the todo board and this app speak slightly
  * different dialects, and every mistranslation here is silent: a board that
  * resolves to nothing renders as "no board yet" over a board full of work, and a
  * proposed key outside cloud's `^[A-Z][A-Z0-9]{1,7}$` is a create that always
@@ -14,9 +14,9 @@ import {
   refSession,
   sessionRef,
   type Board,
-} from "@/lib/api/tracker";
+} from "@/lib/api/todo";
 
-/** Cloud's key validator, verbatim from apps/tracker/tracker.go. */
+/** Cloud's key validator, verbatim from apps/todo/todo.go. */
 const KEY_RE = /^[A-Z][A-Z0-9]{1,7}$/;
 
 const board = (key: string, name: string): Board => ({

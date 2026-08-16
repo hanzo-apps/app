@@ -8,10 +8,9 @@
  * pages this app does not own, which makes inlining the tables the obvious move
  * and the wrong one.
  */
-import fs from 'node:fs';
-import path from 'node:path';
+import { widget } from '../widget';
 
-const script = fs.readFileSync(path.join(process.cwd(), 'public/edit.js'), 'utf8');
+const script = widget();
 
 /**
  * Comments stripped before scanning for a COPY, because the comment explaining

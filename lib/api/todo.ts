@@ -1,10 +1,10 @@
 /**
- * The work-item client — hanzo.app's binding to the cloud tracker.
+ * The work-item client — hanzo.app's binding to the todo board.
  *
  * A work item is a unit of engineering work someone moves across a board, and
- * Hanzo has exactly ONE primitive for it: the cloud tracker Issue. This module
+ * Hanzo has exactly ONE primitive for it: the todo board's Issue. This module
  * holds no state and mirrors no rows; every function here is one call to the
- * same-origin `/v1/tracker` BFF, which forwards to the cloud as the signed-in
+ * same-origin `/v1/todo` BFF, which forwards to the cloud as the signed-in
  * user. There is no second issues table anywhere in this app.
  *
  * The vocabulary below (status/priority/kind/source) is the cloud's CLOSED set,
@@ -56,7 +56,7 @@ export interface Board {
   updatedAt: number;
 }
 
-/** One work item, exactly as `/v1/tracker` reports it. */
+/** One work item, exactly as `/v1/todo` reports it. */
 export interface Issue {
   id: string;
   /** `KEY-<number>` — the human handle. */
@@ -107,7 +107,7 @@ export type IssuePatch = Partial<NewIssue>;
 // An agent run is a SESSION (cloud `/v1/agents/sessions`, status
 // running|paused|done|error) — "mission" is not a modeled concept anywhere in
 // the fleet, only an informal name for the console view over sessions. So a work
-// item points at a session, and it does so through `extRef`, which the tracker
+// item points at a session, and it does so through `extRef`, which the board
 // contract already defines as "a link INTO another plane". No new column, no
 // metadata bag: the anchor is a self-describing value.
 
@@ -150,7 +150,7 @@ export function boardFor(boards: Board[], handle: string): Board | null {
 
 /**
  * A board key proposed from a display name — the SAME rule cloud applies when a
- * caller omits one (`deriveKey`, apps/tracker/tracker.go): leading alphanumerics,
+ * caller omits one (`deriveKey`, apps/todo/todo.go): leading alphanumerics,
  * uppercased, capped at four. Restated here so the create form can PREFILL the
  * key it is about to send; the field stays editable because this rule collides by
  * design and only the user knows which board they meant.
@@ -170,7 +170,7 @@ export function proposeKey(name: string): string {
 
 // --- Transport (same-origin BFF; the session cookie carries auth) ----------
 
-const BASE = '/v1/tracker';
+const BASE = '/v1/todo';
 
 /** Stamp the selected org. Honored server-side ONLY for a global admin acting
  *  cross-org; ignored for everyone else, whose org is pinned to their token. */
