@@ -120,12 +120,28 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // The widget imports the preference transform from pages on OTHER
-        // origins, and a cross-origin module import is a CORS request — without
-        // this the import rejects and the preferences section silently never
-        // appears. A stylesheet needs none, which is why the rest of /vendor
-        // has worked without it.
-        source: '/vendor/appearance/:file*',
+        /*
+         * EVERY vendored asset is fetched cross-origin, because `lib/vendor.ts`
+         * spells them absolute (`https://hanzo.app/vendor/…`) and generated
+         * sites are published elsewhere. A stylesheet needs no CORS, which is
+         * why this went unnoticed — but a FONT and an ES MODULE both do, and
+         * both were failing:
+         *
+         * - `@font-face` is always fetched in CORS mode. Measured on a
+         *   cross-origin page: `FontFace.status` = "error" for Geist AND Geist
+         *   Mono, and the page painted with a SYSTEM face
+         *   (CDP `CSS.getPlatformFontsForNode` → `Geist (SYSTEM)`). So every
+         *   published site had design's tokens and colours without its
+         *   typeface — the exact silent failure this repo already documents,
+         *   since `document.fonts.check('16px Geist')` answers TRUE for a face
+         *   whose download failed and `getComputedStyle` reports the DECLARED
+         *   family either way. Neither of the two obvious checks can see it.
+         *   Worse, it varies by viewer: a machine with Geist installed locally
+         *   renders something close to right.
+         * - the widget imports the preference transform as a module; without
+         *   this the import rejects and the preferences section never appears.
+         */
+        source: '/vendor/:path*',
         headers: [
           { key: 'Access-Control-Allow-Origin', value: '*' },
           { key: 'Cache-Control', value: 'public, max-age=300, stale-while-revalidate=3600' },
