@@ -8,7 +8,8 @@ import { SizableText, YStack, XStack, Image } from '@hanzo/ui';
 import { sends } from '@hanzo/ui/chat';
 import type { GuiElement } from '@hanzo/gui';
 import { useState, useEffect, useRef, useMemo, useCallback, DragEvent, ClipboardEvent } from 'react';
-import { MessageSquare, CheckCircle, XCircle, ChevronRight, FileCode, ClipboardList, Bot, RotateCcw, RefreshCw, Send, ChevronUp, ChevronDown, Code, Trash2, X, Brain, Image as ImageIcon } from 'lucide-react';
+import { MessageSquare, CheckCircle, XCircle, ChevronRight, FileCode, ClipboardList, RotateCcw, RefreshCw, Send, ChevronUp, ChevronDown, Code, Trash2, X, Brain, Image as ImageIcon } from 'lucide-react';
+import { HanzoLogo } from '@/components/HanzoLogo';
 import { DebugEvent } from '@/components/debug-panel';
 import { MarkdownRenderer } from '@/components/markdown-renderer';
 import { Button, Textarea, Popover, PopoverContent, PopoverTrigger, Tabs, TabsList, TabsTrigger } from '@hanzo/ui';
@@ -1352,7 +1353,11 @@ function AgentDisplay({ itemId, content, isExpanded, onToggle }: AgentDisplayPro
         alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color4" }}
       >
         <XStack alignItems="center" gap="$1.5">
-          <Bot size={12} />
+          {/* The agent here IS Hanzo, so it wears the Hanzo mark — @hanzo/logo's
+              MARK_PATHS through the shared HanzoLogo, never a lucide stand-in.
+              12 to match the glyph column the sibling rows (reasoning, plan,
+              tool) already keep. */}
+          <HanzoLogo size={12} />
           <SizableText fontSize="$1" fontFamily="$mono">agent</SizableText>
         </XStack>
         <SizableText fontSize="$1" color="$color11" numberOfLines={1} flex={1}>

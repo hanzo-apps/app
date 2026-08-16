@@ -7,7 +7,7 @@ import { XStack, YStack, SizableText, H3 } from '@hanzo/ui';
 import { Anchor } from '@hanzo/gui';
 import { VERSION } from '@/lib/version';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Button, Badge } from '@hanzo/ui';
-import { Logo } from '@/components/ui/logo';
+import { HanzoLogo } from '@/components/HanzoLogo';
 import { Github, ExternalLink } from 'lucide-react';
 import { DiscordIcon } from '@/components/ui/discord-icon';
 
@@ -22,7 +22,8 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
       <DialogContent maxWidth={768} maxHeight="90vh">
         <DialogHeader>
           <XStack alignItems="center" gap="$4" marginBottom="$2">
-            <Logo width={64} height={64} />
+            {/* The ONE mark, from @hanzo/logo via the shared HanzoLogo. */}
+            <HanzoLogo size={64} />
             <div>
               <DialogTitle fontSize="$8">Hanzo App</DialogTitle>
               <DialogDescription fontSize="$4">

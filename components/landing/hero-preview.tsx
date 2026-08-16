@@ -30,6 +30,10 @@ import type { GuiElement } from '@hanzo/gui';
 
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { Spinner } from "@/components/ui/spinner";
+// The mark this mockup wears is the REAL one — @hanzo/logo's MARK_PATHS through
+// the shared HanzoLogo, the same component the builder header draws. A local
+// copy of the geometry is a second logo the day either is redrawn.
+import { HanzoLogo } from "@/components/HanzoLogo";
 import {
   ArrowUp,
   Check,
@@ -471,7 +475,7 @@ export default function HeroPreview({ ask }: { ask: (prompt: string) => void }) 
               name. NO browser window dots — the real /dev header has none (it is
               the app, not a window), and the mockup's OWN rounded frame already
               reads as a window. */}
-          <HMark size={14} color="var(--foreground)" />
+          <HanzoLogo size={14} color="var(--foreground)" />
           <SizableText display="none" $sm={{ display: "inline" }} numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
             maxpower / {story.name.toLowerCase().replace(/\s+/g, "-")}
           </SizableText>
@@ -790,13 +794,3 @@ function Generating(): ReactElement {
   );
 }
 
-/* ── Inline Hanzo mark (currentColor) ───────────────────────────────────────*/
-/** Exported so the walkthrough's frame wears the SAME mark as this one. Two
- *  copies of a logo is two logos the day one of them is redrawn. */
-export function HMark({ size = 14, color }: { size?: number; color?: string }) {
-  return (
-    <svg viewBox="0 0 67 67" width={size} height={size} color={color} fill="currentColor" aria-hidden>
-      <path d="M22.21 67V44.64H0V67h22.21ZM66.72 22.32H22.25L.09 44.64h44.37l22.26-22.32ZM22.21 0H0v22.32h22.21V0ZM66.72 0H44.51v22.32h22.21V0ZM66.72 67V44.64H44.51V67h22.21Z" />
-    </svg>
-  );
-}

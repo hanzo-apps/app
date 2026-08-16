@@ -4,8 +4,9 @@ import { SizableText, YStack, Paragraph } from '@hanzo/ui';
 import { Check, ChevronDown } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger, Button } from '@hanzo/ui';
+import { ModelIcon } from '@/components/model-icon';
 import { ModelSelector } from '@/components/model-selector';
-import { AUTO_MODEL, FALLBACK_MODELS, labelOf } from "@/lib/providers";
+import { AUTO_MODEL, FALLBACK_MODELS, familyOf, labelOf } from "@/lib/providers";
 import { useModels } from "@/lib/hooks/use-models";
 import type { Runtime } from "@/lib/agent/sandbox";
 
@@ -186,6 +187,14 @@ export function Settings({
           title="Model"
           height={26} minHeight={26} alignItems="center" gap="$1" borderRadius={999} backgroundColor="$color3" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color4" }}
         >
+          {/* The chosen model wears its own mark, from `ModelIcon` — the ONE
+              path to @hanzo/logo's ENSO_MARK and to every maker's glyph. So the
+              chip that says "Enso" draws the ensō, and it is the same 14px mark
+              the picker's own trigger shows one press later. Auto is a routing
+              POLICY across families, not a model, so it has no mark to wear. */}
+          {!isAuto && (
+            <ModelIcon family={familyOf(model)?.key} label={labelOf(model)} size={14} />
+          )}
           <SizableText fontSize="$2" fontWeight="500" color="$color" numberOfLines={1} maxWidth="9rem">
             {isAuto ? "Auto" : labelOf(model)}
           </SizableText>

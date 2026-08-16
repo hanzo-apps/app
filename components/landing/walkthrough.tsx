@@ -39,7 +39,7 @@ import {
   Type,
 } from "lucide-react";
 import { PANES, type RightPane } from "@/lib/panes";
-import { HMark } from "./hero-preview";
+import { HanzoLogo } from "@/components/HanzoLogo";
 import Reveal from "./reveal";
 
 // The frame's tabs ARE the builder's, read from the ONE list — the same reason
@@ -523,7 +523,7 @@ function Frame({ stop }: { stop: Stop }) {
   return (
     <YStack className="window" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
       <XStack alignItems="center" gap="$3" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$2">
-        <HMark size={14} color="var(--foreground)" />
+        <HanzoLogo size={14} color="var(--foreground)" />
         <SizableText display="none" $sm={{ display: "inline" }} numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
           maxpower / shift-board
         </SizableText>

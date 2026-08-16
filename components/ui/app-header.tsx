@@ -3,7 +3,11 @@
 import { YStack, XStack, SizableText, H1, Paragraph } from '@hanzo/ui';
 import React, { useState } from 'react';
 import { Button, Badge } from '@hanzo/ui';
-import { Logo } from '@/components/ui/logo';
+// The ONE Hanzo mark — @hanzo/logo's MARK_PATHS through the shared HanzoLogo.
+// It replaced a local 256-unit copy that drew the H inside a white plate, so
+// this header wears the same geometry, in currentColor, as the sidebar, the
+// builder header and the account chrome.
+import { HanzoLogo } from '@/components/HanzoLogo';
 import { ChevronDown, ChevronUp, Menu } from 'lucide-react';
 
 export interface HeaderAction {
@@ -78,7 +82,7 @@ export function AppHeader({
         {/* Left side - Logo + pageName (mobile when showMobileMenu is true) */}
         {showMobileMenu && (
           <XStack alignItems="center" gap="$3" $md={{ display: "none" }}>
-            <Logo width={24} height={24} />
+            <HanzoLogo size={24} />
             {pageName && <SizableText fontSize="$3" fontWeight="500">{pageName}</SizableText>}
           </XStack>
         )}
@@ -89,7 +93,7 @@ export function AppHeader({
             onClick={onLogoClick}
             alignItems="center" gap="$2" padding="$1" paddingRight="$2" borderRadius="$1"
           >
-            <Logo width={24} height={24} />
+            <HanzoLogo size={24} />
             {/* Show leftText next to logo on desktop only */}
             {leftText && <SizableText fontWeight="500" fontSize="$6" display="none" $md={{ display: "inline" }}>{leftText}</SizableText>}
           </Button>

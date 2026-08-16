@@ -6,6 +6,7 @@ import { Paragraph, SizableText, XStack, YStack } from '@hanzo/ui';
 import { Boxes, ChevronDown, ChevronLeft, ChevronRight, Plug } from 'lucide-react';
 
 import { panel } from '@/lib/chrome';
+import { ModelIcon } from '@/components/model-icon';
 import { fetchConnectors, type Provider } from '@/lib/connectors';
 import { useModels } from '@/lib/hooks/use-models';
 import { fetchMcpServers, fetchMcpToolCount, type McpServer } from '@/lib/mcp';
@@ -274,13 +275,21 @@ function ModelsBody() {
   const { models, defaultModel, loading } = useModels();
   const families = new Map<string, number>();
   for (const m of models) families.set(m.family, (families.get(m.family) ?? 0) + 1);
-  const fallback = models.find((m) => m.value === defaultModel)?.label ?? defaultModel;
+  const chosen = models.find((m) => m.value === defaultModel);
+  const fallback = chosen?.label ?? defaultModel;
 
   return (
     <YStack {...panel} padding="$4" gap="$3">
       <YStack gap="$0.5">
         <SizableText fontSize="$2" color="$color11">Default model</SizableText>
-        <SizableText fontSize="$4" color="$color">{fallback}</SizableText>
+        {/* The model and every family below wear their own mark, drawn by
+            `ModelIcon` — the ONE path to @hanzo/logo's ENSO_MARK and to each
+            maker's glyph, and the same component the composer's picker uses, so
+            "Enso" is the same ensō on both surfaces. */}
+        <XStack alignItems="center" gap="$2">
+          <ModelIcon family={chosen?.family} label={fallback} size={16} />
+          <SizableText fontSize="$4" color="$color">{fallback}</SizableText>
+        </XStack>
         <Paragraph fontSize="$1" color="$color11">
           Answers every build unless a turn picks otherwise — change it from the composer's
           model picker.
@@ -293,6 +302,7 @@ function ModelsBody() {
         <XStack flexWrap="wrap" gap="$1.5" paddingTop="$1">
           {[...families.entries()].map(([family, count]) => (
             <XStack key={family} alignItems="center" gap="$1.5" borderRadius={999} backgroundColor="$color2" paddingHorizontal="$2.5" paddingVertical="$1">
+              <ModelIcon family={family} label={family} size={12} />
               <SizableText fontSize="$1" color="$color">{family}</SizableText>
               <SizableText fontSize="$1" color="$color11">{count}</SizableText>
             </XStack>

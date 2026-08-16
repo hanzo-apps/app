@@ -7,12 +7,12 @@ import {
   Github,
   GitBranch,
   FolderOpen,
-  Brain,
   Palette,
   Database,
   Globe,
 } from "lucide-react";
 import { Button, Card, Badge } from '@hanzo/ui';
+import { ModelIcon } from '@/components/model-icon';
 import { BuildComposer } from '@/components/build-composer';
 import { TemplateThumb } from '@/components/template-thumb';
 import Link from "next/link";
@@ -46,9 +46,18 @@ const features = [
     icon: <Zap size={16} />
   },
   {
+    // The two families Hanzo builds, wearing their OWN marks — `ModelIcon` is
+    // the one path to @hanzo/logo's ENSO_MARK and to Zoo's (Zen's maker), the
+    // same two glyphs the picker and the landing's model cards draw. A lucide
+    // stand-in was one glyph for two families, and neither of them.
     title: "Zen and Enso",
     description: "Plus Anthropic, OpenAI, Google and Mistral",
-    icon: <Brain size={16} />
+    icon: (
+      <XStack alignItems="center" gap="$1.5">
+        <ModelIcon family="zen" size={16} />
+        <ModelIcon family="enso" size={16} />
+      </XStack>
+    )
   },
   {
     title: "A real database",
