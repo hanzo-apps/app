@@ -43,7 +43,7 @@ overrides:
   brace-expansion@2: '>=2.1.2'
   axios: '>=1.18.0'
   '@hanzogui/web': 8.1.0
-  '@hanzo/ui': 8.0.103
+  '@hanzo/ui': 8.0.110
 
 importers:
 
@@ -98,8 +98,8 @@ importers:
         specifier: ^0.1.6
         version: 0.1.6(react@19.2.8)
       '@hanzo/ui':
-        specifier: 8.0.103
-        version: 8.0.103(703e799ef3e7dc6b5cceb71345badfa6)
+        specifier: 8.0.110
+        version: 8.0.110(703e799ef3e7dc6b5cceb71345badfa6)
       '@hanzo/usage':
         specifier: ^0.1.6
         version: 0.1.6(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(@hanzogui/lucide-icons-2@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8))(react@19.2.8)
@@ -928,8 +928,8 @@ packages:
       react:
         optional: true
 
-  '@hanzo/ui@8.0.103':
-    resolution: {integrity: sha512-7DxXqqRdSQ9mGPJqt4toUWPStJeDHVhpQDkQZH7725lsm8BK9HqXdIXs78EjLRgx2yys3y3CW5r8HMgdOzpGcA==}
+  '@hanzo/ui@8.0.110':
+    resolution: {integrity: sha512-6/rdBBD76yhi4GIYdAo6cApPtuj8pIPU85ybWWj48/lzEYG0TfYrXvumwd+lqs5r4p88Wwtvi9fqSgWGPYPB6w==}
     peerDependencies:
       '@hanzo/canvas': '>=0.1.0'
       '@hanzo/cd': '>=0.1.0'
@@ -8188,7 +8188,7 @@ snapshots:
       '@hanzogui/lucide-icons-2': 8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8)
       react: 19.2.8
 
-  '@hanzo/ui@8.0.103(703e799ef3e7dc6b5cceb71345badfa6)':
+  '@hanzo/ui@8.0.110(703e799ef3e7dc6b5cceb71345badfa6)':
     dependencies:
       '@hanzo/appearance': 0.1.6(react@19.2.8)
       '@hanzo/brand': 1.4.6(react@19.2.8)

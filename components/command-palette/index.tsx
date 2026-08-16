@@ -41,6 +41,8 @@ import { Anchor } from '@hanzo/gui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Palette, type Op } from '@hanzo/ui/product';
+/* The canonical surface registry — where chat LIVES is one fact, kept once. */
+import { U } from '@hanzogui/shell';
 import { toast } from '@hanzo/ui';
 import {
   LayoutDashboard,
@@ -211,6 +213,22 @@ export function CommandPalette({
     [projects, openProject, onOpenChange, router, find],
   );
 
+  // The way out when 2,323 operations and every project still do not hold what
+  // somebody typed. This app builds; it does not answer questions, so the
+  // question goes to the one surface that does, carried rather than retyped.
+  // Chat reads `q`/`submit` on arrival, so it is asked, not merely pasted.
+  const ask = useCallback(
+    (question: string) => {
+      onOpenChange(false);
+      window.open(
+        `${U.chat}/c/new?q=${encodeURIComponent(question)}&submit=true`,
+        '_blank',
+        'noreferrer',
+      );
+    },
+    [onOpenChange],
+  );
+
   // ⌘↵ opens the highlighted project's PUBLISHED site; plain ↵ is the package's
   // own onSelect. Only the meta/ctrl case is intercepted, and only for a project.
   useEffect(() => {
@@ -239,6 +257,7 @@ export function CommandPalette({
       placeholder="Search projects and commands…"
       title="Search projects and commands"
       footer={<Hints />}
+      onAsk={ask}
     >
       <PreviewPanel project={activeProject} authorName={user?.name || user?.fullname || '—'} />
     </Palette>
