@@ -77,8 +77,8 @@ importers:
         specifier: ^0.1.0
         version: 0.1.1
       '@hanzo/control':
-        specifier: ^0.3.0
-        version: 0.3.0
+        specifier: ^0.4.0
+        version: 0.4.0
       '@hanzo/design':
         specifier: ^0.5.13
         version: 0.5.13
@@ -862,8 +862,8 @@ packages:
   '@hanzo/composer@0.1.1':
     resolution: {integrity: sha512-+eC1gbT872zcKMoD+JD4tb4CVBQBq7dv6G0NRCT5d+PAfD2dAuqlDF3J5zzywQi55LZazbsip5zWOcbs31uJZg==}
 
-  '@hanzo/control@0.3.0':
-    resolution: {integrity: sha512-GfcDbBlmpdKz0jYcxHy2RixByxSDBpBPPFTWfDrgBrZLlMYjSdMcRoYc0kAbYuUdy2UL2ndrUjgwTQh1oPnrfg==}
+  '@hanzo/control@0.4.0':
+    resolution: {integrity: sha512-2ihmy+GWlJKjLk7BSUoLwOPr8dMWqGd+nBLNlyD0Mhv1Xiy2EVjCwnCTMWM2gcmG/RemxLjklFffDpzlJ7Sc0g==}
 
   '@hanzo/data@1.2.2':
     resolution: {integrity: sha512-hgLGGnsfZqyBmSzCPL2nsnON6jXbUKVNKDnzeIAPCJEkF5SXw4lzCTEtJRHYmrRb01lU0LlQfZxZXrvBd85ZMA==}
@@ -8101,7 +8101,7 @@ snapshots:
 
   '@hanzo/composer@0.1.1': {}
 
-  '@hanzo/control@0.3.0': {}
+  '@hanzo/control@0.4.0': {}
 
   '@hanzo/data@1.2.2(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8)':
     dependencies:
@@ -15596,11 +15596,11 @@ snapshots:
   ox@0.6.7(typescript@5.9.3)(zod@4.4.3):
     dependencies:
       '@adraffy/ens-normalize': 1.11.1
-      '@noble/curves': 1.8.1
-      '@noble/hashes': 1.7.1
-      '@scure/bip32': 1.6.2
-      '@scure/bip39': 1.5.4
-      abitype: 1.0.8(typescript@5.9.3)(zod@4.4.3)
+      '@noble/curves': 1.9.7
+      '@noble/hashes': 1.8.0
+      '@scure/bip32': 1.7.0
+      '@scure/bip39': 1.6.0
+      abitype: 1.3.0(typescript@5.9.3)(zod@4.4.3)
       eventemitter3: 5.0.1
     optionalDependencies:
       typescript: 5.9.3
