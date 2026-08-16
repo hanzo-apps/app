@@ -65,8 +65,8 @@ importers:
         specifier: ^6.1.3
         version: 6.1.3
       '@hanzo/ai':
-        specifier: ^0.3.4
-        version: 0.3.4
+        specifier: ^0.3.8
+        version: 0.3.8
       '@hanzo/appearance':
         specifier: ^0.1.4
         version: 0.1.4(react@19.2.8)
@@ -822,8 +822,8 @@ packages:
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
 
-  '@hanzo/ai@0.3.4':
-    resolution: {integrity: sha512-jWTkN20ql2SWjtA/tzY4rcB4Ypks9TJmMPQSWUZ/oRa7LE+hmcgl5zq5825r4on5BsQYaArLmwhD/X9ufQA0Ag==}
+  '@hanzo/ai@0.3.8':
+    resolution: {integrity: sha512-kSaDUBIEwbnERfodjr4MsoTe/5LQiNyP/CnmMKpqA2T1pW7o2Wc38rsnvApOcI/SAmqhK0kLNRKBn9zbkxxQYQ==}
     engines: {node: '>=18'}
 
   '@hanzo/annotate@0.1.1':
@@ -8047,7 +8047,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@hanzo/ai@0.3.4': {}
+  '@hanzo/ai@0.3.8': {}
 
   '@hanzo/annotate@0.1.1(typescript@5.9.3)':
     dependencies:

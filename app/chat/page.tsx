@@ -109,7 +109,7 @@ async function api<T>(url: string, init?: RequestInit): Promise<T> {
 }
 
 export default function ChatPage() {
-  const { models: allModels } = useModels();
+  const { models: allModels, defaultModel } = useModels();
   const models = houseOnly(allModels);
   const [model, setModel] = useState(CHAT_DEFAULT);
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -138,16 +138,25 @@ export default function ChatPage() {
   // The turn the paid route refused, held so Free can replay it verbatim.
   const pendingRef = useRef<{ history: Message[]; convId: string | null } | null>(null);
 
-  // The model this page serves on: a remembered free switch wins, and otherwise
-  // a selection the live house list does not carry is corrected onto it. Free
-  // is chosen deliberately, so it is never corrected away.
+  // The model this page serves on. /v1/models names it: that route reads the
+  // caller's balance and answers with a model they can actually run, so a page
+  // that opens on a literal of its own opens on a rung a new account is refused
+  // for. It is adopted once, on arrival, so a later pick is not overwritten.
+  // A remembered free switch still wins, and a selection the live house list
+  // does not carry is corrected onto one it does. Free is chosen deliberately,
+  // so it is never corrected away.
+  const opened = useRef(false);
   useEffect(() => {
     if (isFree(model)) return;
     const saved = window.localStorage.getItem('model');
+    const serverDefault = !opened.current && defaultModel ? defaultModel : '';
+    if (defaultModel) opened.current = true;
     const stale = models.length > 0 && !models.some((m) => m.value === model);
-    const next = saved && isFree(saved) ? saved : stale ? models[0].value : model;
+    const next = saved && isFree(saved)
+      ? saved
+      : serverDefault || (stale ? models[0].value : model);
     if (next !== model) setModel(next);
-  }, [models, model]);
+  }, [models, model, defaultModel]);
 
   /** Select a model. Free is remembered, a paid pick forgets it. */
   const pick = useCallback((id: string) => {
@@ -347,13 +356,15 @@ export default function ChatPage() {
     c.title.toLowerCase().includes(search.toLowerCase()),
   );
 
-  // What the picker offers: the house families, plus Free while Free is what is
+  // What the picker offers: the house families, and Free while Free is what is
   // serving — so the trigger can name it and a paid model stays one pick away.
-  const picker = isFree(model)
+  // The live list carries Free itself now, so it is only appended when the list
+  // is missing it; appending unconditionally offered it twice.
+  const picker = isFree(model) && !models.some((m) => m.value === FREE_MODEL)
     ? [...models, { value: FREE_MODEL, label: FREE_MODEL_LABEL }]
     : models.length
       ? models
-      : [{ value: CHAT_DEFAULT, label: 'Zen 5' }];
+      : [{ value: CHAT_DEFAULT, label: 'Enso' }];
 
   return (
     <AppShell currentView="chat">

@@ -418,7 +418,7 @@ export function buildModelsFrom(raw: GatewayModel[]): ModelOption[] {
     if (family?.chat === false || isDeadModelId(m.id)) continue;
 
     const label = labelOf(m.id, m.owned_by);
-    const key = `${family?.key ?? "other"} ${label}`;
+    const key = `${family?.key ?? "other"}\0${label}`;
     const resold = (m.owned_by ?? "").toLowerCase() === "do-ai";
     const next: ModelOption & { resold: boolean } = {
       value: m.id,

@@ -25,6 +25,7 @@ import { IAM, CLIENT_ID, iamHandlers, mint } from "../../iam-fixture";
 
 import { GET as listModels } from "@/app/v1/models/route";
 import { DEFAULT_MODEL, FALLBACK_MODELS } from "@/lib/providers";
+import { FREE_MODEL } from "@hanzo/ai";
 
 const GATEWAY = "https://api.hanzo.ai/v1";
 
@@ -179,6 +180,51 @@ describe("BFF: GET /v1/models", () => {
     expect(res.status).toBe(200);
     expect(body.fallback).toBe(true);
     expect(body.models).toHaveLength(FALLBACK_MODELS.length);
+  });
+
+  // Which model a caller OPENS on follows the balance, because the balance is
+  // what the gateway gate charges against. A brand-new account has none, so a
+  // page that opens on a priced rung is refused on its first message.
+  describe("the model a caller opens on", () => {
+    const balance = (body: unknown, status = 200) =>
+      http.get("https://api.hanzo.ai/v1/billing/balance", () =>
+        HttpResponse.json(body as Record<string, unknown>, { status })
+      );
+    const ladder = () =>
+      http.get(`${GATEWAY}/models`, () =>
+        HttpResponse.json({ data: [{ id: "enso" }, { id: "enso-free" }, { id: "zen5-pro" }] })
+      );
+
+    it("opens a spent-out caller on the free model, with the paid rungs still offered", async () => {
+      server.use(ladder(), balance({ available: 0 }));
+      const body = await (await listModels(req("tok-abc"))).json();
+
+      expect(body.defaultModel).toBe(FREE_MODEL);
+      // Free LEADS; nothing was trimmed to get it there — the rungs this caller
+      // cannot pay for yet are the ones they grow into.
+      expect(body.models[0].value).toBe(FREE_MODEL);
+      const ids = body.models.map((m: { value: string }) => m.value);
+      expect(ids).toEqual(expect.arrayContaining(["enso", "zen5-pro"]));
+      expect(ids).toHaveLength(3);
+    });
+
+    it("leaves a funded caller on the paid default, in the gateway's order", async () => {
+      server.use(ladder(), balance({ available: 500 }));
+      const body = await (await listModels(req("tok-abc"))).json();
+
+      expect(body.defaultModel).toBe(DEFAULT_MODEL);
+      expect(body.models[0].value).not.toBe(FREE_MODEL);
+    });
+
+    // A balance that could not be READ is not a spent-out one; treating it as
+    // one would open every caller on the free model during a moment's trouble.
+    it("does not treat an unreadable balance as spent out", async () => {
+      server.use(ladder(), balance({ error: "boom" }, 500));
+      const body = await (await listModels(req("tok-abc"))).json();
+
+      expect(body.defaultModel).toBe(DEFAULT_MODEL);
+      expect(body.models[0].value).not.toBe(FREE_MODEL);
+    });
   });
 
   it("falls back (200) when the gateway serves no build models", async () => {
