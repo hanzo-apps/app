@@ -6,7 +6,13 @@
  * regenerating the whole site. This is the working copy that closes the window
  * before a project record or a repo exists.
  */
-import { saveWorkspace, loadWorkspace, clearWorkspace } from '@/lib/dev/workspace';
+import {
+  saveWorkspace,
+  loadWorkspace,
+  clearWorkspace,
+  saveTranscript,
+  loadTranscript,
+} from '@/lib/dev/workspace';
 import type { Page } from '@/types';
 
 const pages: Page[] = [
@@ -111,5 +117,56 @@ describe('startNewBuild — a fresh prompt is a different project', () => {
     const spy = jest.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => { throw new Error('x'); });
     expect(() => startNewBuild()).not.toThrow();
     spy.mockRestore();
+  });
+});
+
+/**
+ * The conversation is half of the session, and it used to be the half that
+ * vanished: the pages came back exactly as they were, above a thread claiming
+ * nothing had ever been said. Every correction already given had to be typed
+ * again.
+ */
+describe('transcript', () => {
+  const thread = [
+    { id: '1', role: 'user', text: 'build a quest board' },
+    { id: '2', role: 'assistant', kind: 'chat', phase: 'done', text: 'Done — it is in the preview.' },
+  ];
+
+  it('restores the conversation', () => {
+    saveTranscript('luxquest', thread);
+    const back = loadTranscript<{ id: string; text?: string }>('luxquest');
+    expect(back).toHaveLength(2);
+    expect(back?.[1].text).toContain('preview');
+  });
+
+  it('keeps projects apart, on the same key the pages use', () => {
+    saveTranscript('a', thread);
+    expect(loadTranscript('b')).toBeNull();
+    expect(loadTranscript('A')).toHaveLength(2); // case-insensitive, like the pages
+  });
+
+  it('answers null rather than half-reading an unknown shape', () => {
+    window.localStorage.setItem('hanzo.dev.transcript:luxquest', JSON.stringify({ v: 99, messages: thread }));
+    expect(loadTranscript('luxquest')).toBeNull();
+  });
+
+  it('forgets the thread when the project is started over', () => {
+    saveTranscript('luxquest', thread);
+    clearWorkspace('luxquest');
+    expect(loadTranscript('luxquest')).toBeNull();
+  });
+
+  it('an emptied thread clears the record rather than leaving a stale one', () => {
+    saveTranscript('luxquest', thread);
+    saveTranscript('luxquest', []);
+    expect(loadTranscript('luxquest')).toBeNull();
+  });
+
+  it('never throws when storage refuses', () => {
+    const setItem = jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceededError');
+    });
+    expect(() => saveTranscript('luxquest', thread)).not.toThrow();
+    setItem.mockRestore();
   });
 });

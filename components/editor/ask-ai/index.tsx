@@ -44,6 +44,7 @@ import { SelectedFiles } from "./selected-files";
 import { Uploader } from "./uploader";
 import { sentence } from "./sentence";
 import { ChatThread, type ThreadMessage } from "./chat-thread";
+import { UNTITLED, loadTranscript, saveTranscript } from "@/lib/dev/workspace";
 import { codeTurn } from "./code-turn";
 import type { Runtime } from "@/lib/agent/sandbox";
 import { isConversational } from "./intent";
@@ -416,6 +417,17 @@ export function AskAI({
   // turn. Every send appends a user message + an assistant placeholder that the
   // ONE /v1/generate stream mutates through planning → building → done/error.
   const [messages, setMessages] = useState<ThreadMessage[]>([]);
+
+  // The SAME key the working copy of the pages is stored under — components/editor
+  // derives it identically. The thread and the pages must never disagree about
+  // which project they belong to, or a reload restores one build's conversation
+  // over another build's site.
+  const projectKey =
+    project?.title ||
+    (typeof window !== "undefined"
+      ? (window as { __projectName?: string }).__projectName
+      : "") ||
+    UNTITLED;
   const activeAssistantId = useRef<string | null>(null);
   const activeStartedAt = useRef<number>(0);
   // "stream" = a full generation whose pages stream in live (drives the build
@@ -1020,6 +1032,33 @@ export function AskAI({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isNew]);
 
+  /**
+   * The conversation survives a reload, the same way the pages already did.
+   *
+   * Declared BEFORE the greeting effect below on purpose: mount effects run in
+   * declaration order, and a restored thread already contains its opener. Left
+   * to run after, the greeting would append a second copy of "… is loaded —
+   * tell me what to change" on top of the real conversation, every reload.
+   */
+  const restored = useRef(false);
+  useEffect(() => {
+    const prior = loadTranscript<ThreadMessage>(projectKey);
+    if (!prior?.length) return;
+    restored.current = true;
+    setMessages(prior);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Keep it current. Debounced, and never while a turn is in flight: a thread
+  // caught mid-stream restores as a bubble that spins forever, so the last
+  // SETTLED state is the one worth coming back to — the same reason the working
+  // copy of the pages is not written during a build.
+  useEffect(() => {
+    if (isAiWorking) return;
+    const t = setTimeout(() => saveTranscript(projectKey, messages), 800);
+    return () => clearTimeout(t);
+  }, [messages, isAiWorking, projectKey]);
+
   // Template/remix EDIT arrival: a GREETING-only seed. The template's real HTML
   // is already loaded into the preview (pages), so we do NOT generate — we post
   // a friendly ASSISTANT greeting and wait for the user to ask for a change.
@@ -1031,6 +1070,7 @@ export function AskAI({
     const greeting = (window as any).__assistantGreeting;
     if (!greeting) return;
     delete (window as any).__assistantGreeting;
+    if (restored.current) return; // the restored thread already opens with it
     setMessages((prev) => [
       ...prev,
       {

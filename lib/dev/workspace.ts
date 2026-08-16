@@ -83,8 +83,71 @@ export function clearWorkspace(project: string): void {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.removeItem(keyFor(project));
+    window.localStorage.removeItem(transcriptKeyFor(project));
   } catch {
     /* nothing to do */
+  }
+}
+
+/* ── The conversation ─────────────────────────────────────────────────────────
+ *
+ * The pages survived a reload and the conversation did not, which made the two
+ * halves of one session disagree: the site came back exactly as it was, above a
+ * thread that claimed nothing had ever been said. Everything already asked for —
+ * every correction, every rejected idea, the reasoning behind the current
+ * shape — was gone, and the only way to tell the builder what it had already
+ * been told was to type it again.
+ *
+ * Same rules as the working copy above, for the same reasons: scoped by project
+ * so two builds cannot restore into each other, version-stamped so a shape
+ * change is ignored rather than half-read, bounded, and never throwing.
+ */
+const TRANSCRIPT_KEY = "hanzo.dev.transcript";
+const transcriptKeyFor = (project: string) =>
+  `${TRANSCRIPT_KEY}:${(project || "untitled").toLowerCase()}`;
+
+interface Thread {
+  v: number;
+  messages: readonly unknown[];
+  at: number;
+}
+
+/**
+ * Persist the conversation. Never throws — losing the thread must not break a
+ * build, which is the failure this exists to prevent in the first place.
+ *
+ * The caller owns the message type; this module only guarantees that what comes
+ * back is what went in, or nothing. Typing it here would mean importing a view
+ * component's interface into storage, and the version stamp is what actually
+ * guards the shape.
+ */
+export function saveTranscript(project: string, messages: readonly unknown[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (!messages.length) {
+      window.localStorage.removeItem(transcriptKeyFor(project));
+      return;
+    }
+    const blob = JSON.stringify({ v: VERSION, messages, at: Date.now() } satisfies Thread);
+    if (blob.length > MAX_BYTES) return;
+    window.localStorage.setItem(transcriptKeyFor(project), blob);
+  } catch {
+    /* quota or privacy mode — the thread is a convenience, never the record */
+  }
+}
+
+/** The stored conversation for a project, or null. Never throws. */
+export function loadTranscript<T>(project: string): T[] | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(transcriptKeyFor(project));
+    if (!raw) return null;
+    const thread = JSON.parse(raw) as Thread;
+    if (!thread || thread.v !== VERSION || !Array.isArray(thread.messages) || !thread.messages.length)
+      return null;
+    return thread.messages as T[];
+  } catch {
+    return null;
   }
 }
 
