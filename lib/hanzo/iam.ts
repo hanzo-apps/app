@@ -21,6 +21,17 @@ const REDIRECT_URI =
   (typeof window !== 'undefined'
     ? `${window.location.origin}/auth/callback`
     : 'https://hanzo.app/auth/callback');
+/**
+ * Where hanzo.id returns the browser once the session has ended.
+ *
+ * Signing out is a navigation to the issuer — that is what carries its
+ * `SameSite=Lax` session cookie — so somewhere to come back to is part of the
+ * request, and the issuer honors only an address this client has REGISTERED.
+ * The landing is `/` rather than `/login`, which starts a fresh authorize on
+ * mount and would send someone who just signed out straight back.
+ */
+const POST_LOGOUT_URI =
+  typeof window !== 'undefined' ? `${window.location.origin}/` : 'https://hanzo.app/';
 
 /**
  * In-memory Storage shim. The SDK constructor falls back to bare
@@ -73,6 +84,7 @@ export const iamConfig: IAMConfig = {
   clientId: CLIENT_ID,
   appName: 'hanzo-app',
   redirectUri: REDIRECT_URI,
+  postLogoutRedirectUri: POST_LOGOUT_URI,
   // `offline_access` requests a REFRESH token so the SDK can silently renew the
   // access token when it expires — without it a long session lapses and a
   // logged-in user gets bounced to the "Log In to use Hanzo for free" modal.
