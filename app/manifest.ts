@@ -9,13 +9,16 @@ import type { MetadataRoute } from "next";
 // hanzo.ai/scripts/gen-favicons.mjs. A tab is where a reader recognizes us, so
 // two hosts drawing two generations of the same H is the one drift that shows.
 //
-// The installer sizes are listed TWICE, once per purpose. The manifest spec
-// makes `purpose` a space-separated set, so one entry can say "any maskable";
-// Next types it as a single value (`'any' | 'maskable' | 'monochrome'`), and
-// the string form is a type error that stops the release before it builds. Two
-// entries naming the same src say the same thing to a user agent — it picks by
-// purpose — and say it in the shape the type accepts. Collapsing them back is
-// the edit that reopens the hole.
+// EACH PURPOSE GETS ITS OWN FILE, because the two want opposite bytes.
+//
+// An "any" icon is used as it is, so it stays transparent and stands on the
+// host's own surface. A "maskable" icon is cropped by the OS to a platform
+// shape, so it has to be opaque and full-bleed with the mark inside the safe
+// circle — the launcher composites a transparent one onto a ground it picks,
+// and against `background_color` that drew a solid black square on Android.
+// The installer sizes were listed twice, once per purpose, both rows naming the
+// SAME transparent file; two rows that agree on the src say one file serves
+// both, which is the thing that cannot be true.
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Hanzo — describe an app and it gets built",
@@ -28,11 +31,10 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#000000",
     icons: [
       { src: "/icon.svg", type: "image/svg+xml", sizes: "any" },
-      { src: "/apple-icon.png", type: "image/png", sizes: "180x180" },
       { src: "/icon-192.png", type: "image/png", sizes: "192x192", purpose: "any" },
-      { src: "/icon-192.png", type: "image/png", sizes: "192x192", purpose: "maskable" },
       { src: "/icon-512.png", type: "image/png", sizes: "512x512", purpose: "any" },
-      { src: "/icon-512.png", type: "image/png", sizes: "512x512", purpose: "maskable" },
+      { src: "/icon-maskable-192.png", type: "image/png", sizes: "192x192", purpose: "maskable" },
+      { src: "/icon-maskable-512.png", type: "image/png", sizes: "512x512", purpose: "maskable" },
     ],
   };
 }
