@@ -31,7 +31,28 @@ const eslintConfig = [
   // `.next/**`. Linting it reported 622 problems (128 of them errors) about
   // code nobody wrote and nobody can edit: every `react-hooks/rules-of-hooks`
   // hit in the repo was a bundler artifact in these five files.
-  { ignores: ['.next/**', 'public/**', 'coverage/**', '.claude/**', '.hanzogui/**'] },
+  //
+  // `dist/**` and `target/**` are the launcher's build output — its Vite bundle
+  // and the JS that `tauri-codegen` emits under `src-tauri/target/release`.
+  // `.gitignore` already declares `dist/`, `dist-ssr/` and `target/`, but a flat
+  // config never reads `.gitignore`, so without them here the error count depends
+  // on whether the developer running the lint happens to have built the launcher:
+  // 164 on a fresh checkout, 173 with a launcher build beside it, against a
+  // ceiling of 164. A ratchet that moves with the local filesystem measures the
+  // machine rather than the change, and it fails on the one machine that did more
+  // work. No tracked file lives under any of the three.
+  {
+    ignores: [
+      '.next/**',
+      'public/**',
+      'coverage/**',
+      '.claude/**',
+      '.hanzogui/**',
+      '**/dist/**',
+      '**/dist-ssr/**',
+      '**/target/**',
+    ],
+  },
   ...nextCoreWebVitals,
   ...nextTypescript,
   {

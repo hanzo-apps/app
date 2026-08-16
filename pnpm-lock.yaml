@@ -68,8 +68,8 @@ importers:
         specifier: ^0.3.4
         version: 0.3.4
       '@hanzo/appearance':
-        specifier: ^0.1.2
-        version: 0.1.2(react@19.2.8)
+        specifier: ^0.1.4
+        version: 0.1.4(react@19.2.8)
       '@hanzo/base':
         specifier: ^0.2.1
         version: 0.2.1(react@19.2.8)
@@ -831,11 +831,6 @@ packages:
     peerDependencies:
       typescript: '>=5'
 
-  '@hanzo/appearance@0.1.2':
-    resolution: {integrity: sha512-Oc67xzdurgX0dTz4GM5IBGjKD7mOOeVfDU6VvjTABU6hjT6rKfwrEPbSaVNCVK1ZGyJ5qdHHzwYmjFU1GTmLpw==}
-    peerDependencies:
-      react: '>=19'
-
   '@hanzo/appearance@0.1.4':
     resolution: {integrity: sha512-JBsre5oDxjo0iRpXvt0ME2NKklXdNsB7dJwBoZouGzSHAbQldxFF7LLNuSuk6w1a6TYCIftoooYGmw0ynQsclA==}
     peerDependencies:
@@ -857,10 +852,6 @@ packages:
     peerDependencies:
       '@hanzo/gui': '>=7.2.2'
       react: '>=19'
-
-  '@hanzo/design@0.4.12':
-    resolution: {integrity: sha512-lE1UxUL10FLrETj7VjfMqTkbUF+qlOTTwN2zXKJIhUwHyr0isKWfFPigdjoxy2YK+/t7aY/zE9C/Y5s3DoTKQA==}
-    hasBin: true
 
   '@hanzo/design@0.5.8':
     resolution: {integrity: sha512-wPs0NcJR+bZDwsdNfHuUGqkTYj5H/p9jgkkm5fIgYgPXml9GrZrpfIO7ntcmXO/QI6ln58+W3cVqCX4Wz9HQ2Q==}
@@ -8047,11 +8038,6 @@ snapshots:
     dependencies:
       typescript: 5.9.3
 
-  '@hanzo/appearance@0.1.2(react@19.2.8)':
-    dependencies:
-      '@hanzo/design': 0.4.12
-      react: 19.2.8
-
   '@hanzo/appearance@0.1.4(react@19.2.8)':
     dependencies:
       '@hanzo/design': 0.5.8
@@ -8067,8 +8053,6 @@ snapshots:
     dependencies:
       '@hanzo/gui': 8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8)
       react: 19.2.8
-
-  '@hanzo/design@0.4.12': {}
 
   '@hanzo/design@0.5.8': {}
 
