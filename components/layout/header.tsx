@@ -96,29 +96,32 @@ export default function Header() {
   return (
     <>
       <HanzoHeader
-        // `primaryCTA: undefined` is the one override, and it is load-bearing.
-        // The registry describes hanzo.app from the OUTSIDE, so its primary
-        // action points at `https://hanzo.app` — everywhere else a link TO the
-        // builder, here a link to the page you are already on. A self-link is a
-        // dead control, and it is worst BEFORE hydration, which is exactly when
-        // a static export is read. `tryMenu` does not rescue it either: the pill
-        // keeps that href as its no-JavaScript fallback, so the doors menu would
-        // hand the same dead link to the readers least able to recover from it.
+        // The registry's own primary action is back, because the shell can now
+        // say the thing that had kept it off: from 8.1.22 any control naming the
+        // CURRENT place — either CTA, a nav row, a mobile sheet row, and the
+        // brand mark — renders `aria-current="page"` with NO href, keeping its
+        // exact appearance. So `+ New project` is a real pill again and is not a
+        // link to the page you are already on.
         //
-        // The shell cannot yet say "this entry names the surface it is on" —
-        // there is `currentHref`, but it highlights a Products LEAF, not the
-        // CTA. Until it can mark that entry `aria-current` and drop the href,
-        // refusing the action is the honest answer, and creating lives in the
-        // page and in the account menu where it already worked.
-        surface={{ ...surface, localNav: nav, primaryCTA: undefined }}
+        // That mattered more than the pill. The brand mark was the same bare
+        // self-link on this surface, so fixing only the CTA would have left one
+        // behind — and a self-link is worst BEFORE hydration, which is exactly
+        // when a static export is read.
+        surface={{ ...surface, localNav: nav }}
         // The ten categories, called what a builder is looking for when they
         // open them. A LABEL, not a second menu — one taxonomy, one component.
         // There is no /platform page to link, and there should not be: the
         // taxonomy IS that page, and a row that only opens a menu is the menu.
         productsTaxonomy={HANZO_PRODUCT_CATEGORIES}
         productsLabel="Platform"
+        // The pill opens the DOORS rather than taking one — a visitor here has
+        // already chosen the builder, so a single destination is wrong for most
+        // of them.
+        tryMenu
         auth={auth}
-        currentHref="https://hanzo.app"
+        // The ROUTE, not the absolute URL. This is what the shell matches an
+        // entry against to decide it names the current place.
+        currentHref="/"
         // The bar's own search control, opening THIS app's palette: it holds
         // what a shared header cannot know — the visitor's projects and every
         // operation the cloud answers.
