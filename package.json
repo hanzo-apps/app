@@ -36,7 +36,7 @@
     "@hanzo/base": "^0.2.1",
     "@hanzo/composer": "^0.1.0",
     "@hanzo/design": "^0.5.8",
-    "@hanzo/event": "^0.3.9",
+    "@hanzo/event": "^0.3.25",
     "@hanzo/gui": "^8.1.0",
     "@hanzo/iam": "^0.21.13",
     "@hanzo/logo": "^1.0.17",
