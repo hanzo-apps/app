@@ -119,6 +119,18 @@ const nextConfig: NextConfig = {
           { key: 'Cache-Control', value: 'public, max-age=300, stale-while-revalidate=3600' },
         ],
       },
+      {
+        // The widget imports the preference transform from pages on OTHER
+        // origins, and a cross-origin module import is a CORS request — without
+        // this the import rejects and the preferences section silently never
+        // appears. A stylesheet needs none, which is why the rest of /vendor
+        // has worked without it.
+        source: '/vendor/appearance/:file*',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Cache-Control', value: 'public, max-age=300, stale-while-revalidate=3600' },
+        ],
+      },
     ];
   },
 

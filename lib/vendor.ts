@@ -54,6 +54,21 @@ export const LIBS = {
    * and that is what tests/e2e asks.
    */
   design: { from: '@hanzo/design/styles.css', file: 'design/styles.css' },
+  /**
+   * The preference TRANSFORM, served so the injected widget can call it instead
+   * of keeping a copy.
+   *
+   * `edit.js` runs on pages this app does not own and has no bundler, so the
+   * obvious move is to inline the density and face tables into the widget — and
+   * that is exactly the copy @hanzo/design's own docblock records going wrong:
+   * a restated ramp shipped `lg: 16px` against the tokens' 15px, so a
+   * preference of 1 silently resized the published design. One transform, one
+   * home, fetched at runtime.
+   *
+   * `dist/preference.js` is import-free (checked: zero import statements), so it
+   * is copied verbatim with no specifier to rewrite and no bundler to add.
+   */
+  preference: { from: '@hanzo/design/dist/preference.js', file: 'appearance/preference.js' },
   geist: { from: '@hanzo/design/assets/fonts/Geist-Variable.woff2', file: 'design/assets/fonts/Geist-Variable.woff2' },
   geistMono: { from: '@hanzo/design/assets/fonts/GeistMono-Variable.woff2', file: 'design/assets/fonts/GeistMono-Variable.woff2' },
   /** Icons. One set, so a page never loads two icon fonts to draw two glyphs. */

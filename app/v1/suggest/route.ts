@@ -1,15 +1,28 @@
 /**
  * /v1/suggest — the LOW-privilege "contribute to this page" door.
  *
- * ANYONE, including anonymous visitors, may suggest a fix. No credits, no agent
- * run: we file a lightweight issue-style entry against the page's declared repo.
+ * A SIGNED-IN person may suggest a fix. No credits and no agent run — we file a
+ * lightweight issue-style entry against the page's declared repo — but a name is
+ * required, and that is a deliberate change from the anonymous door this used to
+ * be.
+ *
+ * Two reasons, and the second is the one that decided it. A suggestion becomes an
+ * ISSUE on one of our repos, filed by a bot identity when the caller has no forge
+ * token of their own, so an open door is an unauthenticated write into every repo
+ * in the host map — the classic shape of a spam channel, and one where the abuse
+ * lands on maintainers rather than on us. And an issue with no author cannot be
+ * answered: a reviewer with a question about a suggestion has nobody to ask, so
+ * the cheapest suggestions to file were the most expensive to act on.
+ *
  * The token used to file is (in order) the caller's linked-provider token, else a
  * configured Hanzo bot identity (`HANZO_EDIT_BOT_TOKEN`). When neither exists the
  * suggestion is acknowledged honestly (`filed:false`) rather than fabricating a
  * filing — the deploy simply hasn't wired a channel yet.
  *
- * Cross-origin BY DESIGN (the widget runs on every Hanzo app); the security model
- * is the LOW blast radius (a reviewable issue), not CSRF.
+ * Cross-origin BY DESIGN (the widget runs on every Hanzo app). A JSON POST is
+ * preflighted and `withCors` reflects only Hanzo-family origins, so requiring a
+ * credential here does not open a CSRF path: a third-party page cannot get the
+ * preflight past the allow-list to send it.
  */
 import type { NextRequest } from 'next/server';
 
@@ -53,10 +66,14 @@ export async function POST(req: NextRequest) {
   }
 
   const provider = providerName(body.provider);
-  // Best-effort actor label for the issue body (validated only when a bearer is
-  // present; anonymous suggestions are labeled honestly).
+
+  // A suggestion carries a name. Refused BEFORE the repo is touched, so an
+  // unauthenticated caller learns nothing about which repos exist.
   const id = await session(req);
-  const actor = id ? `@${id.name}${id.isAdmin ? ' (admin)' : ''}` : 'an anonymous visitor';
+  if (!id) {
+    return withCors(origin, { ok: false, error: 'Sign in to suggest a change.', authRequired: true }, 401);
+  }
+  const actor = `@${id.name}${id.isAdmin ? ' (admin)' : ''}`;
 
   const editToken = await resolveEditToken(req, provider, id?.token ?? null);
   if (!editToken) {

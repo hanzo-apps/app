@@ -4,7 +4,7 @@
  * boundary that the widget only cosmetically mirrors:
  *   /v1/edit  → 401 anon · 402 no-credit non-admin · admin+credit pass the gate
  *   /v1/me    → the { authenticated, isAdmin, balance, hasCredits } shape
- *   /v1/suggest → anonymous works (honest filed:false with no channel; files an
+ *   /v1/suggest → signed-in only (honest filed:false with no channel; files an
  *                 issue when a forge token is available)
  * Node env (NextRequest extends the global Request).
  */
@@ -165,10 +165,30 @@ describe('POST /v1/edit — the gate', () => {
 // --- /v1/suggest -----------------------------------------------------------
 
 describe('POST /v1/suggest', () => {
-  it('anonymous with no bot configured → accepted, filed:false (honest)', async () => {
+  it('anonymous is REFUSED — a suggestion carries a name', async () => {
+    // An open door here is an unauthenticated write into every repo in the host
+    // map, filed under a bot identity, and the spam lands on maintainers.
     installFetch();
     const res = await suggestPOST(
       req('https://hanzo.app/v1/suggest', { method: 'POST', body: { repo: 'owner/repo', suggestion: 'fix a typo' } }),
+    );
+    expect(res.status).toBe(401);
+    expect(await res.json()).toMatchObject({ ok: false, authRequired: true });
+  });
+
+  it('refuses BEFORE reading the repo, so it leaks no repo names', async () => {
+    installFetch();
+    const res = await suggestPOST(
+      req('https://hanzo.app/v1/suggest', { method: 'POST', body: { repo: 'secret-owner/secret-repo', suggestion: 'x' } }),
+    );
+    expect(res.status).toBe(401);
+    expect(JSON.stringify(await res.json())).not.toContain('secret');
+  });
+
+  it('signed in with no bot configured → accepted, filed:false (honest)', async () => {
+    installFetch();
+    const res = await suggestPOST(
+      req('https://hanzo.app/v1/suggest', { method: 'POST', token: await USER(), body: { repo: 'owner/repo', suggestion: 'fix a typo' } }),
     );
     expect(res.status).toBe(200);
     expect(await res.json()).toMatchObject({ ok: true, filed: false });
@@ -186,7 +206,7 @@ describe('POST /v1/suggest', () => {
   it('rejects an empty suggestion', async () => {
     installFetch();
     const res = await suggestPOST(
-      req('https://hanzo.app/v1/suggest', { method: 'POST', body: { repo: 'owner/repo', suggestion: '  ' } }),
+      req('https://hanzo.app/v1/suggest', { method: 'POST', token: await USER(), body: { repo: 'owner/repo', suggestion: '  ' } }),
     );
     expect(res.status).toBe(400);
   });
