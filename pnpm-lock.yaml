@@ -43,7 +43,7 @@ overrides:
   brace-expansion@2: '>=2.1.2'
   axios: '>=1.18.0'
   '@hanzogui/web': 8.1.0
-  '@hanzo/ui': 8.0.95
+  '@hanzo/ui': 8.0.103
 
 importers:
 
@@ -95,8 +95,8 @@ importers:
         specifier: ^0.1.6
         version: 0.1.6(react@19.2.8)
       '@hanzo/ui':
-        specifier: 8.0.95
-        version: 8.0.95(d34e077889466c577c1365fa870eccd8)
+        specifier: 8.0.103
+        version: 8.0.103(703e799ef3e7dc6b5cceb71345badfa6)
       '@hanzo/usage':
         specifier: ^0.1.6
         version: 0.1.6(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(@hanzogui/lucide-icons-2@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8))(react@19.2.8)
@@ -844,6 +844,15 @@ packages:
       react:
         optional: true
 
+  '@hanzo/brand@1.4.6':
+    resolution: {integrity: sha512-Pn0rBr4n0yCx9KiNuL2lU1ikRcVlgNadfB4LfOkh4b+RGJNfxgg+CQVa0WJFwRKYVWfCyPucvwqNAh9MihGZtQ==}
+    hasBin: true
+    peerDependencies:
+      react: '>=18'
+    peerDependenciesMeta:
+      react:
+        optional: true
+
   '@hanzo/composer@0.1.1':
     resolution: {integrity: sha512-+eC1gbT872zcKMoD+JD4tb4CVBQBq7dv6G0NRCT5d+PAfD2dAuqlDF3J5zzywQi55LZazbsip5zWOcbs31uJZg==}
 
@@ -910,8 +919,8 @@ packages:
       react:
         optional: true
 
-  '@hanzo/ui@8.0.95':
-    resolution: {integrity: sha512-jmrLrHnn3Afx+W8VXuSvhTUnWtHxiRism2gmnTJpcEZSXjoKKkjiP/rc//s9OujPmlHoWCIT0EjOXQs/Acsu/Q==}
+  '@hanzo/ui@8.0.103':
+    resolution: {integrity: sha512-7DxXqqRdSQ9mGPJqt4toUWPStJeDHVhpQDkQZH7725lsm8BK9HqXdIXs78EjLRgx2yys3y3CW5r8HMgdOzpGcA==}
     peerDependencies:
       '@hanzo/canvas': '>=0.1.0'
       '@hanzo/cd': '>=0.1.0'
@@ -920,7 +929,10 @@ packages:
       '@hanzo/gui': '>=8.1.0'
       '@hanzo/usage': '>=0.1.0'
       '@hanzogui/config': '>=8.1.0'
+      '@hanzogui/lucide-icons-2': '>=8.1.0'
       '@hanzogui/next-theme': '>=8.1.0'
+      '@hanzogui/telemetry': '>=8.1.0'
+      '@hanzogui/toast': '>=8.1.0'
       next: '>=14'
       next-themes: '>=0.2.1'
       react: '>=19'
@@ -8047,6 +8059,12 @@ snapshots:
     optionalDependencies:
       react: 19.2.8
 
+  '@hanzo/brand@1.4.6(react@19.2.8)':
+    dependencies:
+      '@hanzo/logo': 1.0.17(react@19.2.8)
+    optionalDependencies:
+      react: 19.2.8
+
   '@hanzo/composer@0.1.1': {}
 
   '@hanzo/data@1.2.2(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8)':
@@ -8155,9 +8173,10 @@ snapshots:
       '@hanzogui/lucide-icons-2': 8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8)
       react: 19.2.8
 
-  '@hanzo/ui@8.0.95(d34e077889466c577c1365fa870eccd8)':
+  '@hanzo/ui@8.0.103(703e799ef3e7dc6b5cceb71345badfa6)':
     dependencies:
       '@hanzo/appearance': 0.1.4(react@19.2.8)
+      '@hanzo/brand': 1.4.6(react@19.2.8)
       '@hanzo/data': 1.2.2(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8)
       '@hanzo/design': 0.5.8
       '@hanzo/gui': 8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8)
@@ -8176,8 +8195,6 @@ snapshots:
       next: 16.2.12(@babel/core@7.29.7)(@opentelemetry/api@1.9.0)(@playwright/test@1.62.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       next-themes: 0.4.6(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react-native-web: 0.21.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-    transitivePeerDependencies:
-      - react-native-svg
 
   '@hanzo/usage@0.1.6(@hanzo/gui@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(@hanzogui/lucide-icons-2@8.1.0(react-dom@19.2.8(react@19.2.8))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))(react@19.2.8))(react@19.2.8))(react@19.2.8)':
     optionalDependencies:

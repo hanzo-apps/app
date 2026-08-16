@@ -41,7 +41,7 @@
     "@hanzo/iam": "^0.21.13",
     "@hanzo/logo": "^1.0.17",
     "@hanzo/observe": "^0.1.6",
-    "@hanzo/ui": "^8.0.95",
+    "@hanzo/ui": "^8.0.103",
     "@hanzo/usage": "^0.1.6",
     "@hanzo/voice": "^0.1.8",
     "@hanzogui/config": "^8.0.1",
@@ -142,7 +142,7 @@
       "brace-expansion@2": ">=2.1.2",
       "axios": ">=1.18.0",
       "@hanzogui/web": "8.1.0",
-      "@hanzo/ui": "8.0.95"
+      "@hanzo/ui": "8.0.103"
     },
     "onlyBuiltDependencies": [
       "better-sqlite3"
