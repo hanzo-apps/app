@@ -43,7 +43,12 @@ async function destination(page: Page): Promise<string | null> {
 
 test.describe('a chosen plan survives sign-in', () => {
   test.beforeEach(async ({ page }) => {
-    await page.route('https://hanzo.id/**', (route) => route.abort());
+    // Answer the hand-off here rather than at hanzo.id: nothing is asked of IAM,
+    // and the hop still LANDS, so the next navigation is not racing a page that
+    // never arrived.
+    await page.route('https://hanzo.id/**', (route) =>
+      route.fulfill({ status: 200, contentType: 'text/html', body: '<title>hand-off</title>' }),
+    );
     await page.goto(PRICING);
     await page.evaluate(() => window.localStorage.removeItem('redirectAfterLogin'));
   });
@@ -56,6 +61,7 @@ test.describe('a chosen plan survives sign-in', () => {
       const card = page.getByTestId(`plan-${slug}`);
       await expect(card).toBeVisible();
       await card.getByRole('button', { name: 'Get started' }).click();
+      await page.waitForURL(/hanzo\.id/);
 
       expect(await destination(page), `after pressing ${slug}`).toBe(`/checkout?plan=${slug}`);
     }
@@ -64,11 +70,13 @@ test.describe('a chosen plan survives sign-in', () => {
   test('the destination is the checkout, never the list just used', async ({ page }) => {
     const [first] = await ladder(page);
     await page.getByTestId(`plan-${first}`).getByRole('button', { name: 'Get started' }).click();
+    await page.waitForURL(/hanzo\.id/);
     expect(await destination(page)).not.toBe('/pricing');
   });
 
   test('checkout reached straight carries the plan through the same hand-off', async ({ page }) => {
     await page.goto(CHECKOUT);
+    await page.waitForURL(/hanzo\.id/);
     expect(await destination(page)).toBe('/checkout?plan=pro');
   });
 });
