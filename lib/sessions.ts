@@ -68,7 +68,12 @@ export async function listSessions(
   const q = new URLSearchParams();
   if (opts.status) q.set('status', opts.status);
   if (opts.limit) q.set('limit', String(opts.limit));
-  const url = q.size ? `${SESSIONS_BASE}?${q}` : SESSIONS_BASE;
+  // `toString()`, never `q.size`: that property is recent (Node 19 / Chrome 113)
+  // and reads as `undefined` where it is missing, so the ternary is silently
+  // false and the filter is DROPPED — the caller asks for running sessions and
+  // is handed every session, with nothing reporting a problem.
+  const qs = q.toString();
+  const url = qs ? `${SESSIONS_BASE}?${qs}` : SESSIONS_BASE;
 
   const res = await fetch(url, {
     headers: { Authorization: `Bearer ${token}` },

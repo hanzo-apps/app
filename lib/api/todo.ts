@@ -217,11 +217,38 @@ export async function createBoard(input: {
   return req<Board>('/projects', json('POST', input));
 }
 
-export async function listIssues(key: string, filter: IssueFilter = {}): Promise<Issue[]> {
+/** A filter as a query string. One encoding, so the two reads below cannot
+ *  disagree about how a filter is spelled. */
+function query(filter: IssueFilter): string {
   const q = new URLSearchParams();
   for (const [k, v] of Object.entries(filter)) if (v) q.set(k, String(v));
-  const qs = q.size ? `?${q}` : '';
-  return req<Issue[]>(`/projects/${encodeURIComponent(key)}/issues${qs}`);
+  // `q.toString()`, never `q.size`: the property is recent (Node 19 / Chrome
+  // 113) and reads as `undefined` where it is missing, so `q.size ? …` is
+  // silently false and the filter is DROPPED — a board that quietly returns
+  // every row while the caller believes it asked for one column. The rendered
+  // string is the value being tested anyway.
+  const qs = q.toString();
+  return qs ? `?${qs}` : '';
+}
+
+export async function listIssues(key: string, filter: IssueFilter = {}): Promise<Issue[]> {
+  return req<Issue[]>(`/projects/${encodeURIComponent(key)}/issues${query(filter)}`);
+}
+
+/**
+ * Work across EVERY board in the org, rather than one project's.
+ *
+ * The board a work item sits on answers "which effort is this part of", and that
+ * is the wrong axis for "what are the agents doing" — an agent asked to do work
+ * across a project opens items wherever the work lands, so a per-board read
+ * shows a slice of one agent's output and calls it the whole picture. Pair it
+ * with `{ source: 'agent' }`.
+ *
+ * The tenant is the caller's own, resolved server-side from the validated
+ * bearer: this names no org and cannot.
+ */
+export async function listAllIssues(filter: IssueFilter = {}): Promise<Issue[]> {
+  return req<Issue[]>(`/issues${query(filter)}`);
 }
 
 export async function createIssue(key: string, input: NewIssue): Promise<Issue> {

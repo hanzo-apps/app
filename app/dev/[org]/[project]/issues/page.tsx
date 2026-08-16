@@ -118,6 +118,11 @@ export default function ProjectIssuesPage() {
   const [issues, setIssues] = useState<Issue[]>([]);
   const [sessions, setSessions] = useState<Record<string, SessionStatus>>({});
   const [status, setStatus] = useState<Status | "">("");
+  // WHO opened an item, which is a different question from what column it is in.
+  // An agent stamps `source: "agent"` on anything it opens (cloud apps/todo
+  // toolprovider.go) and cannot claim otherwise, so this lens answers "what are
+  // the agents doing here" without a second list or a second store.
+  const [who, setWho] = useState<"" | "agent" | "team">("");
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("");
   const [busy, setBusy] = useState(false);
@@ -169,8 +174,16 @@ export default function ProjectIssuesPage() {
   }, []);
 
   const shown = useMemo(
-    () => (status ? issues.filter((i) => i.status === status) : issues),
-    [issues, status],
+    () =>
+      issues.filter(
+        (i) =>
+          (!status || i.status === status) &&
+          // "team" is everything a person opened — the several non-agent sources
+          // (team, git, crm, helpdesk, cms) are one answer to "who", so this asks
+          // the question rather than enumerating a set that can grow.
+          (!who || (who === "agent" ? i.source === "agent" : i.source !== "agent")),
+      ),
+    [issues, status, who],
   );
 
   const open = async () => {
@@ -291,12 +304,35 @@ export default function ProjectIssuesPage() {
             ))}
           </XStack>
 
+          <XStack gap="$2" flexWrap="wrap" alignItems="center">
+            <SizableText size="$1" color="$color11">
+              Opened by
+            </SizableText>
+            {([
+              ["", "Anyone"],
+              ["agent", "Agents"],
+              ["team", "People"],
+            ] as const).map(([v, label]) => (
+              <Button
+                key={label}
+                size="sm"
+                variant="outline"
+                {...selected(who === v)}
+                onPress={() => setWho(v)}
+              >
+                {label}
+              </Button>
+            ))}
+          </XStack>
+
           {shown.length === 0 ? (
             <YStack {...panel} padding="$4.5">
               <Paragraph fontSize="$2" color="$color11">
                 {issues.length === 0
                   ? "Nothing open. The first line above starts the board."
-                  : `Nothing in ${STATUS_LABEL[status as Status]}.`}
+                  : `Nothing here${status ? ` in ${STATUS_LABEL[status as Status]}` : ""}${
+                      who === "agent" ? " opened by an agent" : who === "team" ? " opened by a person" : ""
+                    }.`}
               </Paragraph>
             </YStack>
           ) : (

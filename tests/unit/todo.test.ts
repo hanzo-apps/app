@@ -14,6 +14,8 @@ import {
   refSession,
   sessionRef,
   type Board,
+  listAllIssues,
+  listIssues,
 } from "@/lib/api/todo";
 
 /** Cloud's key validator, verbatim from apps/todo/todo.go. */
@@ -88,5 +90,58 @@ describe("proposing a board key", () => {
     for (const name of ["a", "x", "", "9", "my-site", "platform", "a-b", "Z2"]) {
       expect(proposeKey(name)).toMatch(KEY_RE);
     }
+  });
+});
+
+
+/**
+ * The ADDRESS each read calls, pinned at the call rather than through a stubbed
+ * body — a client aimed at a route the server does not serve stays green under a
+ * body stub, which is exactly how /v1/tracker survived its own rename.
+ */
+describe("what the board reads", () => {
+  const calls: string[] = [];
+  const original = globalThis.fetch;
+
+  beforeEach(() => {
+    calls.length = 0;
+    globalThis.fetch = ((url: string) => {
+      calls.push(String(url));
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve([]),
+      } as Response);
+    }) as typeof fetch;
+  });
+  afterEach(() => {
+    globalThis.fetch = original;
+  });
+
+  it("reads one board under that board's key", async () => {
+    await listIssues("ENG");
+    expect(calls[0]).toBe("/v1/todo/projects/ENG/issues");
+  });
+
+  it("reads EVERY board from the org-wide address, naming no org", async () => {
+    // The tenant is resolved server-side from the validated bearer; a client
+    // that could name one could read another org's work.
+    await listAllIssues();
+    expect(calls[0]).toBe("/v1/todo/issues");
+    expect(calls[0]).not.toMatch(/org=/);
+  });
+
+  it("spells a filter one way for both reads", async () => {
+    await listIssues("ENG", { source: "agent", status: "in_progress" });
+    await listAllIssues({ source: "agent", status: "in_progress" });
+    const [one, all] = calls;
+    expect(one).toContain("source=agent");
+    expect(one).toContain("status=in_progress");
+    expect(one.slice(one.indexOf("?"))).toBe(all.slice(all.indexOf("?")));
+  });
+
+  it("omits an empty filter rather than sending a blank value", async () => {
+    await listAllIssues({ source: undefined, status: "" as never });
+    expect(calls[0]).toBe("/v1/todo/issues");
   });
 });
