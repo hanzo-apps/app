@@ -1717,9 +1717,17 @@ export function AskAI({
   />
             <Voice voice={voice} disabled={isAiWorking} className="voice-control" />
             {isAiWorking ? (
+              // The composer's two actions are icon-only, so the glyph is the
+              // whole label and neither had one. That is unreadable to a screen
+              // reader, and it is why a harness looking for "Stop" could not
+              // find the control at all: with no accessible name there is
+              // nothing to look it up by. `title` for a pointer, `aria-label`
+              // for everything else — a name is not one or the other.
               <Button
                 size="icon"
                 variant="destructive"
+                aria-label="Stop generating"
+                title="Stop generating"
                 onClick={stopController}
                 gap="$1" height={36} minHeight={36} width={36} minWidth={36} borderRadius={999}
               >
@@ -1729,6 +1737,8 @@ export function AskAI({
               <Button
                 size="icon"
                 {...accent}
+                aria-label="Send"
+                title="Send"
                 height={36} minHeight={36} width={36} minWidth={36} borderWidth={0} borderRadius={999}
                 disabled={
                   isUploading ||

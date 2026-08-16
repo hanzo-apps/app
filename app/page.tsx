@@ -230,13 +230,23 @@ export default function LandingPage() {
             the composer already docked at the foot of the screen. From $lg the
             two stand side by side, which is the arrangement the copy is
             measured for: 1200 is two columns and the $8 (48px) gap between
-            them, and the left column stops at 576 because that is the width
-            the headline's two deliberate lines need — measured: at 520 the
-            second line broke again and left "it." alone on a third. */}
+            them, and the left column needs 576 because that is the width the
+            headline's two deliberate lines need — measured: at 520 the second
+            line broke again and left "it." alone on a third.
+
+            576 is a FLOOR, and it has to be one. It was written as `maxWidth`
+            alone, which is a cap — `flex: 1` then hands the column whatever a
+            half-share happens to be and the cap never applies. Between 1024 and
+            1200 that share is 456–544px against the 573px the second sentence
+            occupies at 48px, so the headline stood at THREE lines with "ships
+            it." orphaned across that whole band, and read correctly at 1280 and
+            up only because the share finally reached the cap. Measured every
+            80px from 900 to 1680. The right column is a scaled mock and gives
+            up the difference; a headline cannot. */}
         <YStack minHeight="100svh" justifyContent="center" paddingHorizontal="$4" paddingBottom="$10" paddingTop="$8" $md={{ paddingHorizontal: "$6" }}>
           <YStack alignSelf="center" width="100%" maxWidth={768} gap="$7" $lg={{ flexDirection: "row", alignItems: "center", maxWidth: 1200, gap: "$8" }}>
             {/* LEFT — what the product does, said once. */}
-            <YStack alignSelf="center" width="100%" maxWidth={768} $lg={{ flex: 1, maxWidth: 576, alignSelf: "center" }}>
+            <YStack alignSelf="center" width="100%" maxWidth={768} $lg={{ flex: 1, minWidth: 576, maxWidth: 576, alignSelf: "center" }}>
               <Reveal>
                 <XStack alignSelf="center" marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color0025" paddingHorizontal="$3" paddingVertical="$1.5" $lg={{ alignSelf: "flex-start" }}>
                   <SizableText fontFamily="$mono" fontSize="$1" color="$color11">

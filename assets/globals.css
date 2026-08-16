@@ -1266,14 +1266,24 @@ html:root .hz-dense [data-variant][data-size] {
 [data-variant][data-size].rounded-full {
   border-radius: 9999px !important;
 }
-/* Raw <button> elements (not the @hanzo/ui Button) normalize to the control radius so
-   no custom button is a sharp rectangle. This covers bare buttons AND ones that
-   hardcoded a small/sharp radius (rounded / -sm / -md / -lg / -none — the source of
-   the 2–6px chrome buttons). Only deliberately-LARGE radii (rounded-xl / -2xl /
-   -3xl) and pills (rounded-full) opt out, so segmented inners stay inset and
-   circles/pills are untouched. The :not() chain out-specifies the rounded-*
-   utilities, so it wins without !important. */
-button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded-2xl"]):not([class*="rounded-3xl"]):not([class*="rounded-full"]) {
+/* Raw <button> elements (not a control @hanzo/ui made) normalize to the control
+   radius so no custom button is a sharp rectangle. This covers bare buttons AND
+   ones that hardcoded a small/sharp radius (rounded / -sm / -md / -lg / -none —
+   the source of the 2–6px chrome buttons). Only deliberately-LARGE radii
+   (rounded-xl / -2xl / -3xl) and pills (rounded-full) opt out, so segmented
+   inners stay inset and circles/pills are untouched. The :not() chain
+   out-specifies the rounded-* utilities, so it wins without !important.
+
+   The exemption is `[data-slot]`, not `[data-slot="button"]`. Naming ONE slot
+   said "the Button is a library control" when the rule means "anything the
+   library made is not a raw button", and every OTHER @hanzo/ui control that
+   renders a <button> was therefore overruled here. The Select trigger is one:
+   gui renders it `render="button"` under `data-slot="select-trigger"`, so this
+   rule — (0,4,1) against the (0,1,0) atomic class a style prop compiles to —
+   painted it at 10px beside the Input's 8px, and no prop at the call site could
+   answer. A control the library owns brings its own radius; this dresses the
+   ones nothing owns. */
+button:not([data-slot]):not([class*="rounded-xl"]):not([class*="rounded-2xl"]):not([class*="rounded-3xl"]):not([class*="rounded-full"]) {
   border-radius: var(--control-radius);
 }
 
