@@ -35,7 +35,7 @@ const REDIRECT_KEY = "redirectAfterLogin";
  * still three-quarter ring beside "Signing you in…", on a screen whose entire
  * job is to say that something is happening. lucide ships only the arc, and the
  * rotation was an opt-in this site never took — as it turned out, nor did 79
- * others. `components/ui/spinner` now binds the two, so the glyph cannot be
+ * others. `@hanzo/ui`'s `Spinner` binds the two, so the glyph cannot be
  * rendered still; this screen simply has no spinner to place, because the
  * mark's breathe already says it.
  */

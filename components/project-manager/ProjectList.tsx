@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, SizableText, Paragraph, YStack, H2 } from '@hanzo/ui';
+import { H2, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { useState, useEffect, useCallback } from 'react';
 import { Button, Input } from '@hanzo/ui';
 import { Plus, Search, FolderOpen } from 'lucide-react';
@@ -13,7 +13,6 @@ import { ProjectCard } from './ProjectCard';
 import { CreateProject } from './CreateProject';
 import { OrgSwitcher } from '@/components/org-switcher';
 import { useOrg } from '@/lib/org/client';
-import { Spinner } from '@/components/ui/spinner';
 
 /**
  * The org-scoped projects list — reads the ONE shared `/v1/projects` store

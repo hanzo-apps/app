@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, H3, YStack, SizableText, Paragraph } from '@hanzo/ui';
+import { H3, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import React, { useState, useEffect, useRef, useCallback, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { VirtualServer } from '@/lib/preview/virtual-server';
 import { resolveAssets } from '@/lib/preview/rewrite';
@@ -28,7 +28,6 @@ import {
 import { logger } from '@/lib/utils';
 import { captureIframeScreenshot } from '@/lib/utils/screenshot';
 import type { ProjectRuntime } from '@/lib/vfs/types';
-import { Spinner } from '@/components/ui/spinner';
 
 export interface MultipagePreviewHandle {
   captureScreenshot: (waitForContent?: boolean) => Promise<string | null>;

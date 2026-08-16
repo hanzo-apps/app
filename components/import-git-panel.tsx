@@ -1,7 +1,7 @@
 "use client";
 
 import { sends } from '@hanzo/ui/chat';
-import { YStack, XStack, H2, Paragraph, Image, SizableText, H3 } from '@hanzo/ui';
+import { H2, H3, Image, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useIam } from "@hanzo/iam/react";
 import {
@@ -42,7 +42,6 @@ import {
 import { connectProvider } from "@/lib/connectors";
 import { isGitUrl } from "@/lib/git/url";
 import { useRepoImport } from "@/lib/import/use-repo-import";
-import { Spinner } from "@/components/ui/spinner";
 
 /**
  * Provider display metadata — the ONE place icon/label per provider lives.

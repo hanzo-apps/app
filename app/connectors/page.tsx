@@ -23,7 +23,7 @@
  * "connected" signal.
  */
 
-import { SizableText, Paragraph, YStack, XStack, H2 } from '@hanzo/ui';
+import { H2, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
@@ -46,7 +46,6 @@ import { Button, Badge, Input, toast } from '@hanzo/ui';
 import { useUser } from "@/hooks/useUser";
 import { AppShell } from "@/components/app-shell";
 import { selected } from "@/lib/chrome";
-import { Spinner } from "@/components/ui/spinner";
 import {
   fetchConnectors,
   connectProvider,

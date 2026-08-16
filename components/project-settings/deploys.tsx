@@ -14,7 +14,7 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
-import { Paragraph, SizableText, XStack, YStack } from '@hanzo/ui';
+import { Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 // `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
 // same way it drops the GuiElement type. Tracked; everything else in this
 // file comes from @hanzo/ui.
@@ -24,7 +24,6 @@ import { Circle, ExternalLink } from "lucide-react";
 
 import type { Project } from "@/types";
 import { relativeTime } from "@/lib/projects-view";
-import { Spinner } from "@/components/ui/spinner";
 import {
   fetchDeploys,
   inflight,

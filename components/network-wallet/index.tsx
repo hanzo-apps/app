@@ -15,13 +15,12 @@
  * white surface with a semantic-green live dot; disconnect is the only muted
  * destructive affordance. No brand hue.
  */
-import { Button } from '@hanzo/ui';
+import { Button, Spinner } from '@hanzo/ui';
 import { XStack, YStack, SizableText } from '@hanzo/ui';
 import { LogOut, Wallet } from "lucide-react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 
 import { WalletBoundary } from "@/components/providers/WalletBoundary";
-import { Spinner } from "@/components/ui/spinner";
 
 /** Truncate an EVM address for a glanceable, monospaced label. */
 function shortAddress(address: string): string {

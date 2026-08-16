@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, Paragraph, XStack, SizableText } from '@hanzo/ui';
+import { Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 // `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
 // same way it drops the GuiElement type. Tracked; everything else in this
 // file comes from @hanzo/ui.
@@ -13,7 +13,6 @@ import { configManager } from '@/lib/config/storage';
 import { validateApiKey } from '@/lib/llm/llm-client';
 import { checkHFCapabilities, loginHF } from '@/lib/auth/hf-auth';
 import type { HFCapabilities } from '@/lib/auth/hf-auth';
-import { Spinner } from '@/components/ui/spinner';
 
 interface HFAuthPanelProps {
   onAuthChange?: () => void;

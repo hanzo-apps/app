@@ -9,7 +9,7 @@
  * recorded run output (or the recorded upstream failure).
  */
 
-import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
+import { Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { useCallback, useEffect, useState } from "react";
 import {
   Activity,
@@ -34,7 +34,6 @@ import { AppShell } from "@/components/app-shell";
 import { accent, panel } from "@/lib/chrome";
 import { DEFAULT_MODEL } from "@/lib/providers";
 import Link from "next/link";
-import { Spinner } from "@/components/ui/spinner";
 
 // The canonical cloud agentView shape (cloud/clients/agents/agents.go).
 interface Agent {

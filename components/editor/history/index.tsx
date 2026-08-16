@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
+import { Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import {
   useCallback,
   useEffect,
@@ -52,7 +52,6 @@ import {
 } from "@/lib/api/history";
 import { readBookmarks, saveBookmarks } from "./bookmarks";
 import type { DetailsRev } from "./details";
-import { Spinner } from "@/components/ui/spinner";
 
 /**
  * A revision as the panel sees it — the union of the THREE real sources, primary

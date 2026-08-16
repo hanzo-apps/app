@@ -1,12 +1,11 @@
 'use client';
 
-import { YStack, XStack, H4, Paragraph, SizableText } from '@hanzo/ui';
+import { H4, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Button, toast, Textarea } from '@hanzo/ui';
 import { Play } from 'lucide-react';
 import { SchemaViewer } from '@/components/database-manager/schema-viewer';
 import { SqlEditor } from '@/components/database-manager/sql-editor';
-import { Spinner } from '@/components/ui/spinner';
 
 interface SchemaEditorProps {
   projectId: string;

@@ -1,6 +1,6 @@
 "use client";
 
-import { SizableText, YStack, XStack, H3, Paragraph } from '@hanzo/ui';
+import { H3, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 // `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
 // same way it drops the GuiElement type. Tracked; everything else in this
 // file comes from @hanzo/ui.
@@ -39,7 +39,6 @@ import {
   type SyncGitResult,
 } from "@/lib/api/git";
 import { Page } from "@/types";
-import { Spinner } from "@/components/ui/spinner";
 
 /**
  * The push targets, Hanzo FIRST (our own git — the default). Each carries its

@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, YStack, SizableText, Paragraph, H3 } from '@hanzo/ui';
+import { H3, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { glass, scrim } from "@/lib/chrome";
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Input, Label } from '@hanzo/ui';
@@ -8,7 +8,6 @@ import {
   Database, Plus, RefreshCw, Trash2, Pencil, X, Search, TableProperties,
 } from 'lucide-react';
 import { selectAll, insertInto, updateRow, deleteRow } from './sql';
-import { Spinner } from '@/components/ui/spinner';
 
 /**
  * Data browser — the native "admin backend for all collections": list every

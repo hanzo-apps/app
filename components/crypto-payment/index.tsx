@@ -1,6 +1,6 @@
 'use client'
 
-import { SizableText, XStack, Paragraph, YStack } from '@hanzo/ui';
+import { Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 // `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
 // same way it drops the GuiElement type. Tracked; everything else in this
 // file comes from @hanzo/ui.
@@ -11,7 +11,6 @@ import { useAccount, useConnect, useDisconnect, useWriteContract, useWaitForTran
 import { parseUnits } from 'viem'
 import { base, mainnet, arbitrum } from 'wagmi/chains'
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Badge } from '@hanzo/ui';
-import { Spinner } from '@/components/ui/spinner';
 import { Wallet, Check, ExternalLink, Zap, ChevronDown } from 'lucide-react'
 import { TREASURY_ADDRESS, USDC_ADDRESSES, ERC20_ABI, CREDIT_PRICING, CHAIN_INFO } from '@/lib/web3/config'
 

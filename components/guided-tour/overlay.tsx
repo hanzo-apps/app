@@ -1,12 +1,11 @@
 'use client';
 
-import { YStack, XStack, H3, SizableText } from '@hanzo/ui';
+import { H3, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { glass } from "@/lib/chrome";
 import { useEffect, useMemo, useState } from 'react';
 import { useGuidedTour } from './context';
 import { Button } from '@hanzo/ui';
 import { GUIDED_TOUR_STEPS } from './steps';
-import { Spinner } from '@/components/ui/spinner';
 
 interface GuidedTourOverlayProps {
   location: 'global' | 'project-manager' | 'workspace' | 'settings';

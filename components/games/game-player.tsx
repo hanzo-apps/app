@@ -13,10 +13,9 @@
  * or allow-popups — a game build needs neither.
  */
 
-import { YStack, Paragraph } from '@hanzo/ui';
+import { Paragraph, Spinner, YStack } from '@hanzo/ui';
 import { useState } from 'react';
 import { webglBuildPath } from '@/data/games-catalog';
-import { Spinner } from '@/components/ui/spinner';
 
 interface GamePlayerProps {
   /** Catalog id — resolves the hosted build at webglBuildPath(id). */

@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, YStack, XStack, Image } from '@hanzo/ui';
+import { Image, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 // `GuiElement` is a TYPE, and @hanzo/ui's dts build drops a two-hop
 // type-only re-export, so it is not on the barrel yet. A type is erased at
 // build and cannot create a second runtime, so this does not reintroduce
@@ -19,7 +19,6 @@ import { PendingImage } from '@/lib/llm/multi-agent-orchestrator';
 import { ContentBlock } from '@/lib/llm/types';
 import { EVENTS } from '@hanzo/event';
 import { useAnalytics } from '@hanzo/event/react';
-import { Spinner } from '@/components/ui/spinner';
 
 type FocusTarget = FocusContextPayload & { timestamp: number };
 

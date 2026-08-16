@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, YStack, Paragraph, H3, SizableText } from '@hanzo/ui';
+import { H3, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { glass } from "@/lib/chrome";
 import { useState, useEffect } from 'react';
 import { FunctionLog } from '@/lib/vfs/types';
@@ -9,7 +9,6 @@ import {
   Clock, ArrowRight
 } from 'lucide-react';
 import { Button } from '@hanzo/ui';
-import { Spinner } from '@/components/ui/spinner';
 interface LogsViewerProps {
   deploymentId: string;
 }

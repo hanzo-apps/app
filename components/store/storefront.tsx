@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, XStack, H1, SizableText, Paragraph, H2, Image, H3 } from '@hanzo/ui';
+import { H1, H2, H3, Image, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { glass } from "@/lib/chrome";
 // Ecommerce storefront — the REAL per-org store surface.
 //
@@ -13,7 +13,6 @@ import { glass } from "@/lib/chrome";
 import { useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardFooter, Button, Badge, Input, AspectRatio } from '@hanzo/ui';
 import { ShoppingCart, Search, Store as StoreIcon } from "lucide-react";
-import { Spinner } from "@/components/ui/spinner";
 
 interface StoreProduct {
   key: string;

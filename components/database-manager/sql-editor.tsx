@@ -1,13 +1,12 @@
 'use client';
 
 import { sends } from '@hanzo/ui/chat';
-import { XStack, YStack, SizableText, Paragraph } from '@hanzo/ui';
+import { Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { glass } from "@/lib/chrome";
 import { useState, useEffect, useCallback } from 'react';
 import { CodeEditor } from '@/components/code-editor';
 import { Play, AlertCircle, CheckCircle2, History } from 'lucide-react';
 import { Button } from '@hanzo/ui';
-import { Spinner } from '@/components/ui/spinner';
 interface SqlEditorProps {
   deploymentId?: string;
   queryEndpoint?: string;

@@ -1,43 +1,48 @@
 import { render } from "@testing-library/react";
+import { Spinner } from "@hanzo/ui";
+import { GuiProvider } from "@hanzo/gui";
 
-import { Spinner } from "@/components/ui/spinner";
+import guiConfig from "@/lib/gui";
 
 /**
- * The spinner carries its own motion — runtime contract.
+ * ONE spinner, and it comes from the library.
  *
- * A source scan (ui-centralization, "Spinners spin") can prove that no call site
- * reaches for the raw lucide glyph and that `components/ui/spinner` is the only
- * file naming `.spin`. It cannot prove the class actually reaches the DOM: make
- * it conditional, or spell it in a prop the component drops, and every scan
- * still passes while every spinner in the app goes still again — which is the
- * exact failure this component exists to end (82 of 83 call sites had declined
- * the opt-in `.spin` was before it).
+ * The local home existed because gui typed `size` as `'small' | 'large'` and
+ * defaulted `color` to `#1976D2`, so it could answer none of the ~83 pixel call
+ * sites here. `@hanzo/ui` 8.0.103 answers both — a number reaches the element as
+ * width and height, and the arc's stroke is `currentColor` — so the reason is
+ * gone and the copy with it.
  *
- * The other half of the claim is CSS, and it is verified in the browser rather
- * than here: on the running app `.spin` computes to `spin 1s linear infinite`
- * against `@keyframes spin { 100% { transform: rotate(360deg) } }`, and a probe
- * element carrying the class measured 0° → -104.8° between two samples. jsdom
- * has no animation clock, so asserting rotation here would prove nothing.
+ * What this file can still prove is that the props arrive. The MOTION is a
+ * browser fact and is asserted where a browser is: `@hanzo/ui`'s consumer gate
+ * reads a non-`none` animation with an infinite iteration count off the running
+ * page. jsdom has no animation clock, so asserting rotation here would prove
+ * nothing — which is exactly how 82 of 83 call sites once rendered a still ring
+ * under a green suite.
  */
 describe("Spinner", () => {
-  it("renders an arc that carries the motion class", () => {
-    const { container } = render(<Spinner />);
-    const svg = container.querySelector("svg");
+  // gui throws `Missing theme.` for a component with no root theme context, so
+  // the provider is structurally required — the same one app/providers.tsx mounts.
+  const mount = (ui: React.ReactElement) =>
+    render(
+      <GuiProvider config={guiConfig} defaultTheme="dark">
+        {ui}
+      </GuiProvider>,
+    ).container;
 
-    expect(svg).not.toBeNull();
-    expect(svg!.getAttribute("class")).toContain("spin");
+  const spinner = (el: HTMLElement) => el.querySelector('[data-slot="spinner"]') as HTMLElement;
+
+  it("is the library's, marked so a stylesheet and a test can find it", () => {
+    expect(spinner(mount(<Spinner />))).not.toBeNull();
   });
 
   it("is decorative — the text beside it carries the meaning", () => {
-    const { container } = render(<Spinner />);
-    expect(container.querySelector("svg")!.getAttribute("aria-hidden")).toBe("true");
+    expect(spinner(mount(<Spinner />)).getAttribute("aria-hidden")).toBe("true");
   });
 
-  it("takes its size, and defaults to the inline register", () => {
-    const def = render(<Spinner />).container.querySelector("svg")!;
-    expect(def.getAttribute("width")).toBe("16");
-
-    const big = render(<Spinner size={32} />).container.querySelector("svg")!;
-    expect(big.getAttribute("width")).toBe("32");
+  it("takes a pixel size, and defaults to the inline register", () => {
+    const box = (el: HTMLElement) => el.querySelector("div[style*='width']") as HTMLElement;
+    expect(box(mount(<Spinner />)).style.width).toBe("16px");
+    expect(box(mount(<Spinner size={32} />)).style.width).toBe("32px");
   });
 });

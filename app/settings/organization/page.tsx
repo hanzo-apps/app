@@ -8,7 +8,7 @@ import { LoadingScreen } from "@/components/ui/loading-screen";
  * the shared `lib/avatar` override (localStorage) until IAM carries a real org
  * `logo` through `/v1/orgs`. Monochrome; matches the dashboard chrome.
  */
-import { Label, Input } from '@hanzo/ui';
+import { Input, Label, Spinner } from '@hanzo/ui';
 import { XStack, YStack, Paragraph, SizableText } from '@hanzo/ui';
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -20,7 +20,6 @@ import { useOrg } from "@/lib/org/client";
 import { currentOrg, display, orgDisplayName } from "@/lib/org-scope";
 import { readOrgLogoOverride, setOrgLogoOverride, isEmoji } from "@/lib/avatar";
 import { useUser } from "@/hooks/useUser";
-import { Spinner } from "@/components/ui/spinner";
 
 function OrganizationSettingsInner() {
   const { ctx, loading } = useOrg();

@@ -1,6 +1,6 @@
 "use client";
 
-import { SizableText, XStack, YStack, Paragraph } from '@hanzo/ui';
+import { Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 // `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
 // same way it drops the GuiElement type. Tracked; everything else in this
 // file comes from @hanzo/ui.
@@ -26,7 +26,6 @@ import {
   type GitProvider,
 } from "@/lib/api/git";
 import { parseUnifiedPatch, diffText, diffStat, type DiffLine } from "@/lib/git/diff";
-import { Spinner } from "@/components/ui/spinner";
 
 /**
  * The revision the Details view describes — a real git commit, or an in-session

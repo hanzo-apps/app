@@ -18,13 +18,12 @@
  * the user is never stranded.
  */
 
-import { H2, Paragraph, YStack, XStack } from '@hanzo/ui';
+import { H2, Paragraph, Spinner, XStack, YStack } from '@hanzo/ui';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogTitle } from '@hanzo/ui';
 import { Check, Circle } from 'lucide-react';
 import { HanzoLogo } from '@/components/HanzoLogo';
-import { Spinner } from '@/components/ui/spinner';
 import {
   createRemixProject,
   provisionRemixProject,

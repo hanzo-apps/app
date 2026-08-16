@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, YStack, Paragraph, H3, SizableText } from '@hanzo/ui';
+import { H3, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { useState, useEffect } from 'react';
 import { toast, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@hanzo/ui';
 import { ServerFunction } from '@/lib/vfs/types';
@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 import { ServerFunctionEditor } from './server-function-editor';
 import type { ServerFunctionsDataProvider } from './data-providers';
-import { Spinner } from '@/components/ui/spinner';
 
 interface ServerFunctionsManagerProps {
   deploymentId?: string;

@@ -262,7 +262,7 @@ describe("Full-screen states measure the screen", () => {
 });
 
 /**
- * ONE spinner.
+ * ONE spinner, and it is `@hanzo/ui`'s.
  *
  * A spinner is an arc IN MOTION; lucide ships only the arc. The rotation lived
  * in `.spin` (globals.css) as an OPT-IN, and an opt-in that 82 of 83 call sites
@@ -270,59 +270,48 @@ describe("Full-screen states measure the screen", () => {
  * state in the app rendered a still three-quarter ring, which is what the owner
  * saw on /auth/callback and correctly read as breakage.
  *
- * `components/ui/spinner` binds the rotation to the glyph, so reaching for the
- * raw lucide loader is the thing to ban: there is no way to get the arc without
- * the motion, and therefore no way to forget it.
+ * A local home bound the two, and existed only because gui typed `size` as
+ * `'small' | 'large'` and defaulted `color` to `#1976D2` — an enum and a
+ * Material blue, against ~83 pixel call sites in a monochrome app.
+ * `@hanzo/ui` 8.0.103 answers both, so the copy is gone and the ban is on
+ * growing another: reach for the arc and the motion comes with it, from the
+ * library, where the browser gate that proves it turns also lives.
  */
 describe("Spinners spin", () => {
   it("no raw lucide loader glyph — the motion comes with it", () => {
-    // The one home renders the arc; everywhere else asks the home for it. The
-    // RAW_LOADER_DEBT ratchet that used to sit here held exactly one file,
-    // components/settings/model-settings.tsx, whose API-key panel moved to
-    // SecretInput and whose Connecting… loader moved to Spinner in the same
-    // pass. The debt is paid, so the list is gone rather than kept at zero
-    // length — a shrink-only list that has finished shrinking is just a name
-    // for the empty set, and the assertion below already states the law.
-    expect(
-      offendersOf(/<Loader(?:2|Circle)\b/).filter((f) => f !== "components/ui/spinner.tsx"),
-    ).toEqual([]);
+    // Nothing here renders the arc; every busy state asks the library for it.
+    // There is no exemption left to carve out — the local home that used to be
+    // the one legal holder is gone.
+    expect(offendersOf(/<Loader(?:2|Circle)\b/)).toEqual([]);
   });
 
-  it("the one spinner is the one that carries `.spin`", () => {
-    // `.spin` is not a class components decorate themselves with any more. The
-    // sole other holder is the sync badge, which spins an icon that is NOT a
-    // loader (it swaps glyph by status), so it states the motion itself.
-    expect(offendersOf(/className=(?:"spin"|'spin'|\{'spin'\})/)).toEqual([
-      "components/ui/spinner.tsx",
-    ]);
+  it("nothing decorates itself with `.spin`", () => {
+    // `.spin` survives in globals.css for the sync badge, which spins an icon
+    // that is NOT a loader (it swaps glyph by status) and so states the motion
+    // itself, conditionally. No component wears it as a literal any more.
+    expect(offendersOf(/className=(?:"spin"|'spin'|\{'spin'\})/)).toEqual([]);
   });
 
   /**
-   * The second mark, and why the home stays LOCAL.
+   * The second mark.
    *
-   * `@hanzo/gui` exports a `Spinner` too, and `components/loading` used it —
-   * so the app shipped two different spinners: react-native's
-   * `ActivityIndicator` (a faint full ring under a dashed arc) on the
-   * preview/save overlays, lucide's three-quarter arc everywhere else.
-   *
-   * It cannot simply replace the local one. gui types its `size` as
-   * `'small' | 'large'`, so it cannot take the pixel sizes all ~83 call sites
-   * pass, and its `color` defaults to `#1976D2` — Material blue, in a
-   * monochrome app — unless every caller remembers to say otherwise. An
-   * app-wide opt-in that every call site must remember is the exact failure
-   * `components/ui/spinner` was written to end.
-   *
-   * So the home is local and the ban is on reaching PAST it. This is the
-   * assertion that keeps the second mark from coming back; it goes when gui's
-   * Spinner can take a number and inherits its colour.
+   * The app once shipped two spinners at once: gui's `ActivityIndicator` (a
+   * faint full ring under a dashed arc) on the preview/save overlays, lucide's
+   * three-quarter arc everywhere else. They are one now, and `@hanzo/ui` is
+   * where it lives — so the two ways to grow a second are importing gui's
+   * directly, which skips the pixel size and the inherited ink, or writing
+   * another local one.
    */
-  it("nothing reaches for gui's Spinner directly", () => {
-    const offenders = files.filter((f) => {
-      const src = readFileSync(f, "utf8");
-      // A gui import naming Spinner — the barrel import is the only way in.
-      return /import\s*\{[^}]*\bSpinner\b[^}]*\}\s*from\s*['"]@hanzo\/gui['"]/.test(src);
-    });
-    expect(offenders.map(rel)).toEqual([]);
+  it("the spinner comes from @hanzo/ui, and from nowhere else", () => {
+    const raw = files.filter((f) =>
+      /import\s*\{[^}]*\bSpinner\b[^}]*\}\s*from\s*['"]@hanzo\/gui['"]/.test(readFileSync(f, "utf8")),
+    );
+    expect(raw.map(rel)).toEqual([]);
+
+    const local = files.filter((f) =>
+      /(?:export\s+(?:default\s+)?(?:function|const)\s+Spinner\b)/.test(readFileSync(f, "utf8")),
+    );
+    expect(local.map(rel)).toEqual([]);
   });
 });
 

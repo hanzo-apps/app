@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, XStack, Paragraph, YStack } from '@hanzo/ui';
+import { Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 // `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
 // same way it drops the GuiElement type. Tracked; everything else in this
 // file comes from @hanzo/ui.
@@ -11,7 +11,6 @@ import { ExternalLink, Terminal, TriangleAlert } from 'lucide-react';
 import { ConnectionBadge } from '@/components/settings/connection-badge';
 import { configManager } from '@/lib/config/storage';
 import { parseCodexAuthJson, connectCodex, disconnectCodex, checkCodexStatus } from '@/lib/auth/codex-auth';
-import { Spinner } from '@/components/ui/spinner';
 
 interface CodexAuthPanelProps {
   onAuthChange?: () => void;

@@ -1,6 +1,6 @@
 "use client";
 
-import { XStack, SizableText, YStack, Image, H1, Paragraph, H3, H4 } from '@hanzo/ui';
+import { H1, H3, H4, Image, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 // `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
 // same way it drops the GuiElement type. Tracked; everything else in this
 // file comes from @hanzo/ui.
@@ -20,7 +20,6 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { resolveTemplateSeedMeta, type TemplateSeedMeta } from "@/lib/api/templates";
-import { Spinner } from "@/components/ui/spinner";
 
 type StartMode = "fork" | "edit" | "deploy";
 

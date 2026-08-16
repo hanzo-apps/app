@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, YStack, XStack, H1, Paragraph } from '@hanzo/ui';
+import { H1, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { PrimaryButton } from '@hanzo/ui/product';
 // `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
 // same way it drops the GuiElement type. Tracked; everything else in this
@@ -12,7 +12,6 @@ import Link from 'next/link';
 import { useIam } from '@hanzo/iam/react';
 import { HanzoBrand } from '@/components/HanzoLogo';
 import { Monitor, Apple, Terminal } from 'lucide-react';
-import { Spinner } from '@/components/ui/spinner';
 import HeroPreview from '@/components/landing/hero-preview';
 import LazySection from '@/components/landing/lazy-section';
 

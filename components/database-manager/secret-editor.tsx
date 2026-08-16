@@ -1,11 +1,10 @@
 'use client';
 
-import { YStack, Paragraph, SizableText, XStack } from '@hanzo/ui';
+import { Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import React, { useState, useEffect } from 'react';
 import { Secret } from '@/lib/vfs/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Input, Label } from '@hanzo/ui';
 import { AlertCircle, Eye, EyeOff, Info } from 'lucide-react';
-import { Spinner } from '@/components/ui/spinner';
 
 interface SecretEditorProps {
   secret: Secret | null;

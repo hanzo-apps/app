@@ -1,10 +1,9 @@
 "use client";
 
-import { YStack, XStack, Paragraph, SizableText } from '@hanzo/ui';
+import { Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Button, ScrollArea, Avatar, AvatarFallback, Badge, Textarea } from '@hanzo/ui';
 import { Send, Bot, User, Copy, RefreshCw, Sparkles, Settings } from "lucide-react";
-import { Spinner } from "@/components/ui/spinner";
 interface Message {
   id: string;
   role: "user" | "assistant";

@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, H3, SizableText, Paragraph } from '@hanzo/ui';
+import { H3, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { Deployment, Project } from '@/lib/vfs/types';
 import { Button, Badge, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@hanzo/ui';
 import { CopyButton } from '@hanzo/ui/product';
@@ -25,7 +25,6 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { ThumbnailArea } from '@/components/ui/thumbnail-area';
 import { captureDeploymentScreenshot } from '@/lib/utils/deployment-thumbnail';
-import { Spinner } from '@/components/ui/spinner';
 
 interface DeploymentCardProps {
   deployment: Deployment;

@@ -14,14 +14,13 @@
  * comes from `@hanzo/ui/product`. This decides whether they have one at all, and
  * that decision is hanzo.app's own — it is bound to this app's onboarding route.
  */
-import { XStack, YStack, Paragraph, SizableText, H1 } from '@hanzo/ui';
+import { H1, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { Sparkles } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Button, Input } from '@hanzo/ui';
 
 import { useOrg } from '@/lib/org/client';
 import { currentOrg, setCurrentOrg, getHomeOrg, isScopedAway } from '@/lib/org-scope';
-import { Spinner } from '@/components/ui/spinner';
 
 export function OrgGate({ children }: { children: React.ReactNode }) {
   const { ctx, loading } = useOrg();

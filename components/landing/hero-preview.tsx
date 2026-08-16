@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, XStack, SizableText, H3 } from '@hanzo/ui';
+import { H3, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 // `GuiElement` is a TYPE, and @hanzo/ui's dts build drops a two-hop
 // type-only re-export, so it is not on the barrel yet. A type is erased at
 // build and cannot create a second runtime, so this does not reintroduce
@@ -29,7 +29,6 @@ import type { GuiElement } from '@hanzo/gui';
 // no animation and no cycling.
 
 import { useEffect, useRef, useState, type ReactElement } from "react";
-import { Spinner } from "@/components/ui/spinner";
 // The mark this mockup wears is the REAL one — @hanzo/logo's MARK_PATHS through
 // the shared HanzoLogo, the same component the builder header draws. A local
 // copy of the geometry is a second logo the day either is redrawn.

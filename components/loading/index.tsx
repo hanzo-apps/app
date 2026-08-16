@@ -1,8 +1,7 @@
 'use client';
 
-import { YStack } from '@hanzo/ui';
+import { Spinner, YStack } from '@hanzo/ui';
 
-import { Spinner } from '@/components/ui/spinner';
 
 /**
  * A spinner centred on a dark overlay — the preview/save surfaces, where what is

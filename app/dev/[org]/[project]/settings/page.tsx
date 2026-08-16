@@ -10,7 +10,7 @@
  * (the same store console.hanzo.ai uses) so config is consistent everywhere.
  */
 
-import { XStack, SizableText, YStack, Paragraph, H2 } from '@hanzo/ui';
+import { H2, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 // `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
 // same way it drops the GuiElement type. Tracked; everything else in this
 // file comes from @hanzo/ui.
@@ -51,7 +51,6 @@ import { CopyButton, FieldRow, Fieldset } from '@hanzo/ui/product';
 import { statusOf } from "@/lib/project-status";
 import { relativeTime } from "@/lib/projects-view";
 import { currentOrg, setCurrentOrg } from "@/lib/org-scope";
-import { Spinner } from "@/components/ui/spinner";
 
 /** The legend glyph's colour — quiet by default, the danger tone in that one
  *  group. `Fieldset` takes the icon as a node, so the colour is stated here. */

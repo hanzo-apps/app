@@ -1,10 +1,9 @@
 'use client';
 
-import { XStack, YStack, SizableText } from '@hanzo/ui';
+import { SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import React from 'react';
 import { Button } from '@hanzo/ui';
 import { LogOut } from 'lucide-react';
-import { Spinner } from '@/components/ui/spinner';
 
 interface ConnectionBadgeProps {
   method?: string;

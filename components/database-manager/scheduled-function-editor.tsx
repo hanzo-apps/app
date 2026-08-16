@@ -1,11 +1,10 @@
 'use client';
 
-import { YStack, Paragraph, SizableText, XStack } from '@hanzo/ui';
+import { Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { useState, useEffect } from 'react';
 import { ScheduledFunction, EdgeFunction } from '@/lib/vfs/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Input, Label, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { AlertCircle, Info } from 'lucide-react';
-import { Spinner } from '@/components/ui/spinner';
 
 interface ScheduledFunctionEditorProps {
   scheduledFunction: ScheduledFunction | null;

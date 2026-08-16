@@ -12,7 +12,7 @@
  * provision + seed) → the builder. Game cards open their existing detail page.
  */
 
-import { SizableText, YStack, XStack, H1, Paragraph, H3 } from '@hanzo/ui';
+import { H1, H3, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { glass } from "@/lib/chrome";
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -32,7 +32,6 @@ import { TemplateThumb } from '@/components/template-thumb';
 import { TemplatePreviewModal } from '@/components/remix/template-preview-modal';
 import { RemixDialog } from '@/components/remix/remix-dialog';
 import { RemixProgress } from '@/components/remix/remix-progress';
-import { Spinner } from '@/components/ui/spinner';
 
 /** The page proper. Wrapped below because `useSearchParams` suspends, and the
  *  App Router requires a boundary rather than letting the whole route go dynamic. */

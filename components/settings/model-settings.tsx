@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, H3, Paragraph, SizableText, XStack } from '@hanzo/ui';
+import { H3, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 // `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
 // same way it drops the GuiElement type. Tracked; everything else in this
 // file comes from @hanzo/ui.
@@ -10,7 +10,6 @@ import { configManager } from '@/lib/config/storage';
 import { validateApiKey as checkApiKey } from '@/lib/llm/llm-client';
 import { Button, Label, Switch, toast, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator } from '@hanzo/ui';
 import { SecretInput } from '@hanzo/ui/product';
-import { Spinner } from '@/components/ui/spinner';
 import { Check, X, ExternalLink, Lightbulb } from 'lucide-react';
 import { ModelSelector } from '@/components/model-selector';
 import { useProviderModels } from '@/lib/hooks/use-provider-models';

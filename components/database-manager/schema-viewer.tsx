@@ -1,11 +1,10 @@
 'use client';
 
-import { XStack, YStack, Paragraph, H3, SizableText } from '@hanzo/ui';
+import { H3, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { useState, useEffect } from 'react';
 import { TableInfo } from '@/lib/vfs/types';
 import { ChevronRight, ChevronDown, Table2, KeyRound, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@hanzo/ui';
-import { Spinner } from '@/components/ui/spinner';
 
 interface SchemaViewerProps {
   deploymentId?: string;

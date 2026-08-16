@@ -1,11 +1,10 @@
 'use client';
 
-import { SizableText, XStack, Paragraph } from '@hanzo/ui';
+import { Paragraph, SizableText, Spinner, XStack } from '@hanzo/ui';
 import { useEffect, useState } from 'react';
 import { Deployment } from '@/lib/vfs/types';
 import { Server, Database, X } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Tooltip, TooltipContent, TooltipTrigger, Button } from '@hanzo/ui';
-import { Spinner } from '@/components/ui/spinner';
 interface DeploymentSelectorProps {
   projectId: string;
   selectedDeploymentId: string | null;

@@ -1,11 +1,10 @@
 'use client';
 
-import { Button, Input } from '@hanzo/ui';
+import { Button, Input, Spinner } from '@hanzo/ui';
 import { YStack, Image, XStack, SizableText } from '@hanzo/ui';
 import React, { useRef, useState } from 'react';
 import { Camera, ImageUp, X } from 'lucide-react';
 import { compressImage } from '@/lib/utils/image-compress';
-import { Spinner } from '@/components/ui/spinner';
 interface ThumbnailAreaProps {
   image: string | undefined;
   onCapture?: () => Promise<string | null>;  // undefined = capture unavailable

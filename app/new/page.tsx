@@ -1,6 +1,6 @@
 "use client";
 
-import { SizableText, YStack, XStack, H1, Paragraph, H2 } from '@hanzo/ui';
+import { H1, H2, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { glass } from "@/lib/chrome";
 import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -33,7 +33,6 @@ import { OrgGate } from "@/components/org-gate";
 import { isGitUrl } from "@/lib/git/url";
 import { useProjectImport } from "@/lib/import/use-project-import";
 import { useRepoImport } from "@/lib/import/use-repo-import";
-import { Spinner } from "@/components/ui/spinner";
 
 function NewProject() {
   const router = useRouter();

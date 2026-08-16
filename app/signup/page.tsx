@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, YStack, XStack, H3, Paragraph } from '@hanzo/ui';
+import { H3, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 // `Anchor` is not on @hanzo/ui's barrel yet — the dts build drops it, the
 // same way it drops the GuiElement type. Tracked; everything else in this
 // file comes from @hanzo/ui.
@@ -13,7 +13,6 @@ import { useAnalytics } from '@hanzo/event/react';
 import { HanzoLogo } from '@/components/HanzoLogo';
 import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription } from '@hanzo/ui';
 import { Sparkles, Shield, Rocket } from 'lucide-react';
-import { Spinner } from '@/components/ui/spinner';
 import { accent } from '@/lib/chrome';
 
 /**
