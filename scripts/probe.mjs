@@ -1,12 +1,13 @@
 /**
  * Drive a real browser against a running hanzo.app and capture what breaks.
  *
- * This exists because the error plane cannot be relied on to answer: browser
- * errors are POSTed to an ingest endpoint that has refused every key, so for
- * long stretches nothing this app throws in a browser has been recorded
- * anywhere. A crash report then arrives as one sentence — "it says This page
- * crashed" — with no message, no stack and no digest, and the only way to turn
- * that into a defect is to reproduce it while holding an instrument.
+ * A crash report arrives as one sentence — "it says This page crashed" — and a
+ * screenshot of a screen that names nothing. Errors ARE recorded (`captureError`
+ * puts a `$exception` on the analytics stream), but a warehouse row tells you
+ * what threw, not what the person did to make it throw, and the Sentry envelope
+ * that would have carried a digest and a breadcrumb trail has its own broken
+ * key. Reproducing it while holding an instrument is what turns the sentence
+ * into a defect.
  *
  * It found one: `global-error` reachable from a module-scope `window.localStorage`
  * read in the root layout's chunk, above every error boundary, whenever storage
@@ -39,7 +40,7 @@
  * misses it while the transcript beside it looks healthy. And it reports the
  * app's own `hanzo_error_log` — `lib/error-handling/error-logger` keeps the last
  * 50 errors, with message, stack and reference, in localStorage — which is the
- * record when the ingest plane has none.
+ * copy you can read on the spot, without waiting on a warehouse query.
  */
 import { chromium } from '@playwright/test'
 import { mkdirSync, existsSync } from 'node:fs'
@@ -93,10 +94,12 @@ p.on('response', async (r) => {
 p.on('crash', () => errs.push({ kind: 'pagecrash', msg: 'renderer process crashed' }))
 
 // ---- session ----
-if (!existsSync(state)) {
-  const email = process.env.E2E_EMAIL
-  const password = process.env.E2E_PASSWORD
-  if (!email || !password) throw new Error('E2E_EMAIL / E2E_PASSWORD required to mint a session')
+// A signed-in session is needed for /dev and nothing else, so credentials are
+// optional: without them this drives the app as a visitor, which is the right
+// instrument for every public route and for the crash screen itself.
+const email = process.env.E2E_EMAIL
+const password = process.env.E2E_PASSWORD
+if (!existsSync(state) && email && password) {
   await p.goto(`${BASE}/dashboard`, { waitUntil: 'domcontentloaded', timeout: 90000 })
   await p.waitForURL(/hanzo\.id\/login\/oauth\/authorize/, { timeout: 45000 })
   await p.waitForLoadState('networkidle').catch(() => {})
@@ -361,6 +364,18 @@ for (const raw of steps) {
         console.log('  soak actions:', n)
         break
       }
+      case 'store': {
+        const found = await p.evaluate((prefix) => {
+          const out = {}
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i)
+            if (k && k.startsWith(prefix)) out[k] = (localStorage.getItem(k) || '').slice(0, 400)
+          }
+          return out
+        }, arg)
+        console.log('STORE', JSON.stringify(found, null, 1))
+        break
+      }
       case 'shot':
         console.log('  ->', await shot(arg || 'shot'))
         break
@@ -382,7 +397,7 @@ if (!crashedAt) {
   await shot('final')
 }
 
-// The app's own record, which survives when the ingest plane has nothing.
+// The app's own copy of the last 50 errors, readable on the spot.
 const stored = await p
   .evaluate(() => {
     try {

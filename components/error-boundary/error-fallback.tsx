@@ -125,8 +125,9 @@ export function ErrorFallback({
             {!isDevelopment && (
               <YStack marginBottom="$5">
                 <Paragraph color="$color11">
-                  If it keeps happening, use Report this issue below — it carries the
-                  error message{reference ? ' and the reference' : ''} with it.
+                  The error was reported to us automatically. If it keeps happening, use
+                  Report this issue below — it carries the error message
+                  {reference ? ' and the reference' : ''} with it.
                 </Paragraph>
                 {reference && (
                   <YStack marginTop="$4" padding="$3" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" borderRadius="$5">

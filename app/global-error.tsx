@@ -14,15 +14,23 @@
  * sees when everything else has failed is the only white page on a dark-only
  * app.
  *
- * The card used to make two promises it could not keep. It said the error was
- * "reported to us automatically" while the ingest endpoint refused every key,
- * so no browser error from this app had ever been recorded; and it pointed at
- * "the reference below", which renders only when Next attaches a `digest` —
- * server errors only, never the client throws that reach this screen. A person
- * following both instructions had nothing to send and no way to know it. So the
- * card now claims nothing about delivery and hands over the one thing that is
- * always true and always actionable: the report itself, on this screen, ready
- * to paste.
+ * The card pointed at "the reference below", and for the errors that actually
+ * reach this screen there was never a reference to point at: it rendered only
+ * when Next attaches a `digest`, which is server errors only. A client throw
+ * produces none, so a person doing exactly what the card asked had nothing to
+ * send and no way to know it.
+ *
+ * Reporting itself is real, and the card still says so. `captureError` puts the
+ * error on the analytics stream as a `$exception` (`POST /v1/event` → 200) and
+ * those rows are in the warehouse. Its OTHER half, the Sentry envelope, is
+ * separately broken — a `pk-` key resolved against the wrong key space — and
+ * because a digest would have lived there, looking for one found nothing and
+ * made the whole plane read as dead. It is not; only that road is.
+ *
+ * So the reference is MINTED rather than hoped for. `errorLogger` returns it,
+ * stores it beside the record in this browser, and carries it in the reported
+ * context — one string, in the person's hand and in the warehouse, which is
+ * what "quote this back to us" has to mean to be worth printing.
  */
 import { useEffect, useState } from 'react';
 import { errorLogger, ErrorSeverity } from '@/lib/error-handling/error-logger';
@@ -80,8 +88,9 @@ export default function GlobalError({
         <main className="crash">
           <h1>This page crashed</h1>
           <p>
-            Reloading usually works. If it keeps happening, send us the report below —
-            it names the failure exactly, and that is what gets it fixed.
+            Try again reloads it, and that usually works. The error was reported to us
+            automatically. If it keeps happening, send us the reference below — or copy
+            the whole report, which names the failure exactly.
           </p>
           {ref && (
             <p className="crash-ref">
