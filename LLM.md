@@ -369,6 +369,23 @@ stays a pure function the tests read directly:
   production over every one of the 422 models the picker offers: **166 fail**,
   145 of them 502. The service is up; those ids are not reachable through it.
 
+**A model's WINDOW holds its input and its output together, so one output
+ceiling cannot serve every model.** `/v1/generate` asked for `max_tokens:
+128_000` on every call — right for Enso and the Zen ladder, whose windows are a
+million, and a refusal for everything smaller: 119 of the 403 models that declare
+a window hold less than that, so the gateway answered "maximum context length is
+128000 tokens. However, you requested about 131205 (3205 of text input, 128000 in
+the output)" before generating a byte. Measured live, that was half of every
+failing model, and the builder reported it as the AI being unavailable.
+
+`lib/output-cap.ts` bounds the ask by the model's remaining room, read from the
+catalog the gateway publishes and kept five minutes. A million-token window still
+resolves to exactly 128000, so the default path is untouched, and
+`tests/unit/output-cap.test.ts` pins that first. The arithmetic lives in `lib/`
+rather than in the route because importing the route pulls in the IAM session and
+its crypto: the suite then dies at import and reports `Tests: 0 total`, which
+reads as a pass.
+
 **The catalog advertises more than the gateway can serve, and this app cannot
 tell which from an id.** Two shortcuts look obvious and are both wrong, measured:
 
