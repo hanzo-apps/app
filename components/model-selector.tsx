@@ -111,11 +111,15 @@ export function ModelSelector({
                   }}
                 >
                   {/* The chosen row keeps a rail, so the current pick stays
-                      findable when the cursor has moved elsewhere. */}
+                      findable when the cursor has moved elsewhere.
+
+                      NO vertical margin. A ListItem is padded 14px, so the flex
+                      line this stretches into is 20px of a 48px row, and 6px a
+                      side left a 2x8 tick — measured, and small enough to read
+                      as nothing. 8 with the margins, 20 without. */}
                   <YStack
                     width={2}
                     alignSelf="stretch"
-                    marginVertical="$1.5"
                     borderRadius={1}
                     backgroundColor={current ? '$color' : 'transparent'}
                   />

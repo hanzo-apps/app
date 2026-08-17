@@ -1,20 +1,40 @@
 "use client";
 
-import { sends } from '@hanzo/ui/chat';
-import { Input, Button } from '@hanzo/ui';
-import { YStack, XStack, SizableText, Paragraph } from '@hanzo/ui';
-import { useEffect, useMemo, useRef, useState } from "react";
-import { FileCode, Folder, Search } from "lucide-react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  Paragraph,
+  SizableText,
+  YStack,
+} from '@hanzo/ui';
+import { useEffect, useMemo, useRef, type ComponentRef } from "react";
+import { Check, FileCode } from "lucide-react";
 /**
  * PagePanel — the ONE browsable page picker for the builder chrome.
  *
- * The header's page selector used to be a cramped dropdown that just listed
- * `path` strings; this is a proper panel: search + a folder-grouped, scrollable
- * list of EVERY page in the project, the working page highlighted, click to open.
+ * Search, then a folder-grouped scrollable list of EVERY page in the project
+ * with the open one marked. Click to open.
  *
- * Presentational only — it holds just its search query. The caller owns the
- * `pages`/`currentPage` state and closes the surrounding popover via `onClose`.
- * Monochrome / true-black to sit inside the always-dark header chrome.
+ * It IS `Command`, the same palette `components/model-selector.tsx` opens, and
+ * what that replaced is the point. This file used to hand-roll a search row, a
+ * filter, an Enter handler and rows built out of Buttons — four answers to
+ * questions the palette already answers, and each had drifted from the picker
+ * standing next to it in the same header. The row's search field, being a
+ * `width: 100%` field in a flex row, took the panel's whole width and pushed the
+ * icon and the match count out past the edge; every option carried a filled
+ * Button's ground and border, so five pages read as five stacked buttons; and
+ * the open-page dot asked for `$1.5`, a SIZE token, which is 24px — the white
+ * disc that swallowed the first row.
+ *
+ * What is left is the only thing that is this picker's own: how pages group
+ * into folders, and which one is open.
+ *
+ * Presentational only. The caller owns the `pages`/`currentPage` state and
+ * closes the surrounding popover via `onClose`.
  */
 
 interface PageLike {
@@ -71,8 +91,10 @@ export function PagePanel({
   onClose,
   autoFocus,
 }: PagePanelProps) {
-  const [query, setQuery] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
+  // A gui element, not an `HTMLInputElement`: gui hands back the DOM node plus
+  // its own `measure*` methods, so naming the field's own ref type is the way to
+  // say it. `focus()` is the HTMLElement half.
+  const inputRef = useRef<ComponentRef<typeof CommandInput>>(null);
 
   useEffect(() => {
     if (!autoFocus) return;
@@ -80,98 +102,74 @@ export function PagePanel({
     return () => cancelAnimationFrame(id);
   }, [autoFocus]);
 
-  const filteredPaths = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const paths = pages.map((p) => p.path);
-    if (!q) return paths;
-    return paths.filter((p) => p.toLowerCase().includes(q));
-  }, [pages, query]);
+  // Every page, always. The palette HIDES the rows a search misses rather than
+  // unmounting them — that is what keeps its cursor in source order — so
+  // filtering is not this component's to do, and a group whose every page
+  // filtered out hides itself.
+  const groups = useMemo(() => groupPages(pages.map((p) => p.path)), [pages]);
 
-  const groups = useMemo(() => groupPages(filteredPaths), [filteredPaths]);
-
-  const select = (path: string) => {
-    onSelectPage(path);
-    onClose?.();
-  };
-
-  // Enter opens the first match — fast keyboard navigation from the search box.
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (sends(e.key, e.nativeEvent)) {
-      const first = groups[0]?.items[0]?.path;
-      if (first) {
-        e.preventDefault();
-        select(first);
-      }
-    }
-  };
+  // Two different facts, and they used to be told as one sentence. A project
+  // with no pages is not a failed search, and `No pages match “”` blames the
+  // reader for a query they never typed.
+  if (pages.length === 0) {
+    return (
+      <Paragraph paddingHorizontal="$3" paddingVertical="$5" textAlign="center" fontSize="$1" color="$color11">
+        This project has no pages yet.
+      </Paragraph>
+    );
+  }
 
   return (
-    <YStack maxHeight="min(60vh,24rem)" width="100%">
-      <XStack alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingBottom="$2" paddingTop="$0.5">
-        <Search size={14} />
-        <Input
-          ref={inputRef}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Search pages…"
-          aria-label="Search pages"
-          width="100%" backgroundColor="transparent" paddingVertical="$1" fontSize="$3" color="$color" placeholderTextColor="$color11"
-  />
-        <SizableText flexShrink={0} fontFamily="$mono" fontSize="$1" color="$color11">
-          {filteredPaths.length}
-        </SizableText>
-      </XStack>
+    // The cursor opens on the page you are already on, so Enter re-opens it
+    // rather than jumping to whatever happens to be first.
+    <Command backgroundColor="transparent" defaultValue={currentPage}>
+      <CommandInput ref={inputRef} placeholder="Search pages…" aria-label="Search pages" />
+      <CommandList>
+        <CommandEmpty>No pages match that search.</CommandEmpty>
+        {groups.map((group) => (
+          <CommandGroup key={group.folder || "/"} heading={group.folder || undefined}>
+            {group.items.map((item) => {
+              const current = item.path === currentPage;
+              return (
+                <CommandItem
+                  key={item.path}
+                  // The whole path, so typing a folder finds the pages inside it.
+                  value={item.path}
+                  // The row says its PATH. `index.html` names nothing on its own
+                  // in a project that has several, and the visible name is the
+                  // one thing that may be clipped. There is no tooltip to carry
+                  // it: `title` is a web attribute @hanzo/ui declares on the
+                  // components that spread it, and neither ListItem nor
+                  // SizableText is one — widening that belongs upstream.
+                  aria-label={item.path}
+                  onSelect={() => {
+                    onSelectPage(item.path);
+                    onClose?.();
+                  }}
+                >
+                  {/* The open page keeps a rail. The row highlight belongs to the
+                      CURSOR, so without a second mark "which page am I on" is
+                      lost the moment an arrow key moves. Same rail the model
+                      picker draws, for the same reason.
 
-      {/* `flexGrow` + `flexBasis: auto`, never `flex={1}`. The shorthand compiles
-          to `flex-basis: 0`, and this list's parents are CONTENT-sized — the
-          popover sets a width and no height, and the panel above sets only a
-          maxHeight. So the list's hypothetical size was 0, the container sized
-          itself to the search row alone, there was no free space left for
-          `flex-grow` to hand out, and the list stayed 0 tall: the picker opened
-          as a search box with nothing under it, not even the page you were on.
-          Same collapse this app already hit on TabsContent and CardContent. */}
-      <YStack minHeight={0} flexGrow={1} flexBasis="auto" paddingVertical="$1" overflow="scroll">
-        {groups.length === 0 ? (
-          // Two different facts, and they were told as one. A project with no
-          // pages is not a failed search, and saying `No pages match “”` for it
-          // blames the reader for a query they never typed.
-          <Paragraph paddingHorizontal="$3" paddingVertical="$5" textAlign="center" fontSize="$1" color="$color11">
-            {query.trim() ? `No pages match “${query}”.` : "This project has no pages yet."}
-          </Paragraph>
-        ) : (
-          groups.map((group) => (
-            <YStack key={group.folder || "/"} paddingVertical="$0.5">
-              {group.folder && (
-                <XStack alignItems="center" gap="$1.5" paddingHorizontal="$2.5" paddingVertical="$1">
-                  <SizableText color="$color11"><Folder size={12} /></SizableText>
-                  <SizableText numberOfLines={1} fontSize="$1" fontWeight="500" letterSpacing={0.4} color="$color11">{group.folder}</SizableText>
-                </XStack>
-              )}
-              {group.items.map((item) => {
-                const active = item.path === currentPage;
-                return (
-                  <Button
-                    key={item.path}
-                    type="button"
-                    onClick={() => select(item.path)}
-                    title={item.path}
-                    width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$1.5" justifyContent="flex-start" {...{ paddingLeft: group.folder ? "$5" : undefined, backgroundColor: active ? "$color3" : undefined, hoverStyle: active ? undefined : {"backgroundColor":"$color3"} }}
-                  >
-                    <FileCode size={14} />
-                    <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
-                      {item.name}
-                    </SizableText>
-                    {active && (
-                      <SizableText marginLeft="auto" width="$1.5" height="$1.5" flexShrink={0} borderRadius="$10" backgroundColor="$color12" />
-                    )}
-                  </Button>
-                );
-              })}
-            </YStack>
-          ))
-        )}
-      </YStack>
-    </YStack>
+                      NO vertical margin: a ListItem is padded 14px, so the flex
+                      line it stretches into is only 20px of a 48px row, and 6px
+                      a side left a 2x8 tick — a mark you cannot see is not a
+                      mark. Measured 8 with the margins, 20 without. */}
+                  <YStack width={2} alignSelf="stretch" borderRadius={1} backgroundColor={current ? "$color" : "transparent"} />
+                  <FileCode size={14} />
+                  <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
+                    {item.name}
+                  </SizableText>
+                  {/* Reserved, never collapsed: a check that takes the row's
+                      space only when it is set moves every other row's text. */}
+                  <Check size={14} opacity={current ? 1 : 0} style={{ marginLeft: 'auto', flexShrink: 0 }} />
+                </CommandItem>
+              );
+            })}
+          </CommandGroup>
+        ))}
+      </CommandList>
+    </Command>
   );
 }
