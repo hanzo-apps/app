@@ -22,7 +22,12 @@ describe("the hero is a sentence beside the product", () => {
   it("says what the product does, once, on the left", () => {
     expect(landing).toContain("Describe your app.");
     expect(landing).toContain("Hanzo builds and ships it.");
-    expect(landing).toContain("One prompt becomes a live app");
+    // "site or app", not "app": the headline is measured to the pixel and cannot
+    // move, so the sentence under it is where the product admits that a website
+    // is the same thing. Someone with a shop or a studio does not think they
+    // want an app, and every other word on this page said only "app".
+    expect(landing).toContain("One prompt becomes a live site or app");
+    expect(landing).toContain("Sites and apps, wired to real data");
     // The break is UNCONDITIONAL: two sentences, two lines, at every width.
     // It used to be hidden below 640 by `.break-sm`, and that rule is what
     // forced the phone to hold both sentences on one line — 17px, a hero

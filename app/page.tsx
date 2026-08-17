@@ -79,6 +79,12 @@ interface LandingProject {
 // Typewriter phrases for the composer — the same honest app types, phrased as
 // natural completions of "Ask Hanzo to build …".
 const TYPED = [
+  // A SITE leads, because "app" is the word this page says everywhere else and
+  // it excludes the visitor who came to make a website. Someone with a shop or a
+  // studio does not think they want an app; they want their pages, a gallery and
+  // a way to be contacted — which is the same product, and the rotation is where
+  // it can say so without touching a headline measured to the pixel.
+  "a website for my studio with a gallery and a contact form",
   "a customer portal with login and a dashboard",
   "an internal admin dashboard for my team",
   "an AI support chatbot trained on my docs",
@@ -250,7 +256,7 @@ export default function LandingPage() {
               <Reveal>
                 <XStack alignSelf="center" marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color0025" paddingHorizontal="$3" paddingVertical="$1.5" $lg={{ alignSelf: "flex-start" }}>
                   <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
-                    Apps, wired to real data &amp; AI
+                    Sites and apps, wired to real data &amp; AI
                   </SizableText>
                 </XStack>
               </Reveal>
@@ -303,8 +309,8 @@ export default function LandingPage() {
                     does, the number has to be checked against the ones next
                     door rather than trusted. */}
                 <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$3" textAlign="center" color="$color11" $md={{ fontSize: "$6" }} $lg={{ alignSelf: "flex-start", textAlign: "left" }} lineHeight="1.5">
-                  One prompt becomes a live app on Hanzo Cloud — UI, database,
-                  auth, and 500+ AI models, wired in and deployed.
+                  One prompt becomes a live site or app on Hanzo Cloud — pages,
+                  database, auth, and 500+ AI models, wired in and deployed.
                 </Paragraph>
               </Reveal>
 
