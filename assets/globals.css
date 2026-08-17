@@ -695,7 +695,21 @@ html:root .hz-shot {
   /* The ONE keyboard-focus ring, per theme — white on the dark ground. This is the
      value the landing page already proved legible; it is now the whole app's. */
   --focus-ring: rgba(255, 255, 255, 0.72);
-  --focus-edge: rgba(255, 255, 255, 0.6);
+  /* The EDGE is not the ring and does not want the ring's weight. It draws a 1px
+     line where a hairline sits, so on a near-black ground 60% white read as a lit
+     white outline around the whole composer rather than an edge that had
+     brightened — the first thing the eye went to on the page.
+
+     Measured, compositing white-over-#0a0a0a and comparing against the rest edge
+     (--border, white 10% → rgb(34,34,34)):
+
+       0.60   5.87:1   the glare
+       0.45   3.60:1   clears the 3:1 focus-appearance floor with headroom
+       0.40   3.03:1   at the line — no room for a lighter surface
+
+     0.45. The indicator still carries WCAG 2.4.13 on its own, which is what the
+     focus block below relies on, and it stops shouting. */
+  --focus-edge: rgba(255, 255, 255, 0.45);
   /* The lift inverts with the ground: white on black, black on white. The accent
      does not — it is one value, and the app has one ground. */
   --tint: 255 255 255;
