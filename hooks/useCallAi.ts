@@ -12,12 +12,11 @@ import { baseEnabled } from "@/lib/base/flag";
 // response and UNAVAILABLE stands in only when the body said nothing a person
 // can act on — a dead socket, a bodyless response, an HTML error page.
 //
-// This matters most on the 5xx branch, because `refusal` folds every status
-// that is not 401/402/403/429 into 502: an out-of-credit house provider, a
-// model whose upstreams all refused, a request some adapter could not parse.
-// Each of those states its cause and none of them clears on its own, so
-// substituting "try again shortly" turns a fixable condition into a wait with
-// no end.
+// The 5xx branch is where this bites, because it is the one branch that answers
+// before the body is read. Behind it sit an out-of-credit house provider, a
+// model whose upstreams all refused, a request some adapter could not parse —
+// each states its cause, none clears on its own, and substituting "try again
+// shortly" turns a fixable condition into a wait with no end.
 import { CREDIT, UNAVAILABLE, said } from "@/lib/gateway";
 
 // Guarded JSON parse: the stream-done handler only treats the response as a
