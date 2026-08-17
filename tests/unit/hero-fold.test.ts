@@ -87,9 +87,18 @@ describe("the hero is a sentence beside the product", () => {
     }
 
     // `100svh` and not `vh`: a phone's URL bar moves the large unit, so the
-    // hero would resize under the fold it is supposed to own.
+    // hero would resize under the fold it is supposed to own. MINUS the header,
+    // which is sticky but sits in flow — a bare 100svh starts 60px down and
+    // therefore ends 60px past the bottom of the screen.
     const hero = landing.slice(landing.indexOf("── Hero"), landing.indexOf("── Below the fold"));
-    expect(hero).toMatch(/minHeight="100svh"/);
+    expect(hero).toMatch(/minHeight="calc\(100svh - 60px\)"/);
+
+    // The foot reserve is the DOCK'S OWN HEIGHT and not a rung that looked
+    // about right. `.hz-dock` measures 127px; `$14` is 128. At `$10` (64) the
+    // last 123px of the hero sat under the composer at 390 and 58px at 768 —
+    // the preview frame's status bar and its "Build <app> →" control, which
+    // elementFromPoint at its centre answered as the composer.
+    expect(hero).toMatch(/paddingBottom="\$14"/);
   });
 
   it("shows the product, and never the address of the page you are on", () => {

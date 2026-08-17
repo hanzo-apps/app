@@ -421,6 +421,31 @@ a full rung low because nothing challenged it. **Do not re-declare a name
 design publishes.** What globals.css still owns is what design does not ship:
 `--focus-ring`/`--focus-edge` and `--tint`.
 
+**`--text-xs` is the ONE exception, and it is a retune rather than a fork.**
+theme.css says so in the ramp's own preamble — a surface overrides any
+`--text-*` on `:root` to retune density — so this is the knob it published, not
+a second ramp. The rung ships at 11px, described there as eyebrows and section
+labels; this app spends it on reading copy at roughly 1600 call sites, and 11 is
+under every legibility floor. Measured on the landing at 390 before the retune:
+40 elements under 12px at first paint, 80 once the template strip has scrolled
+through, and every one of them this rung — the hero's own eyebrow among them,
+every template card label, and the preview's "Build <app> →". hanzo.chat and
+hanzo.id have none. Raised to 12 in the `html:root` block in `assets/globals.css` — an
+anchor, not a preference, because theme.css loads AFTER globals.css and a bare
+`:root` would lose the tie. It keeps `* var(--type-scale, 1)`: drop the
+multiplier and this becomes the one rung the Appearance text-size control cannot
+move. The right home is @hanzo/design, where the rung is written; until it moves
+there, hanzo.app and design disagree by one rung and this paragraph is the
+record of it.
+
+Below that rung there is nothing left on the landing but the drawn frame's own
+model of a composer — a 16px pill carrying a 9px label, roughly 44% scale. The
+line the numbers draw: the demo app INSIDE the frame is not a miniature (its
+pane is 330px at a 390px viewport, 85% of the phone's own width) and reads at
+the ramp floor; the frame's model of our chrome is a picture and keeps its raw
+numbers. `tests/unit/type-ramp.test.ts` ratchets `components/editor` only —
+`components/landing` has never been under it.
+
 `html.dark { --background: … !important }` is gone with it. It existed because
 gui's generated theme declares `--background` at bare `:root`, ties design on
 specificity and wins on load order — `scripts/gen-gui-css.mjs` now drops the
@@ -563,6 +588,55 @@ sat 8px apart in one row. 36 is this app's icon box — Lovable's 32 is
 unreachable without either dropping `size="icon"` (which the test above forbids)
 or overriding the library's floor, and inventing a third authority for one box
 is worse than a 4px delta.
+
+**THERE ARE TWO FLOOR SYSTEMS AND THEY DISAGREE ABOUT WHERE THEY APPLY.** The
+`@media (pointer: coarse)` block above grows the PAINTED box and exempts
+`.hz-dense`; a second block, `@media (max-width: 767px)` near the bottom of
+`assets/globals.css`, lays a centred 44x44 transparent `::after` on every bare
+`button:not([data-slot="button"])` and is width-scoped on purpose (its own note
+explains why: a coarse query is invisible in a resized desktop window). Between
+them sits a tablet held in the hand — 768 wide, coarse pointer, an iPad in
+portrait — and the composer's mic falls through it: no `data-touch-*` because
+@hanzo/voice is not an @hanzo/ui Button, so the `.hz-dense` slop rule has no
+overlay to widen, and past 767 the other block has stopped. Measured with each
+neighbour hidden, so no overlapping slop flatters the number: 32x32 against
+48x44 / 88x44 / 48x44 for the other three in its own row.
+
+Two traps when measuring or fixing this. **The painted box is not the target**:
+`getBoundingClientRect` on the button reads 32-36 while `elementFromPoint` walks
+out to 44 — an audit that reports painted boxes reports four failures in this
+row where there is one. **And a hit box is measured one control at a time**:
+these sit 4-8px apart, so each neighbour's overlay claims part of the strip and
+the loser measures short. Hide the siblings, then measure. The first fix written
+here set `inset: -6px` on the mic's `::after` and made it WORSE — the
+width-scoped rule's `translate: -50% -50%` survives on the same pseudo and shifts
+an inset-positioned box by half its own size, off the control entirely. State the
+whole shape, the same one that block states, or state nothing.
+
+**THE HERO'S FOLD IS ARITHMETIC, AND BOTH TERMS WERE WRONG.** `app/page.tsx`
+sizes the hero to own the first screen and reserves its foot for the composer.
+The fold is 100svh MINUS the header — sticky, but in flow, so a bare `100svh`
+starts 60px down and ends 60px past the bottom of the screen — and the reserve
+is `.hz-dock`'s own height, which measures 127px against the `$10` (64) that was
+written. Together they buried the last 123px of the hero at 390 and 58px at 768:
+the preview frame's status bar and its "Build <app> →", visible by every
+computed style and answered by `elementFromPoint` as the composer. 1440 was
+never affected, and only because its content is short enough that centring left
+34px of slack — so a desktop check certifies this as fine. `calc(100svh - 60px)`
++ `$14` clears it at 768 (+4) and 1440 (+96); 60 is measured at all three widths
+and the shell publishes no variable to read it from.
+
+**390 IS STILL BURIED AND CANNOT BE FIXED BY A RESERVE.** The hero's content is
+732px, the room between header and dock is 609, and a reserve inside a box
+smaller than its content does not lift anything — it spills, and with
+`justifyContent: center` it spills UPWARD into the header (measured: content top
+at y 46 under a 60px header). The mock cannot give up the difference either: its
+pane floor of 200 is exactly the demo app's own height at that width. What is
+left is shortening the hero's copy or letting the composer arrive on the first
+scroll, and the two comments that meet here already disagree — `.hz-dock`'s says
+the hero owns the first screen with nothing scrolling under it, page.tsx's says
+the composer is already docked at the foot of a phone. That is a design decision
+and it is open. Today the control is reachable at 390 after ~130px of scroll.
 
 **A `<kbd>` is a hint, not a keycap** — one element rule in `assets/globals.css`,
 `var(--text-tertiary)` + `var(--text-xs)`, no box. Same shape hanzo.chat draws

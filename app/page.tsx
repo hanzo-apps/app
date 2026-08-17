@@ -232,6 +232,31 @@ export default function LandingPage() {
             moves the large one, which would push the composer under the fold
             on first paint.
 
+            BOTH HALVES OF THAT SENTENCE ARE ARITHMETIC, and both were wrong.
+            The fold is 100svh MINUS the header, which is sticky but in flow, so
+            a bare 100svh starts 60px down and ends 60px past the bottom of the
+            screen. And the slot below is the dock's OWN height: `.hz-dock` is
+            an opaque ground carrying the composer and it measures 127px, not
+            the 64 that was reserved for it. Together those two put the last
+            123px of the hero underneath the composer at 390 and 58px at 768 —
+            the preview frame's status bar and its "Build <app> →" control, which
+            `elementFromPoint` at their centres answers as the composer. Only
+            1440 was ever clear, and only because its content is short enough
+            that centring left 34px of slack. 60px is measured at 390, 768 and
+            1440: the shell header is one height at every width, and it
+            publishes no variable to read it from.
+
+            390 is still buried, and no reserve can lift it. The content is
+            732px and the room between header and dock is 609, so the box is
+            smaller than what is in it: the reserve does not push the content
+            up, it spills, and with `justifyContent: center` it spills UPWARD —
+            measured, content top at y 46 under a 60px header. The mock cannot
+            give up the difference either; its pane floor of 200 is exactly the
+            demo app's own height there. What is left is shortening the hero's
+            copy or letting the composer arrive on the first scroll, and that is
+            a design decision rather than an arithmetic one. Today the control
+            is reachable at 390 after about 130px of scroll.
+
             A phone stacks it — sentence, then the product frame under it, with
             the composer already docked at the foot of the screen. From $lg the
             two stand side by side, which is the arrangement the copy is
@@ -249,7 +274,7 @@ export default function LandingPage() {
             up only because the share finally reached the cap. Measured every
             80px from 900 to 1680. The right column is a scaled mock and gives
             up the difference; a headline cannot. */}
-        <YStack minHeight="100svh" justifyContent="center" paddingHorizontal="$4" paddingBottom="$10" paddingTop="$8" $md={{ paddingHorizontal: "$6" }}>
+        <YStack minHeight="calc(100svh - 60px)" justifyContent="center" paddingHorizontal="$4" paddingBottom="$14" paddingTop="$8" $md={{ paddingHorizontal: "$6" }}>
           <YStack alignSelf="center" width="100%" maxWidth={768} gap="$7" $lg={{ flexDirection: "row", alignItems: "center", maxWidth: 1200, gap: "$8" }}>
             {/* LEFT — what the product does, said once. */}
             <YStack alignSelf="center" width="100%" maxWidth={768} $lg={{ flex: 1, minWidth: 576, maxWidth: 576, alignSelf: "center" }}>

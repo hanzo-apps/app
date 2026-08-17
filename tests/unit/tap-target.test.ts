@@ -18,10 +18,16 @@ import { join } from "node:path";
 const ROOT = join(__dirname, "..", "..");
 const css = readFileSync(join(ROOT, "assets/globals.css"), "utf8");
 
-/** The declaration block of a class rule, comments stripped. */
+/** The declaration block of a class rule, comments stripped.
+ *
+ *  Anchored to the START of a line, because a plain substring lands inside any
+ *  DESCENDANT rule that ends in the same class — `html:root .hz-dense
+ *  .voice-control` contains `.voice-control` and is written earlier in the
+ *  sheet, so the search read the wrong rule and every assertion below failed on
+ *  a rule they are not about. */
 const ruleBody = (selector: string): string => {
-  const i = css.indexOf(`${selector} {`);
-  if (i < 0) throw new Error(`${selector} is not declared in globals.css`);
+  const i = css.indexOf(`\n${selector} {`) + 1;
+  if (i < 1) throw new Error(`${selector} is not declared in globals.css`);
   const body = css.slice(i, css.indexOf("}", i));
   return body.replace(/\/\*[\s\S]*?\*\//g, "");
 };

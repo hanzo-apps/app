@@ -544,7 +544,10 @@ function Frame({ stop }: { stop: Stop }) {
                 {...{ backgroundColor: on ? "$color5" : "transparent" }}
               >
                 <SizableText color={on ? "$color12" : "$color11"}><t.icon size={11} /></SizableText>
-                {on ? <SizableText fontSize={10} fontWeight="600" color="$color12">{t.label}</SizableText> : null}
+                {/* The ramp's floor, matching the same tab strip in
+                    hero-preview: the two frames draw one chrome, so a size one
+                    of them invents is a seam between them. */}
+                {on ? <SizableText fontSize="$1" fontWeight="600" color="$color12">{t.label}</SizableText> : null}
               </XStack>
             );
           })}

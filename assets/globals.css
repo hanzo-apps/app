@@ -363,6 +363,39 @@ a {
     left: -6px;
     right: -6px;
   }
+
+  /* THE EXEMPTION'S PREMISE IS "@hanzo/ui ALREADY MADE IT REACHABLE", AND THE MIC
+     IS NOT AN @hanzo/ui BUTTON. It comes from @hanzo/voice, so it emits no
+     `data-touch-*` and there is no overlay under it for the rule above to widen
+     — the two handles up there reach only controls the library already drew one
+     for. Below 768 that never showed, because the `max-width: 767px` block near
+     the bottom of this file lays a centred 44x44 overlay on every bare button
+     and the mic is one. That block is scoped by WIDTH on purpose (see its own
+     note), so a tablet held in the hand — 768 wide, coarse pointer, which is an
+     iPad in portrait — falls between the two: measured with each neighbour
+     hidden so no overlapping slop flatters the number, the mic is 32x32 there
+     against 48x44, 88x44 and 48x44 for the other three in its own row.
+
+     Deliberately the SAME shape as that block's overlay rather than a third
+     spelling of a hit box: percentage box, centred, floored at 2.75rem. Below
+     768 the two compute the same pixels, so this changes nothing where the
+     other rule was already working; above it, this is the only one left. The
+     mic must be positioned for it, since it declares none of its own and an
+     absolute overlay would otherwise anchor to the composer panel. */
+  html:root .hz-dense .voice-control {
+    position: relative;
+  }
+  html:root .hz-dense .voice-control::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    height: 100%;
+    width: 100%;
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+  }
 }
 
 /* A TEMPLATE PREVIEW NEEDS AN EDGE THAT WORKS ON A LIGHT SHOT TOO.
@@ -947,6 +980,25 @@ html:root [data-field-box]:focus-within {
 html:root {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* THE SMALLEST RUNG A PERSON READS, and 11px is under every legibility floor
+     there is. The ramp names it "eyebrows / section labels", which is the size
+     of the decision it looked like; this app spends it on reading copy. Measured
+     at 390 with the ramp at 11: 40 elements under 12px at first paint and 80
+     once the template strip has scrolled through, and every one of them this
+     rung — the hero's own eyebrow, the "or start from a template" divider, every
+     template card label, and the hero preview's "Build <app> →". hanzo.chat and
+     hanzo.id have none.
+     ONE declaration and not a sweep, because `$1` is the same rung at every one
+     of ~1600 call sites — the failure is the value, not the call sites, and a
+     find-replace would have moved a thousand of them and still left the token
+     saying 11 for whatever is written next.
+     `@hanzo/ui/theme.css` states that a surface retunes any `--text-*` on
+     `:root`, so this is the sanctioned knob rather than a second ramp. It keeps
+     `--type-scale` for the same reason design's own rung does: the Appearance
+     text-size control multiplies this, and a rung that dropped the multiplier
+     would be the one rung that stopped answering. The anchor is `html:root` for
+     the reason stated just above — theme.css loads AFTER this file. */
+  --text-xs: calc(0.75rem * var(--type-scale, 1));
 }
 html:root .font_body,
 html:root .font_heading {

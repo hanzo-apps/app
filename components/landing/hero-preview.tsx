@@ -254,11 +254,20 @@ function App({ story, v, compact }: { story: Story; v: number; compact?: boolean
   // ONE control scale for the whole widget: every row shares this height,
   // radius and label size, compact simply steps the scale down.
   const row = compact ? 20 : 26;
-  const fs = compact ? 8 : 10;
+  // The full frame is not a miniature and cannot borrow a miniature's licence:
+  // its pane measures 330px at a 390px viewport, 85% of the phone's own width,
+  // so its text is read at very near life size. At 10px "Thu · morning" was the
+  // smallest thing on the page — a demo that shows what Hanzo builds, printed
+  // too small to read. `$1` is the ramp's floor rung and every other label on
+  // this page already uses it. The compact rung stays a raw number because the
+  // compact frame IS a picture: a phone drawn 148px wide, roughly a third of
+  // life size, where a floor meant for reading would draw a phone whose text
+  // does not fit its own chrome.
+  const fs = compact ? 8 : ('$1' as const);
   return (
     <YStack height="100%" {...{ gap: compact ? "$1.5" : "$2.5", padding: compact ? "$2.5" : "$3.5" }}>
       <XStack alignItems="center" justifyContent="space-between">
-        <SizableText fontFamily="$mono" color="$color" {...{ fontSize: compact ? 7 : 9 }}>
+        <SizableText fontFamily="$mono" color="$color" {...{ fontSize: compact ? 7 : '$1' }}>
           {story.name}
         </SizableText>
         {v >= 2 && (
@@ -312,7 +321,7 @@ function App({ story, v, compact }: { story: Story; v: number; compact?: boolean
       </YStack>
 
       {v >= 1 && (
-        <SizableText fontFamily="$mono" color="$color11" {...{ fontSize: compact ? 7 : 9 }} className="rise">
+        <SizableText fontFamily="$mono" color="$color11" {...{ fontSize: compact ? 7 : '$1' }} className="rise">
           {story.note}
         </SizableText>
       )}
@@ -496,8 +505,13 @@ export default function HeroPreview({ ask }: { ask: (prompt: string) => void }) 
                   height={22} alignItems="center" justifyContent="center" gap="$1" borderRadius="$3" paddingHorizontal={on ? "$2" : "$1.5"} {...{ backgroundColor: on ? "$color5" : "transparent", hoverStyle: { backgroundColor: on ? "$color6" : "$color3" } }}
                 >
                   <SizableText color={on ? "$color12" : "$color11"}><tabItem.icon size={11} /></SizableText>
+                  {/* The ramp's floor, like every other label in this header
+                      row — the project path beside it is `$1`, so at 10 the
+                      active pane's name was the one word here drawn at a size
+                      nothing else on the page uses. The 22px tab carries a 12px
+                      line box with room over. */}
                   {on && (
-                    <SizableText fontSize={10} fontWeight="600" color="$color12">{tabItem.label}</SizableText>
+                    <SizableText fontSize="$1" fontWeight="600" color="$color12">{tabItem.label}</SizableText>
                   )}
                 </XStack>
               );

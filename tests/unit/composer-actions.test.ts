@@ -16,9 +16,13 @@ import { join } from "path";
  */
 const css = readFileSync(join(__dirname, "../../assets/globals.css"), "utf8");
 
+/** Anchored to the START of a line: a bare substring lands inside any DESCENDANT
+ *  rule ending in the same selector — `html:root .hz-dense .voice-control` holds
+ *  `.voice-control` and is written earlier in the sheet — so the search read a
+ *  rule these assertions are not about. */
 const block = (sel: string) => {
-  const at = css.indexOf(sel);
-  expect(at).toBeGreaterThan(-1);
+  const at = css.indexOf(`\n${sel}`) + 1;
+  expect(at).toBeGreaterThan(0);
   return css.slice(at, css.indexOf("}", at) + 1);
 };
 
