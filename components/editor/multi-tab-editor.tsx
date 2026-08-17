@@ -5,35 +5,18 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { CodeEditor } from '@/components/code-editor';
 import { VirtualFile, ProjectRuntime } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
-import { X, Code2, Save, FileCode, Image as ImageIcon, AlertCircle, Search, Folder } from 'lucide-react';
-import { Button, Input } from '@hanzo/ui';
+import { X, Code2, Save, FileCode, Image as ImageIcon, AlertCircle } from 'lucide-react';
+import {
+  Button,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@hanzo/ui';
+import { basename, byFolder } from '@/lib/path';
 import { logger } from '@/lib/utils';
-
-// index.html floats to the top of its folder; everything else alphabetical.
-function fileIndexRank(name: string): number {
-  return /^index\.html?$/i.test(name) ? 0 : 1;
-}
-
-// Group VFS files by their containing folder for the browse list.
-function groupFiles(files: VirtualFile[]): { folder: string; items: VirtualFile[] }[] {
-  const map = new Map<string, VirtualFile[]>();
-  for (const file of files) {
-    const norm = file.path.replace(/^\/+/, '');
-    const folder = norm.split('/').slice(0, -1).join('/');
-    const arr = map.get(folder) ?? [];
-    arr.push(file);
-    map.set(folder, arr);
-  }
-  const folders = Array.from(map.keys()).sort((a, b) =>
-    a === b ? 0 : a === '' ? -1 : b === '' ? 1 : a.localeCompare(b)
-  );
-  return folders.map((folder) => ({
-    folder,
-    items: (map.get(folder) ?? []).sort(
-      (a, b) => fileIndexRank(a.name) - fileIndexRank(b.name) || a.name.localeCompare(b.name)
-    ),
-  }));
-}
 
 interface MultiTabEditorProps {
   projectId: string;
@@ -54,7 +37,6 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
   const savingPathsRef = React.useRef<Set<string>>(new Set());
   // All project files, for the browse list shown when no tab is open.
   const [allFiles, setAllFiles] = useState<VirtualFile[]>([]);
-  const [browseQuery, setBrowseQuery] = useState('');
 
   useEffect(() => {
     const handleFileOpen = (event: CustomEvent<VirtualFile>) => {
@@ -313,14 +295,13 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
 
   const activeFile = activeFilePath ? openFiles.get(activeFilePath) : null;
 
-  // Browse list: every project file except hidden/transient (dot) paths,
-  // filtered by the search box and grouped by folder.
-  const browseFiltered = useMemo(() => {
-    const visible = allFiles.filter((f) => !f.path.startsWith('/.'));
-    const q = browseQuery.trim().toLowerCase();
-    return q ? visible.filter((f) => f.path.toLowerCase().includes(q)) : visible;
-  }, [allFiles, browseQuery]);
-  const browseGroups = useMemo(() => groupFiles(browseFiltered), [browseFiltered]);
+  // Browse list: every project file except hidden/transient (dot) paths, grouped
+  // by folder. There is no filtered copy — the palette hides the rows a search
+  // misses, which is also what keeps its cursor in source order.
+  const browseGroups = useMemo(
+    () => byFolder(allFiles.filter((f) => !f.path.startsWith('/.'))),
+    [allFiles],
+  );
 
   return (
     <YStack height="100%">
@@ -367,63 +348,62 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
       </XStack>
       
       {openFiles.size === 0 ? (
-        <YStack flex={1} minHeight={0}>
-          <XStack alignItems="center" gap="$2" borderBottomWidth={1} paddingHorizontal="$3" paddingVertical="$2">
-            <Search size={14} />
-            <Input
-              value={browseQuery}
-              onChange={(e) => setBrowseQuery(e.target.value)}
-              placeholder="Search files…"
-              aria-label="Search files"
-              width="100%" backgroundColor="transparent" paddingVertical="$0.5" fontSize="$3" color="$color" placeholderTextColor="$color11"
-  />
-            <SizableText flexShrink={0} fontFamily="$mono" fontSize="$1" color="$color11">
-              {browseFiltered.length}
-            </SizableText>
-          </XStack>
-          <YStack minHeight={0} flex={1} paddingVertical="$1" overflow="scroll">
-            {browseGroups.length === 0 ? (
-              <YStack height="100%" alignItems="center" justifyContent="center" gap="$3" padding="$5">
-                <FileCode size={40} />
-                <YStack rowGap="$1">
-                  <Paragraph fontSize="$3" fontWeight="500" color="$color11" textAlign="center">
-                    {allFiles.length === 0
-                      ? 'No files in this project yet'
-                      : 'No files match your search'}
-                  </Paragraph>
-                  <Paragraph fontSize="$1" color="$color11" textAlign="center">This list holds every file in the project.</Paragraph>
-                </YStack>
-              </YStack>
-            ) : (
-              browseGroups.map((group) => (
-                <YStack key={group.folder || '/'} paddingVertical="$0.5">
-                  {group.folder && (
-                    <XStack alignItems="center" gap="$1.5" paddingHorizontal="$3" paddingVertical="$1">
-                      <Folder size={12} />
-                      <SizableText numberOfLines={1} fontSize="$1" fontWeight="500" letterSpacing={0.4} color="$color11">{group.folder}</SizableText>
-                    </XStack>
-                  )}
+        // Nothing to search when there is nothing to list, and a project holding
+        // only dot paths reaches here too — so this covers both rather than
+        // offering a field over an empty list.
+        browseGroups.length === 0 ? (
+          <YStack flexGrow={1} flexBasis="auto" minHeight={0} alignItems="center" justifyContent="center" gap="$3" padding="$5">
+            <FileCode size={40} />
+            <Paragraph fontSize="$3" fontWeight="500" color="$color11" textAlign="center">
+              No files in this project yet
+            </Paragraph>
+          </YStack>
+        ) : (
+          // The same palette the page switcher and the model picker open. It owns
+          // the field, the filter, the cursor and the empty sentence; this site
+          // owns which files are listed and what happens on a press.
+          //
+          // `height="100%"`, not `flexGrow`. Every gui View is `flex-shrink: 0`,
+          // so a grow-only child of this pane keeps its CONTENT height: measured
+          // at 1613px inside a 420px pane, the list not scrolling and the last
+          // row painted 1190px below the bottom edge — there, and unreachable.
+          // The pane's height is definite, so saying so is exact.
+          <Command backgroundColor="transparent" borderRadius={0} height="100%">
+            <CommandInput placeholder="Search files…" aria-label="Search files" />
+            {/* `maxHeight` overrides the library's 300 — this list is a PANE, not
+                a popover, so it takes the room the editor has. `flexShrink` for
+                the reason above: without it the scroller is as tall as the files
+                it holds and nothing scrolls. */}
+            <CommandList maxHeight="100%" flexGrow={1} flexShrink={1} flexBasis="auto" minHeight={0}>
+              <CommandEmpty>No files match that search.</CommandEmpty>
+              {browseGroups.map((group) => (
+                <CommandGroup key={group.folder || '/'} heading={group.folder || undefined}>
                   {group.items.map((file) => (
-                    <Button
+                    <CommandItem
                       key={file.path}
-                      type="button"
-                      onClick={() => openFile(file)}
-                      title={file.path}
-                      width="100%" alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" justifyContent="flex-start" hoverStyle={{ backgroundColor: "$color3" }} {...{ paddingLeft: group.folder ? 28 : undefined }}
+                      // The whole path, so typing a folder finds the files in it.
+                      value={file.path}
+                      aria-label={file.path}
+                      // A ListItem justifies space-between — right for its own
+                      // icon/title/iconAfter shape, and with two children it put
+                      // 400px between this icon and its filename. A row of names
+                      // is read from the start edge.
+                      justifyContent="flex-start"
+                      onSelect={() => openFile(file)}
                     >
                       {getFileType(file.path).type === 'image' ? (
                         <ImageIcon size={14} />
                       ) : (
                         <FileCode size={14} />
                       )}
-                      <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1">{file.name}</SizableText>
-                    </Button>
+                      <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1">{basename(file.path)}</SizableText>
+                    </CommandItem>
                   ))}
-                </YStack>
-              ))
-            )}
-          </YStack>
-        </YStack>
+                </CommandGroup>
+              ))}
+            </CommandList>
+          </Command>
+        )
       ) : (
         <>
       <YStack borderBottomWidth={1} backgroundColor="$color3">

@@ -47,16 +47,20 @@ const HOLD = 2400;
  * The line to show. Mounting IS the active state — the caller renders this only
  * while it is waiting, so there is nothing to pass in.
  *
- * Nothing random happens during render: the first pass must agree with itself,
- * so the offset is picked in an effect, on the client, after hydration. A reader
- * who asked for less motion gets ONE line and no churn — the same
+ * It starts at the top of the list every time, and nothing here is random. A
+ * random start has to be chosen on the client, after hydration, which means
+ * writing state from inside the effect — one cascading render, and a first frame
+ * showing a line that is immediately replaced. The list is long enough that a
+ * wait rarely reaches the end of it, so a fixed first line costs nothing a
+ * reader would notice and the hook stays a subscription to a clock.
+ *
+ * A reader who asked for less motion gets ONE line and no churn — the same
  * `prefers-reduced-motion` contract the mark's idle animation keeps.
  */
 export function useThinking(): string {
   const [at, setAt] = useState(0);
 
   useEffect(() => {
-    setAt(Math.floor(Math.random() * THINKING.length));
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
     const id = setInterval(() => setAt((n) => n + 1), HOLD);
     return () => clearInterval(id);

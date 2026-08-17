@@ -13,6 +13,7 @@ import {
 } from '@hanzo/ui';
 import { useEffect, useMemo, useRef, type ComponentRef } from "react";
 import { Check, FileCode } from "lucide-react";
+import { basename, byFolder } from "@/lib/path";
 /**
  * PagePanel — the ONE browsable page picker for the builder chrome.
  *
@@ -49,41 +50,6 @@ interface PagePanelProps {
   autoFocus?: boolean;
 }
 
-interface PageGroup {
-  folder: string;
-  items: { path: string; name: string }[];
-}
-
-// index.html floats to the top of its folder; everything else is alphabetical.
-function indexRank(name: string): number {
-  return /^index\.html?$/i.test(name) ? 0 : 1;
-}
-
-// Group page paths by their containing folder. Paths may be bare
-// ("about.html") or rooted ("/blog/post.html"); both normalize the same way.
-function groupPages(paths: string[]): PageGroup[] {
-  const map = new Map<string, { path: string; name: string }[]>();
-  for (const path of paths) {
-    const norm = path.replace(/^\/+/, "");
-    const segments = norm.split("/");
-    const name = segments[segments.length - 1] || norm;
-    const folder = segments.slice(0, -1).join("/");
-    const arr = map.get(folder) ?? [];
-    arr.push({ path, name });
-    map.set(folder, arr);
-  }
-  const folders = Array.from(map.keys()).sort((a, b) =>
-    a === b ? 0 : a === "" ? -1 : b === "" ? 1 : a.localeCompare(b)
-  );
-  return folders.map((folder) => ({
-    folder,
-    items: (map.get(folder) ?? []).sort(
-      (a, b) =>
-        indexRank(a.name) - indexRank(b.name) || a.name.localeCompare(b.name)
-    ),
-  }));
-}
-
 export function PagePanel({
   pages,
   currentPage,
@@ -106,7 +72,7 @@ export function PagePanel({
   // unmounting them — that is what keeps its cursor in source order — so
   // filtering is not this component's to do, and a group whose every page
   // filtered out hides itself.
-  const groups = useMemo(() => groupPages(pages.map((p) => p.path)), [pages]);
+  const groups = useMemo(() => byFolder(pages), [pages]);
 
   // Two different facts, and they used to be told as one sentence. A project
   // with no pages is not a failed search, and `No pages match “”` blames the
@@ -142,6 +108,11 @@ export function PagePanel({
                   // components that spread it, and neither ListItem nor
                   // SizableText is one — widening that belongs upstream.
                   aria-label={item.path}
+                  // A ListItem justifies space-between, for its own
+                  // icon/title/iconAfter shape. Said here so the row packs from
+                  // the start edge because it was ASKED to, rather than because
+                  // the check's auto margin happens to swallow the free space.
+                  justifyContent="flex-start"
                   onSelect={() => {
                     onSelectPage(item.path);
                     onClose?.();
@@ -159,7 +130,7 @@ export function PagePanel({
                   <YStack width={2} alignSelf="stretch" borderRadius={1} backgroundColor={current ? "$color" : "transparent"} />
                   <FileCode size={14} />
                   <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
-                    {item.name}
+                    {basename(item.path)}
                   </SizableText>
                   {/* Reserved, never collapsed: a check that takes the row's
                       space only when it is set moves every other row's text. */}

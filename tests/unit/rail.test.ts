@@ -6,8 +6,8 @@ import { tagEnd } from "../jsx";
 /**
  * A palette row's mark stretches into TWENTY pixels, so it has no margin.
  *
- * Both pickers in this app draw the same rail: a 2px bar down the left of the
- * chosen row, kept because the row HIGHLIGHT belongs to the keyboard cursor —
+ * The two pickers that mark a chosen row draw the same rail: a 2px bar down its
+ * left, kept because the row HIGHLIGHT belongs to the keyboard cursor —
  * without a second mark, "which one am I on" is lost the moment an arrow key
  * moves. The model picker drew it first and the page picker copied it, margin
  * and all.
@@ -42,9 +42,12 @@ const rows = walk(join(ROOT, "components")).filter((f) =>
 );
 
 describe("the palette row's rail", () => {
-  it("is drawn by every picker there is", () => {
-    // A floor before the assertion below, which is vacuously true over nothing.
+  it("is measured over every palette in the app", () => {
+    // A floor before the assertion below, which is vacuously true over nothing —
+    // and the file browser is here because it lists rows, not because it marks
+    // one: it has no current file to mark.
     expect(rows.map(rel).sort()).toEqual([
+      "components/editor/multi-tab-editor.tsx",
       "components/editor/page-navigator/index.tsx",
       "components/model-selector.tsx",
     ]);
