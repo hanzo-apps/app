@@ -34,19 +34,13 @@ import {
 import { applyEdit } from "@/lib/edit/apply";
 import { resolveModelId } from "@/lib/providers";
 import { refusal } from "@/lib/gateway";
+import { outputCap } from "@/lib/output-cap";
 import { session } from "@/lib/iam";
 import { requireSameOrigin } from "@/lib/org/csrf";
 import { Page } from "@/types";
 
 const HANZO_AI_BASE_URL =
   process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai/v1";
-
-// Output-token ceiling for a generation. Must not exceed the SMALLEST output cap
-// among the models the gateway may route to: claude-opus-4-8 (Enso's upstream)
-// caps at 128000, so 131000 made every Enso build 502 with
-// `max_tokens: 131000 > 128000`. 128000 is ample for a full multi-page app and
-// safe across the Zen ladder + Enso.
-const MAX_TOKENS = 128_000;
 
 // Builder model resolution: kill retired/dead ids (resolveModelId), then honor
 // what remains. `auto` routes via the gateway; everything else is sent verbatim.
@@ -74,6 +68,38 @@ const unauthorized = () =>
 
 type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
 
+/**
+ * The window each model states, read from the gateway and kept briefly.
+ *
+ * The catalog is the only thing that knows, and it moves rarely — a few minutes
+ * of staleness costs nothing, while asking per generation would put a round trip
+ * in front of every build. A read that fails leaves the map alone: the ceiling
+ * then stands, which is exactly the behaviour this replaced.
+ */
+const WINDOW_TTL_MS = 5 * 60_000;
+let windows: { at: number; by: Map<string, number> } | null = null;
+
+async function windowOf(token: string, model: string): Promise<number | undefined> {
+  if (!windows || Date.now() - windows.at > WINDOW_TTL_MS) {
+    try {
+      const r = await fetch(`${HANZO_AI_BASE_URL}/models`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (r.ok) {
+        const d = (await r.json()) as { data?: Array<{ id?: string; context_window?: number }> };
+        const by = new Map<string, number>();
+        for (const m of d?.data ?? []) {
+          if (m?.id && m?.context_window) by.set(m.id, m.context_window);
+        }
+        if (by.size) windows = { at: Date.now(), by };
+      }
+    } catch {
+      // The ceiling stands, and the gateway states the limit if it is wrong.
+    }
+  }
+  return windows?.by.get(model);
+}
+
 async function callGateway(
   token: string,
   messages: ChatMessage[],
@@ -89,7 +115,7 @@ async function callGateway(
     body: JSON.stringify({
       model,
       messages,
-      max_tokens: MAX_TOKENS,
+      max_tokens: outputCap(await windowOf(token, model), messages),
       stream,
     }),
   });
