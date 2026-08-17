@@ -4,7 +4,7 @@ import { toast } from '@hanzo/ui';
 import { Page } from "@/types";
 import { parsePages, parseSinglePage, stripThinkBlocks } from "@/lib/format-pages";
 import { setLastGenerationRequestId } from "@/lib/reward-signal";
-import { qualityReport } from "@/lib/pages/report";
+import { type Edit, edit, qualityReport } from "@/lib/pages/report";
 import { baseEnabled } from "@/lib/base/flag";
 // UNAVAILABLE is the LAST resort, never the first answer. A refusal reaches the
 // browser with the gateway's own sentence in `message` (lib/gateway.ts
@@ -74,6 +74,7 @@ export type Turn = {
   error?: string;
   message?: string;
   success?: boolean;
+  edit?: Edit;
   pages?: Page[];
   truncated?: string[];
   html?: string;
@@ -564,7 +565,16 @@ export const useCallAi = ({
         // The completion chime is the done-signal — no "success" toast.
         if (audio.current) audio.current.play();
 
-        return { success: true, html: res.html, updatedLines: res.updatedLines, model: res.model };
+        // What the turn DID, decided here where both sides of the page are in
+        // hand: `pages` is the project before this call, `res.pages` after.
+        return {
+          success: true,
+          html: res.html,
+          updatedLines: res.updatedLines,
+          model: res.model,
+          edit: edit(pages, res.pages, Array.isArray(res.updatedLines) ? res.updatedLines.length : 0),
+          pages: res.pages,
+        };
       }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

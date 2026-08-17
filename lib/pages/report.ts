@@ -18,6 +18,29 @@ import { deadResources } from "@/lib/pages/resources";
 import { responsiveIssues } from "@/lib/pages/responsive";
 import type { Page } from "@/types";
 
+/**
+ * What an edit turn actually did to the project.
+ *
+ * A count of matched SEARCH blocks answers only one of the two shapes a model
+ * replies in. It may also hand back a WHOLE page — a rebuild rather than a
+ * patch — which the route applies by replacing the page outright and which
+ * therefore records no line ranges at all. Reading the count alone calls that a
+ * failure and tells the reader to rephrase, over a preview showing exactly what
+ * they asked for.
+ *
+ * So the question is whether the PAGES moved, which is the thing the reader can
+ * see.
+ */
+export type Edit = "patched" | "rebuilt" | "untouched";
+
+export function edit(before: Page[], after: Page[], matched: number): Edit {
+  if (matched > 0) return "patched";
+  const moved =
+    before.length !== after.length ||
+    after.some((p, i) => p.path !== before[i]?.path || p.html !== before[i]?.html);
+  return moved ? "rebuilt" : "untouched";
+}
+
 export function qualityReport(pages: Page[]): string | null {
   const dead = deadLinks(pages);
   if (dead.length) {

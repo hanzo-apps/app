@@ -784,16 +784,21 @@ export function AskAI({
         const n = Array.isArray(result.updatedLines)
           ? result.updatedLines.length
           : 0;
-        // Honest count: applyEdits records one entry per SEARCH block that actually
-        // matched, so n === 0 means the model's edit didn't match the current page
-        // and NOTHING changed. Say so (and prompt a retry) instead of the old phantom
-        // "1 edit applied", which lied exactly during the refine step.
+        // A model answers an edit in one of two shapes, and only one of them
+        // leaves line ranges behind: a patch records one entry per SEARCH block
+        // that matched, a rebuild hands back whole pages and records none. The
+        // count alone reads a rebuild as a failure and asks the reader to
+        // rephrase over a preview showing exactly what they asked for, so the
+        // page comparison decides and the count only names the patch.
+        const files = Array.isArray(result.pages) ? result.pages.length : 0;
         finishTurn(
           assistantId,
           "done",
-          n === 0
-            ? `No changes applied — the edit didn't match this page. Try rephrasing. · ${elapsed()}s`
-            : `${n} edit${n === 1 ? "" : "s"} applied · ${elapsed()}s`
+          result.edit === "patched"
+            ? `${n} edit${n === 1 ? "" : "s"} applied · ${elapsed()}s`
+            : result.edit === "rebuilt"
+              ? `Rebuilt · ${files} file${files === 1 ? "" : "s"} · ${elapsed()}s`
+              : `No changes applied — the edit didn't match this page. Try rephrasing. · ${elapsed()}s`
         );
       }
     } else if (useNewPage) {
