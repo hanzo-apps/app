@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 import { reason, refusal, BUSY, UNAVAILABLE } from "../../lib/gateway";
 
@@ -159,5 +161,32 @@ test("a refused request keeps its status and its reason", () => {
 test("a 4xx with nothing stated still does not claim the model answered", () => {
   for (const s of [400, 404, 410, 422]) {
     assert.equal(refusal(s, "").status, s);
+  }
+});
+
+/**
+ * The write half is worth nothing if the last consumer substitutes a generic,
+ * and that is where this class dies every time: `refusal` puts the gateway's
+ * sentence in `message`, then the browser answers `message: UNAVAILABLE` and the
+ * sentence is gone. Nothing else notices — the types are identical, the build is
+ * green, and the screen says "try again shortly" about a request that will be
+ * refused the same way forever. So the read is checked at the source.
+ */
+test("the browser quotes a refusal rather than replacing it", () => {
+  const src = readFileSync(
+    join(__dirname, "..", "..", "hooks", "useCallAi.ts"),
+    "utf8"
+  );
+  const flat = [...src.matchAll(/error:\s*"api_error",\s*message:\s*([^\n}]+)/g)].map(
+    (m) => m[1].trim()
+  );
+
+  assert.ok(flat.length >= 4, `expected the generate paths, found ${flat.length}`);
+  for (const message of flat) {
+    assert.match(
+      message,
+      /said\(|\.message/,
+      `an api_error must read the response, got \`${message}\``
+    );
   }
 });
