@@ -13,6 +13,7 @@ import { useAnalytics } from "@hanzo/event/react";
 import { EVENTS } from "@hanzo/event";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { fold, sheet } from "@/lib/chrome";
+import { useThinking } from "@/lib/thinking";
 
 // ONE conversation turn as rendered in the builder chat thread. The thread is a
 // pure VIEW concern (kept separate from `prompts`, which is AI context, and
@@ -171,7 +172,7 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
               )}
             </XStack>
           ) : (
-            <SizableText fontSize="$2" className="thread-shimmer-text">Thinking…</SizableText>
+            <Thinking />
           )}
           {done && text ? <Feedback text={text} /> : null}
         </YStack>
@@ -375,6 +376,18 @@ function CollapsibleSection({
         </YStack>
       )}
     </YStack>
+  );
+}
+
+// The wait before the first token, narrated. Its own component so the hook it
+// owns is not a branch in the turn above — that turn renders this or the reply,
+// never both, and a conditional hook is not a thing React allows.
+function Thinking() {
+  const line = useThinking();
+  return (
+    <SizableText fontSize="$2" className="thread-shimmer-text">
+      {line}
+    </SizableText>
   );
 }
 
