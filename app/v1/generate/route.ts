@@ -34,6 +34,7 @@ import {
 import { applyEdit } from "@/lib/edit/apply";
 import { resolveModelId } from "@/lib/providers";
 import { refusal } from "@/lib/gateway";
+import { Broke, turn } from "@/lib/sse";
 import { outputCap } from "@/lib/output-cap";
 import { session } from "@/lib/iam";
 import { requireSameOrigin } from "@/lib/org/csrf";
@@ -120,6 +121,23 @@ async function callGateway(
     }),
   });
 }
+
+/**
+ * Ask the gateway the same thing again, for a turn that broke after `200`.
+ *
+ * By the time this runs the response headers are sent, so a refusal on the
+ * second ask can only travel in the body — hence `Broke` rather than a status.
+ */
+const reopen =
+  (token: string, messages: ChatMessage[], model: string) =>
+  async (): Promise<ReadableStream<Uint8Array>> => {
+    const again = await callGateway(token, messages, model, true);
+    if (!again.ok || !again.body) {
+      const detail = await again.text().catch(() => "");
+      throw new Broke(refusal(again.status, detail).body.message);
+    }
+    return again.body;
+  };
 
 /**
  * POST — new project or new page. Streams the gateway's SSE back to the
@@ -229,8 +247,9 @@ export async function POST(request: NextRequest) {
 
   (async () => {
     try {
-      const { model: servedModel, id: responseId } = await pipeGatewaySse(
+      const { model: servedModel, id: responseId } = await turn(
         gateway.body!,
+        reopen(token, messages, selectedModel),
         (delta) => writer.write(encoder.encode(delta))
       );
       // Echo the served model AND the gateway response id to the client,
@@ -359,8 +378,9 @@ export async function PATCH(request: NextRequest) {
 
   (async () => {
     try {
-      const { model: servedModel, id: responseId } = await pipeGatewaySse(
+      const { model: servedModel, id: responseId } = await turn(
         gateway.body!,
+        reopen(token, messages, selectedModel),
         (delta) => writer.write(encoder.encode(delta))
       );
       if (servedModel || responseId) {
@@ -500,60 +520,6 @@ export async function PUT(request: NextRequest) {
     // attaches to reward signals (non-streaming path: available before we reply).
     id: data.id,
   });
-}
-
-/**
- * Parse the gateway's OpenAI-compatible SSE stream and hand each
- * `choices[0].delta.content` fragment to `onDelta`. Returns the model the
- * gateway reports having served (echoed on every chunk — under smart routing the
- * request `model` is `"auto"`, so this is how the actually-served model surfaces)
- * and the gateway response id (`json.id`, first non-empty wins) — the routing
- * ledger's join key the client attaches to reward signals.
- */
-async function pipeGatewaySse(
-  body: ReadableStream<Uint8Array>,
-  onDelta: (delta: string) => Promise<unknown> | unknown
-): Promise<{ model: string | null; id: string | null }> {
-  const reader = body.getReader();
-  const decoder = new TextDecoder("utf-8");
-  let buffer = "";
-  let servedModel: string | null = null;
-  let responseId: string | null = null;
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-
-    buffer += decoder.decode(value, { stream: true });
-
-    // SSE events are separated by a blank line; each may span multiple
-    // `data:` lines. Process complete events, keep the remainder buffered.
-    let sepIndex: number;
-    while ((sepIndex = buffer.indexOf("\n\n")) !== -1) {
-      const rawEvent = buffer.slice(0, sepIndex);
-      buffer = buffer.slice(sepIndex + 2);
-
-      for (const line of rawEvent.split("\n")) {
-        const trimmed = line.trim();
-        if (!trimmed.startsWith("data:")) continue;
-        const payload = trimmed.slice(5).trim();
-        if (payload === "" || payload === "[DONE]") continue;
-
-        try {
-          const json = JSON.parse(payload);
-          if (typeof json.model === "string") servedModel = json.model;
-          if (!responseId && typeof json.id === "string" && json.id)
-            responseId = json.id;
-          const delta = json.choices?.[0]?.delta?.content;
-          if (delta) await onDelta(delta);
-        } catch {
-          // Non-JSON keepalive / comment line — ignore.
-        }
-      }
-    }
-  }
-
-  return { model: servedModel, id: responseId };
 }
 
 /**
