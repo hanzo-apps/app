@@ -140,6 +140,31 @@ export function refusal(
 }
 
 /**
+ * What a refusal in a stream BODY means to the builder.
+ *
+ * Past the response head there is no status line left, so a refusal arrives as
+ * the envelope `refusal()` wrote and the reader has to key on its fields. One
+ * mapping serves every stream: three of them read the same envelope, and three
+ * copies of a ladder is three chances for a field to be dropped from one of
+ * them — which is how a funded org gets a flat message and no way forward.
+ */
+export function outcome(envelope: {
+  message?: string;
+  needCredits?: boolean;
+  openLogin?: boolean;
+  openSelectProvider?: boolean;
+  openProModal?: boolean;
+}): { error: string; message?: string } {
+  if (envelope.openLogin) return { error: "login_required" };
+  if (envelope.needCredits)
+    return { error: "need_credits", message: envelope.message };
+  if (envelope.openSelectProvider)
+    return { error: "provider_required", message: envelope.message };
+  if (envelope.openProModal) return { error: "pro_required" };
+  return { error: "api_error", message: envelope.message };
+}
+
+/**
  * What a refused RESPONSE says, read at the CLIENT.
  *
  * `refusal()` is the write half: it puts the gateway's own sentence in

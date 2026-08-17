@@ -33,8 +33,8 @@ import {
 } from "@/lib/prompts";
 import { applyEdit } from "@/lib/edit/apply";
 import { resolveModelId } from "@/lib/providers";
-import { refusal } from "@/lib/gateway";
-import { ATTEMPTS, Broke, turn } from "@/lib/sse";
+import { refusal, UNAVAILABLE } from "@/lib/gateway";
+import { ATTEMPTS, BEAT_MS, Broke, stream, turn, within } from "@/lib/sse";
 import { outputCap } from "@/lib/output-cap";
 import { session } from "@/lib/iam";
 import { requireSameOrigin } from "@/lib/org/csrf";
@@ -78,6 +78,23 @@ type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
  * then stands, which is exactly the behaviour this replaced.
  */
 const WINDOW_TTL_MS = 5 * 60_000;
+
+/**
+ * How long a catalog read may hold up a build. Its answer only refines a ceiling
+ * that already suits the default model, so it must never be the reason a
+ * generation is late — a read this misses leaves the ceiling standing.
+ */
+const CATALOG_MS = 5_000;
+
+/**
+ * How long the gateway may take to ANSWER — to send its response head. Bounded
+ * so a request that will never be answered ends with a sentence of ours instead
+ * of hanging on a socket. Generous, because the reader is already being written
+ * to by the time this could fire, and a model that thinks for minutes before its
+ * first frame is working, not stuck.
+ */
+const ANSWER_MS = 5 * 60_000;
+
 let windows: { at: number; by: Map<string, number> } | null = null;
 
 async function windowOf(token: string, model: string): Promise<number | undefined> {
@@ -85,6 +102,7 @@ async function windowOf(token: string, model: string): Promise<number | undefine
     try {
       const r = await fetch(`${HANZO_AI_BASE_URL}/models`, {
         headers: { Authorization: `Bearer ${token}` },
+        signal: AbortSignal.timeout(CATALOG_MS),
       });
       if (r.ok) {
         const d = (await r.json()) as { data?: Array<{ id?: string; context_window?: number }> };
@@ -101,25 +119,39 @@ async function windowOf(token: string, model: string): Promise<number | undefine
   return windows?.by.get(model);
 }
 
+/**
+ * Ask the gateway, bounding the wait for its head.
+ *
+ * The bell is dropped the moment the head arrives, so it never touches the body:
+ * a generation is slow by nature and may take as long as it takes, while a
+ * gateway that never answers at all is a hang and is ended here.
+ */
 async function callGateway(
   token: string,
   messages: ChatMessage[],
   model: string,
-  stream: boolean
+  streaming: boolean
 ) {
-  return fetch(`${HANZO_AI_BASE_URL}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages,
-      max_tokens: outputCap(await windowOf(token, model), messages),
-      stream,
-    }),
-  });
+  const bell = new AbortController();
+  const unanswered = setTimeout(() => bell.abort(), ANSWER_MS);
+  try {
+    return await fetch(`${HANZO_AI_BASE_URL}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        max_tokens: outputCap(await windowOf(token, model), messages),
+        stream: streaming,
+      }),
+      signal: bell.signal,
+    });
+  } finally {
+    clearTimeout(unanswered);
+  }
 }
 
 /**
@@ -136,9 +168,9 @@ async function callGateway(
  */
 async function ask(token: string, messages: ChatMessage[], model: string) {
   for (let attempt = 1; ; attempt++) {
-    const answer = await callGateway(token, messages, model, true);
-    if (answer.ok || answer.status < 500 || attempt >= ATTEMPTS) return answer;
-    await answer.text().catch(() => ""); // release the socket before re-asking
+    const gateway = await callGateway(token, messages, model, true);
+    if (gateway.ok || gateway.status < 500 || attempt >= ATTEMPTS) return gateway;
+    await gateway.text().catch(() => ""); // release the socket before re-asking
   }
 }
 
@@ -158,6 +190,68 @@ const reopen =
     }
     return again.body;
   };
+
+/**
+ * The body of one turn, written as the gateway produces it.
+ *
+ * `opening` is the ask already in flight. A refusal that lands after the head
+ * has gone travels whole rather than as a sentence, so the client still reads
+ * the gateway's own words and still raises the credit modal on a 402.
+ */
+const relay =
+  (
+    token: string,
+    messages: ChatMessage[],
+    model: string,
+    opening: Promise<Response>
+  ) =>
+  async (write: (text: string) => Promise<unknown>) => {
+    const open = await opening.catch(() => null);
+    if (!open) throw new Broke(UNAVAILABLE);
+
+    if (!open.ok || !open.body) {
+      const detail = await open.text().catch(() => "");
+      return write(JSON.stringify(refusal(open.status, detail).body));
+    }
+
+    const { model: servedModel, id: responseId } = await turn(
+      open.body,
+      reopen(token, messages, model),
+      write
+    );
+    // Echo the served model AND the gateway response id to the client,
+    // delimited so the page parser never sees them. The response id is the
+    // routing ledger's join key; the client threads it to the reward-signal
+    // store. Under smart routing (`model: "auto"`) this is also how the client
+    // learns which model the gateway routed to.
+    if (servedModel || responseId) {
+      await write(
+        `${ROUTED_MODEL_SEP}${servedModel ?? ""}${ROUTED_MODEL_SEP}${responseId ?? ""}`
+      );
+    }
+  };
+
+/**
+ * Answer a turn: a refusal under its own status while nothing has been sent,
+ * otherwise a stream that opens before the model does.
+ *
+ * Refusals are decided before a byte is generated — a rejected credential, an
+ * empty balance, a window too small — so one beat is long enough to catch them
+ * and short enough that the head always reaches the edge. Past it the head has
+ * to go, and `relay` carries whatever the gateway says down the body.
+ */
+async function answer(token: string, messages: ChatMessage[], model: string) {
+  const opening = ask(token, messages, model);
+  const head = await within(BEAT_MS, opening);
+
+  if (head && (!head.ok || !head.body)) {
+    const detail = await head.text().catch(() => "");
+    const { body, status } = refusal(head.status, detail);
+    return NextResponse.json(body, { status });
+  }
+
+  return stream(relay(token, messages, model, opening));
+}
 
 /**
  * POST — new project or new page. Streams the gateway's SSE back to the
@@ -238,79 +332,7 @@ export async function POST(request: NextRequest) {
       : []),
   ];
 
-  const gateway = await ask(token, messages, selectedModel);
-
-  if (!gateway.ok || !gateway.body) {
-    const detail = await gateway.text().catch(() => "");
-    const { body, status } = refusal(gateway.status, detail);
-    return NextResponse.json(body, { status });
-  }
-
-  const encoder = new TextEncoder();
-  const stream = new TransformStream();
-  const writer = stream.writable.getWriter();
-
-  const response = new NextResponse(stream.readable, {
-    headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      // `no-transform` and `X-Accel-Buffering: no` are what keep this a STREAM
-      // across the proxies in front of it. Without them an intermediary is free
-      // to buffer the whole body before forwarding any of it — the builder then
-      // shows nothing for the length of the generation, and a proxy that gives
-      // up mid-buffer truncates the page instead of delivering it. The sibling
-      // stream (app/v1/chat/completions) has always sent both; this one did not.
-      "Cache-Control": "no-cache, no-transform",
-      Connection: "keep-alive",
-      "X-Accel-Buffering": "no",
-    },
-  });
-
-  (async () => {
-    try {
-      const { model: servedModel, id: responseId } = await turn(
-        gateway.body!,
-        reopen(token, messages, selectedModel),
-        (delta) => writer.write(encoder.encode(delta))
-      );
-      // Echo the served model AND the gateway response id to the client,
-      // delimited so the page parser never sees them. The response id is the
-      // routing ledger's join key; the client threads it to the reward-signal
-      // store. Under smart routing (`model: "auto"`) this is also how the client
-      // learns which model the gateway routed to.
-      if (servedModel || responseId) {
-        await writer.write(
-          encoder.encode(
-            `${ROUTED_MODEL_SEP}${servedModel ?? ""}${ROUTED_MODEL_SEP}${
-              responseId ?? ""
-            }`
-          )
-        );
-      }
-    } catch (error: any) {
-      try {
-        await writer.write(
-          encoder.encode(
-            JSON.stringify({
-              ok: false,
-              message:
-                error?.message ||
-                "An error occurred while processing your request.",
-            })
-          )
-        );
-      } catch {
-        // stream already broken; nothing to do
-      }
-    } finally {
-      try {
-        await writer.close();
-      } catch {
-        // already closed
-      }
-    }
-  })();
-
-  return response;
+  return answer(token, messages, selectedModel);
 }
 
 // Plan mode: a CONVERSATIONAL planning turn. Same gateway, same per-user auth —
@@ -369,73 +391,7 @@ export async function PATCH(request: NextRequest) {
     { role: "user", content: prompt },
   ];
 
-  const gateway = await ask(token, messages, selectedModel);
-
-  if (!gateway.ok || !gateway.body) {
-    const detail = await gateway.text().catch(() => "");
-    const { body, status } = refusal(gateway.status, detail);
-    return NextResponse.json(body, { status });
-  }
-
-  const encoder = new TextEncoder();
-  const stream = new TransformStream();
-  const writer = stream.writable.getWriter();
-
-  const response = new NextResponse(stream.readable, {
-    headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      // `no-transform` and `X-Accel-Buffering: no` are what keep this a STREAM
-      // across the proxies in front of it. Without them an intermediary is free
-      // to buffer the whole body before forwarding any of it — the builder then
-      // shows nothing for the length of the generation, and a proxy that gives
-      // up mid-buffer truncates the page instead of delivering it. The sibling
-      // stream (app/v1/chat/completions) has always sent both; this one did not.
-      "Cache-Control": "no-cache, no-transform",
-      Connection: "keep-alive",
-      "X-Accel-Buffering": "no",
-    },
-  });
-
-  (async () => {
-    try {
-      const { model: servedModel, id: responseId } = await turn(
-        gateway.body!,
-        reopen(token, messages, selectedModel),
-        (delta) => writer.write(encoder.encode(delta))
-      );
-      if (servedModel || responseId) {
-        await writer.write(
-          encoder.encode(
-            `${ROUTED_MODEL_SEP}${servedModel ?? ""}${ROUTED_MODEL_SEP}${
-              responseId ?? ""
-            }`
-          )
-        );
-      }
-    } catch (error: any) {
-      try {
-        await writer.write(
-          encoder.encode(
-            JSON.stringify({
-              ok: false,
-              message:
-                error?.message || "An error occurred while planning.",
-            })
-          )
-        );
-      } catch {
-        // stream already broken
-      }
-    } finally {
-      try {
-        await writer.close();
-      } catch {
-        // already closed
-      }
-    }
-  })();
-
-  return response;
+  return answer(token, messages, selectedModel);
 }
 
 /**

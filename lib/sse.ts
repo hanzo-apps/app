@@ -113,14 +113,12 @@ export async function pipe(
 export const ATTEMPTS = 3;
 
 /**
- * How often to nudge a stream that has produced nothing yet.
+ * The longest this route stays silent on an open connection.
  *
- * A reasoning model spends its first minutes thinking, and it does not stream
- * the thinking: measured against Enso with a builder-sized prompt, the response
- * headers arrive at **2.2s** and then **not one frame for over 118 seconds**.
- * Every proxy in front of this route reads that silence as a dead origin and
- * closes the connection — Cloudflare at 100s, which is exactly the `524` the
- * builder reports after ~2 minutes on a prompt the model is still working on.
+ * A reasoning model spends its first minutes thinking and does not stream the
+ * thinking, so a turn can hold the line for a long time with nothing to say. A
+ * proxy reads that silence as a dead origin and closes: Cloudflare fronts
+ * hanzo.app and gives up around 100s of it.
  *
  * A space is the whole heartbeat. It travels before the first title marker,
  * where the page parser ignores leading whitespace, and browsers ignore it
@@ -130,13 +128,101 @@ export const ATTEMPTS = 3;
 export const BEAT_MS = 15_000;
 
 /**
+ * The value if `p` settles within `ms`, otherwise `null`.
+ *
+ * A status line may only be sent while nothing else has been, so the choice
+ * between a refusal under its own status and a stream has to be made before the
+ * first byte — and it cannot be made by waiting indefinitely. The gateway gets
+ * one beat to answer; past that the head leaves and the answer travels in the
+ * body. A rejection reads as `null` because the caller awaits the same promise
+ * again, where it has a channel to report the reason on.
+ */
+export function within<T>(ms: number, p: Promise<T>): Promise<T | null> {
+  return new Promise((resolve) => {
+    const late = setTimeout(() => resolve(null), ms);
+    const settle = (v: T | null) => {
+      clearTimeout(late);
+      resolve(v);
+    };
+    p.then(settle, () => settle(null));
+  });
+}
+
+/** What the client keys on when a turn cannot be answered. */
+export type Envelope = { ok: false; message: string; needCredits?: true };
+
+/**
+ * A response whose head leaves now, written as the answer arrives.
+ *
+ * The head is what the proxy in front of this route is waiting for, and it goes
+ * before the gateway has been asked anything, so the wait for a model happens on
+ * an open connection rather than a silent one. `no-transform` and
+ * `X-Accel-Buffering: no` keep it a stream the whole way down: an intermediary
+ * left to its own judgement buffers the body whole, which shows the builder
+ * nothing for the length of a generation and truncates the page if the proxy
+ * gives up mid-buffer.
+ *
+ * `work` gets the one write, and its promise ends the body. Whitespace beats
+ * while nothing has been written and stops on the first real fragment — a space
+ * landing mid-document would be a space in somebody's markup. A throw becomes
+ * the client's envelope, since by then the body is the only channel left.
+ */
+export function stream(
+  work: (write: (text: string) => Promise<unknown>) => Promise<unknown>,
+  beat = BEAT_MS
+): Response {
+  const encoder = new TextEncoder();
+  const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>();
+  const writer = writable.getWriter();
+  const put = (text: string) => writer.write(encoder.encode(text));
+
+  let sent = false;
+  // A beat that lands on a closed stream is swallowed, not thrown: the reader
+  // going away is the ordinary end of this, and an unhandled rejection from a
+  // timer would take the process with it.
+  const pulse =
+    beat > 0
+      ? setInterval(() => {
+          if (!sent) void put(" ").catch(() => {});
+        }, beat)
+      : null;
+
+  void (async () => {
+    try {
+      try {
+        await work((text) => {
+          sent = true;
+          return put(text);
+        });
+      } finally {
+        if (pulse) clearInterval(pulse);
+      }
+    } catch (error) {
+      const message =
+        (error as { message?: string } | null)?.message || UNAVAILABLE;
+      await put(JSON.stringify({ ok: false, message } satisfies Envelope)).catch(
+        () => {}
+      );
+    } finally {
+      await writer.close().catch(() => {});
+    }
+  })();
+
+  return new Response(readable, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+      "X-Accel-Buffering": "no",
+    },
+  });
+}
+
+/**
  * One streamed turn, re-asked while the reader has seen nothing.
  *
- * `open` is the stream the caller already checked, so an up-front refusal keeps
- * its real HTTP status at the call site; from here on the response headers are
- * sent and everything — including a later refusal — can only travel in the body.
- * `reopen` asks the gateway again and must throw {@link Broke} if that ask is
- * itself refused.
+ * `open` is the stream the caller already checked. `reopen` asks the gateway
+ * again and must throw {@link Broke} if that ask is itself refused.
  *
  * The retry is sound only before the first byte reaches the client: once a
  * fragment has been written, restarting would splice two different generations
@@ -148,45 +234,21 @@ export async function turn(
   open: ReadableStream<Uint8Array>,
   reopen: () => Promise<ReadableStream<Uint8Array>>,
   write: (delta: string) => Promise<unknown> | unknown,
-  attempts = ATTEMPTS,
-  beat = BEAT_MS
+  attempts = ATTEMPTS
 ): Promise<{ model: string | null; id: string | null }> {
   let sent = false;
   let body: ReadableStream<Uint8Array> | null = open;
 
-  // Keep the connection warm while the model is still thinking. It stops on the
-  // first real fragment: after that the stream speaks for itself, and a space
-  // landing mid-document would be a space in somebody's markup.
-  //
-  // A beat that lands on a closed stream is swallowed, not thrown: the reader
-  // going away is the ordinary end of this, and an unhandled rejection from a
-  // timer would take the process with it.
-  const pulse =
-    beat > 0
-      ? setInterval(() => {
-          if (sent) return;
-          try {
-            void Promise.resolve(write(" ")).catch(() => {});
-          } catch {
-            /* the stream is gone; the next read settles the turn */
-          }
-        }, beat)
-      : null;
-
-  try {
-    for (let attempt = 1; ; attempt++) {
-      if (!body) body = await reopen();
-      try {
-        return await pipe(body, (delta) => {
-          sent = true;
-          return write(delta);
-        });
-      } catch (error) {
-        if (sent || attempt >= attempts || !(error instanceof Broke)) throw error;
-        body = null;
-      }
+  for (let attempt = 1; ; attempt++) {
+    if (!body) body = await reopen();
+    try {
+      return await pipe(body, (delta) => {
+        sent = true;
+        return write(delta);
+      });
+    } catch (error) {
+      if (sent || attempt >= attempts || !(error instanceof Broke)) throw error;
+      body = null;
     }
-  } finally {
-    if (pulse) clearInterval(pulse);
   }
 }

@@ -12,8 +12,35 @@
  * a 51-byte body holding only the routed-model trailer, and the builder said
  * "That model didn't respond" for a fault the next attempt clears.
  */
-import { Broke, pipe, turn } from '@/lib/sse';
+import { Broke, pipe, stream, turn, within } from '@/lib/sse';
 import { UNAVAILABLE } from '@/lib/gateway';
+
+/** Everything the reader received, in order, once the body has closed. */
+async function read(r: Response): Promise<string> {
+  const reader = r.body!.getReader();
+  const decoder = new TextDecoder();
+  let text = '';
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) return text;
+    text += decoder.decode(value, { stream: true });
+  }
+}
+
+/** A reader over the body, one decoded chunk at a time. */
+function chunks(r: Response) {
+  const reader = r.body!.getReader();
+  const decoder = new TextDecoder();
+  return {
+    next: async () => {
+      const { value } = await reader.read();
+      return decoder.decode(value);
+    },
+    drain: async () => {
+      for (;;) if ((await reader.read()).done) return;
+    },
+  };
+}
 
 /** An SSE body from a list of `data:` payloads, framed the way the gateway frames them. */
 function sse(...payloads: string[]): ReadableStream<Uint8Array> {
@@ -121,53 +148,6 @@ describe('turn', () => {
     expect(asks).toBe(2); // three asks in total, two of them re-asks
   });
 
-  it('nudges an idle stream so a proxy does not read silence as a dead origin', async () => {
-    // Enso's headers land at 2.2s and its first frame over 118s later; every
-    // proxy in between closes at 100s of nothing.
-    const got: string[] = [];
-    let release!: () => void;
-    const held = new Promise<void>((r) => (release = r));
-    const slow = new ReadableStream<Uint8Array>({
-      async start(c) {
-        await held;
-        c.enqueue(new TextEncoder().encode(`data: ${chunk('<html>')}\n\ndata: [DONE]\n\n`));
-        c.close();
-      },
-    });
-
-    const done = turn(slow, async () => slow, (d) => { got.push(d); }, 3, 10);
-    // One beat is the whole claim — the connection was nudged while idle.
-    // Counting more would only measure how loaded the test runner is.
-    while (!got.length) await new Promise((r) => setTimeout(r, 5));
-    expect(got.every((g) => g === ' ')).toBe(true);
-
-    release();
-    await done;
-    expect(got.at(-1)).toBe('<html>');
-  });
-
-  it('stops nudging once real content is flowing', async () => {
-    const got: string[] = [];
-    let release!: () => void;
-    const held = new Promise<void>((r) => (release = r));
-    const enc = new TextEncoder();
-    const stream = new ReadableStream<Uint8Array>({
-      async start(c) {
-        c.enqueue(enc.encode(`data: ${chunk('<!DOCTYPE html>')}\n\n`));
-        await held;
-        c.enqueue(enc.encode(`data: ${chunk('<body>')}\n\ndata: [DONE]\n\n`));
-        c.close();
-      },
-    });
-
-    const done = turn(stream, async () => stream, (d) => { got.push(d); }, 3, 10);
-    await new Promise((r) => setTimeout(r, 45));
-    release();
-    await done;
-    // A space landing here would be a space in somebody's markup.
-    expect(got.join('')).toBe('<!DOCTYPE html><body>');
-  });
-
   it('reports a refusal on the re-ask rather than retrying it forever', async () => {
     await expect(
       turn(
@@ -178,5 +158,112 @@ describe('turn', () => {
         () => {},
       ),
     ).rejects.toThrow('You are out of credits.');
+  });
+});
+
+describe('within', () => {
+  it('answers with the value when the promise settles in time', async () => {
+    expect(await within(1_000, Promise.resolve('head'))).toBe('head');
+  });
+
+  it('answers null when it does not, and leaves the promise alone', async () => {
+    let settle!: (v: string) => void;
+    const slow = new Promise<string>((r) => (settle = r));
+    expect(await within(10, slow)).toBeNull();
+    settle('late');
+    expect(await slow).toBe('late'); // still the caller's to await
+  });
+
+  it('answers null for a rejection rather than throwing at the race', async () => {
+    // The caller awaits the same promise again, where it has a body to report on.
+    const failed = Promise.reject(new Error('no route'));
+    expect(await within(1_000, failed)).toBeNull();
+    await expect(failed).rejects.toThrow('no route');
+  });
+});
+
+describe('stream', () => {
+  it('hands over the head before the work has produced anything', async () => {
+    // The head is what the proxy is waiting for. Nothing may be awaited ahead
+    // of it: an edge that never sees a response answers for us.
+    let settle!: () => void;
+    const held = new Promise<void>((r) => (settle = r));
+
+    const r = stream(async (write) => {
+      await held;
+      await write('<html>');
+    }, 0);
+
+    expect(r.status).toBe(200);
+    expect(r.headers.get('X-Accel-Buffering')).toBe('no');
+    expect(r.headers.get('Cache-Control')).toBe('no-cache, no-transform');
+
+    settle();
+    expect(await read(r)).toBe('<html>');
+  });
+
+  it('nudges the connection while the work has said nothing', async () => {
+    // A model that thinks for minutes streams none of the thinking, and a proxy
+    // reads that silence as a dead origin.
+    let settle!: () => void;
+    const held = new Promise<void>((r) => (settle = r));
+
+    const r = stream(async (write) => {
+      await held;
+      await write('<html>');
+    }, 10);
+
+    const body = chunks(r);
+    expect(await body.next()).toBe(' ');
+    settle();
+    await body.drain();
+  });
+
+  it('stops nudging once real content is flowing', async () => {
+    let settle!: () => void;
+    const held = new Promise<void>((r) => (settle = r));
+
+    const r = stream(async (write) => {
+      await write('<!DOCTYPE html>');
+      await held;
+      await write('<body>');
+    }, 10);
+
+    setTimeout(settle, 60);
+    // A space landing here would be a space in somebody's markup.
+    expect(await read(r)).toBe('<!DOCTYPE html><body>');
+  });
+
+  it('writes a throw as the envelope the client keys on', async () => {
+    const r = stream(async () => {
+      throw new Broke('You are out of credits.');
+    }, 0);
+    expect(JSON.parse(await read(r))).toEqual({
+      ok: false,
+      message: 'You are out of credits.',
+    });
+  });
+
+  it('falls back to the honest generic when a throw states nothing', async () => {
+    const r = stream(async () => {
+      throw new Error();
+    }, 0);
+    expect(JSON.parse(await read(r))).toEqual({ ok: false, message: UNAVAILABLE });
+  });
+
+  it('leaves an envelope readable through the beats that preceded it', async () => {
+    // The client trims before parsing, so a refusal that lands after a wait is
+    // still JSON to it.
+    let settle!: () => void;
+    const held = new Promise<void>((r) => (settle = r));
+    const r = stream(async () => {
+      await held;
+      throw new Broke('Sign in again.');
+    }, 10);
+
+    setTimeout(settle, 45);
+    const body = await read(r);
+    expect(body).toMatch(/^ +\{/);
+    expect(JSON.parse(body.trim()).message).toBe('Sign in again.');
   });
 });

@@ -17,7 +17,7 @@ import { baseEnabled } from "@/lib/base/flag";
 // model whose upstreams all refused, a request some adapter could not parse —
 // each states its cause, none clears on its own, and substituting "try again
 // shortly" turns a fixable condition into a wait with no end.
-import { CREDIT, UNAVAILABLE, said } from "@/lib/gateway";
+import { CREDIT, UNAVAILABLE, outcome, said } from "@/lib/gateway";
 
 // Guarded JSON parse: the stream-done handler only treats the response as a
 // JSON error envelope when it actually parses, so a malformed `{…}` never
@@ -59,6 +59,27 @@ const splitSideChannel = (
     model: rest.slice(0, j).trim() || null,
     id: rest.slice(j + 1).trim() || null,
   };
+};
+
+/**
+ * What one AI turn reports back.
+ *
+ * A turn either refuses — carrying the sentence the refusal stated — or succeeds
+ * and carries what it produced. `undefined` is a turn that never started. Stated
+ * rather than inferred: the caller reads `error` and then `success` off the same
+ * value, and an inferred union of return literals stops permitting that as soon
+ * as one of them comes from a function instead of a literal.
+ */
+export type Turn = {
+  error?: string;
+  message?: string;
+  success?: boolean;
+  pages?: Page[];
+  truncated?: string[];
+  html?: string;
+  updatedLines?: number[][];
+  text?: string;
+  model?: string | null;
 };
 
 interface UseCallAiProps {
@@ -107,7 +128,7 @@ export const useCallAi = ({
   const audio = useRef<HTMLAudioElement | null>(null);
   const [controller, setController] = useState<AbortController | null>(null);
 
-  const callAiNewProject = async (prompt: string, model: string | undefined, provider: string | undefined, redesignMarkdown?: string, handleThink?: (think: string) => void, onFinishThink?: () => void, onRoutedModel?: (servedModel: string) => void) => {
+  const callAiNewProject = async (prompt: string, model: string | undefined, provider: string | undefined, redesignMarkdown?: string, handleThink?: (think: string) => void, onFinishThink?: () => void, onRoutedModel?: (servedModel: string) => void): Promise<Turn | undefined> => {
     if (isAiWorking) return;
     if (!redesignMarkdown && !prompt.trim()) return;
     
@@ -184,18 +205,7 @@ export const useCallAi = ({
 
             if (jsonResponse && !jsonResponse.ok) {
               setisAiWorking(false);
-              if (jsonResponse.openLogin) {
-                // Handle login required
-                return { error: "login_required" };
-              } else if (jsonResponse.openSelectProvider) {
-                // Handle provider selection required
-                return { error: "provider_required", message: jsonResponse.message };
-              } else if (jsonResponse.openProModal) {
-                // Handle pro modal required
-                return { error: "pro_required" };
-              } else {
-                return { error: "api_error", message: jsonResponse.message };
-              }
+              return { ...outcome(jsonResponse) };
             }
 
             let newPages = formatPages(contentResponse);
@@ -356,7 +366,7 @@ export const useCallAi = ({
     }
   };
 
-  const callAiNewPage = async (prompt: string, model: string | undefined, provider: string | undefined, currentPagePath: string, previousPrompts?: string[], onRoutedModel?: (servedModel: string) => void) => {
+  const callAiNewPage = async (prompt: string, model: string | undefined, provider: string | undefined, currentPagePath: string, previousPrompts?: string[], onRoutedModel?: (servedModel: string) => void): Promise<Turn | undefined> => {
     if (isAiWorking) return;
     if (!prompt.trim()) return;
     
@@ -418,18 +428,7 @@ export const useCallAi = ({
 
             if (jsonResponse && !jsonResponse.ok) {
               setisAiWorking(false);
-              if (jsonResponse.openLogin) {
-                // Handle login required
-                return { error: "login_required" };
-              } else if (jsonResponse.openSelectProvider) {
-                // Handle provider selection required
-                return { error: "provider_required", message: jsonResponse.message };
-              } else if (jsonResponse.openProModal) {
-                // Handle pro modal required
-                return { error: "pro_required" };
-              } else {
-                return { error: "api_error", message: jsonResponse.message };
-              }
+              return { ...outcome(jsonResponse) };
             }
 
             const newPage = formatPage(contentResponse, currentPagePath);
@@ -481,7 +480,7 @@ export const useCallAi = ({
     }
   };
 
-  const callAiFollowUp = async (prompt: string, model: string | undefined, provider: string | undefined, previousPrompts: string[], selectedElementHtml?: string, files?: string[], selectedElementAt?: SourceLocation) => {
+  const callAiFollowUp = async (prompt: string, model: string | undefined, provider: string | undefined, previousPrompts: string[], selectedElementHtml?: string, files?: string[], selectedElementAt?: SourceLocation): Promise<Turn | undefined> => {
     if (isAiWorking) return;
     if (!prompt.trim()) return;
     
@@ -593,7 +592,7 @@ export const useCallAi = ({
     provider: string | undefined,
     previousPrompts: string[],
     onDelta: (text: string) => void
-  ) => {
+  ): Promise<Turn | undefined> => {
     if (isAiWorking) return;
     if (!prompt.trim()) return;
 
@@ -642,11 +641,7 @@ export const useCallAi = ({
 
           if (jsonResponse && !jsonResponse.ok) {
             setisAiWorking(false);
-            if (jsonResponse.openLogin) return { error: "login_required" };
-            if (jsonResponse.openSelectProvider)
-              return { error: "provider_required", message: jsonResponse.message };
-            if (jsonResponse.openProModal) return { error: "pro_required" };
-            return { error: "api_error", message: jsonResponse.message };
+            return { ...outcome(jsonResponse) };
           }
 
           const visible = stripThinkBlocks(content).trim();

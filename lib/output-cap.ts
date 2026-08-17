@@ -14,10 +14,17 @@
  */
 
 /**
- * 128000 is ample for a full multi-page app and is the smallest output cap
- * across the Zen ladder + Enso, whose upstream (claude-opus-4-8) caps there.
+ * How much output a build asks for.
+ *
+ * Sized to what a build PRODUCES, not to what a model can hold: a generated page
+ * is one self-contained HTML document, the reference implementations in
+ * `templates/` run 7–16 KB each, and a whole site is a handful of those. 64000
+ * tokens is around 256 KB — room for a dozen of the largest — and the ask is
+ * paid on every turn, in reserved capacity and in time to the first byte, while
+ * a build that does outrun it is resumed by the continuation flow rather than
+ * lost.
  */
-export const MAX_TOKENS = 128_000;
+export const MAX_TOKENS = 64_000;
 
 /**
  * Enough output to be worth streaming. Below this a generation cannot produce a
