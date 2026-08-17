@@ -526,18 +526,15 @@ export const useCallAi = ({
       }
 
       {
-        const res = await request.json().catch(() => ({}));
+        // The edit answers on a stream, so its head can leave before the model
+        // does and a beat may sit in front of the JSON. Read the text and trim
+        // it; `.json()` would choke on the whitespace that keeps the connection
+        // open through a long edit.
+        const res = safeJsonParse((await request.text()).trim()) ?? {};
 
-        if (!request.ok) {
+        if (!request.ok || res.ok === false) {
           setisAiWorking(false);
-          if (res.openLogin) {
-            return { error: "login_required" };
-          } else if (res.openSelectProvider) {
-            return { error: "provider_required", message: res.message };
-          } else if (res.openProModal) {
-            return { error: "pro_required" };
-          }
-          return { error: "api_error", message: res.message || UNAVAILABLE };
+          return { ...outcome(res) };
         }
 
         // A 200 with no usable pages (garbled/empty) — fail honestly instead of

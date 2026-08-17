@@ -22,7 +22,7 @@ jest.mock("@/lib/org/csrf", () => ({ requireSameOrigin: () => undefined }));
 
 import { NextRequest } from "next/server";
 
-import { POST } from "@/app/v1/generate/route";
+import { POST, PUT } from "@/app/v1/generate/route";
 import { BEAT_MS } from "@/lib/sse";
 
 const build = () =>
@@ -133,6 +133,73 @@ test("a refusal that lands after the head keeps its sentence and its modal", asy
   assert.equal(envelope.ok, false);
   assert.equal(envelope.needCredits, true);
   assert.equal(envelope.message, "Monthly spend cap reached for org acme.");
+});
+
+/** One follow-up edit against a page the builder already has. */
+const edit = () =>
+  new NextRequest("https://hanzo.app/v1/generate", {
+    method: "PUT",
+    body: JSON.stringify({
+      prompt: "make the hero say Order for pickup",
+      pages: [{ path: "index.html", html: "<html><body><h1>Bakery</h1></body></html>" }],
+    }),
+    headers: { "content-type": "application/json" },
+  });
+
+test("an edit hands over its head too, and applies the pages down the body", async () => {
+  // An edit answers whole rather than in fragments, so it is the turn most able
+  // to stay silent — and silence is what the edge answers for.
+  const { settle } = holding();
+
+  const pending = PUT(edit());
+  let answered = false;
+  void pending.then(() => (answered = true));
+
+  await jest.advanceTimersByTimeAsync(BEAT_MS + 1);
+  assert.equal(answered, true, "the edit must answer without the gateway having");
+
+  const res = await pending;
+  assert.equal(res.status, 200);
+  assert.equal(res.headers.get("X-Accel-Buffering"), "no");
+
+  settle(
+    new Response(
+      JSON.stringify({
+        id: "chatcmpl-9",
+        model: "enso",
+        choices: [
+          {
+            message: {
+              content:
+                "<<<<<<< SEARCH\n<h1>Bakery</h1>\n=======\n<h1>Order for pickup</h1>\n>>>>>>> REPLACE",
+            },
+          },
+        ],
+      }),
+      { status: 200, headers: { "content-type": "application/json" } }
+    )
+  );
+
+  const answer = JSON.parse((await read(res)).trim());
+  assert.equal(answer.ok, true);
+  assert.match(answer.pages[0].html, /Order for pickup/);
+  assert.equal(answer.model, "enso");
+  assert.equal(answer.id, "chatcmpl-9");
+});
+
+test("an edit refused after its head keeps the sentence and the modal", async () => {
+  const { settle } = holding();
+  const p = PUT(edit());
+  await jest.advanceTimersByTimeAsync(BEAT_MS + 1);
+  const res = await p;
+  assert.equal(res.status, 200);
+
+  settle(new Response(JSON.stringify({ msg: "balance exhausted" }), { status: 402 }));
+
+  const envelope = JSON.parse((await read(res)).trim());
+  assert.equal(envelope.ok, false);
+  assert.equal(envelope.needCredits, true);
+  assert.equal(envelope.message, "balance exhausted");
 });
 
 test("a refusal the gateway states promptly still keeps its own status", async () => {

@@ -161,7 +161,10 @@ export function outcome(envelope: {
   if (envelope.openSelectProvider)
     return { error: "provider_required", message: envelope.message };
   if (envelope.openProModal) return { error: "pro_required" };
-  return { error: "api_error", message: envelope.message };
+  // The honest generic only where nothing was stated. A refusal about MONEY
+  // keeps the gateway's own sentence or none at all — a fabricated one there is
+  // what tells a funded account it is empty.
+  return { error: "api_error", message: envelope.message || UNAVAILABLE };
 }
 
 /**

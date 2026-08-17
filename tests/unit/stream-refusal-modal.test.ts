@@ -11,7 +11,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { outcome, refusal } from "@/lib/gateway";
+import { UNAVAILABLE, outcome, refusal } from "@/lib/gateway";
 
 describe("what a refusal envelope means to the builder", () => {
   it("raises the credit modal, carrying the gateway's own sentence", () => {
@@ -44,6 +44,15 @@ describe("what a refusal envelope means to the builder", () => {
       message: "not enabled for this org",
     });
   });
+
+  it("falls back to the honest generic only where nothing was stated", () => {
+    // An unreadable body — an HTML error page from a proxy is the common one —
+    // leaves nothing to quote, and a blank message is worse than the generic.
+    assert.deepEqual(outcome({}), { error: "api_error", message: UNAVAILABLE });
+    // Money keeps the gateway's own words or none: a sentence invented here is
+    // what tells a funded account it is empty.
+    assert.equal(outcome({ needCredits: true }).message, undefined);
+  });
 });
 
 describe("every stream reads it the same way", () => {
@@ -60,5 +69,13 @@ describe("every stream reads it the same way", () => {
       assert.match(block, /outcome\(jsonResponse\)/);
       assert.doesNotMatch(block, /error:\s*"/);
     }
+  });
+
+  it("the edit reads TEXT, because a beat sits in front of its JSON", () => {
+    // Every turn answers on a stream now, and the whitespace that keeps a long
+    // one open is not JSON. `request.json()` throws on it, and the throw lands
+    // in the generic catch as a spinner that never clears.
+    assert.doesNotMatch(code, /request\.json\(\)/);
+    assert.match(code, /safeJsonParse\(\(await request\.text\(\)\)\.trim\(\)\)/);
   });
 });

@@ -466,34 +466,51 @@ export async function PUT(request: NextRequest) {
     { role: "user", content: prompt },
   ];
 
-  const gateway = await callGateway(token, messages, selectedModel, false);
+  // An edit is applied here and answered whole, so the model has to finish
+  // before there is anything to say. The head still goes first and the answer
+  // follows it down the body: a turn this route stays silent through is a turn
+  // the edge answers for, and it answers with its own page under a status none
+  // of these envelopes use.
+  const opening = callGateway(token, messages, selectedModel, false);
+  const head = await within(BEAT_MS, opening);
 
-  if (!gateway.ok) {
-    const detail = await gateway.text().catch(() => "");
-    const { body, status } = refusal(gateway.status, detail);
-    return NextResponse.json(body, { status });
+  if (head && !head.ok) {
+    const detail = await head.text().catch(() => "");
+    const { body: refused, status } = refusal(head.status, detail);
+    return NextResponse.json(refused, { status });
   }
 
-  const data = await gateway.json();
-  const chunk: string | undefined = data.choices?.[0]?.message?.content;
+  return stream(async (write) => {
+    const gateway = await opening.catch(() => null);
+    if (!gateway) throw new Broke(UNAVAILABLE);
 
-  if (!chunk) {
-    return NextResponse.json(
-      { ok: false, message: "No content returned from the model" },
-      { status: 400 }
+    if (!gateway.ok) {
+      const detail = await gateway.text().catch(() => "");
+      return write(JSON.stringify(refusal(gateway.status, detail).body));
+    }
+
+    const data = await gateway.json();
+    const chunk: string | undefined = data.choices?.[0]?.message?.content;
+
+    if (!chunk) {
+      return write(
+        JSON.stringify({ ok: false, message: "No content returned from the model" })
+      );
+    }
+
+    const { updatedLines, pages: updatedPages } = applyEdits(chunk, pages);
+
+    return write(
+      JSON.stringify({
+        ok: true,
+        updatedLines,
+        pages: updatedPages,
+        model: data.model || selectedModel,
+        // The gateway response id — the routing ledger's join key the client
+        // attaches to reward signals.
+        id: data.id,
+      })
     );
-  }
-
-  const { updatedLines, pages: updatedPages } = applyEdits(chunk, pages);
-
-  return NextResponse.json({
-    ok: true,
-    updatedLines,
-    pages: updatedPages,
-    model: data.model || selectedModel,
-    // The gateway response id — the routing ledger's join key the client
-    // attaches to reward signals (non-streaming path: available before we reply).
-    id: data.id,
   });
 }
 
