@@ -49,8 +49,27 @@ const customJestConfig = {
     // Naming the entry directly is the resolution half; `transpile.js` carries
     // the transform half, so Next and the tests still agree on one list.
     '^@hanzo/base$': '<rootDir>/node_modules/@hanzo/base/dist/core/index.js',
-    '\.(css|less|scss|sass)$': '<rootDir>/mocks/style-mock.js',
-    '\.(jpg|jpeg|png|gif|webp|avif|svg)$': '<rootDir>/mocks/file-mock.js',
+    // The same substrate the build resolves. `next.config.ts` aliases
+    // `react-native$` to react-native-web because @hanzo/gui targets react-native
+    // and this is the web; a test that resolves the real package instead reads
+    // Flow syntax (`import typeof`) that no transform here accepts. Exact match,
+    // as it is there, so subpaths still reach the real package.
+    '^react-native$': 'react-native-web',
+    // Named explicitly, because the extension patterns below must not be what
+    // does it: `react-native-svg` ends in `-svg`, and while those patterns had
+    // an unescaped dot they matched this package and mapped it to the FILE mock
+    // — the string 'test-file-stub' — so every icon component was `undefined`
+    // and the whole react-native chain simply never loaded. See the mock.
+    '^react-native-svg$': '<rootDir>/mocks/react-native-svg.js',
+    // The dot is ESCAPED, and that is the whole point: these keys are regex
+    // sources in a JS string, where '\.' collapses to '.' — the wildcard — so
+    // the pattern reads "any character, then css" and matches a PACKAGE whose
+    // name merely ends that way. `@hanzogui/animations-css` resolved to the
+    // empty style mock, which took `createAnimations` with it and killed 19
+    // suites at import. A stylesheet is named by its extension; only a literal
+    // dot says so.
+    '\\.(css|less|scss|sass)$': '<rootDir>/mocks/style-mock.js',
+    '\\.(jpg|jpeg|png|gif|webp|avif|svg)$': '<rootDir>/mocks/file-mock.js',
   },
   collectCoverageFrom: [
     'app/**/*.{js,jsx,ts,tsx}',

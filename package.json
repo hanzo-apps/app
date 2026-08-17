@@ -36,13 +36,13 @@
     "@hanzo/base": "^0.2.1",
     "@hanzo/composer": "^0.1.0",
     "@hanzo/control": "^0.4.0",
-    "@hanzo/design": "^0.5.13",
+    "@hanzo/design": "^0.5.16",
     "@hanzo/event": "^0.3.28",
     "@hanzo/gui": "^8.1.0",
     "@hanzo/iam": "^0.21.13",
     "@hanzo/logo": "^1.0.17",
     "@hanzo/observe": "^0.1.6",
-    "@hanzo/ui": "^8.0.110",
+    "@hanzo/ui": "^8.0.114",
     "@hanzo/usage": "^0.1.6",
     "@hanzo/voice": "^0.1.8",
     "@hanzogui/config": "^8.0.1",
@@ -143,7 +143,7 @@
       "brace-expansion@2": ">=2.1.2",
       "axios": ">=1.18.0",
       "@hanzogui/web": "8.1.0",
-      "@hanzo/ui": "8.0.110"
+      "@hanzo/ui": "8.0.114"
     },
     "onlyBuiltDependencies": [
       "better-sqlite3"
