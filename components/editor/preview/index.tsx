@@ -123,12 +123,12 @@ export const Preview = ({
   }, []);
 
   // ── The frame talks; we listen ───────────────────────────────────────────
-  // This used to be four handlers bound onto `iframe.contentDocument`. That is
-  // the access an opaque origin takes away, and it is the only reason this pane
-  // still carries `allow-same-origin` while generated, imported and forked HTML
-  // runs on the origin holding the IAM refresh token. Everything the pane needs
-  // now arrives as a message from the injected bridge instead, addressed by CSS
-  // selector rather than by node.
+  // This used to be four handlers bound onto `iframe.contentDocument`, which is
+  // the access an opaque origin takes away — so it was the last thing holding
+  // `allow-same-origin` onto this pane. Everything the pane needs now arrives as
+  // a message from the injected bridge, addressed by CSS selector rather than by
+  // node, and the flag is gone: both buffers below run `allow-scripts
+  // allow-forms`, so generated HTML cannot reach the IAM tokens in localStorage.
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
       const frame = iframeRef?.current ?? null;

@@ -2,12 +2,26 @@
  * The preview bridge — everything the editor needs from a previewed document,
  * expressed as messages instead of as reaching into its DOM.
  *
- * The point is that the frame can then be sandboxed WITHOUT `allow-same-origin`.
- * Today it has that flag, so generated, imported and forked HTML runs on this
- * origin and can read the IAM refresh token out of `localStorage`. Dropping the
- * flag nulls `contentDocument`, which is how the editor currently does hover,
- * click-to-select, theming and live style/text edits — so those have to travel
- * some other way first. This file is that way.
+ * It is what lets the frame be sandboxed WITHOUT `allow-same-origin`, and it is:
+ * `preview/index.tsx` runs both buffers on `allow-scripts allow-forms`, so
+ * generated, imported and forked HTML paints on an opaque origin and cannot read
+ * the IAM tokens out of `localStorage`. Dropping that flag nulls
+ * `contentDocument`, which is how hover, click-to-select, theming and live
+ * style/text edits used to reach the document; they travel over this protocol
+ * instead.
+ *
+ * The frame pays for that isolation in the other direction too, and a generated
+ * page has to say so rather than guess: its own `fetch('/v1/me')` fails
+ * TRANSPORT, so it never learns who is signed in. `lib/dev/starter.ts` holds the
+ * sentence it says instead.
+ *
+ * Not for want of an address — a srcdoc document inherits its parent's base, so
+ * the URL resolves perfectly well. It is CORS. Measured in Chromium against a
+ * frame carrying exactly this sandbox: `window.origin` is the string "null",
+ * `document.baseURI` is `https://hanzo.app/`, `/v1/me` resolves to
+ * `https://hanzo.app/v1/me`, and the fetch rejects `TypeError: Failed to fetch`.
+ * Which is the isolation working — a page written by a model cannot read who the
+ * builder is, and no cookie would cross a null origin to tell it.
  *
  * Two halves, one protocol:
  *
