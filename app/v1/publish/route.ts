@@ -49,6 +49,24 @@ function safeRel(p: string): string | null {
   return clean;
 }
 
+/**
+ * The origin already recorded against a project, if it names one.
+ *
+ * The projects service stores `repo` as an object, but a record written by an
+ * older shape can still carry a bare string, and a project that was never built
+ * from a repo carries neither. All three mean "nothing to compare against"
+ * rather than an error, so they collapse to undefined.
+ */
+function existingRepoUrl(project: Record<string, unknown>): string | undefined {
+  const repo = project.repo;
+  if (typeof repo === 'string') return repo.trim() || undefined;
+  if (repo && typeof repo === 'object') {
+    const url = (repo as { url?: unknown }).url;
+    if (typeof url === 'string') return url.trim() || undefined;
+  }
+  return undefined;
+}
+
 export async function POST(req: NextRequest) {
   // CSRF: publishing creates a project + deploys a site + bills the org — refuse a
   // cross-origin POST before any identity/backend work.
@@ -133,7 +151,31 @@ export async function POST(req: NextRequest) {
       cache: 'no-store',
     });
     if (getRes.ok) {
-      project = await getRes.json();
+      const found = (await getRes.json()) as Record<string, unknown>;
+      project = found;
+      // A slug is derived from a NAME, so two unrelated things can ask for the
+      // same one: a builder project called "Hanzo AI" slugifies to exactly the
+      // slug the marketing site already publishes under. Reusing the record on
+      // a match is what makes republishing work at all; reusing it on a
+      // COLLISION means this route deploys over a site it has no relationship
+      // to, and from then on that site has two publishers taking turns
+      // overwriting each other, each one shipping a tree the other has never
+      // seen.
+      //
+      // This refuses, and only refuses. `sourceRepo` still grants nothing —
+      // an absent or matching origin changes no behavior. It is read here as a
+      // collision check, which is a question a caller cannot answer wrongly in
+      // its own favor: claiming someone else's repo does not get you a deploy
+      // you would not already have had.
+      const claimed = existingRepoUrl(found);
+      if (claimed && claimed !== sourceRepo) {
+        return NextResponse.json(
+          {
+            error: `"${name}" is already published from somewhere else. Rename this project to publish it separately.`,
+          },
+          { status: 409 },
+        );
+      }
     } else if (getRes.status === 404) {
       const createRes = await fetch(`${base}/v1/projects`, {
         method: 'POST',
