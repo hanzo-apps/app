@@ -80,7 +80,7 @@ export type ModelOption = {
 // cap and answers `429 Usage limit reached for this 8h` when a burst exhausts
 // it. That is a quota, not a fault, and `refusal()` already tells the reader
 // waiting is the remedy.
-export const DEFAULT_MODEL = "claude-opus-4.8";
+export const DEFAULT_MODEL = "enso";
 
 // The Hanzo gateway (api.hanzo.ai) serves the Zen/Enso ladder + connected
 // providers AND — since DO GenAI funded the proprietary catalog — a CURATED set
