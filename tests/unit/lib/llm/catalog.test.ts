@@ -34,8 +34,20 @@ const HANZO_ROWS = [
   },
   {
     // Verified present in the live catalog (GET https://api.hanzo.ai/v1/models),
-    // and the builder's current DEFAULT_MODEL — enso cannot build until the zen
-    // identity fix reaches its image (lib/providers.ts).
+    // and the builder's current DEFAULT_MODEL: measured at four brief lengths it
+    // returns 8,937-10,114 chars in 42-43s every time, while enso never finishes
+    // and anthropic-claude-opus-5 streams 0 frames (lib/providers.ts).
+    id: 'claude-opus-4.8',
+    object: 'model',
+    created: 1785777643,
+    owned_by: 'anthropic',
+    premium: true,
+    context_window: 1000000,
+    pricing: { input: 15, output: 75 },
+  },
+  {
+    // Also live, and what the default was held on before 4.8. Kept so the row
+    // set still covers an id the picker offers but the default no longer names.
     id: 'anthropic-claude-opus-5',
     object: 'model',
     created: 1785777643,
@@ -178,7 +190,7 @@ describe('the catalogue follows the selected provider', () => {
       expect(model.id).not.toContain('/');
     }
     expect(models.map((m) => m.id).sort()).toEqual(
-      ['anthropic-claude-opus-5', 'claude-4.5-sonnet', 'claude-haiku-4-5', 'enso', 'wan2-2-t2v-a14b'],
+      ['anthropic-claude-opus-5', 'claude-4.5-sonnet', 'claude-haiku-4-5', 'claude-opus-4.8', 'enso', 'wan2-2-t2v-a14b'],
     );
   });
 

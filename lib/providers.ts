@@ -54,20 +54,33 @@ export type ModelOption = {
 //
 // IT IS BACK ON HOLD, for a different reason and by that same rule. Enso cannot
 // finish a builder turn today: it reasons without streaming (measured: response
-// headers at 2.2s, then no frame for 118+ seconds, 7 of 8 tokens spent on
-// reasoning), and its provider intermittently answers `Upstream error from
-// Nvidia: Internal server error` both before and during the stream. Raced
-// against the same builder prompt, streaming, 16k ceiling:
+// headers at 2.2s, then no frame for 118+ seconds, and a 12-token "reply ok"
+// spending 7 of 8 tokens on reasoning), and its provider intermittently answers
+// `Upstream error from Nvidia: Internal server error`. Raced against the real
+// builder brief at four lengths, streaming, 16k ceiling:
 //
-//   claude-opus-4.8           first token 2.7s   COMPLETE 39s   11,362 chars
-//   anthropic-claude-opus-5   first token 8.4s   COMPLETE 40s    8,694 chars
+//   claude-opus-4.8           42-43s, 55 frames, 8,937-10,114 chars — at EVERY
+//                             length, including the full 4,765-char brief
+//   anthropic-claude-opus-5   200 with an EMPTY stream: 0 frames, 0 chars, ~60s
 //   enso                      never finished — still going at 120s
 //   zen5-coder                never finished — still going at 120s
 //
-// A page in 40 seconds against one that does not arrive is not a preference.
+// This line was on `anthropic-claude-opus-5` for a few minutes because that is
+// what it held during the last hold, and it measured 8,694 chars in 40s. Half
+// an hour later the same id served 0 frames on every prompt, at every ceiling,
+// while a trivial "say ok" still answered — so the id is intermittently empty,
+// not slow. A default has to be the one that is up, which is why the measurement
+// above is at four lengths rather than one, and why it is written down.
+//
+// A page in 42 seconds against one that does not arrive is not a preference.
 // Enso stays in the picker and one click away; what moves is only what someone
 // who never opens the picker gets. Put it back the moment Enso finishes a turn.
-export const DEFAULT_MODEL = "anthropic-claude-opus-5";
+//
+// One live constraint worth knowing: the opus upstream carries an 8-hour usage
+// cap and answers `429 Usage limit reached for this 8h` when a burst exhausts
+// it. That is a quota, not a fault, and `refusal()` already tells the reader
+// waiting is the remedy.
+export const DEFAULT_MODEL = "claude-opus-4.8";
 
 // The Hanzo gateway (api.hanzo.ai) serves the Zen/Enso ladder + connected
 // providers AND — since DO GenAI funded the proprietary catalog — a CURATED set
