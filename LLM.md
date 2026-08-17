@@ -364,10 +364,40 @@ stays a pure function the tests read directly:
 - **402 — credit.** Keeps `needCredits` so the usage modal still opens.
 - **429 — rate.** The one status where waiting IS the remedy, so it owns the
   sentence that says so (`BUSY`). It used to share the 5xx one.
-- **anything else — the model.** `UNAVAILABLE`, and it names the model rather
+- **4xx — the request.** It keeps its own status and quotes the gateway's own
+  sentence, because a refused request is refused identically every time and
+  "try again" is the one instruction that cannot work.
+- **5xx — the model.** `UNAVAILABLE`, and it names the model rather
   than the service, because that is what the reader can act on. Measured against
   production over every one of the 422 models the picker offers: **166 fail**,
   145 of them 502. The service is up; those ids are not reachable through it.
+
+**The read half is where this dies, and it died again.** `refusal` writes the
+gateway's sentence into `message`; `useCallAi` answered `message: UNAVAILABLE`
+on every `status >= 500` — the one branch that replies before reading the body —
+so the sentence was fetched and thrown away a second time. All four generate
+paths call `said(request, UNAVAILABLE)` now, and
+`tests/unit/gateway-refusal.test.ts` scans the hook for the substitution,
+because it leaves no other trace: same types, green build, and a screen telling
+the reader to wait for a request that will never be accepted.
+
+What it was hiding, measured against production: `parse
+"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png": invalid character "{" in
+host name`, HTTP 400, on requests carrying this app's own builder system prompt
+— 12 refusals in 25 minutes, 30% of every completion in that window. The
+gateway's vision path regex-scans a prompt's TEXT for image URLs and fetches
+each hit server-side, and a Leaflet tile template is not a host. **A URL in a
+prompt is an input to a parser, not decoration**; `tests/unit/vendor.test.ts`
+checks the authority of every URL in the files that tell a model what to load.
+
+**And the reason a vision path was serving a builder request at all:** cloud
+answers `provider=enso is out of money (402) serving model=enso — top it up`
+and fails over to the free route `nvidia/nemotron-3-ultra-550b-a55b:free`.
+Measured: ten of ten `model: "enso"` completions came back served by that route,
+and three real whole-site builds through `/v1/generate` took 103s (stream cut),
+112s (completed) and 540s (connection reset). `DEFAULT_MODEL` is `enso`, so this
+is every builder turn. Nothing in this repo can fix that one — it is the enso
+provider's upstream balance.
 
 **A model's WINDOW holds its input and its output together, so one output
 ceiling cannot serve every model.** `/v1/generate` asked for `max_tokens:
@@ -687,7 +717,13 @@ compose's), then moves the universe pin through `charts/app/pin.sh`.
   `app/manifest.ts`: the manifest spec makes an icon's `purpose` a
   space-separated set, so `"any maskable"` is valid there and is NOT valid in
   Next's `MetadataRoute.Manifest`, which types it as one of
-  `'any' | 'maskable' | 'monochrome'`. Say it as two entries on the same src.
+  `'any' | 'maskable' | 'monochrome'`. Say it as two entries pointing at two
+  DIFFERENT files. One file cannot serve both purposes: `any` is transparent and
+  may be inset, `maskable` is cropped by the launcher and must be opaque and
+  full-bleed — hand a launcher a transparent icon and it composites it onto its
+  own ground, which is how hanzo.app came to show a solid black square on
+  Android. The safe zone is the square inscribed in the safe CIRCLE,
+  `0.8/√2 = 56.57%`, not the 80% box.
   **Run `pnpm exec tsc --noEmit` before pushing** — it is ~40s locally and it is
   the difference between a release and a fortnight of silence. Read the release
   lane by JOB, never by run status: `test: success` beside `build-amd64:
