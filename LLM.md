@@ -68,6 +68,19 @@ that IS typed may not behave the way the DOM one does:
   already fill their width from content, so a blanket fix would have been four
   changes nobody needed.
 
+- **`disabled` becomes `aria-disabled`, never the native attribute.** A gui
+  Button compiles it to that plus `pointer-events: none` and half opacity. So
+  `expect(btn).toBeDisabled()` FAILS on a button that plainly is — and the
+  inverse, `.not.toBeDisabled()`, passes against every button in the app and
+  certifies nothing. Assert the attribute. It matters beyond tests: with no
+  native attribute the control keeps `tabindex="0"`, and `pointer-events: none`
+  stops a pointer and nothing else, so **Enter and Space both still fire the
+  click** — measured in Chromium against this exact shape, beside a natively
+  disabled button that is not even focusable. A refusal
+  has to live in the handler as well as in the prop — `build-composer`'s send
+  leans on `submit`'s own empty-text return for exactly that, and
+  `tests/unit/composer-row.test.tsx` pins both halves, because the prop alone
+  never covered a keyboard.
 - The field emits text as well as an event. Prefer `onChangeText={(t) => …}` —
   it hands you the string instead of an event to dig through — but **`onChange`
   fires too, so that is a preference, not a bug report.** This line used to say
