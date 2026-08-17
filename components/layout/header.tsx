@@ -63,26 +63,26 @@ export default function Header() {
   const surface = resolveSurface("app");
   const nav = useMemo(
     () => [
+      // The landing page IS what this row means, so it points at the root rather
+      // than a second page repeating it. Opening hanzo.app already shows it.
+      { id: "about", label: "About", href: "/" },
       { id: "features", label: "Features", href: "/features" },
-      // "Business", not "Enterprise", on the same page: the word names WHO it is
-      // for rather than a procurement tier, which is what a reader is actually
-      // deciding when they look at this row.
-      { id: "business", label: "Business", href: "/enterprise" },
-      // Resources holds six pages under one word and keeps `href="/templates"`,
-      // so the row is a real link before hydration.
+      // Learn carries what Resources used to hold, so a reader who hovers still
+      // finds every one of these pages and the top row stays four words. It keeps
+      // `href="/learn"`, so the row is a real link before hydration.
       {
-        id: "resources",
-        label: "Resources",
-        href: "/templates",
-        glyph: "spark" as const,
+        id: "learn",
+        label: "Learn",
+        href: "/learn",
+        glyph: "cap" as const,
         items: [
+          { id: "learn-start", label: "Learn", href: "/learn", glyph: "cap" as const, hint: "Build your first app, step by step" },
           { id: "templates", label: "Templates", href: "/templates", glyph: "template" as const, hint: "Start from a working app" },
           // The catalog directly, not `/games`: that route is a redirect to this
           // very URL, and a menu should name the page it opens.
           { id: "games", label: "Games", href: "/templates?category=Games", glyph: "gamepad" as const, hint: "Open-source games to fork" },
           { id: "community", label: "Community", href: "/community", glyph: "users" as const, hint: "What people shipped on Hanzo" },
           { id: "docs", label: "Documentation", href: "/docs", glyph: "book" as const, hint: "Guides and the API reference" },
-          { id: "learn", label: "Learn", href: "/learn", glyph: "cap" as const, hint: "Build your first app, step by step" },
           { id: "help", label: "Help", href: "/help", glyph: "ring" as const, hint: "Answers, and how to reach us" },
         ],
       },
@@ -107,17 +107,20 @@ export default function Header() {
         // self-link on this surface, so fixing only the CTA would have left one
         // behind — and a self-link is worst BEFORE hydration, which is exactly
         // when a static export is read.
-        surface={{ ...surface, localNav: nav }}
+        // "Hanzo AI" is the company, and that is what the mark should say on
+        // every surface. "Hanzo App" named the property instead, which reads as a
+        // different product from the one the Platform menu beside it lists.
+        surface={{ ...surface, brandName: "Hanzo AI", localNav: nav }}
         // The ten categories, called what a builder is looking for when they
         // open them. A LABEL, not a second menu — one taxonomy, one component.
         // There is no /platform page to link, and there should not be: the
         // taxonomy IS that page, and a row that only opens a menu is the menu.
         productsTaxonomy={HANZO_PRODUCT_CATEGORIES}
         productsLabel="Platform"
-        // The pill opens the DOORS rather than taking one — a visitor here has
-        // already chosen the builder, so a single destination is wrong for most
-        // of them.
-        tryMenu
+        // ONE destination, not a menu. A visitor here has already chosen the
+        // builder, and the other products are a hover away in Platform — so the
+        // pill's job is to start a project, and a second list of doors beside
+        // that list is the same choice asked twice.
         auth={auth}
         // The ROUTE, not the absolute URL. This is what the shell matches an
         // entry against to decide it names the current place.
