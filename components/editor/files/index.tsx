@@ -88,7 +88,7 @@ export function FilesPane({
           is the phone's way to see a page). */}
       <YStack width="100%" flexShrink={0} minWidth={0} $md={{ width: 340 }} borderRightWidth={1} borderColor="$borderColor">
         <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$2.5">
-          <XStack flex={1} minWidth={0} alignItems="center" gap="$2" borderRadius="$4" backgroundColor="$color2" paddingHorizontal="$2.5" data-field-box>
+          <XStack flex={1} minWidth={0} alignItems="center" gap="$2" borderRadius="$4" backgroundColor="$color2" paddingHorizontal="$2.5">
             <SizableText color="$color11"><Search size={14} /></SizableText>
             <Input
               flex={1}

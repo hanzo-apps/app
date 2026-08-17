@@ -499,6 +499,23 @@ html:root .hz-shot {
 
      The values live in the `html.dark` block further down, NOT here — see the
      note there for why the override has to outrank `:root`. */
+
+  /* THE FOCUS RING SPENDS THIS, so read the measurement before retuning it.
+     `--ring` is `--brand-accent`, and design draws the indicator at 2px of it,
+     inset on a field. Compositing over #0a0a0a and comparing against the rest
+     edge (`--border`, white 10% -> rgb(34,34,34)):
+
+       white 0.60   5.87:1   glare — read as a lit outline round the composer
+       white 0.45   3.60:1   clears the 3:1 focus-appearance floor with room
+       white 0.40   3.03:1   at the line, nothing left for a lighter surface
+       #ffffff     15.9:1    what a 2px ring at this accent spends today
+
+     0.45 was measured for a 1px EDGE, which had to be quiet because it sat lit
+     for as long as the box held focus. A 2px ring is a different instrument: it
+     is keyboard-visible only, it replaces the edge rather than sitting beside
+     it, and it is what every button on the page already rings at, so a field
+     that rings differently would be the inconsistency. If it reads loud, this
+     value is the one knob — never a rule, never a prop. */
   --brand-accent: var(--hanzo-accent, #ffffff);
   --brand-accent-hover: var(--hanzo-accent-hover, #d4d4d4);
   --brand-accent-muted: var(--hanzo-accent-muted, #a3a3a3);
@@ -568,15 +585,6 @@ html:root .hz-shot {
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: var(--brand-accent);
-  /* The ONE keyboard-focus ring, per theme — near-black on the light ground.
-     Consumed by the :focus-visible rules below @layer base — one concept, two
-     forms: a ring for shapeless controls, a strengthened edge for fields. */
-  --focus-ring: rgba(0, 0, 0, 0.72);
-  /* Text-entry focus. A field already draws its own edge, so focus STRENGTHENS
-     that edge instead of stamping a second box outside it. Same value @hanzo/ui's
-     Input/Textarea brighten to ($color06), so a field cues focus identically
-     whether it came from the library or is a bare DOM control. */
-  --focus-edge: rgba(0, 0, 0, 0.6);
   /* Charts carry real, distinguishable hue — data series must be told apart. */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -692,24 +700,6 @@ html:root .hz-shot {
    which is this app's own composition rule (see the focus block below) and
    which design does not name, and `--tint`, the app's own lift channel. */
 .dark {
-  /* The ONE keyboard-focus ring, per theme — white on the dark ground. This is the
-     value the landing page already proved legible; it is now the whole app's. */
-  --focus-ring: rgba(255, 255, 255, 0.72);
-  /* The EDGE is not the ring and does not want the ring's weight. It draws a 1px
-     line where a hairline sits, so on a near-black ground 60% white read as a lit
-     white outline around the whole composer rather than an edge that had
-     brightened — the first thing the eye went to on the page.
-
-     Measured, compositing white-over-#0a0a0a and comparing against the rest edge
-     (--border, white 10% → rgb(34,34,34)):
-
-       0.60   5.87:1   the glare
-       0.45   3.60:1   clears the 3:1 focus-appearance floor with headroom
-       0.40   3.03:1   at the line — no room for a lighter surface
-
-     0.45. The indicator still carries WCAG 2.4.13 on its own, which is what the
-     focus block below relies on, and it stops shouting. */
-  --focus-edge: rgba(255, 255, 255, 0.45);
   /* The lift inverts with the ground: white on black, black on white. The accent
      does not — it is one value, and the app has one ground. */
   --tint: 255 255 255;
@@ -850,109 +840,47 @@ html.dark ::selection {
   color: var(--foreground);
 }
 
-/* ONE visible keyboard focus, everywhere (keyboard-only via :focus-visible).
-   This used to be scoped to `.landing-root`, which meant the product had TWO focus
-   systems for one concept: a real 2px white ring on the marketing pages, and — on
-   every signed-in surface — nothing but the user agent's 1px `outline: auto`,
-   tinted by the global `outline-ring/50` into a faint purple hairline. (@hanzo/ui's
-   own `focus-visible:ring-*` classes never compiled, so the components brought no
-   ring of their own; see components/control.) Unscoping it is the whole fix.
+/* THIS SHEET DRAWS NO FOCUS INDICATOR. @hanzo/design draws one rule for every
+   focusable thing, and where the ring sits is a value the element carries:
+   `:focus-visible { outline: 2px solid var(--ring); outline-offset:
+   var(--ring-offset, 2px) }`, with a field setting `--ring-offset: -2px`.
 
-   `--focus-ring` is per-theme so the ring is legible on both grounds — a white ring
-   would have been invisible in light mode, which is why the landing rule could get
-   away with hardcoding one and a global rule cannot. Pointer focus stays quiet (the
-   composer's own border cue handles it); the outline follows each element's
-   border-radius so pills, cards and buttons ring cleanly.
+   A rule here cannot be limited to what it names. `[tabindex]` was in this
+   sheet's own selector, and @hanzo/gui puts `tabIndex: 0` on every Input — so
+   the rule meant for a link and a bare focusable div silently governed all 149
+   fields in the product and held them at a POSITIVE offset, where a composer's
+   `overflow: hidden` clipped the ring away entirely. Measured: `--ring-offset`
+   computed `-2px` and `outline-offset` computed `2px`, on the same element.
 
-   ── `html:root` is what makes this rule the law ─────────────────────────────
-   It was not, and 37 call sites are the proof. `:is(a, button, …)` takes the
-   specificity of its loudest argument — `[role="button"]`, (0,1,0) — plus
-   `:focus-visible` (0,1,0), so this landed at (0,2,0): a dead tie with every
-   atomic class gui compiles, decided by load order, and gui.css is imported
-   after this sheet. So gui's own default outline won on every gui component,
-   and the way each author silenced it was to write `focusVisibleStyle={{
-   outlineWidth: 0 }}` on the element — which does not restore this rule, it
-   deletes the indicator. Thirty-seven controls ended up with no keyboard focus
-   at all, eleven of them in the builder chrome.
+   `--ring` is the knob, set in the accent block above, and it is the one place
+   the app's emphasis is decided. */
 
-   `html:root` is (0,1,1), the same anchor the font tokens below use and for the
-   same reason, and it puts both rules at (0,3,1) — above gui's atomics, decided
-   by specificity rather than by which file a bundler happened to order last. The
-   law now lives HERE, in one place, and a call site cannot quietly opt out of
-   it: the 37 props are gone and none is needed again. */
-html:root :is(a, button, summary, [role="button"], [tabindex]):focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
-}
-
-/* A menu/listbox popup is a CONTAINER, not a control. A dropdown opens by moving
-   focus onto its content, which carries `tabindex="-1"`, so the rule above catches
-   it and paints the 2px `--focus-ring` (72% white) 2px OUTSIDE the panel — the
-   garish white outline that rings a whole opened dropdown. The keyboard indicator
-   belongs on the ITEMS the arrow keys move between (they are buttons / [tabindex]
-   and ring by the rule above), never on the transient shell that holds them, so
-   the container itself draws nothing — the same "not a control" carve-out the
-   fields below take. */
+/* A menu/listbox popup is a CONTAINER, not a control, and it is the ONE thing
+   this sheet still says about focus. A dropdown opens by moving focus onto its
+   content, which carries `tabindex="-1"`, so design's rule catches it and rings
+   the whole opened panel. The indicator belongs on the ITEMS the arrow keys move
+   between — they ring by that same rule — never on the transient shell holding
+   them. */
 html:root :is([role="menu"], [role="listbox"], [data-hanzogui-menu-content]):focus-visible {
   outline: none;
 }
 
-/* Text-entry controls take the SAME rule's intent in the form they already have.
-   A link or a button has no resting shape, so it needs a ring drawn around it. A
-   field does — its own edge — so focus brightens THAT EDGE, and draws nothing
-   else. No offset outline, and no halo either.
+/* A FIELD RINGS LIKE EVERYTHING ELSE, and this sheet says nothing about it.
+   @hanzo/design draws one indicator for every focusable thing —
+   `:focus-visible { outline: 2px solid var(--ring); outline-offset:
+   var(--ring-offset, 2px) }` — and a field carries `--ring-offset: -2px`, so a
+   button's ring sits outside its box and a field's is drawn over its own edge.
 
-   Listing input/textarea/select in the rule above put a hard 2px white box, held
-   2px off, around every field in the product: the command palette read as broken,
-   and the composer as alarmed. Replacing it with an edge was right; keeping a
-   `box-shadow` halo alongside was the same mistake in a softer form — a second
-   shape, concentric with the first. A focused field draws ONE line.
+   An outline needs no border to paint on, which is why one indicator serves a
+   bordered field and a borderless one alike: a `<textarea>` with no edge inside
+   a composer rings on its own. And an INSET one needs no room, so a composer
+   that rounds its corners with `overflow: hidden` cannot clip it — the reason
+   no box here has to light up on behalf of the field inside it.
 
-   That halo also outlived its purpose. It was carrying the indicator because the
-   edge change could not be seen: @hanzogui/input's own focus style brightens to
-   `$borderColorFocus`, which resolves to the SAME value as `$borderColor`, and
-   its atomic classes outrank this rule — so `border-color` here never applied to
-   a library field and the halo was the only thing left. @hanzo/ui 8.0.43 fixes
-   the brighten at the component, which is what makes one line enough.
-
-   `--focus-edge` against a hairline rest is ~5:1, so the edge alone carries the
-   indicator (WCAG 2.4.13).
-
-   Anchored on `html:root` for the reason given above, and here it is the half
-   that matters most: this rule is the ONLY thing standing between a text field
-   and the 2px offset box. Losing the tie to gui's atomic default is what put
-   one around every field in the product the first time. */
-html:root :is(input, textarea, select):focus-visible {
-  outline: none;
-  border-color: var(--focus-edge);
-}
-
-/* A field with no edge of its own is not the control — the box around it is.
-   The composers, the search rows and the palette put a borderless <textarea> or
-   <input> inside a bordered box, so the rule above has nothing to brighten: the
-   field's `border-width` is 0 and a colour on a zero-width border draws no
-   pixels. Six of those fields carried `focusStyle={{ outlineWidth: 0 }}` and
-   were therefore the only controls in the app with NO focus state whatsoever,
-   pointer or keyboard.
-
-   `:focus-within` is what says "the control that contains focus", and it reads
-   the same `--focus-edge` the field rule does, so a bordered field and a
-   borderless one inside a box light up in the same value. Marked by
-   `data-field-box` rather than inferred: whether a box IS the control is a fact
-   about the design, not something a selector can work out, and `:has()` cannot
-   walk up to an arbitrary ancestor anyway.
-
-   Drawn as an inset outline rather than by brightening `border-color`, because
-   half these boxes have no border to brighten — the chat composer and the build
-   composer are a background and a gradient ring, and a colour on a zero-width
-   border paints nothing. `outline-offset: -1px` lays the line exactly where a
-   1px edge would be, follows the box's radius, and costs no layout, so a box
-   that HAS a hairline lights that hairline and a box that has none gets one.
-   One line either way, which is the same promise the field rule above makes. */
-html:root [data-field-box]:focus-within {
-  outline: 1px solid var(--focus-edge);
-  outline-offset: -1px;
-}
+   `--ring` is the knob. It is set in the accent block above (`--brand-accent`,
+   white on this ground) and that is where the whole app's emphasis is decided,
+   so a ring that reads too loud or too quiet is one value there — never a rule
+   here, and never a prop at a call site. */
 
 .monaco-editor .margin {
   background-color: oklch(0.205 0 0) !important;

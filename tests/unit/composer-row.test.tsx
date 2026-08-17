@@ -19,12 +19,11 @@
  * differ from the value while nobody is here, so both signs of a person — a
  * press on the control, a character in the field — put it back.
  *
- * THE DROP RING IS ON THE OUTER HOST. Inside, it lands on the
- * `[data-field-box]`, whose `:focus-within` rule is (0,2,1) against the (0,1,0)
- * atomic class a gui `outlineWidth` compiles to — so a composer someone had
- * typed in showed the same 1px solid edge over a file as at rest, measured at
- * 390 and 1280, while an untouched one dashed correctly. The affordance was
- * absent exactly when a file is most likely to arrive.
+ * THE DROP RING IS ON THE OUTER HOST. The inner panel is opaque and sits above
+ * the gradient (`.hz-composer > *` is `z-index: 1`), so a ring drawn on it — or
+ * inside the host's own box — is covered: computed style said `2px dashed`
+ * while the screenshot showed nothing. Outside the host is the one place the
+ * panel cannot reach.
  */
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -121,10 +120,10 @@ describe('the drop affordance', () => {
   /** A drag carrying files, in the shape the handlers read. */
   const files = { types: ['Files'], files: [new File(['# brief'], 'brief.md', { type: 'text/markdown' })] };
 
-  it('rings the outer host on dragover, and never the box that lights up on focus', () => {
+  it('rings the outer host on dragover, and never the opaque panel inside it', () => {
     const { container } = renderComposer(<BuildComposer onSubmit={jest.fn()} />);
     const host = container.querySelector('.hz-composer') as HTMLElement;
-    const panel = container.querySelector('[data-field-box]') as HTMLElement;
+    const panel = host.firstElementChild as HTMLElement;
 
     // gui compiles a style prop to an atomic class, so the class list IS the
     // declaration — which is also why it loses to a stylesheet rule.
@@ -133,8 +132,8 @@ describe('the drop affordance', () => {
     fireEvent.dragEnter(host, { dataTransfer: files });
     expect(host.className).toContain('_outlineWidth-2px');
     expect(host.className).toContain('_outlineStyle-dashed');
-    // Not "the panel has a different outline" — it declares none at all, so
-    // there is nothing for the focus rule to overrule.
+    // Not "the panel has a different outline" — it declares none at all, so a
+    // ring on it could only come from the sheet, where nothing draws one.
     expect(panel.className).not.toMatch(/_outline/);
 
     fireEvent.drop(host, { dataTransfer: files });
@@ -142,13 +141,15 @@ describe('the drop affordance', () => {
     expect(screen.getByRole('button', { name: 'Remove brief.md' })).toBeInTheDocument();
   });
 
-  it('names the rule that made the outer host necessary', () => {
-    // If this ever leaves globals.css the ring could come back inside; until
-    // then a prop on that element cannot win, and nothing else records it.
+  it('leaves the field focus indicator to the design layer', () => {
+    // A field rings because @hanzo/design draws one indicator for everything
+    // focusable. This sheet states no field rule of its own, and there is no
+    // box standing in for one — a second shape around a composer whose field
+    // already rings is the thing that arrangement now prevents.
     const css = readFileSync(join(__dirname, '../../assets/globals.css'), 'utf8');
-    const at = css.indexOf('html:root [data-field-box]:focus-within');
-    expect(at).toBeGreaterThan(-1);
-    expect(css.slice(at, css.indexOf('}', at))).toMatch(/outline:\s*1px solid/);
+    expect(css).not.toMatch(/:is\(input, textarea, select\):focus-visible/);
+    expect(css).not.toMatch(/\[data-field-box\]:focus-within/);
+    expect(css).not.toMatch(/--focus-edge/);
   });
 });
 

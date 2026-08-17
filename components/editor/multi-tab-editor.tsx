@@ -368,7 +368,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
       
       {openFiles.size === 0 ? (
         <YStack flex={1} minHeight={0}>
-          <XStack data-field-box alignItems="center" gap="$2" borderBottomWidth={1} paddingHorizontal="$3" paddingVertical="$2">
+          <XStack alignItems="center" gap="$2" borderBottomWidth={1} paddingHorizontal="$3" paddingVertical="$2">
             <Search size={14} />
             <Input
               value={browseQuery}

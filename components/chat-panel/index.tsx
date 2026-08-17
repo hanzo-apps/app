@@ -808,7 +808,7 @@ export function ChatPanel({
             </XStack>
           )}
 
-          <XStack data-field-box position="relative" backgroundColor="$background" borderRadius="$5">
+          <XStack position="relative" backgroundColor="$background" borderRadius="$5">
             <Textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}

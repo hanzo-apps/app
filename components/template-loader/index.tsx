@@ -200,7 +200,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
               What do you want to change?{" "}
               <SizableText textTransform="none" letterSpacing={0} color="$color11">(optional)</SizableText>
             </Label>
-            <YStack data-field-box borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color005">
+            <YStack borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color005">
               <Textarea
                 id="tpl-first-msg"
                 value={firstMessage}

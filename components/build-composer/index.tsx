@@ -425,13 +425,12 @@ export function BuildComposer({
       {/* The drop ring is OUT HERE and OUTSIDE the box, and both halves were
           bought with a measurement.
 
-          It used to sit on the panel below — the `[data-field-box]` whose
-          `:focus-within` rule (assets/globals.css, html:root-anchored) lights
-          its edge. That selector is (0,2,1) against the (0,1,0) atomic class a
-          gui prop compiles to, so the stylesheet won and a drag over a composer
-          someone had already typed in changed NOTHING: 1px solid at rest, 1px
-          solid over a file, at 390 and 1280. The affordance was missing exactly
-          when a file is most likely to arrive.
+          On the panel below it is unreachable: a gui style prop compiles to one
+          atomic class at (0,1,0), so any html:root-anchored rule in
+          assets/globals.css outranks it and a drag over a composer someone had
+          already typed in changed NOTHING — 1px solid at rest, 1px solid over a
+          file, at 390 and 1280. The affordance was missing exactly when a file
+          is most likely to arrive.
 
           Moving it to the host is not enough on its own: `.hz-composer > *` is
           `z-index: 1` (the panel has to cover the spinning gradient behind it),
@@ -451,7 +450,6 @@ export function BuildComposer({
         {...dragging}
       >
         <YStack
-          data-field-box
           borderRadius={26.5}
           backgroundColor="$background"
         >

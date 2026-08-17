@@ -215,7 +215,7 @@ function NewProjectInner() {
               onDrop={onComposerDrop}
               onDragOver={onComposerDragOver}
               onDragLeave={onComposerDragLeave}
-              data-field-box group position="relative" borderRadius="$8" borderWidth={1} padding="$2" elevation={6} {...{ borderColor: dragActive ? "$color" : "$borderColor", backgroundColor: dragActive ? "$color3" : "$color005" }}
+              group position="relative" borderRadius="$8" borderWidth={1} padding="$2" elevation={6} {...{ borderColor: dragActive ? "$color" : "$borderColor", backgroundColor: dragActive ? "$color3" : "$color005" }}
             >
               {dragActive && (
                 <XStack {...glass(2)} pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} zIndex={10} alignItems="center" justifyContent="center" borderRadius="$8" borderWidth={2} borderStyle="dashed" borderColor="$color">

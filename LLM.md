@@ -520,19 +520,38 @@ since 8.0.52) — glass rules never read brand's generic `--shadow-*` names;
 
 ### Focus is decided in ONE place, and it is not a prop
 
-`assets/globals.css` states the whole law: a link/button/`[role=button]`/
-`[tabindex]` rings (`2px solid var(--focus-ring)`, offset 2), a text field
-brightens its own edge and draws no ring, and a `[data-field-box]` — a box whose
-field has no edge of its own, the composers and the search rows — lights up on
-`:focus-within`. All three are anchored on **`html:root`**, and that is
-load-bearing: `:is(a, button, …):focus-visible` is (0,2,0), a dead tie with
-every atomic class gui compiles, decided by load order, and `gui.css` is
-imported last. gui therefore won, and the way each author silenced gui's own
-outline was `focusVisibleStyle={{ outlineWidth: 0 }}` on the element — which
-does not restore the rule, it deletes the indicator. That reached 37 call sites,
-eleven in the builder chrome. **Never write that prop.** If a control rings
-wrongly, the answer is in globals.css or in `@hanzo/ui`'s gui theme, never at
-the call site.
+**`--ring` is what actually paints on an `@hanzo/ui` control, and this app sets
+it to `--brand-accent` (`#ffffff`).** `@hanzo/gui` compiles a component's focus
+style to `:root:root:root:root … :focus-visible { … !important }` — `!important`
+by construction, applied to every pseudo-state style regardless of its value
+(`getCSSStylesAtomic.ts`, `const important = !!pseudo`) — so no rule in this
+sheet reaches one. `--focus-ring` (0.72) is therefore **not** the app-wide ring
+it reads like: it governs only what globals.css still draws itself, a bare `<a>`,
+`<summary>` or `[tabindex]`. Every gui button and every field rings `--ring`.
+Measured: `2px solid #ffffff` at offset 2 — 19.8:1 on the page ground, 18.4:1
+inside a composer. **If a ring reads too loud or too quiet, move `--ring`** — one
+value, in the accent block that already calls itself the one place the app's
+emphasis is set.
+
+**A field rings like everything else, and neither this sheet nor a call site says
+anything about it.** @hanzo/design draws one indicator for every focusable thing
+(`:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px }`) and
+`@hanzo/ui` 8.0.112 lets it reach a field. An outline needs no border to paint
+on, so a borderless `<textarea>` inside a composer rings on its own — which is
+why the `[data-field-box]` box that used to carry the indicator up to the
+nearest bordered ancestor is **gone**, along with `--focus-edge` and the
+`:is(input, textarea, select)` carve-out. An EDGE needed that workaround because
+a colour on a zero-width border draws no pixels; an outline does not, so the
+two requirements that looked opposed were only opposed while the indicator was
+an edge.
+
+The way each author used to silence gui's outline was
+`focusVisibleStyle={{ outlineWidth: 0 }}` on the element — which does not restore
+a stylesheet rule, it deletes the indicator, at a specificity nothing can argue
+with. That reached 37 call sites, eleven in the builder chrome, and the same
+defect sat inside `@hanzo/ui` itself until 8.0.112. **Never write that prop.** If
+a control rings wrongly the answer is `--ring`, or @hanzo/design where the rule
+lives — never the call site.
 
 Measured by tabbing every focusable control on `/` — live production before,
 local build after:
@@ -548,6 +567,10 @@ local build after:
 (The commit that landed this said "48 of 85" for the before column. That number
 was never measured — the real one is 23 of 90, above. The counts differ by five
 because the landing page gained controls between the two measurements.)
+
+That last-but-one row is now 0: the two boxes ring nothing, and the fields
+inside them ring themselves. The row is kept because the count above it only
+adds up with it.
 
 ### The left panel has ONE glyph, and a shortcut is not a keycap
 

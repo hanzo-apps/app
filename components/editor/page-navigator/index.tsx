@@ -107,7 +107,7 @@ export function PagePanel({
 
   return (
     <YStack maxHeight="min(60vh,24rem)" width="100%">
-      <XStack data-field-box alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingBottom="$2" paddingTop="$0.5">
+      <XStack alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingBottom="$2" paddingTop="$0.5">
         <Search size={14} />
         <Input
           ref={inputRef}

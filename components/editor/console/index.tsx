@@ -94,7 +94,7 @@ function Prompt() {
   };
 
   return (
-    <XStack alignItems="center" gap="$1.5" paddingTop="$1.5" data-field-box>
+    <XStack alignItems="center" gap="$1.5" paddingTop="$1.5">
       {/* The path IS the prompt, and it is the only place the shell says where
           you are — so it never collapses to nothing. */}
       <SizableText
