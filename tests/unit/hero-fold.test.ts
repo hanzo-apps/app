@@ -20,8 +20,8 @@ const css = readFileSync(join(ROOT, "assets/globals.css"), "utf8");
  */
 describe("the hero is a sentence beside the product", () => {
   it("says what the product does, once, on the left", () => {
-    expect(landing).toContain("Describe your app.");
-    expect(landing).toContain("Hanzo builds and ships it.");
+    expect(landing).toContain("Describe your company.");
+    expect(landing).toContain("Agents build and ship it.");
     // "site or app", not "app": the headline is measured to the pixel and cannot
     // move, so the sentence under it is where the product admits that a website
     // is the same thing. Someone with a shop or a studio does not think they
@@ -47,7 +47,7 @@ describe("the hero is a sentence beside the product", () => {
     const hero = landing.slice(landing.indexOf("── Hero"), landing.indexOf("── Below the fold"));
     expect(hero).toMatch(/\$lg=\{\{ flexDirection: "row"/);
     expect(hero).not.toMatch(/flexDirection="row"/); // never unconditionally
-    expect(hero.indexOf("Describe your app.")).toBeLessThan(hero.indexOf("<HeroPreview"));
+    expect(hero.indexOf("Describe your company.")).toBeLessThan(hero.indexOf("<HeroPreview"));
   });
 
   it("mounts the product frame exactly once, in the fold", () => {

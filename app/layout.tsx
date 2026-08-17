@@ -93,7 +93,7 @@ export const metadata: Metadata = {
   // only "Store" and named nobody. A `template` is Next's own mechanism for
   // exactly this: a page states what IT is, the root says who WE are.
   title: {
-    default: "Hanzo — describe an app and it gets built",
+    default: "Hanzo — describe your company, agents build and ship it",
     template: "%s — Hanzo AI",
   },
   description:

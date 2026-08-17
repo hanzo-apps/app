@@ -21,10 +21,10 @@ import type { MetadataRoute } from "next";
 // both, which is the thing that cannot be true.
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Hanzo — describe an app and it gets built",
+    name: "Hanzo — describe your company, agents build and ship it",
     short_name: "Hanzo",
     description:
-      "Describe an app in plain words. Hanzo writes it, runs it, and puts it on a URL.",
+      "Describe your company in plain words. Agents write its site or app, run it, and put it on a URL.",
     start_url: "/",
     display: "standalone",
     background_color: "#000000",

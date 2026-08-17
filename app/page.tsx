@@ -268,10 +268,10 @@ export default function LandingPage() {
             576 is a FLOOR, and it has to be one. It was written as `maxWidth`
             alone, which is a cap — `flex: 1` then hands the column whatever a
             half-share happens to be and the cap never applies. Between 1024 and
-            1200 that share is 456–544px against the 573px the second sentence
-            occupies at 48px, so the headline stood at THREE lines with "ships
-            it." orphaned across that whole band, and read correctly at 1280 and
-            up only because the share finally reached the cap. Measured every
+            1200 that share is 456–544px against the 540px the longer sentence
+            occupies at 48px, so the headline stood at THREE lines with its last
+            two words orphaned across that whole band, and read correctly at 1280
+            and up only because the share finally reached the cap. Measured every
             80px from 900 to 1680. The right column is a scaled mock and gives
             up the difference; a headline cannot. */}
         <YStack minHeight="calc(100svh - 60px)" justifyContent="center" paddingHorizontal="$4" paddingBottom="$14" paddingTop="$8" $md={{ paddingHorizontal: "$6" }}>
@@ -292,22 +292,21 @@ export default function LandingPage() {
                     It used to be hidden below sm, which forced the phone to hold
                     the whole sentence on ONE line: 17px, the largest that fits
                     358px, and a hero that read smaller than the 32px H2 three
-                    sections down. 30px is the largest that keeps the longer
-                    sentence unwrapped once it has a line of its own (measured at
-                    390: 365px of glyphs less 26 × 0.4px of tracking = 355 in 358
-                    of room). A phone is not ONE width, though: at 30px flat the
-                    same sentence wraps on a 360px screen and orphans "it." again,
-                    so the size is fluid. The longer sentence is 11.8em wide, the
-                    room is 100vw − 32px of padding, so 8.45vw − 2.7px is the
-                    exact fit and 7.9vw − 2.5px keeps 6% of slack for the metrics
-                    of a fallback face. */}
+                    sections down. A phone is not ONE width, though: any flat
+                    size large enough to read at 390 wraps the longer sentence on
+                    a 360px screen and orphans its last words, so the size is
+                    fluid. The longer sentence is 11.25em wide, the room is
+                    100vw − 32px of padding, so 7.9vw − 2.5px fits it with slack
+                    for the metrics of a fallback face. Measured on the running
+                    page: 314px of glyphs in 358 of room at 390, 287 in 328 at
+                    360, and two lines at every width from 360 to 1680. */}
                 <H1 fontSize="clamp(22px, 7.9vw - 2.5px, 34px)" fontWeight="600" textAlign="center" lineHeight="1.05" letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: 48 }} $lg={{ textAlign: "left" }}>
                   {/* The space is explicit: JSX drops the whitespace around the
                       <br>, and it is what separates the sentences for a reader
                       who gets the text without the line break. */}
-                  Describe your app.{' '}
+                  Describe your company.{' '}
                   <br />
-                  Hanzo builds and ships it.
+                  Agents build and ship it.
                 </H1>
               </Reveal>
 
