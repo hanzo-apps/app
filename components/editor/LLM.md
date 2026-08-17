@@ -431,3 +431,24 @@ only — a NAMED group emits `t_group_resizer` and keeps the containment.
 
 **A style prop that compiles to a class is not proof of a rule.** Read the
 computed value under a real pointer; the class name alone tells you nothing.
+
+### A picker is `Command`, and a stretched mark has 20px to live in
+
+The page switcher (`page-navigator`) and the model picker are the same primitive,
+`@hanzo/ui`'s `Command`, because the switcher spent a while being a hand-rolled
+copy of it — its own search row, its own filter, its own Enter handler, rows
+built out of Buttons — and every half drifted. The field asked for `width: 100%`
+inside a flex row and took the whole panel, pinning the search icon against the
+edge and pushing the match count out past it; the rows carried a Button's ground
+and border, so five pages read as five stacked buttons; and the open-page dot
+asked for `$1.5`, a SIZE token — 24px — which is the white disc that swallowed
+the first row. Filtering, the cursor, keyboard traversal and the empty state are
+the library's. Grouping and which-page-is-open are the picker's.
+
+**`@hanzogui/list-item` pads a row 14px, so a child with `alignSelf="stretch"`
+expands into 20px of a 48px row — not 48.** Both pickers mark the chosen row with
+a 2px rail (the highlight belongs to the CURSOR, so the mark has to be separate),
+and both carried `marginVertical="$1.5"` on it: 6px a side off a 20px line leaves
+a 2x8 tick. Measured in Chromium — 8 with the margins, 20 without — and nothing
+in the source hints at it, because `alignSelf` was doing its job the whole time.
+`tests/unit/rail.test.ts` pins it for both files.
