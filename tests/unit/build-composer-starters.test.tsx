@@ -173,27 +173,27 @@ describe("BuildComposer starters", () => {
   // button for the ~3s it rests on screen, so a reader who likes what they see
   // builds it in one tap without typing a word. This pins that the armed phrase
   // is what a bare send submits — the whole point of the read pause.
-  it("arms the fully-typed example — a bare send builds THAT phrase in one tap", () => {
+  it("never submits the animated example — silence is not a request", () => {
     jest.useFakeTimers();
     try {
       const onSubmit = jest.fn();
       renderComposer(<BuildComposer typewriter={["a test app"]} onSubmit={onSubmit} />);
 
-      // Empty field, phrase mid-type → send is the generic "Start building",
-      // with nothing to build yet. (gui renders a role=button div, so assert the
-      // accessible name, not the native disabled attribute.)
-      expect(screen.queryByRole("button", { name: "Build a test app" })).toBeNull();
-      expect(screen.getByRole("button", { name: "Start building" })).toBeInTheDocument();
-
-      // Past the type-in (400ms lead + 10 chars × 38ms) into the read hold.
+      // Past the type-in (400ms lead + 10 chars x 38ms) into the read hold, so
+      // the example is fully typed and showing.
       act(() => {
         jest.advanceTimersByTime(400 + 10 * 38 + 60);
       });
 
-      // Armed: send now NAMES exactly what a bare tap will build, and does.
-      const send = screen.getByRole("button", { name: "Build a test app" });
+      // The example is a PLACEHOLDER. It used to be armed — send named it and a
+      // bare tap built it — which meant an empty composer read silence as a
+      // request. This composer is also the builder's edit box, so in the wild
+      // that appended "a docs site with full-text search" to someone's mediation
+      // app right after a failed turn: a stranger's prompt in their project.
+      expect(screen.queryByRole("button", { name: /^Build / })).toBeNull();
+      const send = screen.getByRole("button", { name: "Start building" });
       fireEvent.click(send);
-      expect(onSubmit).toHaveBeenCalledWith("a test app", "build");
+      expect(onSubmit).not.toHaveBeenCalled();
     } finally {
       jest.useRealTimers();
     }

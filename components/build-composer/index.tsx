@@ -271,10 +271,6 @@ export function BuildComposer({
     return () => clearTimeout(t);
   }, [idle, typewriter]);
 
-  // The example a bare send would build — only while the composer is genuinely
-  // idle (focusing or typing takes over and hands send the draft instead).
-  const armedIdea = idle ? armed : null;
-
   const placeholder = idle && typed
     ? `Ask Hanzo to build ${typed}█`
     : 'Ask Hanzo to build…';
@@ -653,13 +649,23 @@ export function BuildComposer({
                   <Mic size={16} fill={state === "idle" ? "none" : "currentColor"} />
                 )}
               </Voice>
+              {/* SEND BUILDS WHAT YOU WROTE, and nothing else.
+                  The animated example is a PLACEHOLDER — it says what this box
+                  is for. It used to be ARMED: a send on an empty composer built
+                  the phrase that happened to be cycling, so silence was read as
+                  a request. This composer is also the builder's edit box, where
+                  that turns a stray send into a stranger's prompt appended to
+                  someone's project — measured in the wild as "a docs site with
+                  full-text search" arriving in a mediation app nobody asked to
+                  change, right after a failed turn.
+                  An example is worth showing and is never worth submitting. */}
               <Button
                 type="button"
-                onClick={() => submit(idea.trim() ? idea : (armedIdea ?? ''))}
+                onClick={() => submit()}
                 onFocus={() => { freezeRef.current = true; }}
                 onBlur={() => { freezeRef.current = false; }}
-                disabled={!(idea.trim() || armedIdea || files.length)}
-                aria-label={armedIdea && !idea.trim() ? `Build ${armedIdea}` : "Start building"}
+                disabled={!(idea.trim() || files.length)}
+                aria-label="Start building"
                 variant="ghost"
                 className="hz-round"
                 alignItems="center" justifyContent="center" borderWidth={0} backgroundColor="$color5" hoverStyle={{ backgroundColor: "$color6" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3" }}
