@@ -6,16 +6,18 @@ import { parsePages, parseSinglePage, stripThinkBlocks } from "@/lib/format-page
 import { setLastGenerationRequestId } from "@/lib/reward-signal";
 import { qualityReport } from "@/lib/pages/report";
 import { baseEnabled } from "@/lib/base/flag";
-// UNAVAILABLE is the ONE honest message for a failure THIS side detects: the
-// socket died, or the response arrived without a body. The caller's handleError
-// surfaces it once so the user knows to retry — never an infinite "Building…"
-// with a stuck isAiWorking flag.
+// UNAVAILABLE is the LAST resort, never the first answer. A refusal reaches the
+// browser with the gateway's own sentence in `message` (lib/gateway.ts
+// `refusal` put it there), so `said` reads that sentence off every failed
+// response and UNAVAILABLE stands in only when the body said nothing a person
+// can act on — a dead socket, a bodyless response, an HTML error page.
 //
-// It is deliberately NOT the fallback for a refusal the server explained. A 401
-// or a 403 arrives with a reason (lib/gateway.ts wrote it) and that reason is
-// what the user needs; telling them to wait a minute for a revoked key is how an
-// afternoon gets lost. Retry advice belongs only where retrying can work — which
-// is why this sentence and the server's are literally the same string.
+// This matters most on the 5xx branch, because `refusal` folds every status
+// that is not 401/402/403/429 into 502: an out-of-credit house provider, a
+// model whose upstreams all refused, a request some adapter could not parse.
+// Each of those states its cause and none of them clears on its own, so
+// substituting "try again shortly" turns a fixable condition into a wait with
+// no end.
 import { CREDIT, UNAVAILABLE, said } from "@/lib/gateway";
 
 // Guarded JSON parse: the stream-done handler only treats the response as a
@@ -156,7 +158,7 @@ export const useCallAi = ({
       }
       if (!request.ok && request.status >= 500) {
         setisAiWorking(false);
-        return { error: "api_error", message: UNAVAILABLE };
+        return { error: "api_error", message: await said(request, UNAVAILABLE) };
       }
       if (!request.body) {
         setisAiWorking(false);
@@ -392,7 +394,7 @@ export const useCallAi = ({
       }
       if (!request.ok && request.status >= 500) {
         setisAiWorking(false);
-        return { error: "api_error", message: UNAVAILABLE };
+        return { error: "api_error", message: await said(request, UNAVAILABLE) };
       }
       if (!request.body) {
         setisAiWorking(false);
@@ -522,7 +524,7 @@ export const useCallAi = ({
       }
       if (!request.ok && request.status >= 500) {
         setisAiWorking(false);
-        return { error: "api_error", message: UNAVAILABLE };
+        return { error: "api_error", message: await said(request, UNAVAILABLE) };
       }
 
       {
@@ -619,7 +621,7 @@ export const useCallAi = ({
       }
       if (!request.ok && request.status >= 500) {
         setisAiWorking(false);
-        return { error: "api_error", message: UNAVAILABLE };
+        return { error: "api_error", message: await said(request, UNAVAILABLE) };
       }
       if (!request.body) {
         setisAiWorking(false);

@@ -131,3 +131,33 @@ test("the 5xx sentence does not promise that a minute fixes it", () => {
   assert.equal(body.message, UNAVAILABLE);
   assert.ok(!/try again in a minute/i.test(UNAVAILABLE), UNAVAILABLE);
 });
+
+/**
+ * The gateway refuses a REQUEST with a 4xx, and it says which part it could not
+ * take. Verbatim from api.hanzo.ai: the builder's system prompt shows a Leaflet
+ * tile template, the vision path fetches every image URL it finds in the text,
+ * and `{s}` is not a host — so the whole completion is refused, identically,
+ * every time. Folding that into a 502 hid the sentence behind the client's
+ * `status >= 500` branch and told the reader to wait for a request that will
+ * never be accepted.
+ */
+const UNPARSEABLE = JSON.stringify({
+  status: "error",
+  msg: 'parse "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png": invalid character "{" in host name',
+  data: null,
+  data2: null,
+});
+
+test("a refused request keeps its status and its reason", () => {
+  const { body, status } = refusal(400, UNPARSEABLE);
+
+  assert.equal(status, 400, "a refused request is not an outage");
+  assert.match(body.message, /invalid character/);
+  assert.notEqual(body.message, UNAVAILABLE);
+});
+
+test("a 4xx with nothing stated still does not claim the model answered", () => {
+  for (const s of [400, 404, 410, 422]) {
+    assert.equal(refusal(s, "").status, s);
+  }
+});

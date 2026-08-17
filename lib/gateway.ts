@@ -21,7 +21,10 @@
  *        suggest it.
  *   402  CREDIT. Already had a home; kept here so all five live together.
  *   429  RATE. The one status where waiting is the whole remedy.
- *   else the MODEL. The gateway answers 502 for ids it lists but cannot reach,
+ *   4xx  the REQUEST. It keeps its own status and quotes the sentence the
+ *        gateway wrote, because a refused request is refused identically every
+ *        time and "try again" is the one instruction that cannot work.
+ *   5xx  the MODEL. The gateway answers 502 for ids it lists but cannot reach,
  *        so this names the model and offers the move that works — picking
  *        another one — rather than promising a minute will fix it.
  *
@@ -120,11 +123,20 @@ export function refusal(
     return { body: { ok: false, needCredits: true, message: stated || CREDIT }, status: 402 };
   if (status === 429) return { body: { ok: false, message: stated || BUSY }, status: 429 };
 
-  // Anything else is upstream failing, not the caller. One status (502) and one
-  // sentence, because the client cannot act on the difference between a gateway
-  // 500 and a gateway 504 — but it CAN act on the model, which is the commonest
-  // cause: the catalog lists ids the gateway cannot reach.
-  return { body: { ok: false, message: stated || UNAVAILABLE }, status: 502 };
+  // A 4xx keeps its own status: it is the REQUEST being refused, and no amount
+  // of waiting changes a request. Relabelling one 502 made the browser's network
+  // log, this route and the toast tell three different stories about the same
+  // refusal, and put the reason behind the client's `status >= 500` branch,
+  // which is the one place it gets dropped.
+  //
+  // A 5xx collapses to one status and one sentence, because the client cannot
+  // act on the difference between a gateway 500 and a 504 — but it CAN act on
+  // the model, which is the commonest cause either way: an id the catalog lists
+  // and the gateway cannot reach.
+  return {
+    body: { ok: false, message: stated || UNAVAILABLE },
+    status: status >= 400 && status < 500 ? status : 502,
+  };
 }
 
 /**
