@@ -212,7 +212,12 @@ describe("BFF: GET /v1/models", () => {
       expect(body.models[0].value).toBe(FREE_MODEL);
       const ids = body.models.map((m: { value: string }) => m.value);
       expect(ids).toEqual(expect.arrayContaining(["enso", "zen5-pro"]));
-      expect(ids).toHaveLength(4);
+      // Counted off the fixture's own DISTINCT ids: the default is listed by
+      // name, so it may be one of the three above and the ladder is then three
+      // rungs long. The claim is that none was trimmed, not that there are four.
+      expect(ids).toHaveLength(
+        new Set(["enso", "enso-free", "zen5-pro", DEFAULT_MODEL]).size
+      );
     });
 
     it("leaves a funded caller on the paid default, in the gateway's order", async () => {
