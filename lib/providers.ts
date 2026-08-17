@@ -51,7 +51,23 @@ export type ModelOption = {
 // double for the default. So if a future enso regression makes it recite its
 // identity again, this line — not a page, component or env var — is the ONE
 // place to move it back to a model that builds.
-export const DEFAULT_MODEL = "enso";
+//
+// IT IS BACK ON HOLD, for a different reason and by that same rule. Enso cannot
+// finish a builder turn today: it reasons without streaming (measured: response
+// headers at 2.2s, then no frame for 118+ seconds, 7 of 8 tokens spent on
+// reasoning), and its provider intermittently answers `Upstream error from
+// Nvidia: Internal server error` both before and during the stream. Raced
+// against the same builder prompt, streaming, 16k ceiling:
+//
+//   claude-opus-4.8           first token 2.7s   COMPLETE 39s   11,362 chars
+//   anthropic-claude-opus-5   first token 8.4s   COMPLETE 40s    8,694 chars
+//   enso                      never finished — still going at 120s
+//   zen5-coder                never finished — still going at 120s
+//
+// A page in 40 seconds against one that does not arrive is not a preference.
+// Enso stays in the picker and one click away; what moves is only what someone
+// who never opens the picker gets. Put it back the moment Enso finishes a turn.
+export const DEFAULT_MODEL = "anthropic-claude-opus-5";
 
 // The Hanzo gateway (api.hanzo.ai) serves the Zen/Enso ladder + connected
 // providers AND — since DO GenAI funded the proprietary catalog — a CURATED set

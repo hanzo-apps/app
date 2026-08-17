@@ -190,9 +190,16 @@ describe("BFF: GET /v1/models", () => {
       http.get("https://api.hanzo.ai/v1/billing/balance", () =>
         HttpResponse.json(body as Record<string, unknown>, { status })
       );
+    // DEFAULT_MODEL is listed BY NAME rather than spelled out, because "the paid
+    // default" below is only a claim about the default if the gateway actually
+    // offers it. Spelled out, this fixture silently stopped covering that the
+    // day the default moved off `enso`, and the assertion started passing on
+    // `models[0]` instead.
     const ladder = () =>
       http.get(`${GATEWAY}/models`, () =>
-        HttpResponse.json({ data: [{ id: "enso" }, { id: "enso-free" }, { id: "zen5-pro" }] })
+        HttpResponse.json({
+          data: [{ id: "enso" }, { id: "enso-free" }, { id: "zen5-pro" }, { id: DEFAULT_MODEL }],
+        })
       );
 
     it("opens a spent-out caller on the free model, with the paid rungs still offered", async () => {
@@ -205,7 +212,7 @@ describe("BFF: GET /v1/models", () => {
       expect(body.models[0].value).toBe(FREE_MODEL);
       const ids = body.models.map((m: { value: string }) => m.value);
       expect(ids).toEqual(expect.arrayContaining(["enso", "zen5-pro"]));
-      expect(ids).toHaveLength(3);
+      expect(ids).toHaveLength(4);
     });
 
     it("leaves a funded caller on the paid default, in the gateway's order", async () => {
