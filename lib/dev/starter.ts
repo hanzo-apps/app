@@ -122,11 +122,21 @@ ${TAGS.design}
       body: JSON.stringify({ body: text })
     })
       .then(function (res) { if (!res.ok) throw res; body.value = ''; return load(); })
-      .catch(function () { say('That note did not save. Sign in and try again.'); });
+      // Same rule as the identity read: the write failed, and from a preview the
+      // reason is that there is nothing to write to yet. "Sign in and try again"
+      // named a cause this page cannot know and the reader has usually already
+      // done.
+      .catch(function () { say('That note did not save. Notes save once this app is published.'); });
   });
 
   // Who is signed in — Hanzo verifies it server-side, so the page never handles
   // a password, a token or a session of its own.
+  //
+  // THREE STATES, NOT TWO. An answer of "not authenticated" is the reader's to
+  // act on; a request that could not be MADE is ours, and the preview frame is
+  // that case every time — it paints on an opaque origin, so this fetch fails
+  // transport and never reaches an identity. Collapsing the two told a signed-in
+  // builder to sign in, on a screen they had already signed in to reach.
   fetch('/v1/me')
     .then(function (res) { return res.json(); })
     .then(function (me) {
@@ -134,7 +144,9 @@ ${TAGS.design}
         ? 'Signed in with Hanzo. Your notes are saved to this app\\'s database.'
         : 'Sign in with Hanzo to save notes.';
     })
-    .catch(function () { who.textContent = 'Sign in with Hanzo to save notes.'; });
+    .catch(function () {
+      who.textContent = 'Your Hanzo account appears here once this app is published.';
+    });
 
   load();
   // Someone else's note should appear without a reload.

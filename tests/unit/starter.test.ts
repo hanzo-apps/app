@@ -75,6 +75,24 @@ describe('the starter document', () => {
     expect(page.html).toMatch(/Notes load once this app is published/);
     expect(page.html).toMatch(/did not save/);
   });
+
+  it('never asks a signed-in reader to sign in', () => {
+    // The preview frame paints on an opaque origin, so every one of these fetches
+    // fails TRANSPORT and takes its catch — while the person reading it signed in
+    // to reach this screen. A catch may therefore say what WE do not know; only a
+    // request that came back may tell the reader to act.
+    //
+    // Asserted on the catch bodies rather than on the document, because the
+    // signed-out sentence is legitimate in the `.then` and must stay there.
+    const catches = page.html.match(/\.catch\(function \(\) \{[\s\S]*?\}\)/g) ?? [];
+    expect(catches.length).toBeGreaterThan(2);
+    for (const body of catches) {
+      expect(body).not.toMatch(/Sign in/i);
+    }
+
+    // And the answered case keeps it, so this is a split rather than a deletion.
+    expect(page.html).toMatch(/Sign in with Hanzo to save notes\./);
+  });
 });
 
 describe('start() — what a new build begins with', () => {
