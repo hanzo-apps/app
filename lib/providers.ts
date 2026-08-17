@@ -85,10 +85,25 @@ export const resolveModelId = (id?: string | null): string => {
 // this one persisted value, so an explicit concrete pick always wins over auto.
 export const AUTO_MODEL = "auto";
 
-// Whether smart routing is on for a given persisted model value. Empty/unset is
-// treated as auto so a fresh session opens in smart routing (the default).
+// Whether smart routing is on for a given persisted model value.
+//
+// UNSET IS NOT ROUTING. It used to be — empty read as `auto` — so every fresh
+// session was routed, and `resolveSmartRouting` below could never deliver the
+// DEFAULT_MODEL it promises: `localPref` arrives as `true` rather than `null`,
+// so the `?? false` that is supposed to open on Enso is unreachable. The two
+// halves of this module disagreed about what "untouched" means.
+//
+// It is not a cosmetic disagreement. Routing resolves to the gateway's `best`,
+// whose every arm is one provider; measured live, that provider answered 429
+// "Platform overloaded", all five arms failed with `providers_exhausted`, and
+// the builder said "That model didn't respond" — while enso, zen5 and zen5-coder
+// answered 200 throughout. A default one vendor can take out is not a default.
+//
+// Routing is something a person turns ON, or an org sets as policy. Both still
+// work: an explicit `auto` routes, and `defaultSessionRouting` still decides for
+// an org. Only "nobody has said anything" changed, and it now means Enso.
 export const isSmartRouting = (model?: string | null): boolean =>
-  !model || model === AUTO_MODEL;
+  model === AUTO_MODEL;
 
 // Public docs for the routing behaviour, linked from the toggle.
 export const ROUTING_DOCS_URL = "https://docs.hanzo.ai/docs/usage/routing";

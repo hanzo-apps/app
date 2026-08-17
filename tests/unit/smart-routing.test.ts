@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 
-import { resolveSmartRouting } from "../../lib/providers";
+import { AUTO_MODEL, isSmartRouting, resolveSmartRouting } from "../../lib/providers";
 
 /**
  * resolveSmartRouting — the ONE precedence rule for a NEW session's smart
@@ -60,4 +60,25 @@ test("org active, local override wins over the org default", () => {
   assert.equal(resolveSmartRouting(false, defaultOn).enabled, false);
   assert.equal(resolveSmartRouting(true, defaultOff).enabled, true);
   assert.equal(resolveSmartRouting(false, defaultOn).toggleDisabled, false);
+});
+
+/**
+ * Unset is NOT routing.
+ *
+ * It used to be: `isSmartRouting("")` answered true, so every fresh session —
+ * the builder's first prompt, a new chat, any untouched picker — was routed.
+ * Routing resolves to the gateway's `best`, whose every arm is one provider;
+ * measured live, that provider answered 429 "Platform overloaded", all five arms
+ * failed, and the surface said "That model didn't respond." Meanwhile enso and
+ * zen5 answered 200 throughout.
+ *
+ * A default that one vendor can take out is not a default. Routing is something
+ * a person turns ON.
+ */
+test("unset is the default model, not smart routing", () => {
+  assert.equal(isSmartRouting(""), false);
+  assert.equal(isSmartRouting(null), false);
+  assert.equal(isSmartRouting(undefined), false);
+  assert.equal(isSmartRouting(AUTO_MODEL), true);
+  assert.equal(isSmartRouting("enso"), false);
 });
