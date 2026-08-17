@@ -2195,6 +2195,27 @@ div[data-hanzo-shell] > button {
   }
 }
 
+/* THE BAR TAKES THIS PAGE'S GROUND. @hanzogui/shell 8.1.45 made the bar wear
+   the plane — one material from the top of the screen to the bottom of an open
+   menu, so there is no boundary to see — and spends `CHROME.panel`, a flat
+   #000, as that material. The shell's own note says what the value is: "the
+   ground hanzo.chat paints the page with. NOT hanzo.ai's", measured at
+   rgb(10,10,10) on this surface too, and left alone only because the same
+   constant is also the ink on the white CTA. It hands that split to "whoever is
+   looking at the screen".
+
+   Looked, at 1440x900: rows 50-59 read 0,0,0 and row 60 on reads 10,10,10, so
+   an opaque bar whose reason to exist is the absence of a seam was drawing one.
+   This page paints --background, so the bar wearing the plane and the bar
+   reading that token are the same sentence.
+
+   `!important` because the shell writes the background INLINE, and an inline
+   declaration outranks every selector at every specificity. Delete this the day
+   the shell reads the token itself. */
+header[data-hanzo-shell] {
+  background: var(--background) !important;
+}
+
 /* AN OVERLAY THAT CARRIES TEXT IS OPAQUE. One law, every floating surface.
    @hanzo/ui frosts its own `[data-slot="dropdown-menu-content"]` and even
    carries the -webkit- prefix for it, but gui renders poppers and dialogs as
