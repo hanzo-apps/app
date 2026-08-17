@@ -28,7 +28,14 @@ describe('header self-links', () => {
     // A ROUTE, not an absolute URL: the shell matches entries against this to
     // decide which one names the page being rendered. Without it every entry is
     // just a link and the brand mark points at itself again.
-    expect(header).toMatch(/currentHref="\//);
+    //
+    // `{pathname}` and a `"/…"` literal both satisfy that, and the expression is
+    // the stronger of the two — a literal `"/"` marked the home page and only
+    // ever the home page, so every OTHER route kept the self-link this file
+    // exists to prevent. Pinning the literal alone therefore failed the header
+    // for getting better, and in this repo a red `test` job skips `build-amd64`
+    // outright: no image, no deploy, and nothing in the run saying so.
+    expect(header).toMatch(/currentHref=(\{pathname\}|"\/)/);
   });
 
   it('does not refuse the primary action any more', () => {
