@@ -34,7 +34,7 @@ import {
 import { applyEdit } from "@/lib/edit/apply";
 import { resolveModelId } from "@/lib/providers";
 import { refusal } from "@/lib/gateway";
-import { Broke, turn } from "@/lib/sse";
+import { ATTEMPTS, Broke, turn } from "@/lib/sse";
 import { outputCap } from "@/lib/output-cap";
 import { session } from "@/lib/iam";
 import { requireSameOrigin } from "@/lib/org/csrf";
@@ -123,7 +123,27 @@ async function callGateway(
 }
 
 /**
- * Ask the gateway the same thing again, for a turn that broke after `200`.
+ * THE ask. One way to reach the gateway, and it re-asks a 5xx.
+ *
+ * An upstream that fails BEFORE it answers is exactly as transient as one that
+ * fails during — Enso's does both, from the same intermittent provider fault —
+ * and nothing has reached the reader either way, so both deserve the same
+ * second try. Only the in-stream half used to get one, which left the builder
+ * reporting `502` on a prompt the next attempt builds.
+ *
+ * A 4xx is returned untouched: a refused request is refused identically every
+ * time, and asking again only spends the caller's patience.
+ */
+async function ask(token: string, messages: ChatMessage[], model: string) {
+  for (let attempt = 1; ; attempt++) {
+    const answer = await callGateway(token, messages, model, true);
+    if (answer.ok || answer.status < 500 || attempt >= ATTEMPTS) return answer;
+    await answer.text().catch(() => ""); // release the socket before re-asking
+  }
+}
+
+/**
+ * Ask again for a turn that broke after `200`.
  *
  * By the time this runs the response headers are sent, so a refusal on the
  * second ask can only travel in the body — hence `Broke` rather than a status.
@@ -131,7 +151,7 @@ async function callGateway(
 const reopen =
   (token: string, messages: ChatMessage[], model: string) =>
   async (): Promise<ReadableStream<Uint8Array>> => {
-    const again = await callGateway(token, messages, model, true);
+    const again = await ask(token, messages, model);
     if (!again.ok || !again.body) {
       const detail = await again.text().catch(() => "");
       throw new Broke(refusal(again.status, detail).body.message);
@@ -218,7 +238,7 @@ export async function POST(request: NextRequest) {
       : []),
   ];
 
-  const gateway = await callGateway(token, messages, selectedModel, true);
+  const gateway = await ask(token, messages, selectedModel);
 
   if (!gateway.ok || !gateway.body) {
     const detail = await gateway.text().catch(() => "");
@@ -349,7 +369,7 @@ export async function PATCH(request: NextRequest) {
     { role: "user", content: prompt },
   ];
 
-  const gateway = await callGateway(token, messages, selectedModel, true);
+  const gateway = await ask(token, messages, selectedModel);
 
   if (!gateway.ok || !gateway.body) {
     const detail = await gateway.text().catch(() => "");
