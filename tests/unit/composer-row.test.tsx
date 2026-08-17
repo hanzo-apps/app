@@ -224,28 +224,58 @@ describe('the mode label while nobody is here', () => {
     }
   });
 
-  it('sends the mode that was PICKED, never the one the animation is showing', () => {
-    // The ONE moment the label and the value can differ at a submit: the armed
-    // typewriter phrase, which sends without a keystroke and so leaves the
-    // composer idle and the loop running. A phrase long enough to finish typing
-    // AFTER the first flip puts a "Plan" label over a `build` submit — and build
-    // is what must go, because nobody has chosen anything.
+  it('cannot submit at all while the animation is the only thing in the box', () => {
+    // There was exactly ONE moment the label and the submitted value could
+    // differ: a send on an empty composer used to build whatever phrase the
+    // typewriter was showing, which submits without a keystroke and so leaves
+    // the composer idle and the mode loop running — a "Plan" label over a
+    // `build` submit. That is gone; send now builds what was written.
+    //
+    // So the divergence is no longer a value to check, it is a state to make
+    // UNREACHABLE, and this pins the reason it is: the loop runs only while the
+    // box is empty, and while the box is empty there is nothing to send. The
+    // three tests above cover the other direction — every way of putting
+    // something in the box stops the loop first.
+    //
+    // The phrase is long enough to finish typing after the first flip, which is
+    // where the old code armed and where a re-armed one would arm again.
     const LONG =
       'a customer portal with login, a dashboard, billing, invoices, and an admin area for the whole team to use';
-    const armedAt = 400 + 38 * LONG.length; // the typewriter's own lead + cadence
-    expect(armedAt).toBeGreaterThan(4000); // …lands after the label reads Plan
-    expect(armedAt).toBeLessThan(8000); // …and before it reads Build again
+    const typedOut = 400 + 38 * LONG.length; // the typewriter's own lead + cadence
+    expect(typedOut).toBeGreaterThan(4000); // …lands after the label reads Plan
+    expect(typedOut).toBeLessThan(8000); // …and before it reads Build again
 
     const onSubmit = jest.fn();
     jest.useFakeTimers();
     try {
       renderComposer(<BuildComposer typewriter={[LONG]} onSubmit={onSubmit} />);
-      act(() => void jest.advanceTimersByTime(armedAt + 100));
+      act(() => void jest.advanceTimersByTime(typedOut + 100));
 
+      // The whole example is typed out and the label has flipped — the exact
+      // state the old bug submitted from.
+      expect(screen.getByLabelText('Ask Hanzo to build')).toHaveAttribute(
+        'placeholder',
+        `Ask Hanzo to build ${LONG}█`,
+      );
       expect(modeControl()).toHaveTextContent('Plan');
-      fireEvent.click(screen.getByRole('button', { name: `Build ${LONG}` }));
 
-      expect(onSubmit).toHaveBeenCalledWith(LONG, 'build');
+      // TWO assertions, because they cover two different readers, and neither
+      // one alone would have caught the bug.
+      //
+      // `aria-disabled`, not `toBeDisabled()`: a gui Button compiles `disabled`
+      // to that attribute plus `pointer-events: none` and half opacity, and
+      // never to the native attribute — so the matcher that reads the DOM one
+      // reports "not disabled" on a button that plainly is. It is what a screen
+      // reader is told.
+      expect(send()).toHaveAttribute('aria-disabled', 'true');
+
+      // And it stays silent when activated anyway, which is not belt-and-braces:
+      // `pointer-events: none` stops a pointer and nothing else, and with no
+      // native attribute the control keeps `tabindex="0"`, so Enter on it still
+      // fires a click. What refuses that is `submit`'s own `if (!text) return`.
+      // This is the assertion a re-armed handler fails.
+      fireEvent.click(send());
+      expect(onSubmit).not.toHaveBeenCalled();
     } finally {
       jest.useRealTimers();
     }
