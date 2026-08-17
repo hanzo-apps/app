@@ -157,7 +157,21 @@ export async function turn(
   // Keep the connection warm while the model is still thinking. It stops on the
   // first real fragment: after that the stream speaks for itself, and a space
   // landing mid-document would be a space in somebody's markup.
-  const pulse = beat > 0 ? setInterval(() => { if (!sent) void write(" "); }, beat) : null;
+  //
+  // A beat that lands on a closed stream is swallowed, not thrown: the reader
+  // going away is the ordinary end of this, and an unhandled rejection from a
+  // timer would take the process with it.
+  const pulse =
+    beat > 0
+      ? setInterval(() => {
+          if (sent) return;
+          try {
+            void Promise.resolve(write(" ")).catch(() => {});
+          } catch {
+            /* the stream is gone; the next read settles the turn */
+          }
+        }, beat)
+      : null;
 
   try {
     for (let attempt = 1; ; attempt++) {
