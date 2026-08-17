@@ -165,6 +165,29 @@ describe('a stylesheet we host brings its own assets', () => {
   });
 });
 
+describe('a URL we put in a prompt has to be a URL', () => {
+  it('names no host a parser would refuse', () => {
+    // The gateway's vision path scans a prompt's TEXT for image URLs
+    // (`http[s]?://\S+\.(jpg|jpeg|png|gif|webp)`) and fetches each hit
+    // server-side, so a template placeholder inside the authority is not a
+    // cosmetic detail: Go's url.Parse rejects `{` in a host and the whole
+    // completion is refused. A Leaflet tile template shipped that way and
+    // every new-project build carrying it came back 400 — measured against
+    // production, `parse "https://{s}.tile.openstreetmap.org/…": invalid
+    // character "{" in host name`, twelve refusals in twenty-five minutes.
+    //
+    // Placeholders in the PATH are fine and are how a tile URL is written;
+    // only the authority is checked.
+    const bad = GENERATES.flatMap((f) =>
+      [...read(f).matchAll(/https?:\/\/([^/\s'"`)]+)/g)]
+        .map((m) => m[1])
+        .filter((host) => !/^[a-z0-9.-]+(:\d+)?$/i.test(host))
+        .map((host) => `${f}: ${host}`),
+    );
+    expect(bad).toEqual([]);
+  });
+});
+
 describe('the preview frame applies it', () => {
   it('rewrites on the way into the frame', () => {
     // The frame is where the policy bites, so the rewrite has to happen there
