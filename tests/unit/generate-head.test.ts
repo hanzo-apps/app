@@ -135,6 +135,19 @@ test("a refusal that lands after the head keeps its sentence and its modal", asy
   assert.equal(envelope.message, "Monthly spend cap reached for org acme.");
 });
 
+/**
+ * An SSE body carrying `content` as deltas, framed the way the gateway frames
+ * it. Every ask streams — an edit collects the fragments rather than relaying
+ * them, but it asks for them the same way a build does.
+ */
+function sse(content: string, model = "enso", id = "chatcmpl-9"): Response {
+  const frames =
+    [...content.match(/[\s\S]{1,40}/g)!]
+      .map((c) => `data: ${JSON.stringify({ id, model, choices: [{ delta: { content: c } }] })}\n\n`)
+      .join("") + "data: [DONE]\n\n";
+  return new Response(frames, { status: 200, headers: { "content-type": "text/event-stream" } });
+}
+
 /** One follow-up edit against a page the builder already has. */
 const edit = () =>
   new NextRequest("https://hanzo.app/v1/generate", {
@@ -162,23 +175,7 @@ test("an edit hands over its head too, and applies the pages down the body", asy
   assert.equal(res.status, 200);
   assert.equal(res.headers.get("X-Accel-Buffering"), "no");
 
-  settle(
-    new Response(
-      JSON.stringify({
-        id: "chatcmpl-9",
-        model: "enso",
-        choices: [
-          {
-            message: {
-              content:
-                "<<<<<<< SEARCH\n<h1>Bakery</h1>\n=======\n<h1>Order for pickup</h1>\n>>>>>>> REPLACE",
-            },
-          },
-        ],
-      }),
-      { status: 200, headers: { "content-type": "application/json" } }
-    )
-  );
+  settle(sse("<<<<<<< SEARCH\n<h1>Bakery</h1>\n=======\n<h1>Order for pickup</h1>\n>>>>>>> REPLACE"));
 
   const answer = JSON.parse((await read(res)).trim());
   assert.equal(answer.ok, true);
@@ -200,6 +197,25 @@ test("an edit refused after its head keeps the sentence and the modal", async ()
   assert.equal(envelope.ok, false);
   assert.equal(envelope.needCredits, true);
   assert.equal(envelope.message, "balance exhausted");
+});
+
+test("every ask streams, so no bound can mean two different things", async () => {
+  // A non-streaming request withholds its head until the whole completion is
+  // done, which silently turns the bound on the head into a bound on the
+  // generation — generous for one, a guillotine for the other. Both turns ask
+  // the same way and the edit collects what it is sent.
+  const asked: unknown[] = [];
+  global.fetch = jest.fn(async (input: unknown, init?: RequestInit) => {
+    if (String(input).includes("/models")) return catalog();
+    asked.push(JSON.parse(String(init?.body)));
+    return sse("<h1>hi</h1>");
+  }) as unknown as typeof fetch;
+
+  await read(await POST(build()));
+  await read(await PUT(edit()));
+
+  assert.equal(asked.length, 2);
+  for (const body of asked) assert.equal((body as { stream: boolean }).stream, true);
 });
 
 test("a refusal the gateway states promptly still keeps its own status", async () => {

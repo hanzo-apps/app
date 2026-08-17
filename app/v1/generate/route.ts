@@ -124,12 +124,16 @@ async function windowOf(token: string, model: string): Promise<number | undefine
  * The bell is dropped the moment the head arrives, so it never touches the body:
  * a generation is slow by nature and may take as long as it takes, while a
  * gateway that never answers at all is a hang and is ended here.
+ *
+ * Every ask streams. A non-streaming request withholds its head until the whole
+ * completion is done, which turns any bound on the head into a bound on the
+ * generation — the same number then means two different things depending on the
+ * caller, and the one that is generous for a head cuts a long build in half.
  */
 async function callGateway(
   token: string,
   messages: ChatMessage[],
-  model: string,
-  streaming: boolean
+  model: string
 ) {
   const bell = new AbortController();
   const unanswered = setTimeout(() => bell.abort(), ANSWER_MS);
@@ -144,7 +148,7 @@ async function callGateway(
         model,
         messages,
         max_tokens: outputCap(await windowOf(token, model), messages),
-        stream: streaming,
+        stream: true,
       }),
       signal: bell.signal,
     });
@@ -167,7 +171,7 @@ async function callGateway(
  */
 async function ask(token: string, messages: ChatMessage[], model: string) {
   for (let attempt = 1; ; attempt++) {
-    const gateway = await callGateway(token, messages, model, true);
+    const gateway = await callGateway(token, messages, model);
     if (gateway.ok || gateway.status < 500 || attempt >= ATTEMPTS) return gateway;
     await gateway.text().catch(() => ""); // release the socket before re-asking
   }
@@ -471,44 +475,48 @@ export async function PUT(request: NextRequest) {
   // follows it down the body: a turn this route stays silent through is a turn
   // the edge answers for, and it answers with its own page under a status none
   // of these envelopes use.
-  const opening = callGateway(token, messages, selectedModel, false);
+  const opening = ask(token, messages, selectedModel);
   const head = await within(BEAT_MS, opening);
 
-  if (head && !head.ok) {
+  if (head && (!head.ok || !head.body)) {
     const detail = await head.text().catch(() => "");
     const { body: refused, status } = refusal(head.status, detail);
     return NextResponse.json(refused, { status });
   }
 
   return stream(async (write) => {
-    const gateway = await opening.catch(() => null);
-    if (!gateway) throw new Broke(UNAVAILABLE);
+    const open = await opening.catch(() => null);
+    if (!open) throw new Broke(UNAVAILABLE);
 
-    if (!gateway.ok) {
-      const detail = await gateway.text().catch(() => "");
-      return write(JSON.stringify(refusal(gateway.status, detail).body));
+    if (!open.ok || !open.body) {
+      const detail = await open.text().catch(() => "");
+      return write(JSON.stringify(refusal(open.status, detail).body));
     }
 
-    const data = await gateway.json();
-    const chunk: string | undefined = data.choices?.[0]?.message?.content;
+    // The edit is applied here, so the answer is COLLECTED rather than relayed:
+    // the reader is owed pages, not fragments. Nothing reaches the wire until
+    // the JSON does, which is what leaves the beat running for the whole
+    // generation — exactly the turn that needs it.
+    let answer = "";
+    const { model: servedModel, id } = await turn(
+      open.body,
+      reopen(token, messages, selectedModel),
+      (delta) => {
+        answer += delta;
+      }
+    );
 
-    if (!chunk) {
-      return write(
-        JSON.stringify({ ok: false, message: "No content returned from the model" })
-      );
-    }
-
-    const { updatedLines, pages: updatedPages } = applyEdits(chunk, pages);
+    const { updatedLines, pages: updatedPages } = applyEdits(answer, pages);
 
     return write(
       JSON.stringify({
         ok: true,
         updatedLines,
         pages: updatedPages,
-        model: data.model || selectedModel,
+        model: servedModel || selectedModel,
         // The gateway response id — the routing ledger's join key the client
         // attaches to reward signals.
-        id: data.id,
+        id,
       })
     );
   });
