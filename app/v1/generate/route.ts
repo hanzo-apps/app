@@ -82,16 +82,15 @@ const WINDOW_TTL_MS = 5 * 60_000;
 /**
  * How long a catalog read may hold up a build. Its answer only refines a ceiling
  * that already suits the default model, so it must never be the reason a
- * generation is late — a read this misses leaves the ceiling standing.
+ * generation is late — a read that misses this leaves the ceiling standing.
  */
 const CATALOG_MS = 5_000;
 
 /**
  * How long the gateway may take to ANSWER — to send its response head. Bounded
  * so a request that will never be answered ends with a sentence of ours instead
- * of hanging on a socket. Generous, because the reader is already being written
- * to by the time this could fire, and a model that thinks for minutes before its
- * first frame is working, not stuck.
+ * of hanging on a socket. Generous, because a model that thinks for minutes
+ * before its first frame is working, not stuck.
  */
 const ANSWER_MS = 5 * 60_000;
 

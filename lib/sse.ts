@@ -1,5 +1,6 @@
 /**
- * Reading an OpenAI-compatible SSE stream, and re-asking a turn that broke.
+ * Answering with a stream: the response body, the beat that keeps it open,
+ * reading an OpenAI-compatible SSE stream, and re-asking a turn that broke.
  *
  * It lives here rather than in `app/v1/generate/route.ts` because importing
  * that route pulls in the IAM session and its crypto: a suite that imports it
