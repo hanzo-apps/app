@@ -13,6 +13,7 @@
 // and who is signed in.
 
 import { HanzoHeader, resolveSurface, HANZO_PRODUCT_CATEGORIES } from "@hanzogui/shell";
+import { usePathname } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { useCommandK } from "@hanzo/ui/product";
 import { CommandPalette } from "@/components/command-palette";
@@ -20,6 +21,7 @@ import { useUser } from "@/hooks/useUser";
 
 export default function Header() {
   const { user, isAuthenticated, login, logout } = useUser();
+  const pathname = usePathname();
 
   // The palette mounts only while open, so a visitor who never searches never
   // pays for its project fetch. ⌘K and `/` reach it without the control.
@@ -122,9 +124,11 @@ export default function Header() {
         // pill's job is to start a project, and a second list of doors beside
         // that list is the same choice asked twice.
         auth={auth}
-        // The ROUTE, not the absolute URL. This is what the shell matches an
-        // entry against to decide it names the current place.
-        currentHref="/"
+        // The page actually open, so the shell marks the row a reader is
+        // standing on and leaves every other one a link. A constant here says
+        // one page is current everywhere, which both highlights the wrong row
+        // and strips the href off whatever control happens to match it.
+        currentHref={pathname}
         // The bar's own search control, opening THIS app's palette: it holds
         // what a shared header cannot know — the visitor's projects and every
         // operation the cloud answers.
