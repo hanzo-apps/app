@@ -365,19 +365,26 @@ stays a pure function the tests read directly:
 - **429 — rate.** The one status where waiting IS the remedy, so it owns the
   sentence that says so (`BUSY`). It used to share the 5xx one.
 - **anything else — the model.** `UNAVAILABLE`, and it names the model rather
-  than the service, because the commonest cause is an id the catalog lists and
-  the gateway cannot reach: measured against production, 67 of the first 141
-  models the picker offered answered 502, and 49 of those were every `:batch`
-  route it carried. For those a minute changes nothing and another model works
-  at once, so promising a wait was the wrong half of the advice.
+  than the service, because that is what the reader can act on. Measured against
+  production over every one of the 422 models the picker offers: **166 fail**,
+  145 of them 502. The service is up; those ids are not reachable through it.
 
-**A model the gateway cannot serve must never reach the picker.**
-`isDeadModelId` is that guard and it had two holes, both invisible: it anchored
-at `^`, so a provider prefix carried every dead family straight past it
-(`openai/gpt-3.5-turbo` matched nothing while the bare `gpt-3.5-turbo` matched),
-and nothing excluded `:batch` — the Batch API route, which takes no streaming
-completion. The id is now tested after its prefix is stripped, `:batch` is dead
-by construction, and `tests/unit/dead-model.test.ts` pins both.
+**The catalog advertises more than the gateway can serve, and this app cannot
+tell which from an id.** Two shortcuts look obvious and are both wrong, measured:
+
+- **A provider prefix is a different ROUTE, not decoration.** `openai/o1`,
+  `openai/o3`, `openai/gpt-4` and `openai/gpt-3.5-turbo-*` all answer 200, while
+  the bare ids `isDeadModelId` names do not. Reading the id after its prefix
+  therefore deletes nine working models. That guard is for a stale BARE id an
+  older build persisted in `localStorage["model"]`, which is exactly what it
+  already matches — leave the prefix alone.
+- **`:batch` is not dead by its suffix.** 56 of 61 fail and five serve. A suffix
+  cannot decide it.
+
+So the fix is not a cleverer predicate here. Which ids the gateway can reach is
+the GATEWAY's to state, and `/v1/models` currently overstates it by 166. Until
+that closes, the honest move is the sentence: name the model and say another one
+works, rather than promising a minute will fix it.
 
 `openLogin` still belongs to the genuinely-unauthenticated case, which each
 route checks before it ever calls the gateway. Those two conditions sharing one
