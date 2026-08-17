@@ -121,6 +121,53 @@ describe('turn', () => {
     expect(asks).toBe(2); // three asks in total, two of them re-asks
   });
 
+  it('nudges an idle stream so a proxy does not read silence as a dead origin', async () => {
+    // Enso's headers land at 2.2s and its first frame over 118s later; every
+    // proxy in between closes at 100s of nothing.
+    const got: string[] = [];
+    let release!: () => void;
+    const held = new Promise<void>((r) => (release = r));
+    const slow = new ReadableStream<Uint8Array>({
+      async start(c) {
+        await held;
+        c.enqueue(new TextEncoder().encode(`data: ${chunk('<html>')}\n\ndata: [DONE]\n\n`));
+        c.close();
+      },
+    });
+
+    const done = turn(slow, async () => slow, (d) => { got.push(d); }, 3, 10);
+    // One beat is the whole claim — the connection was nudged while idle.
+    // Counting more would only measure how loaded the test runner is.
+    while (!got.length) await new Promise((r) => setTimeout(r, 5));
+    expect(got.every((g) => g === ' ')).toBe(true);
+
+    release();
+    await done;
+    expect(got.at(-1)).toBe('<html>');
+  });
+
+  it('stops nudging once real content is flowing', async () => {
+    const got: string[] = [];
+    let release!: () => void;
+    const held = new Promise<void>((r) => (release = r));
+    const enc = new TextEncoder();
+    const stream = new ReadableStream<Uint8Array>({
+      async start(c) {
+        c.enqueue(enc.encode(`data: ${chunk('<!DOCTYPE html>')}\n\n`));
+        await held;
+        c.enqueue(enc.encode(`data: ${chunk('<body>')}\n\ndata: [DONE]\n\n`));
+        c.close();
+      },
+    });
+
+    const done = turn(stream, async () => stream, (d) => { got.push(d); }, 3, 10);
+    await new Promise((r) => setTimeout(r, 45));
+    release();
+    await done;
+    // A space landing here would be a space in somebody's markup.
+    expect(got.join('')).toBe('<!DOCTYPE html><body>');
+  });
+
   it('reports a refusal on the re-ask rather than retrying it forever', async () => {
     await expect(
       turn(

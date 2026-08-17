@@ -113,6 +113,23 @@ export async function pipe(
 export const ATTEMPTS = 3;
 
 /**
+ * How often to nudge a stream that has produced nothing yet.
+ *
+ * A reasoning model spends its first minutes thinking, and it does not stream
+ * the thinking: measured against Enso with a builder-sized prompt, the response
+ * headers arrive at **2.2s** and then **not one frame for over 118 seconds**.
+ * Every proxy in front of this route reads that silence as a dead origin and
+ * closes the connection — Cloudflare at 100s, which is exactly the `524` the
+ * builder reports after ~2 minutes on a prompt the model is still working on.
+ *
+ * A space is the whole heartbeat. It travels before the first title marker,
+ * where the page parser ignores leading whitespace, and browsers ignore it
+ * ahead of the doctype — so it costs one byte and changes no output. 15s is
+ * comfortably inside the shortest of those windows.
+ */
+export const BEAT_MS = 15_000;
+
+/**
  * One streamed turn, re-asked while the reader has seen nothing.
  *
  * `open` is the stream the caller already checked, so an up-front refusal keeps
@@ -131,21 +148,31 @@ export async function turn(
   open: ReadableStream<Uint8Array>,
   reopen: () => Promise<ReadableStream<Uint8Array>>,
   write: (delta: string) => Promise<unknown> | unknown,
-  attempts = ATTEMPTS
+  attempts = ATTEMPTS,
+  beat = BEAT_MS
 ): Promise<{ model: string | null; id: string | null }> {
   let sent = false;
   let body: ReadableStream<Uint8Array> | null = open;
 
-  for (let attempt = 1; ; attempt++) {
-    if (!body) body = await reopen();
-    try {
-      return await pipe(body, (delta) => {
-        sent = true;
-        return write(delta);
-      });
-    } catch (error) {
-      if (sent || attempt >= attempts || !(error instanceof Broke)) throw error;
-      body = null;
+  // Keep the connection warm while the model is still thinking. It stops on the
+  // first real fragment: after that the stream speaks for itself, and a space
+  // landing mid-document would be a space in somebody's markup.
+  const pulse = beat > 0 ? setInterval(() => { if (!sent) void write(" "); }, beat) : null;
+
+  try {
+    for (let attempt = 1; ; attempt++) {
+      if (!body) body = await reopen();
+      try {
+        return await pipe(body, (delta) => {
+          sent = true;
+          return write(delta);
+        });
+      } catch (error) {
+        if (sent || attempt >= attempts || !(error instanceof Broke)) throw error;
+        body = null;
+      }
     }
+  } finally {
+    if (pulse) clearInterval(pulse);
   }
 }
