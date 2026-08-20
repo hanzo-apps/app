@@ -20,12 +20,10 @@
  * fill the viewport with a widget and say nothing.
  */
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
 
 
-import { sources } from "../source";
+import { read, root, sources } from "../source";
 
-const root = join(__dirname, "..", "..");
 
 const files = sources(["app", "components"], /\.tsx$/);
 const rel = (f: string) => f.replace(root + "/", "");
@@ -63,7 +61,7 @@ describe("the full-viewport loading gate", () => {
 
   it("is what the pages that converged actually render", () => {
     for (const f of ["app/billing/page.tsx", "app/dev/[org]/[project]/settings/page.tsx"]) {
-      const src = readFileSync(join(root, f), "utf8");
+      const src = read(f);
       expect({ f, uses: /<LoadingScreen>/.test(src) }).toEqual({ f, uses: true });
     }
   });

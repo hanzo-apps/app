@@ -1,9 +1,8 @@
-import { readFileSync } from "fs";
-import { join } from "path";
 
-const root = join(__dirname, "../..");
-const askAi = readFileSync(join(root, "components/editor/ask-ai/index.tsx"), "utf8");
-const consoleSrc = readFileSync(join(root, "components/editor/console/index.tsx"), "utf8");
+import { read, root } from "../source";
+
+const askAi = read("components/editor/ask-ai/index.tsx");
+const consoleSrc = read("components/editor/console/index.tsx");
 
 /**
  * The mic lives in the composer's action row, once.

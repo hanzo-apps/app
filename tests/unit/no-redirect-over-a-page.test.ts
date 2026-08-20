@@ -1,5 +1,7 @@
-import { existsSync, readFileSync } from "fs";
+import { existsSync } from "fs";
 import { join } from "path";
+
+import { read, root } from "../source";
 
 /**
  * A redirect runs BEFORE routing, so a redirect whose source is also a route
@@ -20,11 +22,10 @@ import { join } from "path";
  * So the invariant is stated here, and it is the general one rather than the
  * instance: any redirect source that names a route is shadowing it.
  */
-const root = join(__dirname, "../..");
 
 /** The `redirects()` sources, read from the config — `headers()` also has a `source:`. */
 const redirectSources = (): string[] => {
-  const src = readFileSync(join(root, "next.config.ts"), "utf8");
+  const src = read("next.config.ts");
   const block = src.slice(src.indexOf("async redirects()"));
   return [...block.slice(0, block.indexOf("];")).matchAll(/source:\s*'([^']+)'/g)].map((m) => m[1]);
 };

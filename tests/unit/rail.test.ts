@@ -1,8 +1,7 @@
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
 
 
-import { sources, tagEnd } from "../source";
+import { root, sources, tagEnd } from "../source";
 
 /**
  * A palette row's mark stretches into TWENTY pixels, so it has no margin.
@@ -25,9 +24,8 @@ import { sources, tagEnd } from "../source";
  * one has nothing to spare.
  */
 
-const ROOT = join(__dirname, "..", "..");
 
-const rel = (f: string) => f.replace(ROOT + "/", "");
+const rel = (f: string) => f.replace(root + "/", "");
 const rows = sources(["components"], /\.tsx$/).filter((f) =>
   readFileSync(f, "utf8").includes("<CommandItem"),
 );

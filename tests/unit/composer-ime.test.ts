@@ -1,6 +1,7 @@
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 
-import { join } from "node:path";
+
+import { root, sources } from "../source";
 
 
 /**
@@ -24,22 +25,11 @@ import { join } from "node:path";
  * decision each surface may keep — it reads `sends` and narrows the result.
  * What may not vary is who decides the IME question.
  */
-const root = join(__dirname, "..", "..");
-
-function sources(dir: string, out: string[] = []): string[] {
-  for (const name of readdirSync(dir)) {
-    if (name === "node_modules" || name === ".next" || name.startsWith(".")) continue;
-    const p = join(dir, name);
-    if (statSync(p).isDirectory()) sources(p, out);
-    else if (/\.tsx?$/.test(name)) out.push(p);
-  }
-  return out;
-}
 
 /** Files that decide, on a keystroke, whether to submit a composer draft. */
 function composers(): { file: string; src: string }[] {
   const out: { file: string; src: string }[] = [];
-  for (const file of sources(join(root, "components")).concat(sources(join(root, "app")))) {
+  for (const file of sources(["components", "app"], /\.tsx?$/)) {
     // Templates under app/templates are GENERATED APP source — someone else's
     // program that we render, not this app's chrome. Their key handling is
     // their own.

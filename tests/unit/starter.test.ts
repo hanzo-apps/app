@@ -15,8 +15,6 @@
  * records` is exactly the spelling that shipped every generated app's data calls
  * to a collection literally named "collections".
  */
-import { readFileSync } from 'fs';
-import { join } from 'path';
 
 import { STARTER, start } from '@/lib/dev/starter';
 import { loadWorkspace, UNTITLED } from '@/lib/dev/workspace';

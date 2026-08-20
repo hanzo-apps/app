@@ -1,5 +1,5 @@
-import { readFileSync, readdirSync } from "fs";
-import { join } from "path";
+
+import { read, root } from "../source";
 
 /**
  * The landing bands give a PHONE its own vertical rhythm.
@@ -18,7 +18,6 @@ import { join } from "path";
  * $11 is 80px against $10's 64 (measured off the running app's --c-space-*;
  * the ramp is not linear, so do not compute it — $4 is 16px and $10 is 64px).
  */
-const ROOT = join(__dirname, "../..");
 const FILES = [
   "app/page.tsx",
   "components/landing/hanzo-models.tsx",
@@ -31,7 +30,7 @@ const FILES = [
 ];
 
 describe("a landing band's vertical rhythm", () => {
-  const sources = FILES.map((f) => [f, readFileSync(join(ROOT, f), "utf8")] as const);
+  const sources = FILES.map((f) => [f, read(f)] as const);
 
   it("gives the phone more room than the shipped 64px", () => {
     const bands = sources.flatMap(([f, s]) =>

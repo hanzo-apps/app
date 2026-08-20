@@ -1,6 +1,7 @@
-import { readFileSync } from 'node:fs';
 
 import { join } from 'node:path';
+
+import { read } from '../source';
 
 
 // The builder's type grid: three rungs, and nothing off them.
@@ -34,7 +35,6 @@ const RUNG_PX: Record<string, number> = {
 /** small · body · heading. A dev tool needs three, not seven. */
 const ALLOWED = new Set([11, 14, 26]);
 
-const read = (f: string) => readFileSync(join(process.cwd(), f), 'utf8');
 const sizes = (src: string) => [...src.matchAll(/fontSize=\{?["']?\$?([0-9.]+)["']?\}?/g)];
 
 describe('the builder type grid', () => {

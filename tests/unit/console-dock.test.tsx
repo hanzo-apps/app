@@ -8,7 +8,6 @@
  */
 import { readFileSync } from "node:fs";
 
-import { join } from "node:path";
 
 import { useEffect } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
@@ -19,6 +18,8 @@ import { Console } from "@/components/editor/console";
 import { BAR, COLLAPSE_AT, MIN_OPEN, resolveHeight, maxOpen } from "@/components/editor/console/dock";
 
 import { WithGui } from "../gui-wrapper";
+
+import { read } from "../source";
 
 // jsdom has no PointerEvent and no pointer capture; the dock only needs the
 // capture calls to be harmless and clientY to arrive.
@@ -291,11 +292,11 @@ describe("the workspace controls ride far right on the bar", () => {
 describe("the panel toggle lives in the header, once", () => {
   it("the header owns it, so the console cannot also", () => {
     const header = readFileSync(
-      join(__dirname, "..", "..", "components/editor/header/index.tsx"),
+      "components/editor/header/index.tsx",
       "utf8",
     );
     const console_ = readFileSync(
-      join(__dirname, "..", "..", "components/editor/console/index.tsx"),
+      "components/editor/console/index.tsx",
       "utf8",
     );
     expect(header).toMatch(/<PanelLeft\b/);

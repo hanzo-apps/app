@@ -1,10 +1,9 @@
-import { readFileSync } from "fs";
-import { join } from "path";
 
-const root = join(__dirname, "../..");
-const askAi = readFileSync(join(root, "components/editor/ask-ai/index.tsx"), "utf8");
-const header = readFileSync(join(root, "components/editor/header/index.tsx"), "utf8");
-const css = readFileSync(join(root, "assets/globals.css"), "utf8");
+import { read, root } from "../source";
+
+const askAi = read("components/editor/ask-ai/index.tsx");
+const header = read("components/editor/header/index.tsx");
+const css = read("assets/globals.css");
 
 /**
  * Two composer modes, and nobody stranded in a third.

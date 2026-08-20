@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 
-import { join } from "node:path";
 
 
 import { reason, refusal, BUSY, UNAVAILABLE } from "../../lib/gateway";
+
+import { read } from "../source";
 
 /**
  * The gateway's refusal, translated once (lib/gateway.ts).
@@ -175,10 +175,7 @@ test("a 4xx with nothing stated still does not claim the model answered", () => 
  * refused the same way forever. So the read is checked at the source.
  */
 test("the browser quotes a refusal rather than replacing it", () => {
-  const src = readFileSync(
-    join(__dirname, "..", "..", "hooks", "useCallAi.ts"),
-    "utf8"
-  );
+  const src = read("hooks/useCallAi.ts");
   const flat = [...src.matchAll(/error:\s*"api_error",\s*message:\s*([^\n}]+)/g)].map(
     (m) => m[1].trim()
   );

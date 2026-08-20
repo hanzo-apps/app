@@ -1,7 +1,9 @@
-import { existsSync, readFileSync } from "fs";
+import { existsSync } from "fs";
 import { join } from "path";
 
 import sitemap from "@/app/sitemap";
+
+import { read, root } from "../source";
 
 /**
  * Every page we ask search engines to index carries its OWN title.
@@ -22,14 +24,12 @@ import sitemap from "@/app/sitemap";
  * So this checks the pairing, not the presence of a file: a sitemap route whose
  * page is a client component must have a layout that supplies the metadata.
  */
-const root = join(__dirname, "../..");
 
 const routes = () =>
   sitemap()
     .map((e) => new URL(e.url).pathname.replace(/\/$/, ""))
     .filter((p) => p !== "");
 
-const read = (p: string) => readFileSync(join(root, p), "utf8");
 const isClient = (src: string) => /^\s*['"]use client['"]/.test(src);
 
 describe("every indexed page names itself", () => {

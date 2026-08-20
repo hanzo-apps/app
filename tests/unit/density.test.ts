@@ -1,9 +1,8 @@
-import { readFileSync } from "node:fs";
-
-import { join } from "node:path";
 
 
-const ROOT = join(__dirname, "..", "..");
+import { read, root } from "../source";
+
+
 
 /**
  * Appearance density must keep moving the chrome.
@@ -28,7 +27,7 @@ const ROOT = join(__dirname, "..", "..");
  * time. Verified live — density 1.5 moves a gui gap 8→12px.
  */
 describe("appearance: density stays wired through the gui space scale", () => {
-  const css = readFileSync(join(ROOT, "app/gui.css"), "utf8");
+  const css = read("app/gui.css");
 
   it("the space ramp multiplies by --density, at every rung", () => {
     expect(css).toContain("--c-space-1:calc(4px * var(--density, 1))");

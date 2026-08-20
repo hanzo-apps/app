@@ -3,8 +3,9 @@ import { join } from "path";
 
 import robots from "@/app/robots";
 
-const root = join(__dirname, "../..");
-const middleware = readFileSync(join(root, "middleware.ts"), "utf8");
+import { read, root } from "../source";
+
+const middleware = read("middleware.ts");
 
 /**
  * A tool only the product links to is not a public page.

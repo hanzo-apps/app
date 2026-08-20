@@ -14,11 +14,10 @@
  */
 import { readFileSync } from "node:fs";
 
-import { join } from "node:path";
 
 
 const SRC = readFileSync(
-  join(__dirname, "..", "..", "components", "landing", "hero-preview.tsx"),
+  "components/landing/hero-preview.tsx",
   "utf8",
 );
 

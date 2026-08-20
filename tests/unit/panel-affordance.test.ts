@@ -1,9 +1,7 @@
-import { readFileSync } from "node:fs";
-
-import { join } from "node:path";
 
 
-import { stripComments, stripCss } from "../source";
+
+import { read, stripComments, stripCss } from "../source";
 
 /**
  * The left-panel affordance, pinned — one glyph and one hint style, both of
@@ -24,7 +22,6 @@ import { stripComments, stripCss } from "../source";
  * are pinned here rather than left to review.
  */
 
-const read = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 
 // Every surface that shows or hides a column on the reader's left.
 const TOGGLES = [

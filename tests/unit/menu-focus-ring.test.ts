@@ -20,12 +20,12 @@
  * field. Only a look at the running page would show it, which is what the
  * sibling css tests exist to replace.
  */
-import { readFileSync } from "node:fs";
-
-import { join } from "node:path";
 
 
-const CSS = readFileSync(join(__dirname, "..", "..", "assets", "globals.css"), "utf8");
+import { read } from "../source";
+
+
+const CSS = read("assets/globals.css");
 
 /** Collapse whitespace so assertions read against normalized CSS text. */
 const flat = CSS.replace(/\s+/g, " ");

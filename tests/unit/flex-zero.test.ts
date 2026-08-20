@@ -1,5 +1,6 @@
-import { join } from "path";
 import { execSync } from "child_process";
+
+import { root } from "../source";
 
 /**
  * `flex={0}` is a basis-zero trap, and it is the one this app already knows.
@@ -19,7 +20,6 @@ import { execSync } from "child_process";
  * This is the `flex: 1` = `1 1 0%` collapse the CLAUDE.md records for TabsContent
  * and CardContent, at the other end of the scale. Same cause, same tell.
  */
-const ROOT = join(__dirname, "../..");
 
 describe("flex shorthand never carries a zero basis", () => {
   it("no component says flex={0}", () => {
@@ -31,7 +31,7 @@ describe("flex shorthand never carries a zero basis", () => {
     // match must sit on a line that is not a comment.
     const hits = execSync(
       `grep -rn 'flex={0}' --include='*.tsx' components app || true`,
-      { cwd: ROOT, encoding: "utf8" },
+      { cwd: root, encoding: "utf8" },
     )
       .split("\n")
       .filter(Boolean)

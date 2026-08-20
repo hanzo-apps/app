@@ -1,12 +1,9 @@
-import { readFileSync } from "fs";
-import { join } from "path";
 
-import { stripComments } from "../source";
+import { read, root, stripComments } from "../source";
 
-const ROOT = join(__dirname, "..", "..");
-const landing = readFileSync(join(ROOT, "app/page.tsx"), "utf8");
-const frame = readFileSync(join(ROOT, "components/landing/hero-preview.tsx"), "utf8");
-const css = readFileSync(join(ROOT, "assets/globals.css"), "utf8");
+const landing = read("app/page.tsx");
+const frame = read("components/landing/hero-preview.tsx");
+const css = read("assets/globals.css");
 
 /**
  * The hero is a sentence on the left and the product on the right, and every

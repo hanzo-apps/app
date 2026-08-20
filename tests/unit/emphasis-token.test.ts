@@ -19,11 +19,10 @@
  * the two call sites that have already been caught by it.
  */
 import { readFileSync } from "node:fs";
-import { join } from 'node:path';
 
 import { accent, selected } from '@/lib/chrome';
 
-import { sources } from "../source";
+import { root, sources } from "../source";
 
 describe('the chrome recipes that mean "emphasised"', () => {
   it('paint the foreground with $color12, never $color', () => {
@@ -66,7 +65,6 @@ describe('the chrome recipes that mean "emphasised"', () => {
  * scan flagged it, and "fixing" it would have been a change with no defect
  * under it. The scope of the ban is exactly the scope of the re-basing.
  */
-const ROOT = join(__dirname, '..', '..');
 
 /** Every `<Button …>…</Button>` block that spreads `accent`, with its content. */
 function accentButtons(src: string): string[] {
@@ -93,7 +91,7 @@ describe('a label inside an accent Button', () => {
       for (const block of accentButtons(readFileSync(f, 'utf8'))) {
         for (const [tag] of block.matchAll(/<(?:SizableText|Paragraph|Text)\b[^>]*>/g)) {
           if (!/color="\$color12"/.test(tag)) {
-            offenders.push(`${f.replace(ROOT + '/', '')}  ${tag.replace(/\s+/g, ' ').slice(0, 90)}`);
+            offenders.push(`${f.replace(root + '/', '')}  ${tag.replace(/\s+/g, ' ').slice(0, 90)}`);
           }
         }
       }

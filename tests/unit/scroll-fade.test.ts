@@ -1,9 +1,8 @@
-import { readFileSync } from "fs";
-import { join } from "path";
 
-const root = join(__dirname, "../..");
-const css = readFileSync(join(root, "assets/globals.css"), "utf8");
-const askAi = readFileSync(join(root, "components/editor/ask-ai/index.tsx"), "utf8");
+import { read, root } from "../source";
+
+const css = read("assets/globals.css");
+const askAi = read("components/editor/ask-ai/index.tsx");
 
 /**
  * A right-edge fade is a CLAIM — "there is more, scroll for it". Drawn

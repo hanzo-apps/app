@@ -1,8 +1,7 @@
-import { readFileSync } from "fs";
 import { execFileSync } from "child_process";
-import { join } from "path";
 
-const root = join(__dirname, "../..");
+import { read, root } from "../source";
+
 
 /**
  * Every route that opens the server adapter requires a session.
@@ -43,7 +42,7 @@ describe("routes that reach the server adapter", () => {
     // followed by an explicit 401. Asserting only the first would have flagged
     // app/v1/me/projects, which gates perfectly well the other way — a test
     // that demands one spelling reports style as a defect.
-    const src = readFileSync(join(root, file), "utf8");
+    const src = read(file);
     const gated =
       src.includes("requireSession") ||
       (/\bsession\(request\)/.test(src) && /status:\s*401/.test(src));
@@ -53,7 +52,7 @@ describe("routes that reach the server adapter", () => {
   it.each(adapterRoutes())("%s answers 401, not 500, when refused", (file) => {
     // A catch that maps everything to 500 turns "sign in" into "we are broken"
     // — the confusion lib/gateway.ts exists to end on the other side of the app.
-    const src = readFileSync(join(root, file), "utf8");
+    const src = read(file);
     expect(src).toMatch(/status:\s*401/);
   });
 });

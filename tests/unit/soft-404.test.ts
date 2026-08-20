@@ -1,8 +1,8 @@
-import { readFileSync, existsSync } from "fs";
+import { existsSync } from "fs";
 import { join } from "path";
 
-const root = join(__dirname, "../..");
-const read = (p: string) => readFileSync(join(root, p), "utf8");
+import { read, root } from "../source";
+
 
 /**
  * A route that renders "not found" must ANSWER not-found.

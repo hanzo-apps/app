@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 
-import { join } from "node:path";
+
+import { read } from "../source";
 
 
 /**
@@ -20,7 +21,7 @@ import { join } from "node:path";
  * changed shape as you walked through it.
  */
 const overlay = readFileSync(
-  join(__dirname, "..", "..", "components", "guided-tour", "overlay.tsx"),
+  "components/guided-tour/overlay.tsx",
   "utf8",
 );
 
@@ -63,7 +64,7 @@ describe("the guided tour's footer", () => {
     // nobody reads is a lie the next reader has to disprove.
     expect(overlay).not.toContain("showBack");
     for (const f of ["steps.tsx", "types.ts"]) {
-      const src = readFileSync(join(__dirname, "..", "..", "components", "guided-tour", f), "utf8");
+      const src = read(`components/guided-tour/${f}`);
       expect([f, src.includes("showBack")]).toEqual([f, false]);
     }
   });

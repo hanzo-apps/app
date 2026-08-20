@@ -1,5 +1,5 @@
-import { readFileSync } from "fs";
-import { join } from "path";
+
+import { read, root } from "../source";
 
 /**
  * The recent-projects list is a GRID with a fixed track count, on both surfaces.
@@ -14,10 +14,9 @@ import { join } from "path";
  * `minmax(0, 1fr)` is what lets the iframe scale DOWN to the track rather than
  * forcing the track out to the iframe.
  */
-const ROOT = join(__dirname, "../..");
-const css = readFileSync(join(ROOT, "assets/globals.css"), "utf8");
-const home = readFileSync(join(ROOT, "app/page.tsx"), "utf8");
-const dash = readFileSync(join(ROOT, "app/dashboard/page.tsx"), "utf8");
+const css = read("assets/globals.css");
+const home = read("app/page.tsx");
+const dash = read("app/dashboard/page.tsx");
 
 describe("the recent-projects grid", () => {
   it("is used by BOTH the home page and the dashboard", () => {

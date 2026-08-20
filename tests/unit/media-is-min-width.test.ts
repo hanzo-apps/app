@@ -1,7 +1,6 @@
-import { readFileSync, readdirSync, statSync } from "fs";
-import { join } from "path";
+import { readFileSync } from "fs";
 
-import { sources, stripComments } from "../source";
+import { root, sources, stripComments } from "../source";
 
 /**
  * `$sm` / `$md` / `$lg` are MIN-width — "at this width AND UP".
@@ -49,7 +48,6 @@ function px(v: string, prop: string): number | null {
   return null; // percentages, "auto", expressions — not comparable
 }
 
-const ROOT = join(__dirname, "..", "..");
 const FILES = sources(["components", "app"], /\.tsx$/);
 
 /** Size props where "bigger" and "smaller" are meaningful and comparable. */
@@ -99,7 +97,7 @@ describe("media queries are MIN-width, so a phone value is the base", () => {
           if (wide == null) continue;
           if (wide < base) {
             offenders.push(
-              `${file.replace(ROOT + "/", "")}: ${prop} base=${base}px but wider-screen override=${wide}px`,
+              `${file.replace(root + "/", "")}: ${prop} base=${base}px but wider-screen override=${wide}px`,
             );
           }
         }

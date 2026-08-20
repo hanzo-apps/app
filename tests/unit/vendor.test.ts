@@ -5,8 +5,8 @@ import { dirname, join } from 'node:path';
 
 import { LIBS, ORIGIN, rewrite, thirdParty, url } from '@/lib/vendor';
 
-const root = join(__dirname, '..', '..');
-const read = (p: string) => readFileSync(join(root, p), 'utf8');
+import { read, root } from '../source';
+
 
 /**
  * Every file that tells a model, or a template, what a generated site should
@@ -133,7 +133,7 @@ describe('a stylesheet we host brings its own assets', () => {
     // By path: the package's "." export is ESM-only and asking for the .css
     // directly lands on jest's style mock. `toBeGreaterThan(0)` below catches
     // either mistake rather than passing against nothing.
-    const css = readFileSync(join(root, 'node_modules/@hanzo/design/styles.css'), 'utf8');
+    const css = read('node_modules/@hanzo/design/styles.css');
     const wanted = [...new Set([...css.matchAll(/url\(["']?([^)"']+\.woff2)["']?\)/g)].map((m) => m[1]))];
     expect(wanted.length).toBeGreaterThan(0); // or the assertion below is vacuous
     const shipped = new Set<string>(Object.values(LIBS).map((l) => l.file));
@@ -151,7 +151,7 @@ describe('a stylesheet we host brings its own assets', () => {
     //
     // Read from node_modules, not from `public/vendor/`: that directory is a
     // build product and this has to hold before it is written.
-    // Resolve the package ROOT and join the file. `require.resolve` on the
+    // Resolve the package root and join the file. `require.resolve` on the
     // stylesheet itself returns jest's style MOCK — moduleNameMapper sends
     // every `.css` there — so this read silently returned an empty stub and the
     // match count was zero. The `toBeGreaterThan(0)` below is what caught it;

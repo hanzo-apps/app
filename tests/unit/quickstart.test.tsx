@@ -15,7 +15,6 @@
  */
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { readFileSync } from 'node:fs';
 
 import { join } from 'node:path';
 
@@ -24,8 +23,8 @@ import { Quickstart, ENDPOINT, MODEL, scan } from '@/components/quickstart';
 
 import { WithGui } from '../gui-wrapper';
 
-const ROOT = join(__dirname, '..', '..');
-const read = (p: string) => readFileSync(join(ROOT, p), 'utf8');
+import { read, root } from "../source";
+
 
 const LANGUAGES = ['curl', 'TypeScript', 'Python', 'Go'];
 

@@ -22,13 +22,13 @@
  */
 import { MARK_PATHS, MARK_VIEWBOX } from "@hanzo/logo/logos";
 import { widget } from "../widget";
-import { readFileSync, existsSync } from "node:fs";
+import { existsSync } from "node:fs";
 
 import { join } from "node:path";
 
+import { read, root } from "../source";
 
-const ROOT = join(__dirname, "..", "..");
-const read = (p: string) => readFileSync(join(ROOT, p), "utf8");
+
 
 describe("the builder Enso launcher never floats over the preview", () => {
   it("edit.js still treats a missing repo as 'do nothing'", () => {
@@ -118,7 +118,7 @@ describe("the builder Enso launcher never floats over the preview", () => {
 
   it("/dev anchors the launcher by NAMING the key", () => {
     const path = "app/dev/layout.tsx";
-    expect(existsSync(join(ROOT, path))).toBe(true);
+    expect(existsSync(join(root, path))).toBe(true);
     const src = read(path);
     // Measured live: an empty `other: {}` changed nothing, because Next merges
     // `other` BY KEY into the parent's. The key has to be named to override it.

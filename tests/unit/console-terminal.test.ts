@@ -13,12 +13,11 @@
  * - The dock swaps its BODY, never its bar: the prompt hides while the real
  *   terminal (which brings its own) is up.
  */
-import { readFileSync } from "node:fs";
-
-import { join } from "node:path";
 
 
-const read = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
+import { read } from "../source";
+
+
 
 describe("/v1/shell/terminal — the ticket stays a ticket", () => {
   const route = read("app/v1/shell/terminal/route.ts");

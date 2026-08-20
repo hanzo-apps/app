@@ -19,7 +19,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const config = fs.readFileSync(path.join(process.cwd(), 'next.config.ts'), 'utf8');
+import { read, root } from "../source";
+
+const config = fs.readFileSync(path.join(root, 'next.config.ts'), 'utf8');
 
 describe('/vendor is cross-origin readable', () => {
   it('sends Access-Control-Allow-Origin for every vendored path', () => {
@@ -32,14 +34,14 @@ describe('/vendor is cross-origin readable', () => {
   });
 
   it('covers the two assets that actually need it', () => {
-    const vendor = fs.readFileSync(path.join(process.cwd(), 'lib/vendor.ts'), 'utf8');
+    const vendor = read('lib/vendor.ts');
     // Both are declared in the vendor map, so both are served from /vendor.
     expect(vendor).toContain('design/assets/fonts/Geist-Variable.woff2');
     expect(vendor).toContain('appearance/preference.js');
   });
 
   it('still spells vendored URLs absolute, which is WHY the header is needed', () => {
-    const vendor = fs.readFileSync(path.join(process.cwd(), 'lib/vendor.ts'), 'utf8');
+    const vendor = read('lib/vendor.ts');
     // If this ever becomes a relative path, the header stops being load-bearing
     // — but until then a published site fetches these from another origin.
     expect(vendor).toMatch(/ORIGIN\s*=\s*process\.env\.NEXT_PUBLIC_VENDOR_ORIGIN\s*\|\|\s*'https:\/\/hanzo\.app'/);

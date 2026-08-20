@@ -12,15 +12,12 @@
  * rather than a component's props — the same way the token and glass suites
  * pin their laws.
  */
-import { readFileSync } from "node:fs";
-
-import { join } from "node:path";
 
 
-import { stripCss } from "../source";
 
-const ROOT = join(__dirname, "..", "..");
-const css = readFileSync(join(ROOT, "assets/globals.css"), "utf8");
+import { read, root, stripCss } from "../source";
+
+const css = read("assets/globals.css");
 
 /** The declaration block of a class rule, comments stripped.
  *

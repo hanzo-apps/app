@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 
 import { createRequire } from "node:module";
 
-import { sources, stripCss } from "../source";
+import { read, root, sources, stripCss } from "../source";
 
 /**
  * Every token this surface names must resolve.
@@ -35,7 +35,6 @@ import { sources, stripCss } from "../source";
  * only vertical gap silently computed to zero. Nothing but a screenshot caught it.
  */
 
-const ROOT = process.cwd();
 const SURFACE = ["app", "components", "hooks"];
 
 /**
@@ -50,7 +49,7 @@ const PROVIDED = [
 
 /** Where `@hanzo/ui/theme.css` actually lives, via the package's exports map. */
 const themeSheet = (): string => {
-  const require_ = createRequire(join(ROOT, "package.json"));
+  const require_ = createRequire(join(root, "package.json"));
   const pkg = require_.resolve("@hanzo/ui/package.json");
   const exp = (JSON.parse(readFileSync(pkg, "utf8")).exports ?? {})["./theme.css"];
   const rel = typeof exp === "string" ? exp : (exp?.default ?? exp?.style);
@@ -62,7 +61,7 @@ const themeSheet = (): string => {
 /** Every custom property DECLARED in a stylesheet the browser loads. */
 const declared = (): Set<string> => {
   const sheets = [
-    readFileSync(join(ROOT, "assets/globals.css"), "utf8"),
+    read("assets/globals.css"),
     // `@hanzo/brand/styles/variables.css` used to be read here because
     // app/layout.tsx loaded it as a "baseline layer". It does not any more —
     // 136 names with no knob under them and a --shadow-* ramp tuned for a white
@@ -75,7 +74,7 @@ const declared = (): Set<string> => {
     // its own `--t###` / `--colorN` scale and then reads it back. Omitting it
     // here while `referenced()` walks it made the suite report ~740 of gui.css's
     // own tokens as undeclared — a self-inflicted red that hid real ones.
-    readFileSync(join(ROOT, "app/gui.css"), "utf8"),
+    read("app/gui.css"),
     // THE TOKEN LAYER. `app/layout.tsx` imports `@hanzo/ui/theme.css`, which
     // carries @hanzo/design's whole sheet — the colour ramp, the radius ramp,
     // the `--text-*`/`--space-*` scales and, since design 0.4.12, the
@@ -128,7 +127,7 @@ describe("token resolution", () => {
       .filter(([name]) => !defs.has(name))
       .filter(([name]) => !PROVIDED.some((p) => p.test(name)))
       .map(([name, files]) => `${name}  ←  ${files
-        .map((f) => f.slice(ROOT.length + 1))
+        .map((f) => f.slice(root.length + 1))
         .join(", ")}`);
     expect(missing).toEqual([]);
   });
@@ -158,7 +157,7 @@ describe("token resolution", () => {
 
   it("inverts --tint with the ground so a lift reads in both themes", () => {
     const css = stripCss(
-      readFileSync(join(ROOT, "assets/globals.css"), "utf8"),
+      read("assets/globals.css"),
     );
     const decls = [...css.matchAll(/--tint:\s*([^;]+);/g)].map((m) =>
       m[1].trim(),
@@ -180,7 +179,7 @@ describe("token resolution", () => {
     // stylesheet there), so the sweep would run against an empty string and
     // pass against nothing. The `toBeGreaterThan` below is what would say so.
     const sheet = readFileSync(
-      join(ROOT, "node_modules/@hanzo/design/styles.css"),
+      join(root, "node_modules/@hanzo/design/styles.css"),
       "utf8",
     );
     const tokens = new Set(
@@ -196,7 +195,7 @@ describe("token resolution", () => {
     ];
     const missing: string[] = [];
     for (const file of PIPELINE) {
-      const src = stripCss(readFileSync(join(ROOT, file), "utf8"));
+      const src = stripCss(read(file));
       for (const m of src.matchAll(/var\(\s*(--[a-zA-Z0-9_-]+)/g)) {
         if (!tokens.has(m[1])) missing.push(`${m[1]}  ←  ${file}`);
       }
@@ -206,7 +205,7 @@ describe("token resolution", () => {
 
   it("routes the accent through @hanzo/brand, never a literal", () => {
     const css = stripCss(
-      readFileSync(join(ROOT, "assets/globals.css"), "utf8"),
+      read("assets/globals.css"),
     );
     // --brand-accent reads the host brand's accent and only falls back to a
     // literal, so switching host switches every accent consumer with no
@@ -222,7 +221,7 @@ describe("token resolution", () => {
     // boundary. Left deliberately, and not asserted here — a test that pretends
     // to cover it would be worse than one that says where the edge is.
     const preview = readFileSync(
-      join(ROOT, "components/preview/multipage-preview.tsx"),
+      join(root, "components/preview/multipage-preview.tsx"),
       "utf8",
     );
     const crosshair = preview.slice(

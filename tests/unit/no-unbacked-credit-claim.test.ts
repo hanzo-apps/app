@@ -28,12 +28,10 @@
  * against the two legitimate sentences above to be sure it does not catch them.
  */
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
 
 
-import { sources } from "../source";
+import { read, root, sources } from "../source";
 
-const root = join(__dirname, "..", "..");
 
 const files = sources(["app", "components", "lib"]);
 const rel = (f: string) => f.replace(root + "/", "");
@@ -72,7 +70,7 @@ describe("credit the app cannot grant", () => {
   it("still lets /billing show a real balance", () => {
     // Killing the framing must not kill the readout: the number comes from the
     // gateway and stays, including when it is zero.
-    const billing = readFileSync(join(root, "app/billing/page.tsx"), "utf8");
+    const billing = read("app/billing/page.tsx");
     expect(billing).toMatch(/Credit Balance/);
     expect(billing).toMatch(/useCloudBalance|spendableCents/);
   });

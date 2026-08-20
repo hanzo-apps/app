@@ -12,6 +12,8 @@ import { join } from 'node:path';
 import { demoCount, demoUrl, lifts } from '@/lib/template-demos';
 import { TEMPLATES, getTemplate } from '@/lib/templates-catalog';
 
+import { root } from "../source";
+
 const withDemo = TEMPLATES.filter((t) => t.demo);
 
 describe('template demos', () => {
@@ -69,7 +71,7 @@ describe('template demos', () => {
     // detail page silently never renders for that slug. app/templates/
     // saas-landing/ did exactly that: a second in-app copy of a template
     // already served at saas-landing.hanzo.app, hiding its own detail page.
-    const routes = readdirSync(join(process.cwd(), 'app/templates'), { withFileTypes: true })
+    const routes = readdirSync(join(root, 'app/templates'), { withFileTypes: true })
       .filter((e) => e.isDirectory() && e.name !== '[slug]')
       .map((e) => e.name);
     expect(routes.filter((r) => getTemplate(r))).toEqual([]);

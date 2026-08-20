@@ -12,22 +12,10 @@
  * looking. The combination is the tell, so the combination is what this
  * refuses: a Button that also hides its overflow is a card wearing a control.
  */
-import { readFileSync, readdirSync, statSync } from 'fs';
-import { join } from 'path';
+import { readFileSync } from "fs";
 
-import { tagEnd } from '../source';
+import { root, sources, tagEnd } from "../source";
 
-const root = join(__dirname, '..', '..');
-
-function sources(dir: string, out: string[] = []): string[] {
-  for (const name of readdirSync(dir)) {
-    if (name === 'node_modules' || name === '.next' || name.startsWith('.')) continue;
-    const p = join(dir, name);
-    if (statSync(p).isDirectory()) sources(p, out);
-    else if (name.endsWith('.tsx')) out.push(p);
-  }
-  return out;
-}
 
 /** The props of every `<Button …>` opening tag in a file. */
 function buttonTags(src: string): string[] {
@@ -42,7 +30,7 @@ function buttonTags(src: string): string[] {
 describe('a Button never doubles as a card', () => {
   it('finds no Button that hides its own overflow', () => {
     const offenders: string[] = [];
-    for (const file of sources(join(root, 'app')).concat(sources(join(root, 'components')))) {
+    for (const file of sources(['app', 'components'], /\.tsx$/)) {
       for (const tag of buttonTags(readFileSync(file, 'utf8'))) {
         if (/overflow=["{]?["']?hidden/.test(tag)) {
           offenders.push(`${file.slice(root.length + 1)}: ${tag.replace(/\s+/g, ' ').slice(0, 90)}`);

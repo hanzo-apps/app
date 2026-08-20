@@ -4,6 +4,8 @@ import { join } from "path";
 import robots from "@/app/robots";
 import sitemap from "@/app/sitemap";
 
+import { read, root } from "../source";
+
 /**
  * The sitemap says what is public and canonical. Nothing checked either claim.
  *
@@ -25,7 +27,6 @@ import sitemap from "@/app/sitemap";
  * check the property that matters: not "does a file exist" but "is this URL the
  * canonical, public, reachable-without-login one".
  */
-const root = join(__dirname, "../..");
 
 const paths = () =>
   sitemap()
@@ -44,7 +45,7 @@ const disallowed = () => {
 
 /** middleware's PROTECTED_PREFIXES, read from source so there is one list. */
 const protectedPrefixes = (): string[] => {
-  const src = readFileSync(join(root, "middleware.ts"), "utf8");
+  const src = read("middleware.ts");
   const block = src.slice(src.indexOf("const PROTECTED_PREFIXES"));
   return [...block.slice(0, block.indexOf("]")).matchAll(/"([^"]+)"/g)].map((m) => m[1]);
 };
@@ -63,7 +64,7 @@ describe("every sitemap URL is canonical", () => {
   it("has a page of its own — a next.config redirect is not a page", () => {
     // /help had no page under app/ at all; it was a next.config redirect to
     // docs.hanzo.ai, so nothing under app/ would ever have revealed it.
-    const config = readFileSync(join(root, "next.config.ts"), "utf8");
+    const config = read("next.config.ts");
     const redirected = [...config.matchAll(/source:\s*'([^']+)'/g)].map((m) => m[1]);
     expect(paths().filter((p) => redirected.includes(p))).toEqual([]);
   });

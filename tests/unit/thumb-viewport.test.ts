@@ -21,7 +21,6 @@
  */
 import { readFileSync } from "node:fs";
 
-import { join } from "node:path";
 
 
 import { read, stripComments } from "../source";
@@ -29,7 +28,7 @@ import { read, stripComments } from "../source";
 // Comment-stripped: the prose above the fix must not be able to satisfy the
 // check that guards it.
 const src = readFileSync(
-  join(process.cwd(), "components/project-thumb/index.tsx"),
+  "components/project-thumb/index.tsx",
   "utf8",
 )
 

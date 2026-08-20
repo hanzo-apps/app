@@ -25,8 +25,6 @@
  * while the screenshot showed nothing. Outside the host is the one place the
  * panel cannot reach.
  */
-import { readFileSync } from 'fs';
-import { join } from 'path';
 
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';

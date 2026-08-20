@@ -1,9 +1,7 @@
-import { readFileSync } from 'node:fs';
-
-import { join } from 'node:path';
 
 
-import { tagEnd } from '../source';
+
+import { read, tagEnd } from '../source';
 
 // ONE LIT EDGE around the thing you type into.
 //
@@ -16,7 +14,6 @@ import { tagEnd } from '../source';
 // files that look fine apart; the second edge is a `box-shadow` composed inside
 // `@hanzo/ui`'s `.glass`, so a call site can take `borderWidth` away and still
 // paint a hairline. So both are pinned here rather than left to the eye.
-const read = (f: string) => readFileSync(join(process.cwd(), f), 'utf8');
 
 /** `--hz-composer-radius`, the one number. The halo (::after) already reads it
  *  as radius + halo, so the host must state the same value to stay concentric. */

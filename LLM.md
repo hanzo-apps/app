@@ -973,36 +973,62 @@ cropped one way everywhere.
 
 ### Reading source in a test: `tests/source.ts`, and nowhere else
 
-Sixteen suites each wrote their own reader. `tagEnd` was three copies; the
-comment strippers were thirteen, in FIVE behaviours — block-first, line-first,
-line-start-only, JSX-braces-too, and blocks-only. So a rule that held in one
-suite was **evadable in another by writing the comment differently**: four could
-be slipped past with a trailing comment and one stripped no line comments at all.
+Four primitives — `root`/`read`, `sources`, `stripComments`/`stripCss`, `tagEnd`
+— and nothing in `tests/` may grow a private copy of any of them.
 
-**TWO functions, and that is the point, not a compromise.** `stripComments` reads
-TS/TSX/JS; `stripCss` reads stylesheets. `//` is a comment in one and a
-declaration in the other — run the TS stripper over CSS and it deletes from
-`url(https://…` to the end of the line. They are named for what they read, so
-reaching for the wrong one is hard rather than silent. `tap-target`,
-`font-tokens` and `token-resolution` read CSS; `panel-affordance` reads both and
-says which is which per call.
+Before this: `tagEnd` in three suites, comment strippers in thirteen across five
+behaviours, twelve hand-rolled directory walkers, and three spellings of the repo
+root in 41 files. A rule that held in one suite was **evadable in another by
+writing the comment differently** — four could be slipped past with a trailing
+comment, one stripped no line comments at all.
 
-Two hazards, both measured, both now pinned by `tests/unit/source.test.ts`:
+**`stripComments` is a SCANNER, not a regex, and that distinction is the whole
+lesson.** A regex cannot tell a comment from a string, and this tree is full of
+strings that look like comments: `accept=".zip,text/*,.html"` in `app/new`,
+`image/*` in two uploaders, a CSP `https://*.hanzo.ai`, a skills file quoting
+CSS. Measured, the regex read that `/*` as an opener and deleted the next
+thousand characters of real code — the field's own `onChange` inside it. Ten
+files carry the shape. **Nothing failed.** The rules simply stopped seeing the
+code they guard, which is the shape of every bug in this file's history.
 
-- **A walker that has not been told about comments reads an apostrophe in prose
-  as a quote** and inverts every quote after it — a tag runs past its end (a loud
-  false accusation) or stops short of it (a silent miss). It hid for as long as
+Two invariants are now asserted over the whole tree, because both were silently
+broken at some point:
+
+- **No file may lose a declaration it exports.** That is the over-strip, and it
+  fails GREEN. Before the string fix it was `[\s\S]*?` on the JSX-brace rule,
+  which let a match start at an *interface's* brace and run to whatever later
+  comment sat before a `}` — it ate the body of `UsageLimitApi` and
+  `credits-reason` went quiet.
+- **Every file keeps its line count.** A failure prints a line number and it has
+  to be the file's own; collapsing the newlines a comment spanned shortened a
+  216-line component to 181 and every number below that point was wrong.
+
+**TWO strippers, and that is the point rather than a compromise.** `//` is a
+comment in TS and a declaration in CSS, so `stripCss` removes blocks only.
+`tap-target`, `font-tokens` and `token-resolution` read CSS; `panel-affordance`
+reads both and says which is which per call.
+
+`sources(dirs, ext)` replaced the twelve walkers. Their skip lists genuinely
+disagreed — four skipped nothing, two skipped only `node_modules` — and that was
+harmless only because every one happened to start below the root. The conversion
+was verified before it was made: each suite's own predicate against the shared
+one, file by file, all eleven sets identical. `protected-routes` keeps its own
+walker on purpose; it builds a route tree, not a file list.
+
+`root` is derived from this file's location, never `process.cwd()` — the shell's
+directory is not the repo's, and seventeen suites read the right tree only
+because jest is always launched from here.
+
+Two more traps worth carrying:
+
+- **A walker not told about comments reads an apostrophe in prose as a quote**
+  and inverts every quote after it — a tag runs past its end (a loud false
+  accusation) or stops short of it (a silent miss). It hid for as long as
   `/templates` held a second apostrophe that put the count back.
-- **Stripping too much fails GREEN, which is the dangerous direction.** Written
-  `[\s\S]*?`, the JSX-brace rule let a match start at an *interface's* brace and
-  run to whatever later comment sat before a `}`. It ate the body of
-  `UsageLimitApi`, and `credits-reason` — the suite that reads that declaration —
-  went quiet. Only running the suite caught it; reading the regex did not.
-
-A scanner also convicts a file of its own explanation if you let it:
-`ui-centralization`'s all-caps rule fired on the sentence in `settings.tsx`
-saying not to write all-caps. Strip comments before you scan, and when you fix a
-scanner, prove it still bites on real code and not only on prose.
+- **A scanner convicts a file of its own explanation if you let it.**
+  `ui-centralization`'s all-caps rule fired on the sentence in `settings.tsx`
+  saying not to write all-caps. Strip before you scan — and when you fix a
+  scanner, prove it still bites on real code and not only on prose.
 
 ### The ten dependabot alerts: transitive, and none reachable
 

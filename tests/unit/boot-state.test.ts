@@ -1,11 +1,8 @@
-import { readFileSync } from "fs";
-import { join } from "path";
 
-import { stripComments } from "../source";
+import { read, root, stripComments } from "../source";
 
-const root = join(__dirname, "../..");
-const editor = readFileSync(join(root, "components/editor/index.tsx"), "utf8");
-const header = readFileSync(join(root, "components/editor/header/index.tsx"), "utf8");
+const editor = read("components/editor/index.tsx");
+const header = read("components/editor/header/index.tsx");
 
 /**
  * A fresh project boots as CONVERSATION alone.

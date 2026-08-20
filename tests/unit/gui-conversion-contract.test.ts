@@ -22,17 +22,16 @@
  * only see the handful of surfaces a test happens to visit. The rendered
  * counterparts live in tests/e2e/ui-contract.spec.ts.
  */
-import { readFileSync } from "node:fs";
 
 import { execFileSync } from "node:child_process";
-import { join } from "node:path";
+
+import { read, root } from "../source";
 
 
-const ROOT = join(__dirname, "..", "..");
 
 /** Every checked-in .tsx under the app's own source (never node_modules). */
 const files = execFileSync("git", ["ls-files", "app", "components", "templates"], {
-  cwd: ROOT, encoding: "utf8",
+  cwd: root, encoding: "utf8",
 })
   .split("\n")
   .filter((f) => f.endsWith(".tsx"));
@@ -71,7 +70,7 @@ const openingTags = (src: string, file: string): Tag[] => {
 };
 
 const allTags: Tag[] = files.flatMap((f) =>
-  openingTags(readFileSync(join(ROOT, f), "utf8"), f),
+  openingTags(read(f), f),
 );
 
 const at = (t: Tag) => `${t.file}:${t.line} <${t.name}>`;
@@ -136,7 +135,7 @@ describe("5. an icon inherits its colour", () => {
   // prop") flags app components like ConnectionBadge that legitimately accept a
   // gui colour and forward it as a gui prop — the import list cannot be wrong.
   const lucideNames = (file: string): Set<string> => {
-    const src = readFileSync(join(ROOT, file), "utf8");
+    const src = read(file);
     const names = new Set<string>();
     for (const m of src.matchAll(/import\s*\{([^}]*)\}\s*from\s*['"]lucide-react['"]/g))
       for (const raw of m[1].split(","))

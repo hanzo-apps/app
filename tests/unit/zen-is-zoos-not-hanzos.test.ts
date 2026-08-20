@@ -23,13 +23,12 @@
  * mono would erase the brand into a blank disc while leaving the file correct,
  * which is the kind of wrong that survives a screenshot.
  */
-import { readFileSync } from "node:fs";
 
 import { join } from "node:path";
 
+import { read, root } from "../source";
 
-const ROOT = join(__dirname, "..", "..");
-const read = (p: string) => readFileSync(join(ROOT, p), "utf8");
+
 
 /** The first path of Hanzo's mark. Present in public/logo.svg, and nowhere Zen. */
 const HANZO_MARK = "M22.21 67V44.6369H0V67H22.21Z";

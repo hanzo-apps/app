@@ -6,6 +6,8 @@ import { extname, join } from 'node:path';
 
 import { LIBS, TAGS } from '../../lib/vendor';
 
+import { read, root } from '../source';
+
 /**
  * THE PROMISE THIS PRODUCT MAKES TO EVERY PAGE IT BUILDS.
  *
@@ -38,7 +40,7 @@ import { LIBS, TAGS } from '../../lib/vendor';
  * a gate nobody runs.
  */
 
-const VENDOR = join(__dirname, '..', '..', 'public', 'vendor');
+const VENDOR = join(root, 'public', 'vendor');
 const TYPE: Record<string, string> = {
   '.css': 'text/css',
   '.js': 'text/javascript',
@@ -155,7 +157,7 @@ test.describe('a generated page is styled by one stylesheet', () => {
     expect(Object.keys(LIBS)).not.toContain('tailwind');
     expect(existsSync(join(VENDOR, 'tailwind.js'))).toBe(false);
     for (const f of ['lib/prompts.ts', 'lib/vfs/templates/vibe-check.ts']) {
-      const src = readFileSync(join(__dirname, '..', '..', f), 'utf8');
+      const src = read(f);
       expect(src, `${f} still emits the removed script`).not.toMatch(/vendor\/tailwind\.js/);
     }
   });

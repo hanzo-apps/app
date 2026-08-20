@@ -15,9 +15,9 @@
 import { appCatalog } from '@/data/app-catalog';
 import { SURFACES } from '@/data/downloads';
 import releases from '@/data/releases.json';
-import { readFileSync } from 'node:fs';
 
-import { join } from 'node:path';
+
+import { read } from "../source";
 
 
 const resolved = new Set<string>();
@@ -25,7 +25,7 @@ for (const surface of Object.values(releases as Record<string, { platforms: Reco
   for (const url of Object.values(surface.platforms)) resolved.add((url as { url: string }).url);
 }
 
-const source = (f: string) => readFileSync(join(process.cwd(), 'data', f), 'utf8');
+const source = (f: string) => read(`data/${f}`);
 
 describe('every offered build is one that published', () => {
   it('resolves every card on /install to a real release asset', () => {

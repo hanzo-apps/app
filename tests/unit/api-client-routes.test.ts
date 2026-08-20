@@ -11,20 +11,11 @@
  * spelled `/v2` would pass. So this walks from each call site to a route file
  * on disk: the destination exists or it does not.
  */
-import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
+import { readFileSync, existsSync, readdirSync } from "fs";
 import { join } from 'path';
 
-const root = join(__dirname, '..', '..');
+import { root, sources } from "../source";
 
-function sources(dir: string, out: string[] = []): string[] {
-  for (const name of readdirSync(dir)) {
-    if (name === 'node_modules' || name === '.next' || name.startsWith('.')) continue;
-    const p = join(dir, name);
-    if (statSync(p).isDirectory()) sources(p, out);
-    else if (/\.tsx?$/.test(name)) out.push(p);
-  }
-  return out;
-}
 
 /** `/me/projects/${ns}/${repo}` -> the segments, with holes marked. */
 function segments(path: string): string[] {
@@ -56,7 +47,7 @@ describe('the same-origin api client', () => {
 
   it('names only paths that have a route on disk', () => {
     const calls: { file: string; path: string }[] = [];
-    for (const file of sources(join(root, 'components')).concat(sources(join(root, 'hooks')))) {
+    for (const file of sources(['components', 'hooks'], /\.tsx?$/)) {
       const src = readFileSync(file, 'utf8');
       for (const m of src.matchAll(/\bapi\.(?:get|post|put|patch|delete)\s*(?:<[^>]*>)?\s*\(\s*[`'"]([^`'"]+)[`'"]/g)) {
         calls.push({ file: file.slice(root.length + 1), path: m[1] });

@@ -2,6 +2,8 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 
 import { join } from "node:path";
 
+import { read, root } from "../source";
+
 
 /**
  * Every route that draws the signed-in app requires a session.
@@ -17,7 +19,6 @@ import { join } from "node:path";
  * author two honest answers: protect the route, or stop wearing the shell on a
  * page meant to be public.
  */
-const ROOT = join(__dirname, "..", "..");
 
 /** Whether a page MOUNTS the signed-in shell — imports it, or renders it.
  *
@@ -45,13 +46,13 @@ function shelledPrefixes(): Set<string> {
       }
     }
   };
-  walk(join(ROOT, "app"), []);
+  walk(join(root, "app"), []);
   return out;
 }
 
 /** The list middleware actually enforces. */
 function declaredPrefixes(): Set<string> {
-  const src = readFileSync(join(ROOT, "middleware.ts"), "utf8");
+  const src = read("middleware.ts");
   const block = src.match(/const PROTECTED_PREFIXES = \[([\s\S]*?)\];/);
   if (!block) throw new Error("middleware.ts no longer declares PROTECTED_PREFIXES");
   return new Set([...block[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]));

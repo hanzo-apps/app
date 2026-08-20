@@ -14,20 +14,12 @@
  * that has no border (`focus-visible:ring-2`). What this refuses is the two
  * living in the same state on the same element.
  */
-import { readdirSync, readFileSync, statSync } from "node:fs";
-
-import { join } from "node:path";
+import { readFileSync } from "node:fs";
 
 
-const CHROME = join(__dirname, "..", "..", "components", "editor");
+import { rel, sources } from "../source";
 
-function sources(dir: string): string[] {
-  return readdirSync(dir).flatMap((name) => {
-    const p = join(dir, name);
-    if (statSync(p).isDirectory()) return sources(p);
-    return name.endsWith(".tsx") ? [p] : [];
-  });
-}
+
 
 /** Utilities in a class list that carry no `state:` prefix. */
 function unprefixed(classes: string): string[] {
@@ -44,12 +36,12 @@ describe("the /dev chrome never draws a border and a ring on the same element", 
   const offenders: string[] = [];
 
   beforeAll(() => {
-    for (const file of sources(CHROME)) {
+    for (const file of sources(["components/editor"], /\.tsx$/)) {
       const src = readFileSync(file, "utf8");
       for (const m of src.matchAll(/className=\{?"([^"]+)"/g)) {
         const own = unprefixed(m[1]);
         if (own.some((c) => BORDER.test(c)) && own.some((c) => RING.test(c))) {
-          offenders.push(`${file.slice(CHROME.length + 1)}: ${m[1]}`);
+          offenders.push(`${rel(file)}: ${m[1]}`);
         }
       }
     }

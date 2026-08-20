@@ -1,8 +1,7 @@
-import { readFileSync } from "fs";
 import { execFileSync } from "child_process";
-import { join } from "path";
 
-const root = join(__dirname, "../..");
+import { read, root } from "../source";
+
 
 /**
  * The brand is appended in ONE place, and a page never writes it.
@@ -18,7 +17,7 @@ const root = join(__dirname, "../..");
  * has the brand" — it is the opposite: **no page title may contain it**, because
  * the root adds it and a page that writes it too gets it twice.
  */
-const layout = readFileSync(join(root, "app/layout.tsx"), "utf8");
+const layout = read("app/layout.tsx");
 
 /**
  * Every title a page or layout declares AS METADATA.
@@ -41,7 +40,7 @@ function pageTitles(): { file: string; title: string }[] {
 
   const found: { file: string; title: string }[] = [];
   for (const file of files) {
-    const src = readFileSync(join(root, file), "utf8");
+    const src = read(file);
     const start = src.search(/export (const metadata|async function generateMetadata)/);
     if (start < 0) continue;
     const after = src.slice(start);
@@ -81,7 +80,7 @@ describe("the brand is said once", () => {
     // 121-row back door onto the same rule — and every row went through it:
     // each one ended "| Hanzo" before the template existed. A page-file sweep
     // cannot see them, because the file says `title: t.seoTitle`.
-    const catalog = readFileSync(join(root, "lib/templates-catalog.ts"), "utf8");
+    const catalog = read("lib/templates-catalog.ts");
     const titles = [...catalog.matchAll(/seoTitle:\s*"([^"]*)"/g)].map((m) => m[1]);
     expect(titles.length).toBeGreaterThan(100);
     expect(titles.filter((t) => /Hanzo/.test(t))).toEqual([]);

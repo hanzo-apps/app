@@ -1,6 +1,6 @@
-import { readFileSync } from 'node:fs';
 
-import { join } from 'node:path';
+
+import { read } from '../source';
 
 
 /**
@@ -19,7 +19,6 @@ import { join } from 'node:path';
  * is someone re-adding one word.
  */
 
-const read = (rel: string) => readFileSync(join(process.cwd(), rel), 'utf8');
 
 /** The sandbox attribute values a file declares. */
 const sandboxes = (src: string) =>

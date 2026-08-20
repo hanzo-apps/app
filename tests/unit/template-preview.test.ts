@@ -1,17 +1,14 @@
-import { readFileSync } from 'node:fs';
-
-import { join } from 'node:path';
 
 
-import { stripComments } from '../source';
 
-const root = join(__dirname, '..', '..');
+import { read, root, stripComments } from '../source';
+
 
 /** A file with its comments removed. The rule is about what the code DOES, and
  *  the comment explaining a fix necessarily NAMES the thing it stopped using —
  *  read whole, every file convicts itself of its own explanation. The ordering
  *  law this discovered now lives with the function. */
-const code = (p: string) => stripComments(readFileSync(join(root, p), 'utf8'));
+const code = (p: string) => stripComments(read(p));
 
 /** Every surface that draws a picture of a template. */
 const SURFACES = [

@@ -19,10 +19,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { stripComments } from "./source";
+import { root, stripComments } from "./source";
 
 export const WIDGET_PATH = path.join(
-  process.cwd(),
+  root,
   'node_modules/@hanzo/control/src/control.js',
 );
 

@@ -8,7 +8,7 @@ import { join } from "node:path";
 // the defects were measured in.
 import { glass, panel, row, rows, scrim } from "@/lib/chrome";
 
-import { sources } from "../source";
+import { root, sources } from "../source";
 
 /**
  * ONE glass.
@@ -28,15 +28,14 @@ import { sources } from "../source";
 const ROOTS = ["components", "app", "lib", "hooks"];
 const EXT = /\.(tsx?|jsx?)$/;
 
-const repoRoot = join(__dirname, "..", "..");
 const files = sources(ROOTS, EXT);
-const rel = (f: string) => f.replace(repoRoot + "/", "");
+const rel = (f: string) => f.replace(root + "/", "");
 const offendersOf = (re: RegExp) =>
   files.filter((f) => re.test(readFileSync(f, "utf8"))).map(rel);
 
 // The app's own sheet. It holds neither the material nor any part of the ladder
 // now, so it is asserted on for what must NOT be here.
-const appCss = readFileSync(join(repoRoot, "assets", "globals.css"), "utf8");
+const appCss = readFileSync(join(root, "assets", "globals.css"), "utf8");
 
 // The material itself. It moved to `@hanzo/ui/glass.css`, so the law is asserted
 // where the law now lives; asserting it against the app's sheet after the move
@@ -46,7 +45,7 @@ const appCss = readFileSync(join(repoRoot, "assets", "globals.css"), "utf8");
 // through it returns the mock, so the assertions below passed against an empty
 // stub. The symlink pnpm puts at node_modules/@hanzo/ui is the real file.
 const pkgCss = readFileSync(
-  join(repoRoot, "node_modules", "@hanzo", "ui", "dist", "glass.css"),
+  join(root, "node_modules", "@hanzo", "ui", "dist", "glass.css"),
   "utf8",
 );
 

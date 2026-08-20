@@ -1,7 +1,7 @@
-import { readFileSync, readdirSync, statSync } from 'node:fs'
-import { join } from 'node:path'
+import { readFileSync } from "node:fs";
 
-import { sources, tagEnd as jsxTagEnd } from '../source'
+
+import { rel, sources, tagEnd as jsxTagEnd } from '../source'
 
 /**
  * An icon-only Button must say `size="icon"`.
@@ -29,7 +29,6 @@ import { sources, tagEnd as jsxTagEnd } from '../source'
  * label is not icon-only; a switch track is not an icon box.
  */
 
-const ROOT = join(__dirname, '..', '..')
 
 const SKIP = new Set([
   // two glyphs side by side — a tab, not a square
@@ -85,8 +84,8 @@ function closeOf(s: string, from: number): number {
 it('gives every icon-only Button size="icon"', () => {
   const offenders: string[] = []
   for (const file of sources(['components', 'app'], /\.tsx$/)) {
-    const rel = file.slice(ROOT.length + 1)
-    if (SKIP.has(rel)) continue
+    const relPath = rel(file)
+    if (SKIP.has(relPath)) continue
     const s = readFileSync(file, 'utf8')
     for (let i = s.indexOf('<Button'); i >= 0; i = s.indexOf('<Button', i + 7)) {
       const end = tagEnd(s, i)
@@ -112,7 +111,7 @@ it('gives every icon-only Button size="icon"', () => {
       // strip tags, then expressions; whatever is left is a visible label
       const label = body.replace(/<[^>]*>/g, '').replace(/\{[^{}]*\}/g, '').trim()
       if (label) continue
-      offenders.push(`${rel}:${s.slice(0, i).split('\n').length}`)
+      offenders.push(`${relPath}:${s.slice(0, i).split('\n').length}`)
     }
   }
   expect(offenders).toEqual([])

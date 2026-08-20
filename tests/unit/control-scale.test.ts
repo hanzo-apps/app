@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 
-import { sources, tagEnd } from "../source";
+import { read, root, sources, tagEnd } from "../source";
 
 /**
  * ONE control scale.
@@ -23,11 +23,10 @@ import { sources, tagEnd } from "../source";
  * Two mechanisms let that happen, and this file pins both shut.
  */
 
-const ROOT = join(__dirname, "..", "..");
 const SURFACE = ["app", "components"];
 
 const files = sources(SURFACE, /\.tsx$/);
-const rel = (f: string) => f.replace(ROOT + "/", "");
+const rel = (f: string) => f.replace(root + "/", "");
 
 /**
  * The size vocabulary, READ FROM the library rather than re-typed here.
@@ -46,7 +45,9 @@ const SIZES: string[] = (() => {
   // `backends/gui/button.d.ts`. Hardcoding any of those spellings makes this
   // suite report "the library dropped its sizes" when the library did nothing of
   // the kind, which is exactly the failure it exists to prevent.
-  const root = join(ROOT, "node_modules/@hanzo/ui/dist");
+  // The INSTALLED package, which `sources` deliberately skips — this rule is
+  // about what @hanzo/ui declares, not about our own files.
+  const installed = join(root, "node_modules/@hanzo/ui/dist");
   const candidates: string[] = [];
   const scan = (dir: string) => {
     for (const e of readdirSync(dir, { withFileTypes: true })) {
@@ -55,7 +56,7 @@ const SIZES: string[] = (() => {
       else if (e.name === "button.d.ts") candidates.push(p);
     }
   };
-  scan(root);
+  scan(installed);
 
   for (const c of candidates) {
     const dts = readFileSync(c, "utf8");
@@ -69,7 +70,7 @@ const SIZES: string[] = (() => {
     if (sizes.length) return sizes;
   }
   throw new Error(
-    `@hanzo/ui declares no button size union — searched ${candidates.length} button.d.ts under ${root}`,
+    `@hanzo/ui declares no button size union — searched ${candidates.length} button.d.ts under ${installed}`,
   );
 })();
 
@@ -140,7 +141,7 @@ describe("one control scale", () => {
    * here rather than waiting for a browser to show it.
    */
   it("the button rule does not enumerate size names", () => {
-    const css = readFileSync(join(ROOT, "assets/globals.css"), "utf8");
+    const css = read("assets/globals.css");
     expect(css.match(/\[data-size="[^"]+"\]/g)).toBeNull();
   });
 });
