@@ -168,7 +168,6 @@ export function priceAt(p: Plan, level: number): number {
   return p.prices[Math.min(Math.max(level, 0), p.prices.length - 1)] ?? p.price;
 }
 
-/** Render cents as a whole-dollar string when even, else with cents. */
-export function usd(cents: number): string {
-  return cents % 100 === 0 ? `$${cents / 100}` : `$${(cents / 100).toFixed(2)}`;
-}
+// `usd` lives in lib/money.ts. Re-exported because the plan surfaces import
+// it from here; the IMPLEMENTATION moving is the point.
+export { usd } from "./money";

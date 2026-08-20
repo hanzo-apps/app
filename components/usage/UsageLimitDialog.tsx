@@ -30,7 +30,8 @@ import { Wallet, Sparkles, ArrowRight, type LucideIcon } from 'lucide-react';
 
 import { useCloudBalance, spendableCents } from '@/lib/billing/live-balance';
 
-const fmtUsd = (cents: number): string => `$${(cents / 100).toFixed(2)}`;
+import { usd } from "@/lib/money";
+
 
 /**
  * The CAUSE the refusal gave, without the instruction it gave with it.
@@ -183,7 +184,7 @@ function BalanceLine() {
     <XStack alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2">
       <SizableText color="$color11"><Wallet size={14} /></SizableText>
       <SizableText fontSize="$1" color="$color11">Current balance</SizableText>
-      <SizableText marginLeft="auto" fontFamily="$mono" fontSize="$1" color="$color">{fmtUsd(cents)}</SizableText>
+      <SizableText marginLeft="auto" fontFamily="$mono" fontSize="$1" color="$color">{usd(cents)}</SizableText>
     </XStack>
   );
 }

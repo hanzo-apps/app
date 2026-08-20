@@ -83,7 +83,7 @@ function Checkout() {
     <YStack alignSelf="center" alignItems="center" paddingVertical="$12" gap="$4">
       <Spinner />
       <Paragraph color="$color11">
-        {plan ? `Taking you to checkout for ${plan.name} — ${usd(priceAt(plan, level))}/mo` : "Taking you to checkout…"}
+        {plan ? `Taking you to checkout for ${plan.name} — ${usd(priceAt(plan, level), 'trim')}/mo` : "Taking you to checkout…"}
       </Paragraph>
     </YStack>
   );

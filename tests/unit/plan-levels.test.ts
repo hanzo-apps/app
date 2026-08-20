@@ -78,8 +78,13 @@ describe('the price ladder off the catalog', () => {
   });
 
   it('renders the top of the ladder as whole dollars', () => {
-    expect(usd(99900)).toBe('$999');
-    expect(usd(9900)).toBe('$99');
+    // `trim` is the MARKETING register and it is asked for, not assumed. The
+    // default is exact ("$999.00") because most of what this app renders is a
+    // balance or a charge, and money that has moved is stated to the cent.
+    expect(usd(99900, 'trim')).toBe('$999');
+    expect(usd(9900, 'trim')).toBe('$99');
+    // A price with real cents keeps them in either register, or it is wrong.
+    expect(usd(9950, 'trim')).toBe('$99.50');
   });
 });
 

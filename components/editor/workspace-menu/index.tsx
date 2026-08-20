@@ -50,7 +50,8 @@ import { updateProject } from "@/lib/api/projects";
 import { NetworkWallet } from "@/components/network-wallet";
 import type { Project } from "@/types";
 
-const fmtUsd = (cents: number): string => `$${(cents / 100).toFixed(2)}`;
+import { usd } from "@/lib/money";
+
 
 // Shared item styling — Hanzo darker chrome: white-on-black, hairline focus,
 // a crisp hover. ONE gui prop bundle, spread on every menu item.
@@ -118,7 +119,7 @@ export function WorkspaceMenu({
   // consumed remainder). Only drawn from real fields; never a fabricated quota.
   const cents = spendableCents(balance);
   const ready = phase === "ready" && cents !== null;
-  const balanceText = ready ? fmtUsd(cents as number) : "—";
+  const balanceText = ready ? usd(cents as number) : "—";
   const total = typeof balance?.balance === "number" ? balance.balance : null;
   const holds = typeof balance?.holds === "number" ? balance.holds : null;
   const pct = ready
@@ -136,7 +137,7 @@ export function WorkspaceMenu({
           : !ready
             ? "Loading balance…"
             : holds !== null && holds > 0
-              ? `${fmtUsd(holds)} on hold`
+              ? `${usd(holds)} on hold`
               : "Credits debit as you build";
 
   // Rename — PATCH a real project, else update the name publish will use.

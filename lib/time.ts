@@ -1,5 +1,5 @@
 /**
- * How long ago, said once.
+ * How long ago, said once. (Money is next door in `lib/money.ts`.)
  *
  * There were two of these — `lib/projects-view.ts` and `lib/api/git.ts` — and
  * they disagreed about the same instant. Measured: something 90 minutes old read

@@ -16,6 +16,8 @@
  *    billing not configured on this deployment.
  */
 import { YStack } from '@hanzo/ui';
+
+import { usd } from "@/lib/money";
 import {useRouter} from 'next/navigation'
 import {User, Wallet} from 'lucide-react'
 import {UserMenu, resolveIdentity} from '@hanzo/iam/react'
@@ -29,7 +31,6 @@ import {useCloudBalance, spendableCents} from '@/lib/billing/live-balance'
 const BILLING_URL =
   process.env.NEXT_PUBLIC_BILLING_URL || 'https://billing.hanzo.ai'
 
-const fmtUsd = (cents: number): string => `$${(cents / 100).toFixed(2)}`
 
 function openTopUp(): void {
   if (typeof window !== 'undefined')

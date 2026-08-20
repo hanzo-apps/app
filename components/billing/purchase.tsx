@@ -182,7 +182,7 @@ export function Subscribe({ slug, label }: { slug: string; label?: string }) {
       size="sm"
     >
       <Sparkles size={16} />
-      {label ?? `Upgrade to ${plan.name}`} — {usd(plan.price)}
+      {label ?? `Upgrade to ${plan.name}`} — {usd(plan.price, 'trim')}
       {plan.perSeat ? '/seat' : ''}/mo
     </Button>
   );

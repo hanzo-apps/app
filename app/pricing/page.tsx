@@ -172,7 +172,7 @@ export default function PricingPage() {
                             {/* Price straight from the catalog that will be charged. */}
                             <XStack marginTop="$4.5" alignItems="baseline" gap="$1.5">
                               <SizableText fontFamily="$mono" fontSize="$11" fontWeight="500" letterSpacing={-0.4}>
-                                {p.contactSales ? "Custom" : usd(priceAt(p, level))}
+                                {p.contactSales ? "Custom" : usd(priceAt(p, level), 'trim')}
                               </SizableText>
                               {!p.contactSales && (
                                 <SizableText fontSize="$3" color="$color11">
