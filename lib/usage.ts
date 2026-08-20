@@ -33,7 +33,7 @@ export function buildUsage(projectCount: number): AccountUsage {
   return {
     metered: false,
     metrics: [
-      { label: "Projects", value: Math.max(0, projectCount | 0), limit: null },
+      { label: "Web projects", value: Math.max(0, projectCount | 0), limit: null },
     ],
     note: "Consumption metering (compute, storage, requests) is coming soon.",
   };

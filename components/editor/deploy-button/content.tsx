@@ -173,7 +173,7 @@ export const DeployButtonContent = ({
       }
       if (data?.deployError && !liveUrl) {
         toast.success("Saved to your organization.", {
-          description: "The deploy is still finishing. Open it from Projects in a moment.",
+          description: "The deploy is still finishing. Open it from Web Projects in a moment.",
         });
       } else {
         toast.success("Your app is published.", {

@@ -85,7 +85,7 @@ const PRIMARY_ITEMS: SidebarItem[] = [
 
 // ── Projects group ──────────────────────────────────────────────────────────
 const PROJECT_ITEMS: SidebarItem[] = [
-  { id: 'all-projects', label: 'All projects', icon: FolderOpen, route: '/projects' },
+  { id: 'all-projects', label: 'All web projects', icon: FolderOpen, route: '/projects' },
   { id: 'starred', label: 'Starred', icon: Star, route: '/projects?filter=starred' },
   { id: 'created-by-me', label: 'Created by me', icon: User, route: '/projects?filter=mine' },
   { id: 'shared', label: 'Shared with me', icon: Users, route: '/projects?filter=shared' },

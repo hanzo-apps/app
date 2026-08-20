@@ -149,7 +149,7 @@ export function SyncTabs({
       <TabsList width="100%">
         <TabsTrigger value="projects" alignItems="center" gap="$1.5">
           <FolderGit2 size={14} />
-          <span>Projects</span>
+          <span>Web Projects</span>
           <SizableText fontSize="$1" color="$color11">({projectCount})</SizableText>
         </TabsTrigger>
         <TabsTrigger value="skills" alignItems="center" gap="$1.5">

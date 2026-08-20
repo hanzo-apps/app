@@ -50,7 +50,7 @@ export const GUIDED_TOUR_STEPS: GuidedTourStepContent[] = [
     body: (
       <YStack rowGap="$2">
         <Paragraph fontSize="$3" color="$color11">The menu on any project card exports it: ZIP to deploy somewhere else, JSON to keep a backup.</Paragraph>
-        <Paragraph fontSize="$3" color="$color11">Projects can also be duplicated or deleted from this menu.</Paragraph>
+        <Paragraph fontSize="$3" color="$color11">Web projects can also be duplicated or deleted from this menu.</Paragraph>
       </YStack>
     ),
     location: 'project-manager',

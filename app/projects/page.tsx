@@ -33,7 +33,7 @@ export default function ProjectsPage() {
   }
 
   return (
-    <AppShell currentView="all-projects" title="Projects">
+    <AppShell currentView="all-projects" title="Web Projects">
       {/* Sidebar already renders the org switcher — suppress the duplicate in
           the list toolbar so there's one org control, not two. */}
       <ProjectList showOrgSwitcher={false} />
