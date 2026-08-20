@@ -27,10 +27,17 @@ test.describe('hanzo.app — authenticated', () => {
   test('light/dark: dark by default; toggling to light paints the app white', async ({ page }) => {
     await page.goto('/dashboard');
 
-    // Default theme is dark → --background resolves to (near) black. This also
-    // proves the Tamagui-override fix (bg-background would otherwise be #141414).
+    // Default theme is dark → --background is the design's near-black ground,
+    // #0a0a0a. This also proves the Tamagui-override fix, which would otherwise
+    // leave it at #141414 — so the assertion has to tell those two apart and
+    // cannot simply accept anything dark.
+    //
+    // It matched PURE black (oklch(0%) / #000 / rgb(0,0,0)) and the ground has
+    // never been pure black; the comment above it already said "near". A literal
+    // pinned in a spec goes stale the release after the token moves, which is
+    // the same way the generated-page ink assertion broke.
     const dark = await bgToken(page);
-    expect(dark).toMatch(/oklch\(0%|^#000|rgb\(0, ?0, ?0/i);
+    expect(dark.toLowerCase()).toMatch(/^(#0a0a0a|rgb\(10, ?10, ?10\))$/);
 
     // Flip to light via the same next-themes store the user-menu toggle drives.
     await page.evaluate(() => localStorage.setItem('hanzo-app-theme', 'light'));

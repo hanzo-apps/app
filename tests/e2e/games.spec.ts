@@ -38,7 +38,13 @@ test.describe('Games surface', () => {
     // /games already has Games selected and there would be nothing to narrow.
     await page.goto('/templates');
     const cards = page.getByRole('button', { name: /^Preview / });
+    // Wait for the grid before counting it. This read raced hydration exactly
+    // like the click below, and the failure it produced was unreadable: `all`
+    // came back 0, so the assertion became `expect(28).toBeLessThan(0)` — a
+    // filter that had in fact worked, reported as an impossible expectation.
+    await expect(cards.first()).toBeVisible();
     const all = await cards.count();
+    expect(all).toBeGreaterThan(0);
     const fps = page.getByRole('button', { name: 'Games', exact: true });
 
     // Retry the click until it narrows the grid: a click that lands before React
