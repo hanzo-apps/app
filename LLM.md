@@ -142,16 +142,27 @@ That last rule has teeth: `@types/hanzo-ui.d.ts` used to declare every export as
 `any`. "Zero type errors" then meant no types existed to check. Deleting it
 surfaced 79 real errors, one of which was the dead-handler bug above.
 
-### Five composers, five Enter rules
+### Five composers, ONE Enter rule
 
 `components/editor/ask-ai` (the builder), `components/build-composer`,
-`components/chat-panel`, `app/chat` and `app/new` each hand-roll Enter-to-send,
-and they disagree: chat-panel needs Ctrl/Cmd+Enter, `app/new` accepts Cmd, Ctrl
-OR bare Enter, the rest are Enter-unless-Shift. **None checks
-`e.isComposing`**, so an open IME candidate — every Japanese, Chinese and Korean
-user, mid-word — submits the turn instead of accepting the candidate. The fix is
-`sends()` from `@hanzo/ui/chat`, which is one function with those cases already
-covered; do not write a sixth copy here.
+`components/chat-panel`, `app/chat` and `app/new` all ask `sends()` from
+`@hanzo/ui/chat`. Do not write a sixth copy.
+
+They each hand-rolled it once, and disagreed, and **none checked
+`e.isComposing`** — so an open IME candidate committed a half-typed word for
+every Japanese, Chinese and Korean writer. That is what `sends()` is for: it
+knows a keystroke can be claimed three ways (`isComposing`, `key === 'Process'`,
+and Safari's legacy keyCode 229, which it sets when `isComposing` is absent), so
+checking the flag alone is still not enough.
+
+**chat-panel narrows the answer, deliberately**: bare Enter writes a newline
+there, so it reads `sends()` and then requires Ctrl/Cmd on top. The IME question
+has one home; the send rule stays the surface's own. Narrowing the shared
+predicate is the sanctioned move — re-deriving it is not.
+
+The `key === "Enter" || key === " "` handlers in `build-composer` and `app/new`
+are a different question — keyboard activation on an element that is not a
+button — and are correctly local.
 
 ### ONE next config
 
@@ -960,16 +971,38 @@ The landing strip (`app/page.tsx`) is 360×225 for the same reason — at 280×1
 whole website was a thumbnail of a thumbnail. 16:10 both places, so one shot is
 cropped one way everywhere.
 
-**Three test suites hand-rolled the same JSX tag walker**, and none skipped
-comments. `tests/jsx.ts` is now the one `tagEnd`, used by `card-not-button`,
-`control-scale` and `icon-button`. A block comment is legal between props and
-this app writes long ones there; an apostrophe in that prose is not a string
-delimiter, but a walker that has not been told about comments reads it as one and
-inverts every quote after it — a tag then runs past its end (a loud false
-accusation) or stops short of it (a silent miss). It hid for as long as
-`/templates` happened to hold a second apostrophe that put the count back, and
-deleting an unrelated `'none'` exposed it. Teaching the walker about comments
-immediately reached a call site the old scan had never asked about.
+### Reading source in a test: `tests/source.ts`, and nowhere else
+
+Sixteen suites each wrote their own reader. `tagEnd` was three copies; the
+comment strippers were thirteen, in FIVE behaviours — block-first, line-first,
+line-start-only, JSX-braces-too, and blocks-only. So a rule that held in one
+suite was **evadable in another by writing the comment differently**: four could
+be slipped past with a trailing comment and one stripped no line comments at all.
+
+**TWO functions, and that is the point, not a compromise.** `stripComments` reads
+TS/TSX/JS; `stripCss` reads stylesheets. `//` is a comment in one and a
+declaration in the other — run the TS stripper over CSS and it deletes from
+`url(https://…` to the end of the line. They are named for what they read, so
+reaching for the wrong one is hard rather than silent. `tap-target`,
+`font-tokens` and `token-resolution` read CSS; `panel-affordance` reads both and
+says which is which per call.
+
+Two hazards, both measured, both now pinned by `tests/unit/source.test.ts`:
+
+- **A walker that has not been told about comments reads an apostrophe in prose
+  as a quote** and inverts every quote after it — a tag runs past its end (a loud
+  false accusation) or stops short of it (a silent miss). It hid for as long as
+  `/templates` held a second apostrophe that put the count back.
+- **Stripping too much fails GREEN, which is the dangerous direction.** Written
+  `[\s\S]*?`, the JSX-brace rule let a match start at an *interface's* brace and
+  run to whatever later comment sat before a `}`. It ate the body of
+  `UsageLimitApi`, and `credits-reason` — the suite that reads that declaration —
+  went quiet. Only running the suite caught it; reading the regex did not.
+
+A scanner also convicts a file of its own explanation if you let it:
+`ui-centralization`'s all-caps rule fired on the sentence in `settings.tsx`
+saying not to write all-caps. Strip comments before you scan, and when you fix a
+scanner, prove it still bites on real code and not only on prose.
 
 ### The ten dependabot alerts: transitive, and none reachable
 
