@@ -104,7 +104,7 @@ function Choice({
       aria-pressed={selected}
       data-testid={testid}
       // THE FLOOR IS A MEASUREMENT, not a taste: 21px of label, 2px of margin,
-      // 19px per hint line, 16px of padding. A Button carries a fixed height
+      // 19px per hint line, 12px of padding. A Button carries a fixed height
       // from its size variant, so a row sized under its own text cuts the top
       // off its label — which no assertion on the text would ever notice.
       //
@@ -113,8 +113,8 @@ function Choice({
       // flexShrink because the body scrolls: a flex child in a height-capped
       // column gives way by default, and the row is the fixed thing here — the
       // list is what should give.
-      width="100%" minHeight={39 + 19 * rows} flexShrink={0} alignItems="center" gap="$2"
-      borderWidth={0} borderRadius="$3" paddingVertical="$2"
+      width="100%" minHeight={35 + 19 * rows} flexShrink={0} alignItems="center" gap="$2"
+      borderWidth={0} borderRadius="$3" paddingVertical="$1.5"
       backgroundColor={selected ? "$color4" : "transparent"}
       hoverStyle={{ backgroundColor: "$color5" }}
       focusStyle={{ backgroundColor: "$color5" }}
@@ -233,17 +233,20 @@ export function Settings({
         className="hz-picker-panel"
         width={320} overflow="hidden" padding="$1"
       >
-        {/* THE BODY SCROLLS. Two sections plus a refusal do not fit above the
-            composer on a laptop, and a popover that is merely `overflow: hidden`
-            answers that by cutting the last option off with nothing to say it
-            did. Half the window is what actually fits: the popover opens upward
-            from a trigger sitting near the bottom, so anything taller runs off
-            the TOP of the screen instead. 60vh is what holds the whole sandbox
-            list on a laptop: all four runtimes are there to be COMPARED, and a
-            row you have to scroll to is one nobody weighs against the others. */}
+        {/* THE BODY SCROLLS, and 60vh is the cap. A popover that is merely
+            `overflow: hidden` answers a list too long for the room by cutting
+            the last option off with nothing to say it did. The ceiling is a
+            fraction of the WINDOW because the popover opens upward from a
+            trigger sitting near the bottom, so anything taller runs off the top
+            of the screen rather than the bottom. 60 rather than 50 is what holds
+            the whole sandbox list on a laptop — all four runtimes are there to
+            be COMPARED, and a row you have to scroll to is one nobody weighs
+            against the others. Measured at 820px tall: content 490, cap 492. */}
         <YStack data-testid="settings-body" width="100%" maxHeight="60vh" overflow="scroll">
           <Section>Model</Section>
-          {error && error !== "" && (
+          {/* `!!` because `"" && x` is `""`, which React renders as a text node
+              and a gui View refuses to take as a child. */}
+          {!!error && (
             <Paragraph role="alert" display="flex" alignItems="center" justifyContent="space-between" marginHorizontal="$1" marginBottom="$1" borderRadius="$3" borderWidth={1} borderColor="$red9" padding="$2" fontSize="$2" fontWeight="500" color="$red10">
               {error}
             </Paragraph>
@@ -262,6 +265,7 @@ export function Settings({
                 ? `Last request went to ${routedModel} — you are billed as what served you`
                 : "Routes each request to the cheapest capable model"
             }
+            rows={2}
             selected={isAuto}
             onClick={() => onModelChange(AUTO_MODEL)}
   />
