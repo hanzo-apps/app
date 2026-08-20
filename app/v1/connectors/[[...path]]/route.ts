@@ -10,11 +10,10 @@
  * so every connect/disconnect is org-scoped WITHOUT the browser ever choosing its
  * own tenant (least privilege). Identical trust model to the /v1/projects BFF.
  *
- * Endpoint reconciliation: the app surface + cloud target are BOTH `/v1/connectors`
- * now (was `/v1/integrations`). To stay green while cloud completes the same rename
- * in parallel, the forward falls back to the legacy `/v1/integrations` cloud prefix
- * on a 404 — so connectors load live regardless of which prefix cloud is serving,
- * and there is exactly ONE app endpoint (`/v1/connectors`).
+ * ONE name, end to end: this route, cloud's endpoint, cloud's package and the KMS
+ * namespace a token is sealed under all say `connectors`. There is no
+ * `/v1/integrations` anywhere in the path any more — see CLOUD_PREFIX below for
+ * why the fallback that used to be here was never doing what it claimed.
  *
  * Surface (proxied verbatim to cloud `/v1/connectors`):
  *   GET  /v1/connectors                       list catalog + org status
@@ -85,9 +84,16 @@ async function subpathOf(req: NextRequest, ctx: Ctx): Promise<string | null> {
   return base + qs;
 }
 
-/** Cloud prefixes tried in order — the canonical one first, the legacy alias as a
- *  fallback so a mid-rename cloud never blanks connectors. ONE app endpoint. */
-const CLOUD_PREFIXES = ['/v1/connectors', '/v1/integrations'] as const;
+/** The cloud prefix. ONE name, end to end: cloud's package, its endpoint, its KMS
+ *  namespace and this app's route all say `connectors`.
+ *
+ *  This was a LIST — the canonical prefix and a legacy `/v1/integrations` alias,
+ *  tried in order — written to stay green while cloud "completed the same rename
+ *  in parallel". Cloud had not started it: main carried neither prefix, so both
+ *  legs 404'd and the fallback only doubled the latency of failing. Cloud serves
+ *  /v1/connectors now, so the second name is gone rather than left as a thing to
+ *  keep working. */
+const CLOUD_PREFIX = '/v1/connectors';
 
 /**
  * Forward to the org-scoped cloud connectors surface as the user.
@@ -113,42 +119,27 @@ async function forwardConnectors(
   if (init.contentType) headers['Content-Type'] = init.contentType;
   if (scope.crossOrg) headers['X-Org-Id'] = scope.org;
 
-  let lastRes: Response | null = null;
-  for (const prefix of CLOUD_PREFIXES) {
-    try {
-      const res = await fetch(`${cloudBase()}${prefix}${subpath}`, {
-        method: init.method,
-        headers,
-        body: init.body ?? undefined,
-        cache: 'no-store',
-        redirect: 'manual',
-      });
-      // A 404 on the canonical prefix means cloud is still on the legacy one —
-      // try the next prefix. Any other status (incl. 2xx/4xx/5xx) is authoritative.
-      if (res.status === 404 && prefix !== CLOUD_PREFIXES[CLOUD_PREFIXES.length - 1]) {
-        lastRes = res;
-        continue;
-      }
-      const location = res.headers.get('location');
-      const outHeaders: Record<string, string> = {
-        'Content-Type': res.headers.get('content-type') || 'application/json',
-      };
-      if (location) outHeaders['Location'] = location;
-      const buf = await res.arrayBuffer();
-      return new Response(buf, { status: res.status, headers: outHeaders });
-    } catch {
-      // network error on this prefix — try the next, else surface 502 below
-      lastRes = null;
-    }
-  }
-  if (lastRes) {
-    const buf = await lastRes.arrayBuffer();
-    return new Response(buf, {
-      status: lastRes.status,
-      headers: { 'Content-Type': lastRes.headers.get('content-type') || 'application/json' },
+  try {
+    const res = await fetch(`${cloudBase()}${CLOUD_PREFIX}${subpath}`, {
+      method: init.method,
+      headers,
+      body: init.body ?? undefined,
+      cache: 'no-store',
+      redirect: 'manual',
     });
+    // Every status is authoritative now, 404 included: with one prefix a 404
+    // means the connector does not exist, which is an answer the reader needs
+    // rather than a reason to ask somewhere else.
+    const location = res.headers.get('location');
+    const outHeaders: Record<string, string> = {
+      'Content-Type': res.headers.get('content-type') || 'application/json',
+    };
+    if (location) outHeaders['Location'] = location;
+    const buf = await res.arrayBuffer();
+    return new Response(buf, { status: res.status, headers: outHeaders });
+  } catch {
+    return jsonError('connectors backend unreachable', 502);
   }
-  return jsonError('connectors backend unreachable', 502);
 }
 
 async function proxy(req: NextRequest, ctx: Ctx, method: string, withBody: boolean) {

@@ -1,10 +1,9 @@
 /**
  * Connectors client — the ONE browser client for the org-scoped connector surface.
  *
- * "Connectors" is the canonical product AND endpoint name. This talks to the
- * SAME-ORIGIN `/v1/connectors` BFF (app/v1/connectors/[[...path]]), which forwards
- * to the cloud connectors surface as the signed-in user (falling back to the legacy
- * `/v1/integrations` cloud prefix during the cloud rename). Cloud derives the
+ * "Connectors" is the canonical product AND endpoint name — the only one. This
+ * talks to the SAME-ORIGIN `/v1/connectors` BFF (app/v1/connectors/[[...path]]),
+ * which forwards to cloud's `/v1/connectors` as the signed-in user. Cloud derives the
  * org from the bearer `owner` claim (gateway-minted `X-Org-Id`), so every
  * connection is org-scoped — and the IAM token is NEVER read by
  * browser JS (the cookie rides the same-origin request; least privilege).
@@ -21,7 +20,7 @@
 
 import { currentOrg } from '@/lib/org-scope';
 
-// --- Types (cloud clients/integrations providerView + connectionView) ---
+// --- Types (cloud clients/connectors providerView + connectionView) ---
 
 /** A live connection this org holds for a provider (non-secret metadata only —
  *  the OAuth/apikey token lives in KMS server-side, never here). */
