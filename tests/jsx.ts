@@ -20,6 +20,25 @@
  * hold a second apostrophe that put the count back — deleting an unrelated
  * `'none'` is what exposed it.
  */
+/**
+ * Source with its comments removed.
+ *
+ * A rule is about what the code DOES, and the comment explaining a rule
+ * necessarily QUOTES it — so a scanner that reads a file whole convicts every
+ * file of its own explanation. `ui-centralization` did exactly that: its
+ * all-caps rule fired on the sentence saying not to write all-caps.
+ *
+ * LINE comments first, and the order is not a preference. A `//` comment can
+ * contain the characters that open a block — `components/landing/*` does — and
+ * stripping blocks first opens one there that runs to the next close 2000
+ * characters later, taking real code with it. That is a false POSITIVE, which
+ * fails loudly; the inverse would pass silently.
+ *
+ * The line strip spares `://`, so a URL in code survives to be caught.
+ */
+export const stripComments = (src: string): string =>
+  src.replace(/(^|[^:])\/\/.*$/gm, '$1').replace(/\/\*[\s\S]*?\*\//g, '');
+
 export function tagEnd(src: string, from: number): number {
   let depth = 0;
   let quote = '';

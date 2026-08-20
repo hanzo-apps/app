@@ -85,20 +85,21 @@ export function ChatThread({
 }
 
 /**
- * What you asked for, as a pill.
+ * What you asked for — the SAME card `components/chat-panel` gives a user turn:
+ * `$color3` ground, `$5` corner, a `$borderColor` hairline.
  *
- * A tail (`borderBottomRightRadius: $1`) and a hairline made this a speech
- * BUBBLE — the shape a messaging app uses because two people are talking and
- * the tail says which one. Here only one side ever speaks in this shape, so the
- * tail pointed at nothing and the border drew a box around a sentence that
- * needs no box. Fully rounded, no border: the prompt reads as a thing you
- * placed, and the assistant's cards below it are the only rectangles in the
- * column, which is what makes them scannable.
+ * It was a borderless pill here, on the argument that the assistant's cards are
+ * the only rectangles in the column and a prompt needs no box. That argument
+ * held while the assistant answered in cards. It answers in bare prose on the
+ * page's own ground now, so a fill at `$color3` — one rung off `$background` —
+ * was the only thing separating the two voices, and on black it is nearly
+ * nothing. The hairline is what makes your turn findable when you scroll back
+ * through a long build, which is the whole job of marking it at all.
  *
- * `borderRadius={999}` rather than a token: this is a pill, and a pill's radius
- * is not a rung on a ramp — it is "half my own height", whatever that turns out
- * to be. A `$` value would be a specific number that happens to look round at
- * one line and stops looking round at three.
+ * Right-aligned at 85% is the builder's own rhythm and stays: the transcript
+ * alternates you and the agent and nothing else, so the side already says who
+ * is speaking. chat-panel interleaves tool calls and system lines too, which is
+ * why it spends a "User" label instead — same treatment, different column.
  */
 function UserBubble({ text, images }: { text: string; images?: string[] }) {
   return (
@@ -122,7 +123,7 @@ function UserBubble({ text, images }: { text: string; images?: string[] }) {
       )}
       {text ? (
         <XStack justifyContent="flex-end" width="100%">
-          <YStack maxWidth="85%" borderRadius={999} backgroundColor="$color3" paddingHorizontal="$4" paddingVertical="$2">
+          <YStack maxWidth="85%" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor">
             <SizableText whiteSpace="pre-wrap" fontSize="$2" lineHeight="1.45" color="$color">
               {text}
             </SizableText>
@@ -350,8 +351,14 @@ function CollapsibleSection({
         ? { overflow: "hidden", borderRadius: "$6", ...sheet(open ? 2 : 1), ...(open ? null : fold) }
         : {})}
     >
+      {/* `ghost`, because an unstyled Button is NOT unstyled. @hanzo/ui's
+          `default` variant is a quiet control — `$color2` fill, `$borderColor`
+          hairline — so leaving the prop off drew a box around every disclosure
+          row, including the LIVE ones the paragraph above says wear no mark at
+          all. The row was boxed whatever `boxed` said. */}
       <Button
         type="button"
+        variant="ghost"
         onClick={() => setOpen((o) => !o)}
         width="100%" alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingVertical="$2" hoverStyle={{ backgroundColor: "$color3" }}
       >

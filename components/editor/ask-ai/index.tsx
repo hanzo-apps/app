@@ -1438,14 +1438,26 @@ export function AskAI({
           did not, so the place you spend the most time typing was a flat black
           box with a hard hairline while the other two glowed.
 
-          The host draws the edge, so the panel carries NO border of its own: a
-          hairline inside the ring is the second edge that made this read heavy.
-          Radius is $8 outside / 14 inside, matching build-composer — concentric,
-          the inner radius smaller by the host's padding. */}
-      <YStack borderRadius="$8" elevation={6} zIndex={10} width="100%" className="hz-composer">
+          The host draws the edge, and the panel draws NONE — two lit edges at
+          two radii is what a reader calls a ghost border. Both halves were
+          broken: `$8` is 12px, SMALLER than the panel's 14, so the panel's
+          corner crossed outside the ring and the two arcs peeled apart; and
+          `.glass` re-added the hairline as `--edge-highlight`, a top-lip
+          box-shadow, after the `borderWidth` had been taken away (zeroed for
+          every composer panel in assets/globals.css, where design's own `.light`
+          rule zeroes it for the same reason). Measured at x8 the corner carried
+          two separate arcs; at 24/23 with the highlight off it carries one.
+
+          24 is `--hz-composer-radius`, which the halo (::after) already reads
+          as radius + halo — so stating it here is the SAME number, not a second
+          one, and host, ring and halo are concentric by construction. The panel
+          is one band (1px) inside it. build-composer still says 28/26.5; it
+          reads clean only because its panel is opaque `$background` and has no
+          lit edge to disagree with. */}
+      <YStack borderRadius={24} elevation={6} zIndex={10} width="100%" className="hz-composer">
       <YStack
         className="glass"
-        position="relative" borderRadius={14} width="100%" group
+        position="relative" borderRadius={23} width="100%" group
         onDragOver={handleDragOver}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}

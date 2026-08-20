@@ -1,6 +1,8 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
+import { stripComments } from "../jsx";
+
 /**
  * ONE home.
  *
@@ -46,8 +48,12 @@ function walk(dir: string, out: string[] = []): string[] {
 const repoRoot = join(__dirname, "..", "..");
 const files = ROOTS.flatMap((r) => walk(join(repoRoot, r)));
 const rel = (f: string) => f.replace(repoRoot + "/", "");
+// Comments stripped, because a rule's own explanation quotes the thing it bans:
+// the all-caps rule below fired on the sentence in settings.tsx saying not to
+// write all-caps. Five other suites here each hand-rolled this; `stripComments`
+// is the one they should all reach for.
 const offendersOf = (re: RegExp) =>
-  files.filter((f) => re.test(readFileSync(f, "utf8"))).map(rel);
+  files.filter((f) => re.test(stripComments(readFileSync(f, "utf8")))).map(rel);
 
 describe("UI centralization — every component comes from @hanzo/ui", () => {
   it("scans a non-trivial number of source files", () => {

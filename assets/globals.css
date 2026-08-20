@@ -435,6 +435,17 @@ html:root .hz-shot {
   --hz-composer-control: 36px;
 }
 
+/* ONE LIT EDGE. The ring IS the composer's edge, so a glass panel sitting
+   inside it must not draw a second one — `.glass` composes
+   `box-shadow: var(--edge-highlight), var(--glass-shadow-N)`, and that top lip
+   is a full arc at the panel's own radius. Two arcs at two radii is what a
+   reader calls a ghost border: measured at x8 on the builder they peeled apart
+   in every corner. Design zeroes this same token in `.light` for the same
+   reason — a lit edge that has nothing to say is noise. The drop stays. */
+.hz-composer .glass {
+  --edge-highlight: none;
+}
+
 .hz-composer textarea {
   max-height: var(--hz-composer-max, 40vh);
   overflow-y: auto;

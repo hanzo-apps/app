@@ -22,12 +22,9 @@ import type { Runtime } from "@/lib/agent/sandbox";
  *      gvisor     3,948ms    5,274ms
  *      kata-fc   26,957ms  174,877ms
  *
- * On an idle cluster a microVM leases in 4–8s, which is the number this list
- * used to carry and the reason it has to carry a different one now. Under load
- * its p90 is 175 SECONDS. Both are true; only one of them describes a working
- * day, and a hint that printed the flattering one would have talked somebody
- * into a runtime that stalls for two and a half minutes the first time a
- * colleague starts a build.
+ * On an idle cluster a microVM leases in 4–8s; under load its p90 is 175
+ * SECONDS. Both are true, and only one of them describes a working day, so the
+ * row states the one somebody schedules around.
  *
  * The steady-state win is real and stays: once running, git status inside a
  * microVM takes 21–53ms against gVisor's 156–195ms. So the row says both — the
@@ -54,12 +51,35 @@ const RUNTIMES: { value: Runtime; label: string; hint: string }[] = [
   },
 ];
 
-/** One selectable row — a plain button (no nested Radix Select portal, which was
- *  rendering a second floating layer that overlapped the popover body). Solid
- *  hover, a single check when active.
+/** A group heading — the rung `@hanzo/ui` gives a list's own section labels, so
+ *  "Model" and "Sandbox" read as headings rather than as two more rows.
  *
- *  It was `ModelRow`. Nothing about it was ever about models, and the runtime
- *  list below needs exactly the same row, so it is named for what it does. */
+ *  Sentence case, which is a house rule and not a preference here: the small
+ *  rung plus the muted colour already say "heading", and `ui-centralization`
+ *  fails the build on `textTransform="uppercase"` anywhere in the chrome. */
+function Section({ children }: { children: string }) {
+  return (
+    <SizableText
+      fontSize="$1" fontWeight="500" color="$color11"
+      letterSpacing={0.3} paddingHorizontal="$2" paddingVertical="$1.5"
+    >
+      {children}
+    </SizableText>
+  );
+}
+
+/** The hairline between groups: a menu separator, inset from the panel's edge
+ *  so it reads as a division inside one surface rather than as an edge. */
+function Rule() {
+  return <YStack height={1} backgroundColor="$borderColor" marginHorizontal="$1" marginVertical="$1" />;
+}
+
+/** One selectable row.
+ *
+ *  A MENU ROW, so it paints nothing at rest: the panel underneath is glass, and
+ *  a row that carries its own fill and border stacks an opaque box on top of the
+ *  material and hides it. State is the whole treatment — the pointer and the
+ *  keyboard cursor light the row, the current pick keeps a fill and a check. */
 function Choice({
   label,
   hint,
@@ -79,31 +99,29 @@ function Choice({
   return (
     <Button
       type="button"
+      variant="ghost"
       onClick={onClick}
       aria-pressed={selected}
       data-testid={testid}
-      group
-      // THE FLOOR IS A MEASUREMENT, not a taste. A Button carries a fixed 36px
-      // height from its size variant, so a row with a label over a hint was
-      // drawing 58px of text into a 36px box and cutting the top off its own
-      // label — which every model row had done since the day it was written,
-      // and which no assertion on the text would ever notice.
-      //
-      // It is `rows` now rather than one number because the hints stopped being
-      // short: a runtime has to state both what it is fast at and what it is
-      // slow at, and that is two lines for the worst of them. 21px of label,
-      // 2px of margin, 19px per hint line, 16px of padding.
+      // THE FLOOR IS A MEASUREMENT, not a taste: 21px of label, 2px of margin,
+      // 19px per hint line, 16px of padding. A Button carries a fixed height
+      // from its size variant, so a row sized under its own text cuts the top
+      // off its label — which no assertion on the text would ever notice.
       //
       // A floor rather than a height because min-height beats height in CSS,
-      // which is the one way to state this that the size variant cannot
-      // overrule; `height="auto"` was tried and the variant won at 30px.
+      // which is the one way to state this the size variant cannot overrule.
       // flexShrink because the body scrolls: a flex child in a height-capped
       // column gives way by default, and the row is the fixed thing here — the
       // list is what should give.
-      width="100%" minHeight={39 + 19 * rows} flexShrink={0} alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$2" {...{ backgroundColor: selected ? "$color3" : undefined, hoverStyle: selected ? undefined : { backgroundColor: "$color3" } }}
+      width="100%" minHeight={39 + 19 * rows} flexShrink={0} alignItems="center" gap="$2"
+      borderWidth={0} borderRadius="$3" paddingVertical="$2"
+      backgroundColor={selected ? "$color4" : "transparent"}
+      hoverStyle={{ backgroundColor: "$color5" }}
+      focusStyle={{ backgroundColor: "$color5" }}
+      pressStyle={{ backgroundColor: "$color6" }}
     >
       <YStack minWidth={0} flex={1}>
-        <SizableText numberOfLines={1} fontWeight="500" textAlign="left" fontSize="$3" color={selected ? "$color" : "$color11"} $group-hover={{ color: "$color" }}>{label}</SizableText>
+        <SizableText numberOfLines={1} fontWeight="500" textAlign="left" fontSize="$3" color="$color12">{label}</SizableText>
         {/* The hint wraps to `rows` and the row is sized for exactly that. A
             Button has a fixed height, so a hint that wraps further does not make
             room — it slides up under its own label and out through the sides of
@@ -174,11 +192,8 @@ export function Settings({
         {/* The VISIBLE model chip — the composer's first-class "which model" the
             way the Mode pill beside it is the first-class "which mode". It names
             the current model (or Auto) so you can SEE what will answer, and opens
-            this same model+runtime popover on press. It used to be a 1x1
-            opacity:0 anchor that only the [+] menu's Settings item could reach,
-            so the model was invisible unless you went looking for it — a picker
-            you cannot see is one that is not working. It keeps its id so that
-            [+] → Settings still opens it too. */}
+            this same model+runtime popover on press. It keeps its id so that
+            [+] → Settings opens it too. */}
         <Button
           id="composer-settings"
           type="button"
@@ -201,28 +216,35 @@ export function Settings({
           <SizableText color="$color11"><ChevronDown size={12} /></SizableText>
         </Button>
       </PopoverTrigger>
-      {/* ONE popover surface: solid bg-card, a single hairline border, high
-          z-index. The model list is inline (not a nested Select portal), so the
-          menu can no longer render a second overlapping layer. */}
+      {/* ONE SURFACE, and it is glass because of what it is: `[data-slot=
+          "popover-content"]` carries the frosted ground, the lit edge and rung 2
+          of the elevation ladder from `@hanzo/ui/glass.css`. Nothing inside may
+          paint an opaque fill over it, or the material is a border nobody sees.
+
+          `hz-picker-panel` is the phone rule the model panel already uses: below
+          40em a list this long becomes a sheet at the foot of the screen, because
+          a panel hanging off a trigger that sits near the bottom opens into ~100px
+          and runs off the top. 320 keeps the panel inside the builder's chat pane
+          at every desktop width, and the 4px inset is the menu's own, so a row's
+          lit background stops short of the panel's rounded edge. */}
       <PopoverContent
         align="end"
         sideOffset={8}
-        width={384} overflow="hidden" padding="$0"
+        className="hz-picker-panel"
+        width={320} overflow="hidden" padding="$1"
       >
         {/* THE BODY SCROLLS. Two sections plus a refusal do not fit above the
             composer on a laptop, and a popover that is merely `overflow: hidden`
             answers that by cutting the last option off with nothing to say it
             did. Half the window is what actually fits: the popover opens upward
             from a trigger sitting near the bottom, so anything taller runs off
-            the TOP of the screen instead — which is how a long refusal pushed
-            the model section out of view entirely. */}
-        <YStack data-testid="settings-body" maxHeight="50vh" overflow="scroll">
-        <YStack borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3">
-          <SizableText textAlign="center" fontSize="$3" fontWeight="500" color="$color">Model</SizableText>
-        </YStack>
-        <YStack rowGap="$2.5" paddingHorizontal="$4" paddingTop="$4" paddingBottom="$4.5">
+            the TOP of the screen instead. 60vh is what holds the whole sandbox
+            list on a laptop: all four runtimes are there to be COMPARED, and a
+            row you have to scroll to is one nobody weighs against the others. */}
+        <YStack data-testid="settings-body" width="100%" maxHeight="60vh" overflow="scroll">
+          <Section>Model</Section>
           {error && error !== "" && (
-            <Paragraph role="alert" display="flex" alignItems="center" justifyContent="space-between" borderRadius="$3" borderWidth={1} borderColor="$red9" padding="$2" fontSize="$3" fontWeight="500" color="$red10">
+            <Paragraph role="alert" display="flex" alignItems="center" justifyContent="space-between" marginHorizontal="$1" marginBottom="$1" borderRadius="$3" borderWidth={1} borderColor="$red9" padding="$2" fontSize="$2" fontWeight="500" color="$red10">
               {error}
             </Paragraph>
           )}
@@ -231,37 +253,37 @@ export function Settings({
               builder's "Routed: …" banner and the smart-routing card read it. It
               is the gateway's OWN cross-family router (cheapest capable across
               Enso / Zen / Anthropic / OpenAI), which is NOT what Enso does, so
-              it says so rather than borrowing Enso's name. It is no longer the
-              fresh-session default: that is Enso, in the list below. */}
-          <YStack borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$1">
-            <Choice
-              label="Auto · smart routing"
-              hint={
-                isAuto && routedModel
-                  ? `Last request went to ${routedModel} — you are billed as what served you`
-                  : "Routes each request to the cheapest capable model"
-              }
-              selected={isAuto}
-              onClick={() => onModelChange(AUTO_MODEL)}
+              it says so rather than borrowing Enso's name. The fresh-session
+              default is Enso, in the list below. */}
+          <Choice
+            label="Auto · smart routing"
+            hint={
+              isAuto && routedModel
+                ? `Last request went to ${routedModel} — you are billed as what served you`
+                : "Routes each request to the cheapest capable model"
+            }
+            selected={isAuto}
+            onClick={() => onModelChange(AUTO_MODEL)}
   />
+          {/* The model list keeps its own anchored panel, so it sits in the row
+              a menu item would occupy rather than unrolling inside this one. */}
+          <YStack paddingHorizontal="$1" paddingVertical="$1">
+            <ModelSelector
+              models={entries}
+              value={isAuto ? undefined : model}
+              onChange={onModelChange}
+              size="sm"
+              placeholder="Pick a model"
+              data-testid="model-picker"
+    />
           </YStack>
-          <ModelSelector
-            models={entries}
-            value={isAuto ? undefined : model}
-            onChange={onModelChange}
-            size="sm"
-            placeholder="Pick a model"
-            data-testid="model-picker"
-  />
-        </YStack>
 
-        {/* THE SANDBOX SECTION. A second header rather than a second popover:
-            model and runtime are the two things a coding session is configured
-            with, and they are chosen in the same breath. */}
-        <YStack borderTopWidth={1} borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3">
-          <SizableText textAlign="center" fontSize="$3" fontWeight="500" color="$color">Sandbox</SizableText>
-        </YStack>
-        <YStack rowGap="$2.5" paddingHorizontal="$4" paddingTop="$4" paddingBottom="$4.5">
+          <Rule />
+
+          {/* THE SANDBOX SECTION. A second heading rather than a second popover:
+              model and runtime are the two things a coding session is configured
+              with, and they are chosen in the same breath. */}
+          <Section>Sandbox</Section>
           {/* THE REFUSAL, in cloud's own words and above the list, so the next
               thing read after "that did not work" is the thing to change. A
               silent fallback is the failure this exists to prevent: it is how
@@ -270,18 +292,14 @@ export function Settings({
             <Paragraph
               role="alert"
               data-testid="runtime-refused"
+              marginHorizontal="$1" marginBottom="$1"
               borderRadius="$3" borderWidth={1} borderColor="$red9" padding="$2.5"
               fontSize="$2" lineHeight="$1" color="$red10"
             >
               {refused}
             </Paragraph>
           )}
-          <YStack
-            role="group"
-            aria-label="Sandbox runtime"
-            data-testid="runtime-picker"
-            borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$1"
-          >
+          <YStack role="group" aria-label="Sandbox runtime" data-testid="runtime-picker">
             {/* Two lines for every row, not per-row. A runtime's hint has to say
                 what it is fast at AND what it is slow at, which is two lines for
                 the longest; and rows of differing heights invite the eye to read
@@ -304,12 +322,11 @@ export function Settings({
           {/* WHAT IT GOT, never what it asked for. Absent until a run has one,
               because before that there is nothing true to say. */}
           {granted !== undefined && (
-            <SizableText data-testid="runtime-granted" fontSize="$1" color="$color11">
+            <SizableText data-testid="runtime-granted" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$1" color="$color11">
               {`Running on ${granted || "the fleet's own runtime"}` +
                 (runtime && granted !== runtime ? ` — you asked for ${runtime}` : "")}
             </SizableText>
           )}
-        </YStack>
         </YStack>
       </PopoverContent>
     </Popover>
