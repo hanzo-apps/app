@@ -7,6 +7,7 @@ import { XStack, YStack, Paragraph, SizableText } from '@hanzo/ui';
 import type { GuiElement } from '@hanzo/gui';
 import { useUpdateEffect } from "react-use";
 import { withBridge, isFrameEvent, command, type ElementInfo } from "./bridge";
+import { PREVIEW_HOST } from "@/lib/security/middleware";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast, Button } from '@hanzo/ui';
 import { Maximize2, Minimize2 } from "lucide-react";
@@ -56,6 +57,12 @@ function PreviewOverlay({ building }: { building: boolean }) {
   );
 }
 
+
+/** Where a previewed document paints -- its own origin, so it stops inheriting
+ *  this page's CSP. `lib/security/middleware.ts` keys the permissive policy on
+ *  exactly this host. */
+const SHELL = `https://${PREVIEW_HOST}/preview/frame`;
+
 export const Preview = ({
   html,
   isResizing,
@@ -75,10 +82,11 @@ export const Preview = ({
   isAiWorking: boolean;
   pages: Page[];
   /**
-   * The project's own public address. A `srcDoc` frame has no address, so every
-   * root-relative path the document names — its bundle, its stylesheet, its
-   * images — would otherwise resolve against the BUILDER and 404. Null while
-   * nothing is deployed, which is most of a build's life and needs no base.
+   * The project's own public address. The document is written into the preview
+   * shell, so it inherits the SHELL's address — every root-relative path the
+   * document names (its bundle, its stylesheet, its images) would otherwise
+   * resolve against preview.hanzo.app and 404. Null while nothing is deployed,
+   * which is most of a build's life and needs no base.
    */
   siteUrl?: string | null;
   setCurrentPage: React.Dispatch<React.SetStateAction<string>>;
@@ -131,6 +139,23 @@ export const Preview = ({
   // allow-forms`, so generated HTML cannot reach the IAM tokens in localStorage.
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
+      // The shell's own two signals arrive from EITHER buffer, so they are
+      // matched by source window rather than against the front frame.
+      const which =
+        event.source === iframeA.current?.contentWindow
+          ? "a"
+          : event.source === iframeB.current?.contentWindow
+            ? "b"
+            : null;
+      if (which && event.data?.type === "preview:shell") {
+        handleShellReady(which);
+        return;
+      }
+      if (which && event.data?.type === "preview:painted") {
+        handleFramePainted(which);
+        return;
+      }
+
       const frame = iframeRef?.current ?? null;
       if (!isFrameEvent(event, frame)) return;
       const msg = event.data;
@@ -224,6 +249,18 @@ export const Preview = ({
     else setSrcA(streamHtml);
   }, [streamHtml, isAiWorking]);
 
+  // Each buffer's document goes in by message. `withBridge` still wraps it, so
+  // the bridge that carries hover, select, navigate and the editable commands is
+  // inside the document exactly as before -- only the delivery changed.
+  useEffect(() => {
+    post("a", withBridge(srcA, siteUrl));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [srcA, siteUrl]);
+  useEffect(() => {
+    post("b", withBridge(srcB, siteUrl));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [srcB, siteUrl]);
+
   // Follow the stream to the bottom while the model writes, settle at the top
   // when it stops. A command now: `contentWindow.document` is exactly what an
   // opaque origin denies. The anchor wiring that used to live here is gone —
@@ -237,12 +274,51 @@ export const Preview = ({
     });
   };
 
-  const handleFrameLoad = (which: "a" | "b") => {
+  // A frame is ready to be WRITTEN to when its shell has loaded -- which is what
+  // the frame's own load event now means, since the document it shows arrives by
+  // message afterwards and never reloads the frame.
+  const shellReady = useRef({ a: false, b: false });
+  const workingRef = useRef(isAiWorking);
+  useEffect(() => {
+    workingRef.current = isAiWorking;
+  }, [isAiWorking]);
+  const pending = useRef<{ a: string | null; b: string | null }>({ a: null, b: null });
+
+  const post = (which: "a" | "b", doc: string) => {
+    const el = which === "a" ? iframeA.current : iframeB.current;
+    if (!shellReady.current[which]) {
+      // A write that lands before the shell exists is simply lost, so hold it.
+      pending.current[which] = doc;
+      return;
+    }
+    el?.contentWindow?.postMessage({ type: "preview:doc", html: doc }, "*");
+  };
+
+  const handleShellReady = (which: "a" | "b") => {
+    shellReady.current[which] = true;
+    const held = pending.current[which];
+    if (held !== null) {
+      pending.current[which] = null;
+      post(which, held);
+    }
+  };
+
+  // Painting is what the crossfade waits on, and it has to be SAID: closing the
+  // document does not refire the frame's load event. Measured against the live
+  // shell from hanzo.app -- one load for the shell, none for any document
+  // written after it. Reading the swap off load here would stream forever and
+  // never reveal the back buffer.
+  const handleFramePainted = (which: "a" | "b") => {
     const isFront = (which === "a") === frontRef.current;
+    // `workingRef`, not `isAiWorking`: this runs from the message listener, an
+    // effect that mounts ONCE, so it holds the first render's closure forever.
+    // The old load handler was re-created in JSX on every render and never had
+    // to think about it; reading the prop here would freeze the crossfade at
+    // whatever the stream state was when the pane first appeared.
     wireFrame(which === "a" ? iframeA.current : iframeB.current);
     // The BACK frame just finished painting the newest stream → reveal it.
     // Flip the ref synchronously so the next stream paint targets the new back.
-    if (isAiWorking && !isFront) {
+    if (workingRef.current && !isFront) {
       frontRef.current = !frontRef.current;
       setFrontA(frontRef.current);
     }
@@ -363,8 +439,14 @@ export const Preview = ({
             // `contentWindow` throws SecurityError, and the exfiltration script
             // from the report comes back DENIED instead of a token.
             sandbox="allow-scripts allow-forms"
-            srcDoc={withBridge(srcA, siteUrl)}
-            onLoad={() => handleFrameLoad("a")}
+            // The SHELL, not the document. A srcdoc frame inherits this page's
+            // CSP, so a generated app could reach only our hosts and the endorsed
+            // CDNs -- every other API, CDN, video and embed was refused. Loaded
+            // from its own origin it carries its own policy instead. Measured
+            // there: fetch to api.open-meteo.com and api.github.com both answer,
+            // and cdn.tailwindcss.com executes and paints.
+            src={SHELL}
+            onLoad={() => handleShellReady("a")}
           />
         </YStack>
         <YStack overflow="hidden" {...frameBox(!frontA)}>
@@ -378,8 +460,14 @@ export const Preview = ({
             // Same sandbox as the frame above — the double buffer means both
             // frames show untrusted HTML, so both are isolated or neither is.
             sandbox="allow-scripts allow-forms"
-            srcDoc={withBridge(srcB, siteUrl)}
-            onLoad={() => handleFrameLoad("b")}
+            // The SHELL, not the document. A srcdoc frame inherits this page's
+            // CSP, so a generated app could reach only our hosts and the endorsed
+            // CDNs -- every other API, CDN, video and embed was refused. Loaded
+            // from its own origin it carries its own policy instead. Measured
+            // there: fetch to api.open-meteo.com and api.github.com both answer,
+            // and cdn.tailwindcss.com executes and paints.
+            src={SHELL}
+            onLoad={() => handleShellReady("b")}
           />
         </YStack>
       </YStack>

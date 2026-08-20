@@ -23,6 +23,13 @@ describe('the preview shell', () => {
     expect(await (await get(PREVIEW_HOST)).text()).toMatch(/preview:shell/)
   })
 
+  // document.close() does not refire the frame's load event -- measured. The
+  // builder crossfades on that event, so without this the preview would stream
+  // and never swap buffers.
+  it('announces its paint, because load does not refire', async () => {
+    expect(await (await get(PREVIEW_HOST)).text()).toMatch(/preview:painted/)
+  })
+
   it('is never cached, so it can be fixed', async () => {
     expect((await get(PREVIEW_HOST)).headers.get('Cache-Control')).toBe('no-store')
   })

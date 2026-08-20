@@ -33,6 +33,12 @@ const SHELL = `<!doctype html>
     document.open();
     document.write(m.html);
     document.close();
+    // Closing the document does NOT refire the frame's load event -- measured
+    // against this shell from hanzo.app: one load for the shell itself and none
+    // for any document written after it. The builder crossfades its two buffers
+    // on that event, so the shell has to say when it has painted, or the preview
+    // streams and never swaps.
+    try { parent.postMessage({ type: 'preview:painted' }, '*'); } catch (_) {}
   });
   // The host cannot know when this document is ready to be written into, and a
   // write that lands first is simply lost — so the shell says so.
