@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -46,8 +45,12 @@ describe('the builder type grid', () => {
         found.set(px, [...(found.get(px) ?? []), f]);
       }
     }
-    const strays = [...found.keys()].filter((px) => !ALLOWED.has(px));
-    expect(strays, `sizes off the grid: ${strays.join(', ')}px`).toEqual([]);
+    // jest's expect takes no message argument, so the VALUE carries the context:
+    // a failure prints the stray size and the files that wrote it.
+    const strays = [...found.entries()]
+      .filter(([px]) => !ALLOWED.has(px))
+      .map(([px, files]) => `${px}px in ${[...new Set(files)].join(', ')}`);
+    expect(strays).toEqual([]);
   });
 
   it('never sizes text with a bare number', () => {
@@ -55,7 +58,8 @@ describe('the builder type grid', () => {
     // CSS, because gui writes sizes inline. It is a permanent exception.
     for (const f of SURFACES) {
       const literals = sizes(read(f)).filter((m) => !m[0].includes('$'));
-      expect(literals.map((m) => m[0]), `${f} sizes text with a raw number`).toEqual([]);
+      expect({ file: f, literals: literals.map((m) => m[0]) })
+        .toEqual({ file: f, literals: [] });
     }
   });
 
@@ -65,7 +69,7 @@ describe('the builder type grid', () => {
     // narrowest viewport, which is backwards and was the loudest thing on the page.
     const src = read('components/build-composer/index.tsx');
     for (const m of src.matchAll(/\$sm=\{\{([^}]*)\}\}/g)) {
-      expect(m[1], 'a $sm block must not carry a fontSize').not.toMatch(/fontSize/);
+      expect(m[1]).not.toMatch(/fontSize/);
     }
   });
 });
