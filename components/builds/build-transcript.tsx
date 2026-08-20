@@ -117,7 +117,7 @@ export function BuildTranscript({ build }: { build: Build }) {
               </SizableText>
             </nav>
 
-            <H1 marginTop="$6" fontSize="$10" fontWeight="500" lineHeight="1.08" letterSpacing={-0.4} $sm={{ fontSize: "$11" }}>
+            <H1 marginTop="$6" fontSize="$8" fontWeight="500" lineHeight="1.08" letterSpacing={-0.4} $sm={{ fontSize: "$11" }}>
               {build.title || `How ${build.project} was built`}
             </H1>
 

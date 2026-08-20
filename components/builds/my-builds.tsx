@@ -116,7 +116,7 @@ export function MyBuilds() {
   return (
     <YStack marginTop="$6" paddingTop="$5" borderTopWidth={1} borderColor="$borderColor">
       <XStack flexWrap="wrap" alignItems="baseline" justifyContent="space-between" gap="$2">
-        <H3 fontSize="$6" fontWeight="500" color="$color">Your builds</H3>
+        <H3 fontSize="$3" fontWeight="500" color="$color">Your builds</H3>
         <Paragraph fontSize="$3" color="$color11">
           The agent session behind each project — the whole chat, and the commits it made.
         </Paragraph>

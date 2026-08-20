@@ -23,10 +23,10 @@ export default function BuildsIndexPageView({
           <Paragraph fontFamily="$mono" fontSize="$1" color="$color11">
             Builds
           </Paragraph>
-          <H1 marginTop="$4" fontSize="$10" fontWeight="500" lineHeight="1.08" letterSpacing={-0.4} $sm={{ fontSize: "$11" }}>
+          <H1 marginTop="$4" fontSize="$8" fontWeight="500" lineHeight="1.08" letterSpacing={-0.4} $sm={{ fontSize: "$11" }}>
             How these were actually made
           </H1>
-          <Paragraph marginTop="$4" maxWidth={672} fontSize="$4" lineHeight="1.625" color="$color11">
+          <Paragraph marginTop="$4" maxWidth={672} fontSize="$3" lineHeight="1.625" color="$color11">
             Each of these is a real agent session — the prompt, the reasoning, and the
             commit every turn produced. The turn&nbsp;⇄&nbsp;commit binding lives in git
             itself, so you can check any claim on this site against the repository.
@@ -50,7 +50,7 @@ export default function BuildsIndexPageView({
                     href={`/builds/${b.org}/${b.project}`}
                   ><XStack group flexWrap="wrap" alignItems="baseline" justifyContent="space-between" gap="$3" paddingVertical="$4.5" hoverStyle={{ backgroundColor: "$color005" }}>
                     <YStack minWidth={0}>
-                      <SizableText numberOfLines={1} fontSize="$4" fontWeight="500">
+                      <SizableText numberOfLines={1} fontSize="$3" fontWeight="500">
                         {b.title || `${b.org}/${b.project}`}
                       </SizableText>
                       <SizableText marginTop="$1" fontFamily="$mono" fontSize="$1" color="$color11">

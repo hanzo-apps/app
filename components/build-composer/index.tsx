@@ -392,7 +392,7 @@ export function BuildComposer({
   return (
     <YStack alignSelf="center" width="100%" maxWidth={608} className={`${className}`}>
       {greetingName && (
-        <H1 marginBottom="$2" textAlign="center" fontSize="$10" fontWeight="500" letterSpacing={-0.4} color="$color" $sm={{ fontSize: "$11" }} lineHeight="1.1">
+        <H1 marginBottom="$2" textAlign="center" fontSize="$8" fontWeight="500" letterSpacing={-0.4} color="$color" lineHeight="1.1">
           Ready to build, {greetingName}?
         </H1>
       )}
@@ -482,7 +482,7 @@ export function BuildComposer({
             // and clips the third line at ≤340px until that number moves with
             // it. So the field takes the sideways room and the row below takes
             // the vertical (its own paddingTop), which the floor does not count.
-            width="100%" backgroundColor="transparent" borderWidth={0} paddingHorizontal="$4.5" paddingBottom="$1.5" paddingTop="$3" fontSize={16} lineHeight="1.375" color="$color" placeholderTextColor="$color11" focusStyle={{ borderWidth: 0 }}
+            width="100%" backgroundColor="transparent" borderWidth={0} paddingHorizontal="$4.5" paddingBottom="$1.5" paddingTop="$3" fontSize="$3" lineHeight="1.375" color="$color" placeholderTextColor="$color11" focusStyle={{ borderWidth: 0 }}
   />
           {/* What is attached, and what was turned away, between the field and
               its controls — the answer to "did that land?" belongs next to the
