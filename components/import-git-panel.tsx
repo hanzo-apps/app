@@ -33,7 +33,7 @@ import {
 import {
   fetchGitAccounts,
   fetchGitRepos,
-  relativeTime,
+  pushedAgo,
   type GitAccount,
   type GitProvider,
   type GitProviderStatus,
@@ -387,7 +387,7 @@ export function ImportGitPanel() {
                       )}
                     </XStack>
                     <SizableText numberOfLines={1} fontSize="$1" color="$color11">
-                      {[r.language, relativeTime(r.pushedAt)]
+                      {[r.language, pushedAgo(r.pushedAt)]
                         .filter(Boolean)
                         .join(" · ") || "Repository"}
                     </SizableText>

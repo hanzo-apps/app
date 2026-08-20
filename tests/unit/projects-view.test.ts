@@ -26,9 +26,9 @@ test("toDashboardProject sources every field from the real row", () => {
 
 test("relativeTime is honest and stable (no randomness)", () => {
   const now = Date.parse("2026-06-26T12:00:00.000Z");
-  assert.equal(relativeTime("2026-06-26T11:59:30.000Z", now), "just now");
-  assert.equal(relativeTime("2026-06-26T10:00:00.000Z", now), "2 hours ago");
-  assert.equal(relativeTime("2026-06-25T12:00:00.000Z", now), "1 day ago");
-  assert.equal(relativeTime(null, now), "—");
-  assert.equal(relativeTime("not-a-date", now), "—");
+  assert.equal(relativeTime("2026-06-26T11:59:30.000Z", { now }), "just now");
+  assert.equal(relativeTime("2026-06-26T10:00:00.000Z", { now }), "2 hours ago");
+  assert.equal(relativeTime("2026-06-25T12:00:00.000Z", { now }), "1 day ago");
+  assert.equal(relativeTime(null, { now }), "—");
+  assert.equal(relativeTime("not-a-date", { now }), "—");
 });

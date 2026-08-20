@@ -52,22 +52,7 @@ export function toDashboardProject(row: BaseProjectRow): DashboardProject {
   };
 }
 
-/** Honest relative time. Returns null-safe "—" for missing timestamps. */
-export function relativeTime(iso: string | null, now: number = Date.now()): string {
-  if (!iso) return "—";
-  const then = Date.parse(iso);
-  if (Number.isNaN(then)) return "—";
-  const sec = Math.max(0, Math.round((now - then) / 1000));
-  if (sec < 45) return "just now";
-  const min = Math.round(sec / 60);
-  if (min < 60) return `${min} minute${min === 1 ? "" : "s"} ago`;
-  const hr = Math.round(min / 60);
-  if (hr < 24) return `${hr} hour${hr === 1 ? "" : "s"} ago`;
-  const day = Math.round(hr / 24);
-  if (day < 30) return `${day} day${day === 1 ? "" : "s"} ago`;
-  return new Date(then).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
+// `relativeTime` lives in lib/time.ts. It is re-exported here because a dozen
+// call sites import it from this module and the name is the same thing —
+// moving the IMPLEMENTATION is the point, not making every caller rewrite.
+export { relativeTime } from "./time";

@@ -9,6 +9,8 @@
  * honest "Connect GitHub" CTA instead of crashing.
  */
 
+import { relativeTime } from '../time';
+
 /** The git providers the import surface can talk to. */
 export type GitProvider = 'github' | 'gitlab' | 'hanzo';
 
@@ -384,22 +386,10 @@ export async function composeCommitMessage(
   }
 }
 
-/** "updated 2h ago" — compact relative time for a repo's last push. */
-export function relativeTime(iso: string): string {
-  if (!iso) return '';
-  const then = new Date(iso).getTime();
-  if (!Number.isFinite(then)) return '';
-  const secs = Math.max(0, Math.floor((Date.now() - then) / 1000));
-  const units: [number, string][] = [
-    [31536000, 'y'],
-    [2592000, 'mo'],
-    [604800, 'w'],
-    [86400, 'd'],
-    [3600, 'h'],
-    [60, 'm'],
-  ];
-  for (const [size, label] of units) {
-    if (secs >= size) return `updated ${Math.floor(secs / size)}${label} ago`;
-  }
-  return 'updated just now';
+/** "updated 2h ago" — the compact register, prefixed for a repo subtitle.
+ *  The prefix belongs to this call site, not to the formatter: a function that
+ *  bakes a word into its result cannot be used anywhere that word is wrong. */
+export function pushedAgo(iso: string): string {
+  const ago = relativeTime(iso, { style: 'short', absent: '' });
+  return ago ? `updated ${ago}` : '';
 }
