@@ -152,6 +152,58 @@ const policy = (dev: boolean) => {
   ].join('; ');
 };
 
+/**
+ * The preview origin, and the ONE reason it exists.
+ *
+ * A generated app is untrusted code we invite onto a page. Today it paints in an
+ * `about:srcdoc` frame, and a srcdoc frame INHERITS this document's policy —
+ * policies compose by intersection, so the parent is a ceiling the frame can
+ * only lower. That ceiling is `hanzo.app`'s own policy, written to protect
+ * hanzo.app, and it names our hosts and the endorsed CDNs. Everything else on
+ * the web is refused.
+ *
+ * Measured in a frame carrying exactly the builder's sandbox: a `fetch` to
+ * api.open-meteo.com and to api.github.com both raise a `connect-src`
+ * violation; `cdn.tailwindcss.com` never executes; a third-party `<video>`
+ * raises `media-src` and a YouTube embed raises `frame-src`. An `<img>` from
+ * anywhere loads, because `img-src` is the one directive already open. So a
+ * generated weather app shows a map and nothing else, which reads as the model
+ * writing a broken app rather than as a policy refusing it.
+ *
+ * Raising hanzo.app's own ceiling would fix the preview by weakening the
+ * product: `connect-src https:` on this origin is an exfiltration channel for
+ * any injection that ever lands here. A document served from ITS OWN origin
+ * carries its own policy instead, which is what this host is for — the frame
+ * stops inheriting, and hanzo.app keeps the policy it needs.
+ *
+ * `*.hanzo.app` already serves published projects with no CSP at all, so this
+ * is the plane a generated app runs on once it ships. The preview joins it
+ * rather than inventing a second answer.
+ */
+export const PREVIEW_HOST = 'preview.hanzo.app';
+
+/**
+ * What a previewed document may do: anything outward, nothing inward.
+ *
+ * The permission is deliberate and is not the security boundary. Isolation is
+ * the ORIGIN — this host shares no storage, no cookies and no DOM with
+ * hanzo.app — plus the sandbox the frame still carries, which keeps the origin
+ * opaque so the document cannot reach even this host's own storage.
+ *
+ * `frame-ancestors` is the one directive that stays shut. It is what makes this
+ * a preview surface for our builder instead of an open frame anyone may embed.
+ */
+const previewPolicy = (dev: boolean) =>
+  [
+    "default-src * data: blob: 'unsafe-inline' 'unsafe-eval'",
+    'img-src * data: blob:',
+    'media-src * data: blob:',
+    'font-src * data:',
+    'connect-src * data: blob:',
+    'frame-src * data: blob:',
+    ['frame-ancestors https://hanzo.app', ...(dev ? ['http://localhost:*'] : [])].join(' '),
+  ].join('; ');
+
 // Security headers configuration
 const securityHeaders = {
   'Content-Security-Policy': policy(false),
@@ -201,12 +253,27 @@ const devSecurityHeaders = {
 };
 
 // Apply security headers based on environment
-export function applySecurityHeaders(response: NextResponse): NextResponse {
-  const headers = process.env.NODE_ENV === 'production' ? securityHeaders : devSecurityHeaders;
+export function applySecurityHeaders(response: NextResponse, host?: string | null): NextResponse {
+  const dev = process.env.NODE_ENV !== 'production';
+  const headers = dev ? devSecurityHeaders : securityHeaders;
 
   Object.entries(headers).forEach(([key, value]) => {
     response.headers.set(key, value);
   });
+
+  // EXACT match, and only for the CSP. A prefix or suffix test would hand the
+  // permissive policy to `preview.hanzo.app.example.com`, which anybody can
+  // register — the whole value of a separate origin is that its name is not
+  // guessable-adjacent to ours. Host arrives with the port attached on a dev
+  // server, so it is compared without one.
+  if (host && host.split(':')[0] === PREVIEW_HOST) {
+    response.headers.set('Content-Security-Policy', previewPolicy(dev));
+    // The strict transport and framing headers stay; only the policy changes.
+    // X-Frame-Options has no origin list, so `SAMEORIGIN` would refuse the
+    // builder outright — `frame-ancestors` above is the directive that decides
+    // this, and it is strictly more expressive.
+    response.headers.delete('X-Frame-Options');
+  }
 
   return response;
 }

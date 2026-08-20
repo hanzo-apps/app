@@ -115,7 +115,7 @@ export async function middleware(request: NextRequest) {
   for (const [name, value] of Object.entries(budget)) {
     response.headers.set(name, value);
   }
-  return applySecurityHeaders(response);
+  return applySecurityHeaders(response, request.headers.get('host'));
 }
 
 export const config = {
