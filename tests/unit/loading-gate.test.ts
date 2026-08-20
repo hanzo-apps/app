@@ -19,28 +19,15 @@
  * Those are states with something to say. This only catches the ones that
  * fill the viewport with a widget and say nothing.
  */
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
+
+
+import { sources } from "../source";
 
 const root = join(__dirname, "..", "..");
 
-function walk(dir: string, out: string[] = []): string[] {
-  let entries: string[];
-  try {
-    entries = readdirSync(dir);
-  } catch {
-    return out;
-  }
-  for (const name of entries) {
-    if (name === "node_modules" || name === ".next" || name === ".claude") continue;
-    const full = join(dir, name);
-    if (statSync(full).isDirectory()) walk(full, out);
-    else if (/\.tsx$/.test(name)) out.push(full);
-  }
-  return out;
-}
-
-const files = ["app", "components"].flatMap((r) => walk(join(root, r)));
+const files = sources(["app", "components"], /\.tsx$/);
 const rel = (f: string) => f.replace(root + "/", "");
 
 /**

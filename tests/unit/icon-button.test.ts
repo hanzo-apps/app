@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { tagEnd as jsxTagEnd } from '../source'
+import { sources, tagEnd as jsxTagEnd } from '../source'
 
 /**
  * An icon-only Button must say `size="icon"`.
@@ -82,19 +82,9 @@ function closeOf(s: string, from: number): number {
   return -1
 }
 
-function walk(dir: string, out: string[] = []): string[] {
-  for (const name of readdirSync(dir)) {
-    if (name === 'node_modules' || name === '.next' || name === '.claude') continue
-    const path = join(dir, name)
-    if (statSync(path).isDirectory()) walk(path, out)
-    else if (name.endsWith('.tsx')) out.push(path)
-  }
-  return out
-}
-
 it('gives every icon-only Button size="icon"', () => {
   const offenders: string[] = []
-  for (const file of [...walk(join(ROOT, 'components')), ...walk(join(ROOT, 'app'))]) {
+  for (const file of sources(['components', 'app'], /\.tsx$/)) {
     const rel = file.slice(ROOT.length + 1)
     if (SKIP.has(rel)) continue
     const s = readFileSync(file, 'utf8')

@@ -1,7 +1,7 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 
 import { widget } from "../widget";
+
+import { read } from "../source";
 
 /**
  * "You have no credits" is a claim about MONEY, and only a balance we actually
@@ -76,7 +76,7 @@ describe("the credits wall names the right remedy", () => {
 });
 
 describe("the server keeps the three answers apart", () => {
-  const srv = readFileSync(join(__dirname, "../../lib/billing/server.ts"), "utf8");
+  const srv = read("lib/billing/server.ts");
 
   it("only a KNOWN positive balance is funded", () => {
     // Fail-closed: `noauth` and `unavailable` must never satisfy a paid gate.

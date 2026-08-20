@@ -7,7 +7,9 @@
  * about a thing you can DO to that bar, not about how it is spelled.
  */
 import { readFileSync } from "node:fs";
+
 import { join } from "node:path";
+
 import { useEffect } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";

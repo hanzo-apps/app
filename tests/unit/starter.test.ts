@@ -23,6 +23,8 @@ import { loadWorkspace, UNTITLED } from '@/lib/dev/workspace';
 import { baseEnabled } from '@/lib/base/flag';
 import { thirdParty, url } from '@/lib/vendor';
 
+import { read } from "../source";
+
 const page = STARTER[0];
 
 describe('the starter document', () => {
@@ -112,7 +114,7 @@ describe('start() — what a new build begins with', () => {
     // sides move together while the builder — which spells it out — quietly
     // finds an empty project. So this reads the key and the other side's source.
     expect(window.localStorage.getItem('hanzo.dev.workspace:untitled-site')).toBeTruthy();
-    const editor = readFileSync(join(__dirname, '../../components/editor/index.tsx'), 'utf8');
+    const editor = read("components/editor/index.tsx");
     expect(editor).toContain(`|| "${UNTITLED}"`);
   });
 

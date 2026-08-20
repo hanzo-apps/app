@@ -21,7 +21,9 @@
  * sibling css tests exist to replace.
  */
 import { readFileSync } from "node:fs";
+
 import { join } from "node:path";
+
 
 const CSS = readFileSync(join(__dirname, "..", "..", "assets", "globals.css"), "utf8");
 

@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs';
+
 import { join } from 'node:path';
+
 
 import { tagEnd } from '../source';
 
@@ -70,5 +72,29 @@ describe('a disclosure row is a row', () => {
     const at = src.indexOf('function CollapsibleSection');
     const btn = src.indexOf('<Button', at);
     expect(src.slice(btn, tagEnd(src, btn) + 1)).toMatch(/variant="ghost"/);
+  });
+
+  it('a picker row paints nothing at rest and is as tall as its own text', () => {
+    // Three props, and every one of them can be dropped with the whole suite
+    // still green. `variant="ghost"` and `borderWidth={0}` keep the row from
+    // stacking an opaque box on the panel's glass; `data-slot="item"` says the
+    // row is a list row rather than a control, which is the one thing that
+    // stops the control-height rule in assets/globals.css pinning it to 30px
+    // whatever its hint says.
+    //
+    // And no clamp on the hint. `numberOfLines` compiles to
+    // `-webkit-line-clamp`, which drops the tail of the longest sentence with
+    // nothing on screen a reader would take for truncation — on the microVM row
+    // that tail is the one warning it carries. The label keeps its clamp: a
+    // name that runs out of room ellipsizes.
+    const src = read('components/editor/ask-ai/settings.tsx');
+    const at = src.indexOf('function Choice');
+    const btn = src.indexOf('<Button', at);
+    const tag = src.slice(btn, tagEnd(src, btn) + 1);
+    expect(tag).toMatch(/variant="ghost"/);
+    expect(tag).toMatch(/borderWidth=\{0\}/);
+    expect(tag).toMatch(/data-slot="item"/);
+    const body = src.slice(at, src.indexOf('export function Settings'));
+    expect(body.slice(body.indexOf('{hint && ('))).not.toMatch(/numberOfLines/);
   });
 });

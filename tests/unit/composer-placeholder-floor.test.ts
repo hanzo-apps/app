@@ -1,6 +1,8 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 
+import { read } from "../source";
+
 /**
  * The idle typewriter placeholder ("Ask Hanzo to build <phrase>") is longer than
  * a typed idea, and the field auto-grows on the VALUE, not the placeholder — so
@@ -20,7 +22,7 @@ import { join } from "path";
  *     too. The floor rides a class carried ONLY by the field with the typewriter.
  */
 describe("the narrow-width placeholder floor", () => {
-  const css = readFileSync(join(__dirname, "../../assets/globals.css"), "utf8");
+  const css = read("assets/globals.css");
   const composer = readFileSync(
     join(__dirname, "../../components/build-composer/index.tsx"),
     "utf8",

@@ -1,6 +1,8 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 
+import { read } from "../source";
+
 /**
  * The composer's action pair: a BARE mic and a FILLED send.
  *
@@ -14,7 +16,7 @@ import { join } from "path";
  * collision the `size="icon"` padding note records. Measured beside the mic it
  * was 36x44 at 10px against 36x36, mismatched in shape and height.
  */
-const css = readFileSync(join(__dirname, "../../assets/globals.css"), "utf8");
+const css = read("assets/globals.css");
 
 /** Anchored to the START of a line: a bare substring lands inside any DESCENDANT
  *  rule ending in the same selector — `html:root .hz-dense .voice-control` holds

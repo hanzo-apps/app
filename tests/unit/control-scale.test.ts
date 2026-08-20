@@ -1,7 +1,8 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { tagEnd } from "../source";
+
+import { sources, tagEnd } from "../source";
 
 /**
  * ONE control scale.
@@ -25,17 +26,7 @@ import { tagEnd } from "../source";
 const ROOT = join(__dirname, "..", "..");
 const SURFACE = ["app", "components"];
 
-const walk = (dir: string, out: string[] = []): string[] => {
-  for (const name of readdirSync(dir)) {
-    if (name === "node_modules" || name.startsWith(".")) continue;
-    const p = join(dir, name);
-    if (statSync(p).isDirectory()) walk(p, out);
-    else if (p.endsWith(".tsx")) out.push(p);
-  }
-  return out;
-};
-
-const files = SURFACE.flatMap((r) => walk(join(ROOT, r)));
+const files = sources(SURFACE, /\.tsx$/);
 const rel = (f: string) => f.replace(ROOT + "/", "");
 
 /**

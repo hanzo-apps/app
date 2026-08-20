@@ -1,4 +1,7 @@
-import { stripComments, stripCss, tagEnd } from '../source';
+import { readFileSync } from 'node:fs';
+
+
+import { read, rel, root, sources, stripComments, stripCss, tagEnd } from '../source';
 
 // The readers 16 suites now share. Untested, this file is a single point of
 // silent failure: strip too little and a rule is evadable by writing the
@@ -16,13 +19,16 @@ describe('stripComments — TS/TSX/JS', () => {
     expect(stripComments('const a = 1; // trailing\nconst b = 2;')).not.toContain('trailing');
   });
 
-  it('spares a URL — `//` after a colon is not a comment', () => {
+  it('spares a URL, because its slashes are inside a string', () => {
+    // The old regex had a special case for a preceding colon. The scanner needs
+    // none: it never reaches those slashes, so `a//b` in a string survives too.
     expect(stripComments('fetch("https://hanzo.ai/v1")')).toContain('https://hanzo.ai/v1');
   });
 
-  it('strips line comments BEFORE blocks, so a path in a comment cannot open one', () => {
-    // A `//` comment containing the characters that open a block: stripping
-    // blocks first opens one here and runs to the next close, taking real code.
+  it('a block opener inside a LINE comment does not open a block', () => {
+    // The old regex depended on running the line rule first; get the order
+    // backwards and this opens a comment that eats the code below. A scanner
+    // has no order to get wrong — it is already inside the line comment.
     const src = ['// see components/landing/* for the rest', 'const kept = 1;', '/* gone */'].join('\n');
     const out = stripComments(src);
     expect(out).toContain('const kept = 1;');
@@ -42,6 +48,72 @@ describe('stripComments — TS/TSX/JS', () => {
 
   it('leaves a block comment inside a string alone enough to keep the code', () => {
     expect(stripComments('const s = "a"; /* x */ const t = "b";')).toContain('const t = "b";');
+  });
+
+  // THE ONE A REGEX CANNOT DO, and the reason this is a scanner.
+  //
+  // `accept=".zip,text/*,.html"` is an attribute value in app/new/page.tsx. A
+  // regex reads its `/*` as a comment opener and runs to the next close — a
+  // thousand characters of real code, the field's own onChange among them. Ten
+  // files in this tree carry the shape (`image/*`, a CSP `https://*.hanzo.ai`,
+  // a skills file quoting a CSS example).
+  it('a comment opener inside a string literal is not a comment', () => {
+    const src = '<input accept=".zip,text/*,.html" onChange={hit} />\nconst after = 1;';
+    const out = stripComments(src);
+    expect(out).toContain('onChange={hit}');
+    expect(out).toContain('const after = 1;');
+  });
+
+  it('a line-comment opener inside a string literal is not a comment', () => {
+    expect(stripComments('const u = "https://hanzo.ai"; const kept = 1;')).toContain('const kept = 1;');
+    expect(stripComments("const p = 'a//b'; const kept = 2;")).toContain('const kept = 2;');
+  });
+
+  it('an escaped quote does not end the string', () => {
+    expect(stripComments('const s = "a\\" /* not a comment */ b"; const kept = 3;'))
+      .toContain('const kept = 3;');
+  });
+
+  // A failure prints a line number, and it has to be the file's own. Comments
+  // are removed; the newlines they spanned are not. Collapsing them shortened a
+  // 216-line component to 181 and every number below that point was wrong.
+  it('preserves line numbering', () => {
+    for (const f of sources(['components', 'app'], /\.tsx$/)) {
+      const src = readFileSync(f, 'utf8');
+      expect({ f: rel(f), lines: stripComments(src).split('\n').length })
+        .toEqual({ f: rel(f), lines: src.split('\n').length });
+    }
+  });
+
+  // The whole-tree assertion the string-literal bug would have failed: nothing a
+  // file EXPORTS may disappear into a comment.
+  it('no file loses a declaration to the stripper', () => {
+    const decls = /^export (function|const|default|class|interface|type) /gm;
+    const lost: string[] = [];
+    for (const f of sources(['components', 'app', 'lib', 'hooks'], /\.(tsx?|jsx?)$/)) {
+      const src = readFileSync(f, 'utf8');
+      const before = (src.match(decls) ?? []).length;
+      const after = (stripComments(src).match(decls) ?? []).length;
+      if (after < before) lost.push(`${rel(f)} ${before}->${after}`);
+    }
+    expect(lost).toEqual([]);
+  });
+});
+
+describe('sources — one walker', () => {
+  it('never walks into generated or installed code', () => {
+    const found = sources(['.'], /\.(tsx?|jsx?)$/).map(rel);
+    // `.next` is the one that matters: it holds code nobody wrote, so a rule
+    // scanning it accuses a generated file and a coverage count inflates.
+    expect(found.filter((f) => /^(node_modules|\.next|dist|coverage)\//.test(f))).toEqual([]);
+  });
+
+  it('reads a repo path, not the shell’s working directory', () => {
+    // Three spellings were in use, agreeing only because jest is always
+    // launched from the repo root. `root` is derived from this file's own
+    // location, so a suite run from anywhere reads the same tree.
+    expect(read('package.json')).toContain('"name"');
+    expect(root.endsWith('/tests')).toBe(false);
   });
 });
 

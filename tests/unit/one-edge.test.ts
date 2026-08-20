@@ -15,7 +15,9 @@
  * living in the same state on the same element.
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
+
 import { join } from "node:path";
+
 
 const CHROME = join(__dirname, "..", "..", "components", "editor");
 

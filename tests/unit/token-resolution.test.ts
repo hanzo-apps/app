@@ -1,8 +1,9 @@
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+
 import { createRequire } from "node:module";
 
-import { stripCss } from "../source";
+import { sources, stripCss } from "../source";
 
 /**
  * Every token this surface names must resolve.
@@ -46,16 +47,6 @@ const PROVIDED = [
   /^--font-geist-(sans|mono)$/, // next/font, via `variable:` in app/layout.tsx
   /^--f-/, // Tamagui font registers, injected by its runtime CSS
 ];
-
-const walk = (dir: string, out: string[] = []): string[] => {
-  for (const name of readdirSync(dir)) {
-    if (name === "node_modules" || name.startsWith(".")) continue;
-    const p = join(dir, name);
-    if (statSync(p).isDirectory()) walk(p, out);
-    else if (/\.(tsx?|css)$/.test(name)) out.push(p);
-  }
-  return out;
-};
 
 /** Where `@hanzo/ui/theme.css` actually lives, via the package's exports map. */
 const themeSheet = (): string => {
@@ -116,7 +107,7 @@ const declared = (): Set<string> => {
 const referenced = (): Map<string, string[]> => {
   const map = new Map<string, string[]>();
   for (const dir of SURFACE) {
-    for (const file of walk(join(ROOT, dir))) {
+    for (const file of sources([dir], /\.(tsx?|css)$/)) {
       const src = stripCss(readFileSync(file, "utf8"));
       for (const m of src.matchAll(/var\(\s*(--[a-zA-Z0-9_-]+)/g)) {
         const at = map.get(m[1]) ?? [];

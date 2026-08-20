@@ -18,9 +18,12 @@
  * `$color12` is full strength in EVERY scope, so this pins the rule rather than
  * the two call sites that have already been caught by it.
  */
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { readFileSync } from "node:fs";
 import { join } from 'node:path';
+
 import { accent, selected } from '@/lib/chrome';
+
+import { sources } from "../source";
 
 describe('the chrome recipes that mean "emphasised"', () => {
   it('paint the foreground with $color12, never $color', () => {
@@ -65,22 +68,6 @@ describe('the chrome recipes that mean "emphasised"', () => {
  */
 const ROOT = join(__dirname, '..', '..');
 
-function walk(dir: string, out: string[] = []): string[] {
-  let entries: string[];
-  try {
-    entries = readdirSync(dir);
-  } catch {
-    return out;
-  }
-  for (const name of entries) {
-    if (name === 'node_modules' || name === '.next' || name === '.claude') continue;
-    const full = join(dir, name);
-    if (statSync(full).isDirectory()) walk(full, out);
-    else if (/\.tsx$/.test(name)) out.push(full);
-  }
-  return out;
-}
-
 /** Every `<Button …>…</Button>` block that spreads `accent`, with its content. */
 function accentButtons(src: string): string[] {
   const blocks: string[] = [];
@@ -94,7 +81,7 @@ function accentButtons(src: string): string[] {
 }
 
 describe('a label inside an accent Button', () => {
-  const files = ['components', 'app'].flatMap((r) => walk(join(ROOT, r)));
+  const files = sources(['components', 'app'], /\.tsx$/);
 
   it('scans a non-trivial number of source files', () => {
     expect(files.length).toBeGreaterThan(100);

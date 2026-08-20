@@ -56,7 +56,7 @@ const RUNTIMES: { value: Runtime; label: string; hint: string }[] = [
  *
  *  Sentence case, which is a house rule and not a preference here: the small
  *  rung plus the muted colour already say "heading", and `ui-centralization`
- *  fails the build on `textTransform="uppercase"` anywhere in the chrome. */
+ *  fails the build on an all-caps text transform anywhere in the chrome. */
 function Section({ children }: { children: string }) {
   return (
     <SizableText
@@ -83,15 +83,12 @@ function Rule() {
 function Choice({
   label,
   hint,
-  rows = 1,
   selected,
   onClick,
   testid,
 }: {
   label: string;
   hint?: string;
-  /** How many lines the hint may take. The row's floor is sized from it. */
-  rows?: number;
   selected: boolean;
   onClick: () => void;
   testid?: string;
@@ -100,21 +97,25 @@ function Choice({
     <Button
       type="button"
       variant="ghost"
+      // A LIST ROW, NOT A CONTROL, and `assets/globals.css` already has a name
+      // for that: the rule handing every control `--control-h` exempts the one
+      // slot named below, at a specificity no style prop can reach. Unnamed, a
+      // row is 30px tall whatever its text says, and only a floor can hold it
+      // open — and a floor is a number, while the type ramp is multiplied by
+      // `--type-scale`, which a person moves in Appearance. The two disagree at
+      // every setting but one, and the row that spills is the one carrying the
+      // longest sentence. Named, the row takes `height: auto` from its size
+      // variant and is exactly as tall as what it says, at any scale.
+      data-slot="item"
       onClick={onClick}
       aria-pressed={selected}
       data-testid={testid}
-      // THE FLOOR IS A MEASUREMENT, not a taste: 21px of label, 2px of margin,
-      // 19px per hint line, 12px of padding. A Button carries a fixed height
-      // from its size variant, so a row sized under its own text cuts the top
-      // off its label — which no assertion on the text would ever notice.
-      //
-      // A floor rather than a height because min-height beats height in CSS,
-      // which is the one way to state this the size variant cannot overrule.
       // flexShrink because the body scrolls: a flex child in a height-capped
       // column gives way by default, and the row is the fixed thing here — the
       // list is what should give.
-      width="100%" minHeight={35 + 19 * rows} flexShrink={0} alignItems="center" gap="$2"
-      borderWidth={0} borderRadius="$3" paddingVertical="$1.5"
+      width="100%" flexShrink={0} alignItems="center" gap="$2"
+      borderWidth={0} borderRadius="$3"
+      paddingHorizontal="$2" paddingVertical="$1.5"
       backgroundColor={selected ? "$color4" : "transparent"}
       hoverStyle={{ backgroundColor: "$color5" }}
       focusStyle={{ backgroundColor: "$color5" }}
@@ -122,13 +123,12 @@ function Choice({
     >
       <YStack minWidth={0} flex={1}>
         <SizableText numberOfLines={1} fontWeight="500" textAlign="left" fontSize="$3" color="$color12">{label}</SizableText>
-        {/* The hint wraps to `rows` and the row is sized for exactly that. A
-            Button has a fixed height, so a hint that wraps further does not make
-            room — it slides up under its own label and out through the sides of
-            the popover. Which is a thing a screenshot shows and no assertion on
-            the text would ever notice. */}
+        {/* The hint wraps as far as it needs to and is never clamped. These
+            rows exist to be COMPARED, and a line clamp drops the tail of the
+            longest sentence — on the microVM row that is the one warning it
+            carries — leaving nothing on screen that reads as truncation. */}
         {hint && (
-          <SizableText marginTop="$0.5" numberOfLines={rows} textAlign="left" fontSize="$1" color="$color11">
+          <SizableText marginTop="$0.5" textAlign="left" fontSize="$1" color="$color11">
             {hint}
           </SizableText>
         )}
@@ -144,7 +144,6 @@ export function Settings({
   model,
   error,
   onModelChange,
-  routedModel,
   runtime,
   onRuntimeChange,
   granted,
@@ -161,8 +160,6 @@ export function Settings({
   onClose: React.Dispatch<React.SetStateAction<boolean>>;
   onChange: (provider: string) => void;
   onModelChange: (model: string) => void;
-  /** Which model smart routing actually served the last turn, when it did. */
-  routedModel?: string | null;
   /** The isolation boundary this project asks for. `""` takes the fleet's own. */
   runtime: Runtime;
   onRuntimeChange: (runtime: Runtime) => void;
@@ -258,14 +255,13 @@ export function Settings({
               Enso / Zen / Anthropic / OpenAI), which is NOT what Enso does, so
               it says so rather than borrowing Enso's name. The fresh-session
               default is Enso, in the list below. */}
+          {/* The POLICY, which is the stable thing to say here. Which model
+              smart routing actually served the last turn is a per-turn fact,
+              and the composer says it once, on the "Routed:" pill beside this
+              popover’s own trigger. */}
           <Choice
             label="Auto · smart routing"
-            hint={
-              isAuto && routedModel
-                ? `Last request went to ${routedModel} — you are billed as what served you`
-                : "Routes each request to the cheapest capable model"
-            }
-            rows={2}
+            hint="Routes each request to the cheapest capable model"
             selected={isAuto}
             onClick={() => onModelChange(AUTO_MODEL)}
   />
@@ -304,20 +300,12 @@ export function Settings({
             </Paragraph>
           )}
           <YStack role="group" aria-label="Sandbox runtime" data-testid="runtime-picker">
-            {/* Two lines for every row, not per-row. A runtime's hint has to say
-                what it is fast at AND what it is slow at, which is two lines for
-                the longest; and rows of differing heights invite the eye to read
-                them as differing in importance, which is the opposite of what a
-                list you are meant to COMPARE should do. Two is also what keeps
-                all four inside one screen of the scroller — a comparison you
-                have to scroll through is one nobody makes. */}
             {RUNTIMES.map((r) => (
               <Choice
                 key={r.value || "default"}
                 testid={`runtime-${r.value || "default"}`}
                 label={r.label}
                 hint={r.hint}
-                rows={2}
                 selected={runtime === r.value}
                 onClick={() => onRuntimeChange(r.value)}
     />

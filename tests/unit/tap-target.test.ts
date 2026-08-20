@@ -13,7 +13,9 @@
  * pin their laws.
  */
 import { readFileSync } from "node:fs";
+
 import { join } from "node:path";
+
 
 import { stripCss } from "../source";
 

@@ -1,7 +1,8 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { stripComments } from "../source";
+
+import { read, rel, sources, stripComments } from "../source";
 
 /**
  * ONE home.
@@ -28,32 +29,20 @@ const PRIMITIVES = [
   "dropdown-menu", "resizable", "toggle-group", "popover", "sonner", "toast",
 ];
 
-function walk(dir: string, out: string[] = []): string[] {
-  let entries: string[];
-  try {
-    entries = readdirSync(dir);
-  } catch {
-    return out;
-  }
-  for (const name of entries) {
-    if (name === "node_modules" || name === ".next" || name === ".claude") continue;
-    const full = join(dir, name);
-    const st = statSync(full);
-    if (st.isDirectory()) walk(full, out);
-    else if (EXT.test(name)) out.push(full);
-  }
-  return out;
-}
-
-const repoRoot = join(__dirname, "..", "..");
-const files = ROOTS.flatMap((r) => walk(join(repoRoot, r)));
-const rel = (f: string) => f.replace(repoRoot + "/", "");
+const files = sources(ROOTS, EXT);
 // Comments stripped, because a rule's own explanation quotes the thing it bans:
 // the all-caps rule below fired on the sentence in settings.tsx saying not to
-// write all-caps. Five other suites here each hand-rolled this; `stripComments`
-// is the one they should all reach for.
+// write all-caps. Writing every explanation so it never SPELLS what it bans is
+// the other answer, and it holds only as long as everyone remembers to.
+//
+// It needed a reader that knows a string literal from prose, and for a while it
+// did not have one: `accept=".zip,text/*,.html"` in app/new is an attribute
+// value, and a regex read its `/*` as a comment opener and deleted the next
+// thousand characters of real code — the field's own onChange included. Ten
+// files here carry that shape. `stripComments` is a scanner now, and
+// tests/unit/source.test.ts pins that exact case.
 const offendersOf = (re: RegExp) =>
-  files.filter((f) => re.test(stripComments(readFileSync(f, "utf8")))).map(rel);
+  files.filter((f) => re.test(stripComments(read(rel(f))))).map(rel);
 
 describe("UI centralization — every component comes from @hanzo/ui", () => {
   it("scans a non-trivial number of source files", () => {

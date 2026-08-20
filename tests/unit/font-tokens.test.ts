@@ -1,7 +1,5 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 
-import { stripCss } from "../source";
+import { read, stripCss } from "../source";
 
 /**
  * ONE font token chain, pinned.
@@ -20,8 +18,8 @@ import { stripCss } from "../source";
  * are load-bearing and easy to lose in a whole-file edit — this pins them.
  */
 
-const globals = readFileSync(join(process.cwd(), "assets/globals.css"), "utf8");
-const layout = readFileSync(join(process.cwd(), "app/layout.tsx"), "utf8");
+const globals = read("assets/globals.css");
+const layout = read("app/layout.tsx");
 
 
 describe("font tokens", () => {

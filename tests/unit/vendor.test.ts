@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs';
+
 import { dirname, join } from 'node:path';
+
 
 import { LIBS, ORIGIN, rewrite, thirdParty, url } from '@/lib/vendor';
 

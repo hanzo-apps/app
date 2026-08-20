@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, statSync } from "fs";
 import { join } from "path";
 
-import { stripComments } from "../source";
+import { sources, stripComments } from "../source";
 
 /**
  * `$sm` / `$md` / `$lg` are MIN-width — "at this width AND UP".
@@ -49,16 +49,8 @@ function px(v: string, prop: string): number | null {
   return null; // percentages, "auto", expressions — not comparable
 }
 
-function walk(dir: string): string[] {
-  return readdirSync(dir).flatMap((e) => {
-    const p = join(dir, e);
-    if (statSync(p).isDirectory()) return walk(p);
-    return /\.tsx$/.test(p) ? [p] : [];
-  });
-}
-
 const ROOT = join(__dirname, "..", "..");
-const FILES = [join(ROOT, "components"), join(ROOT, "app")].flatMap(walk);
+const FILES = sources(["components", "app"], /\.tsx$/);
 
 /** Size props where "bigger" and "smaller" are meaningful and comparable. */
 const SIZE_PROPS = ["height", "width", "fontSize", "minHeight", "minWidth"];

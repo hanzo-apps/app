@@ -1,6 +1,8 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 
+import { read } from "../source";
+
 /**
  * A preview's edge has to survive a LIGHT screenshot.
  *
@@ -11,7 +13,7 @@ import { join } from "path";
  * a picture of a website.
  */
 describe("the template preview carries its own edge", () => {
-  const css = readFileSync(join(__dirname, "../../assets/globals.css"), "utf8");
+  const css = read("assets/globals.css");
   const thumb = readFileSync(
     join(__dirname, "../../components/template-thumb.tsx"),
     "utf8",

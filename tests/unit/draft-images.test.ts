@@ -24,6 +24,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
+
 // ── A Base standing in for the data plane ────────────────────────────────────
 // Rows in a Map, filters read the way lib/db writes them (`k='v' && k='v'`).
 

@@ -1,5 +1,5 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+
+import { read } from '../source';
 
 /**
  * Nothing in this header links to the page it is on.
@@ -21,7 +21,7 @@ import { join } from 'node:path';
  * appearance. So the action is back and the invariant moves to the mechanism
  * that makes it safe: the header must TELL the shell where it is.
  */
-const header = readFileSync(join(process.cwd(), 'components/layout/header.tsx'), 'utf8');
+const header = read('components/layout/header.tsx');
 
 describe('header self-links', () => {
   it('tells the shell which place this is, so it can mark it current', () => {

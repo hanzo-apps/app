@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs';
+
 import { join } from 'node:path';
+
 
 // The builder's type grid: three rungs, and nothing off them.
 //

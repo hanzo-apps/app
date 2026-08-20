@@ -1,5 +1,7 @@
 import { readFileSync } from "node:fs";
+
 import { join } from "node:path";
+
 
 /**
  * The tour's footer says two things and only two: leave, on the left, and

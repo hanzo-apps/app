@@ -1,5 +1,7 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
+
 import { join } from "node:path";
+
 
 /**
  * No composer decides on its own whether the IME owns a keystroke.

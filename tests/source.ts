@@ -1,5 +1,9 @@
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+
 /**
- * Reading source in a test: where a tag ends, and how to ignore prose.
+ * Reading source in a test: where the files are, where a tag ends, and how to
+ * ignore prose.
  *
  * ONE home, because sixteen suites here had each written their own. `tagEnd` was
  * three copies; the comment strippers were thirteen, in FIVE behaviours —
@@ -12,11 +16,65 @@
  * CLOSES ITSELF on the star-slash inside the quote. Writing this header is what
  * broke the typecheck once already.
  *
- * TWO functions and not one, because the languages differ: `//` is a comment in
+ * TWO strippers and not one, because the languages differ: `//` is a comment in
  * TS and not in CSS, and a stylesheet's `https://` must survive. Reaching for
  * the wrong one is the bug this file exists to make hard, so they are named for
  * what they read.
  */
+
+/**
+ * The repo root. Three spellings were in use across 41 suites — `process.cwd()`,
+ * `join(__dirname, "..", "..")` and `join(__dirname, "../..")` — which happen to
+ * agree only because jest is always launched from here. `process.cwd()` is the
+ * shell's, not the repo's, so the moment anyone runs a suite from a subdirectory
+ * a third of them read the wrong tree and find nothing to accuse.
+ */
+export const root = join(__dirname, '..');
+
+/** A repo file, by its path from the root. Fifteen suites declared this. */
+export const read = (rel: string): string => readFileSync(join(root, rel), 'utf8');
+
+/**
+ * Never walked into, whichever directory a caller starts from.
+ *
+ * `.next` is the one that matters: it holds GENERATED code, so a rule scanning
+ * it accuses a file nobody wrote and a coverage count inflates with output. The
+ * twelve hand-rolled walkers disagreed here — four skipped nothing at all, two
+ * skipped only `node_modules` — and it was harmless only because every one of
+ * them happened to start below the root. A shared skip list means the next
+ * caller who starts AT the root is right by default rather than by luck.
+ */
+const SKIP = new Set(['node_modules', '.next', '.claude', '.git', 'dist', 'coverage']);
+
+/**
+ * Every source file under `dirs`, relative to the repo root.
+ *
+ * Twelve suites hand-rolled this recursive readdir. The shape they all wanted is
+ * "the app's own files, by extension" — so that is the argument, and the
+ * traversal is not the caller's business.
+ */
+export function sources(dirs: string[], ext = /\.tsx?$/): string[] {
+  const out: string[] = [];
+  const walk = (dir: string): void => {
+    let entries: string[];
+    try {
+      entries = readdirSync(dir);
+    } catch {
+      return; // a root that does not exist is empty, not an error
+    }
+    for (const name of entries) {
+      if (SKIP.has(name)) continue;
+      const full = join(dir, name);
+      if (statSync(full).isDirectory()) walk(full);
+      else if (ext.test(name)) out.push(full);
+    }
+  };
+  for (const d of dirs) walk(join(root, d));
+  return out;
+}
+
+/** `sources` as paths relative to the root — what a failure message should print. */
+export const rel = (f: string): string => f.replace(root + '/', '');
 
 /**
  * Where a JSX opening tag ends: the index of its `>`, or -1.
@@ -57,22 +115,74 @@
  * The line rule runs to end-of-line, not line-start-only, which two more suites
  * had: a rule a TRAILING comment can evade is a rule with a hole in it.
  *
- * The line strip spares a preceding colon, so a URL in code survives to be
- * caught rather than being read as a comment.
+ * A SCANNER AND NOT A REGEX, because the difference between a comment and a
+ * string is not a pattern — it is where you are. `accept=".zip,text/*,.html"`
+ * is an attribute value in `app/new/page.tsx`, and a regex reads its `/*` as a
+ * comment opener: measured, the strip ran on to the next close and deleted a
+ * thousand characters of real code, the field's own `onChange` among them. Ten
+ * files here carry that shape. So every rule below asks the scanner where it
+ * is, and inside a string the answer is "not in a comment".
  *
- * The JSX spelling — a block comment inside braces — goes as a UNIT, before the
- * bare block rule can eat the middle and leave the braces behind. Three suites
- * wrote that rule and three did not, which is the argument for one function.
+ * `//` after a colon is spared the same way and for a better reason than the
+ * old special case: a URL's slashes sit inside a string literal, so the scanner
+ * never reaches them.
+ *
+ * Whitespace is PRESERVED where a comment was, rather than closing the gap. A
+ * scan that reports a line number is worthless if the line moved, and a rule
+ * matching `foo\s+bar` must not start matching because prose between them
+ * vanished. The characters go; the shape stays.
  */
-export const stripComments = (src: string): string =>
-  src
-    // The inner content may not CROSS a comment close. Written `[\s\S]*?` the
-    // brace is free to be an interface's or a block's, and the match runs on to
-    // whatever later comment happens to sit before a `}` — measured, it ate the
-    // whole body of `UsageLimitApi` and the rule that reads it went quiet.
-    .replace(/\{\s*\/\*(?:(?!\*\/)[\s\S])*\*\/\s*\}/g, '')
-    .replace(/(^|[^:])\/\/.*$/gm, '$1')
-    .replace(/\/\*[\s\S]*?\*\//g, '');
+export function stripComments(src: string): string {
+  let out = '';
+  let i = 0;
+  while (i < src.length) {
+    const c = src[i];
+    // A string literal, in any of its three spellings. Template literals can
+    // hold `${…}` with code inside, and that code may hold a comment — but a
+    // comment inside an interpolation is prose too, so consuming the whole
+    // literal is the right answer as well as the simple one.
+    if (c === '"' || c === "'" || c === '`') {
+      const quote = c;
+      out += c;
+      i += 1;
+      while (i < src.length) {
+        out += src[i];
+        if (src[i] === '\\') {
+          i += 2;
+          if (i - 1 < src.length) out += src[i - 1];
+          continue;
+        }
+        if (src[i] === quote) {
+          i += 1;
+          break;
+        }
+        i += 1;
+      }
+      continue;
+    }
+    if (c === '/' && src[i + 1] === '/') {
+      while (i < src.length && src[i] !== '\n') i += 1;
+      continue; // the newline itself is kept by the next pass
+    }
+    if (c === '/' && src[i + 1] === '*') {
+      const close = src.indexOf('*/', i + 2);
+      const end = close < 0 ? src.length : close + 2;
+      // Keep the newlines a block comment spanned, so every line below it
+      // still reports the number it has in the file.
+      for (let j = i; j < end; j += 1) if (src[j] === '\n') out += '\n';
+      i = end;
+      continue;
+    }
+    out += c;
+    i += 1;
+  }
+  // `{}` left behind by a JSX comment is not code either — the braces were the
+  // comment's own delimiters, and a rule counting braces should not see them.
+  // The newlines between them stay, for the same reason the block rule keeps
+  // its own: dropping them here silently shortened a 216-line file to 181 and
+  // every line number a failure printed below that point was wrong.
+  return out.replace(/\{(\s*)\}/g, (_m, gap: string) => gap.replace(/[^\n]/g, ''));
+}
 
 /**
  * A stylesheet with its comments removed.

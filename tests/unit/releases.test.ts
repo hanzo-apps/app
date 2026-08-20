@@ -16,7 +16,9 @@ import { appCatalog } from '@/data/app-catalog';
 import { SURFACES } from '@/data/downloads';
 import releases from '@/data/releases.json';
 import { readFileSync } from 'node:fs';
+
 import { join } from 'node:path';
+
 
 const resolved = new Set<string>();
 for (const surface of Object.values(releases as Record<string, { platforms: Record<string, unknown> }>)) {

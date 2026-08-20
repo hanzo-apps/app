@@ -1,6 +1,8 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 
+import { read } from "../source";
+
 /**
  * hanzo.app is dark-only, and the generated gui sheet may not ask the OS.
  *
@@ -17,7 +19,7 @@ import { join } from "path";
  * the failure returns silently on any regeneration with a newer gui.
  */
 describe("app/gui.css", () => {
-  const css = readFileSync(join(__dirname, "../../app/gui.css"), "utf8");
+  const css = read("app/gui.css");
 
   it("never asks the OS for a color scheme", () => {
     expect(css).not.toMatch(/prefers-color-scheme/);

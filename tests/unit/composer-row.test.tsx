@@ -53,6 +53,8 @@ import { loadWorkspace, UNTITLED } from '@/lib/dev/workspace';
 
 import { WithGui } from '../gui-wrapper';
 
+import { read } from "../source";
+
 const renderComposer = (ui: React.ReactElement) => render(ui, { wrapper: WithGui });
 
 /** gui renders a div[role=button]; `disabled` shows as aria-disabled. */
@@ -146,7 +148,7 @@ describe('the drop affordance', () => {
     // focusable. This sheet states no field rule of its own, and there is no
     // box standing in for one — a second shape around a composer whose field
     // already rings is the thing that arrangement now prevents.
-    const css = readFileSync(join(__dirname, '../../assets/globals.css'), 'utf8');
+    const css = read("assets/globals.css");
     expect(css).not.toMatch(/:is\(input, textarea, select\):focus-visible/);
     expect(css).not.toMatch(/\[data-field-box\]:focus-within/);
     expect(css).not.toMatch(/--focus-edge/);

@@ -6,7 +6,9 @@
  * measured serving scaffolding rather than the template.
  */
 import { readdirSync } from 'node:fs';
+
 import { join } from 'node:path';
+
 import { demoCount, demoUrl, lifts } from '@/lib/template-demos';
 import { TEMPLATES, getTemplate } from '@/lib/templates-catalog';
 

@@ -28,7 +28,9 @@
  * everywhere, because that half is the one that goes silent.
  */
 import { readFileSync } from "node:fs";
+
 import { join } from "node:path";
+
 
 const root = join(__dirname, "..", "..");
 const read = (f: string) => readFileSync(join(root, f), "utf8");

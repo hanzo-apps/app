@@ -24,7 +24,9 @@
  * which is the kind of wrong that survives a screenshot.
  */
 import { readFileSync } from "node:fs";
+
 import { join } from "node:path";
+
 
 const ROOT = join(__dirname, "..", "..");
 const read = (p: string) => readFileSync(join(ROOT, p), "utf8");

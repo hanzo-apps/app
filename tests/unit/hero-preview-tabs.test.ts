@@ -13,7 +13,9 @@
  * exist to stop. If a future edit reverts to a literal tab array, this goes red.
  */
 import { readFileSync } from "node:fs";
+
 import { join } from "node:path";
+
 
 const SRC = readFileSync(
   join(__dirname, "..", "..", "components", "landing", "hero-preview.tsx"),

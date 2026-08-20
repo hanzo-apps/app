@@ -1,11 +1,14 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
+
 
 // The recipes come from `@hanzo/ui/glass` now, so these assert the VALUES the
 // app actually spreads rather than the text of the file that used to define
 // them. A source grep over a re-export proves nothing — and the values are what
 // the defects were measured in.
 import { glass, panel, row, rows, scrim } from "@/lib/chrome";
+
+import { sources } from "../source";
 
 /**
  * ONE glass.
@@ -25,24 +28,8 @@ import { glass, panel, row, rows, scrim } from "@/lib/chrome";
 const ROOTS = ["components", "app", "lib", "hooks"];
 const EXT = /\.(tsx?|jsx?)$/;
 
-function walk(dir: string, out: string[] = []): string[] {
-  let entries: string[];
-  try {
-    entries = readdirSync(dir);
-  } catch {
-    return out;
-  }
-  for (const name of entries) {
-    if (name === "node_modules" || name === ".next" || name === ".claude") continue;
-    const full = join(dir, name);
-    if (statSync(full).isDirectory()) walk(full, out);
-    else if (EXT.test(name)) out.push(full);
-  }
-  return out;
-}
-
 const repoRoot = join(__dirname, "..", "..");
-const files = ROOTS.flatMap((r) => walk(join(repoRoot, r)));
+const files = sources(ROOTS, EXT);
 const rel = (f: string) => f.replace(repoRoot + "/", "");
 const offendersOf = (re: RegExp) =>
   files.filter((f) => re.test(readFileSync(f, "utf8"))).map(rel);

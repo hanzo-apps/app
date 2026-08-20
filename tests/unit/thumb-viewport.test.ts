@@ -20,9 +20,11 @@
  * loads, and the picture is sharp — it is simply of the mobile site.
  */
 import { readFileSync } from "node:fs";
+
 import { join } from "node:path";
 
-import { stripComments } from "../source";
+
+import { read, stripComments } from "../source";
 
 // Comment-stripped: the prose above the fix must not be able to satisfy the
 // check that guards it.
@@ -67,7 +69,7 @@ describe("the sheet that makes the opt-out necessary is the one we load", () => 
   // sheet cannot be read from a unit test at all. The import is the readable,
   // honest half of the fact.
   it("app/layout.tsx imports @hanzo/ui's sheet", () => {
-    const layout = readFileSync(join(process.cwd(), "app/layout.tsx"), "utf8");
+    const layout = read("app/layout.tsx");
     expect(layout).toMatch(/@hanzo\/ui\/(theme|glass)\.css/);
   });
 });

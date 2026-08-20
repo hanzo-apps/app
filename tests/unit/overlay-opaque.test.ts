@@ -1,6 +1,8 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 
+import { read } from "../source";
+
 /**
  * A floating surface that carries text is LEGIBLE WITHOUT THE BLUR.
  *
@@ -38,7 +40,7 @@ import { join } from "path";
  *    value stayed at .72 while the CSS looked correct in the file.
  */
 describe("floating surfaces stay legible", () => {
-  const css = readFileSync(join(__dirname, "../../assets/globals.css"), "utf8");
+  const css = read("assets/globals.css");
 
   const rule = (() => {
     const at = css.indexOf("html:root .is_PopperContent");

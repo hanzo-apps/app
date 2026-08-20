@@ -1,7 +1,8 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { tagEnd } from "../source";
+
+import { sources, tagEnd } from "../source";
 
 /**
  * A palette row's mark stretches into TWENTY pixels, so it has no margin.
@@ -26,18 +27,8 @@ import { tagEnd } from "../source";
 
 const ROOT = join(__dirname, "..", "..");
 
-const walk = (dir: string, out: string[] = []): string[] => {
-  for (const name of readdirSync(dir)) {
-    if (name === "node_modules" || name.startsWith(".")) continue;
-    const p = join(dir, name);
-    if (statSync(p).isDirectory()) walk(p, out);
-    else if (p.endsWith(".tsx")) out.push(p);
-  }
-  return out;
-};
-
 const rel = (f: string) => f.replace(ROOT + "/", "");
-const rows = walk(join(ROOT, "components")).filter((f) =>
+const rows = sources(["components"], /\.tsx$/).filter((f) =>
   readFileSync(f, "utf8").includes("<CommandItem"),
 );
 

@@ -14,7 +14,9 @@
  *   terminal (which brings its own) is up.
  */
 import { readFileSync } from "node:fs";
+
 import { join } from "node:path";
+
 
 const read = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 

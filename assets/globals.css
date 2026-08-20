@@ -2032,6 +2032,16 @@ html:root [data-slot="tabs-list"] {
    Scoped to `.hz-picker-panel` — a class the picker sets — NOT to every
    popover, because most of them are short and correct where they are. */
 @media (max-width: 40em) {
+  /* THE POSITIONER IS WHAT HAS TO LET GO. gui translates the popper's own box,
+     and a transformed ancestor is the containing block for a `position: fixed`
+     descendant (CSS Transforms L1 §3) — so the insets below resolve against that
+     box, which is 0x0: `left: 8` and `right: 8` meet, and the sheet is a 10px
+     hairline standing off the top of the screen. Cleared, the containing block
+     walks up to the portal's own `position: fixed; inset: 0` span, which is the
+     viewport, and the insets mean what they say. */
+  html:root :has(> .hz-picker-panel) {
+    transform: none !important;
+  }
   html:root .hz-picker-panel {
     position: fixed !important;
     inset: auto 8px 8px 8px !important;

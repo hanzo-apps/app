@@ -1,6 +1,8 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 
+import { read } from "../source";
+
 /**
  * A tap target is a BOX, and both sides carry the 44px floor.
  *
@@ -25,7 +27,7 @@ import { join } from "path";
  * goes to die quietly.
  */
 describe("the coarse-pointer touch floor", () => {
-  const css = readFileSync(join(__dirname, "../../assets/globals.css"), "utf8");
+  const css = read("assets/globals.css");
 
   const coarse = (() => {
     const at = css.indexOf("@media (pointer: coarse)");

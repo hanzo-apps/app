@@ -10,13 +10,11 @@
  * the finished site rendering beside the sentence.
  */
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 
 import { edit } from "@/lib/pages/report";
 import type { Page } from "@/types";
 
-import { stripComments } from "../source";
+import { read, stripComments } from "../source";
 
 const page = (path: string, html: string): Page => ({ path, html });
 const before = [page("index.html", "<html><body>Notes</body></html>")];
@@ -52,7 +50,7 @@ describe("the thread says which of the three happened", () => {
   // Comment-stripped: the prose explaining a fix must not satisfy the check
   // that guards it.
   const code = stripComments(
-    readFileSync(join(process.cwd(), "components/editor/ask-ai/index.tsx"), "utf8"),
+    read("components/editor/ask-ai/index.tsx"),
   );
 
   it("never decides the sentence from the range count alone", () => {

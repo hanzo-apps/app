@@ -1,5 +1,8 @@
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
+
+
+import { sources } from "../source";
 
 /**
  * The builder chrome may only use type sizes the design ramp publishes.
@@ -37,17 +40,6 @@ const RAMP = new Set([11, 13, 14, 16, 18, 21, 26, 32, 40, 52, 64, 84, 112]);
  */
 const BASELINE = 0;
 
-function walk(dir: string, out: string[] = []): string[] {
-  for (const name of readdirSync(dir)) {
-    const p = join(dir, name);
-    if (statSync(p).isDirectory()) {
-      if (name === "node_modules" || name === ".next") continue;
-      walk(p, out);
-    } else if (/\.tsx?$/.test(name)) out.push(p);
-  }
-  return out;
-}
-
 function offRamp(file: string): number[] {
   const src = readFileSync(file, "utf8");
   const hits: number[] = [];
@@ -59,7 +51,7 @@ function offRamp(file: string): number[] {
 }
 
 describe("the builder chrome uses the published type ramp", () => {
-  const files = walk("components/editor");
+  const files = sources(["components/editor"]);
 
   it("adds no NEW off-ramp size", () => {
     const found: Array<{ file: string; sizes: number[] }> = [];

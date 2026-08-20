@@ -1,7 +1,9 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 
-const landing = readFileSync(join(__dirname, "../../app/page.tsx"), "utf8");
+import { read } from "../source";
+
+const landing = read("app/page.tsx");
 
 /**
  * The front page's starter strip shows templates that can actually be opened.

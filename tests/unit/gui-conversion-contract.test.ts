@@ -23,8 +23,10 @@
  * counterparts live in tests/e2e/ui-contract.spec.ts.
  */
 import { readFileSync } from "node:fs";
+
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
+
 
 const ROOT = join(__dirname, "..", "..");
 

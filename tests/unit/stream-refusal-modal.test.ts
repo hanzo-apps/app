@@ -8,12 +8,10 @@
  * and without it a funded org gets a flat sentence and no control to act on.
  */
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 
 import { UNAVAILABLE, outcome, refusal } from "@/lib/gateway";
 
-import { stripComments } from "../source";
+import { read, stripComments } from "../source";
 
 describe("what a refusal envelope means to the builder", () => {
   it("raises the credit modal, carrying the gateway's own sentence", () => {
@@ -60,7 +58,7 @@ describe("what a refusal envelope means to the builder", () => {
 describe("every stream reads it the same way", () => {
   // Comment-stripped: the prose above a fix must not be able to satisfy the
   // check that guards it.
-  const code = stripComments(readFileSync(join(process.cwd(), "hooks/useCallAi.ts"), "utf8"));
+  const code = stripComments(read("hooks/useCallAi.ts"));
 
   it("no stream hand-rolls its own ladder", () => {
     const handlers = [...code.matchAll(/jsonResponse && !jsonResponse\.ok\)\s*\{[\s\S]*?\n(\s*)\}/g)];

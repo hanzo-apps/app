@@ -1,5 +1,9 @@
 import { readFileSync } from "node:fs";
+
 import { join } from "node:path";
+
+
+import { read } from "../source";
 
 /**
  * Content that PAINTS is not content you can REACH.
@@ -16,7 +20,7 @@ import { join } from "node:path";
  * writes).
  */
 describe("everything on the page can be reached", () => {
-  const css = readFileSync(join(__dirname, "../../assets/globals.css"), "utf8");
+  const css = read("assets/globals.css");
 
   describe("a tab panel claims the height of its content", () => {
     const rule = (() => {
@@ -111,6 +115,22 @@ describe("everything on the page can be reached", () => {
       expect(rule).toMatch(/transform:\s*none\s*!important/);
     });
 
+    it("clears the transform on the POSITIONER, or the insets mean nothing", () => {
+      // A `position: fixed` box takes its containing block from the nearest
+      // TRANSFORMED ancestor, not from the viewport — and the transform that
+      // decides this one is on the panel's parent, the popper box gui
+      // translates, which is 0x0. Left and right then meet: the sheet is a
+      // 10px hairline standing off the top of the screen while every
+      // declaration above still reads exactly as intended.
+      //
+      // This is a text assertion about a geometric fact, which is as far as a
+      // jsdom suite reaches. The rendered box is measured in
+      // tests/e2e/authed/mobile-overlap.spec.ts.
+      const media = css.lastIndexOf("@media", css.indexOf("html:root .hz-picker-panel"));
+      const block = css.slice(media, css.indexOf("\n}", media) + 2);
+      expect(block).toMatch(/:has\(>\s*\.hz-picker-panel\)[^{]*\{[^}]*transform:\s*none\s*!important/);
+    });
+
     it("is bounded by the viewport, so it always fits", () => {
       // dvh, not vh — the phone's URL bar changes the usable height, and vh
       // does not follow it.
@@ -129,7 +149,7 @@ describe("everything on the page can be reached", () => {
 
   it("the picker asks for the sheet by name", () => {
     // A rule scoped to a class nobody sets is the other way this dies quietly.
-    const picker = readFileSync(join(__dirname, "../../components/model-selector.tsx"), "utf8");
+    const picker = read("components/model-selector.tsx");
     expect(picker).toMatch(/className="[^"]*hz-picker-panel/);
   });
 });

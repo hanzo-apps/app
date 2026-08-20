@@ -1,5 +1,7 @@
 import { readdirSync } from 'node:fs';
+
 import { join } from 'node:path';
+
 
 import snapshot from '@/lib/gallery-snapshot.json';
 import { cellsOf, kindOf, paletteOf } from '@/lib/template-schematic';
