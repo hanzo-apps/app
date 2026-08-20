@@ -4,6 +4,7 @@ import { H3, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import React, { useState, useEffect, useRef, useCallback, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { VirtualServer } from '@/lib/preview/virtual-server';
 import { resolveAssets } from '@/lib/preview/rewrite';
+import { home } from '@/lib/preview/home';
 import {
   CompiledProject,
   PreviewMessage,
@@ -247,8 +248,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           // Non-default entry point — navigate directly to it
           pathToLoad = ep;
         } else {
-          pathToLoad = compiled.blobUrls.has(ep) ? '/' :
-                       (compiled.routes.length > 0 ? compiled.routes[0].path : '/');
+          pathToLoad = compiled.blobUrls.has(ep) ? '/' : home(compiled.routes);
         }
       }
       

@@ -5,6 +5,7 @@ import { XStack, H3, YStack, SizableText, Paragraph } from '@hanzo/ui';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { VirtualServer } from '@/lib/preview/virtual-server';
 import { resolveAssets } from '@/lib/preview/rewrite';
+import { home } from '@/lib/preview/home';
 import {
   CompiledProject,
   PreviewMessage,
@@ -143,8 +144,7 @@ export function LivePreview({
       let pathToLoad = currentPath;
       if (!pathToLoad) {
         pathToLoad = compiled.blobUrls.has('/index.html') ? '/' :
-                     compiled.entryPoint ||
-                     (compiled.routes.length > 0 ? compiled.routes[0].path : '/');
+                     compiled.entryPoint || home(compiled.routes);
       }
 
       loadPage(pathToLoad, compiled);
