@@ -33,21 +33,54 @@ export interface Connection {
 }
 
 /** One connector in the catalog, carrying THIS org's connection status. */
+/**
+ * HOW a connector is connected — the one thing that genuinely differs between
+ * the two halves of the catalog.
+ *
+ * `oauth` sends the browser to the provider and comes back with a code.
+ * `credential` cannot: WhatsApp, a carrier SMS account and SMTP hand you a token
+ * (or a host and a password) in a dashboard, with no consent screen and nothing
+ * to come back from. Cloud publishes this so no client keeps its own list of
+ * which providers are which.
+ */
+export type ConnectorKind = 'oauth' | 'credential';
+
+/** One input a credential connector asks for. The form is rendered from the
+ *  catalog, so adding a connector never edits a UI. */
+export interface ConnectorField {
+  name: string;
+  label: string;
+  /** Sealed into KMS and never read back — render as a password input. */
+  secret: boolean;
+  required: boolean;
+}
+
 export interface Provider {
   id: string;
   name: string;
   description: string;
   category: string;
-  /** Credentials configured on this deployment (the connector can be used). */
+  /** Credentials configured on this deployment (the connector can be used).
+   *  Always true for a credential connector: the org pastes its own account, so
+   *  there is no deployment credential that could be missing. */
   available: boolean;
   /** This org has an active connection. */
   connected: boolean;
   connection: Connection | null;
+  /** Which connect leg this provider takes. Defaults to `oauth`, so a cloud that
+   *  does not publish the field yet keeps its current meaning. */
+  kind: ConnectorKind;
+  /** The form a credential connector needs; empty for oauth. */
+  fields: ConnectorField[];
 }
 
-/** The OAuth connect leg: a provider consent URL to top-level-navigate to. */
+/** The connect result. An oauth connect answers with a consent URL to
+ *  top-level-navigate to; a credential connect has already finished by the time
+ *  it replies, and says so. */
 export interface ConnectResult {
   authorizeUrl?: string;
+  connected?: boolean;
+  account?: string;
   error?: string;
 }
 
@@ -122,7 +155,32 @@ function normalizeProvider(v: unknown): Provider | null {
     available: bool(p.available ?? p.configured) || isLive,
     connected: isLive,
     connection: normalizeConnection(p.connection ?? p.conn) ?? (isLive ? flatConn : null),
+    // Anything that is not the credential kind reads as oauth — the safe
+    // default, because an oauth connect navigates whereas an unrecognised value
+    // would render a form with no fields in it.
+    kind: str(p.kind) === 'credential' ? 'credential' : 'oauth',
+    fields: normalizeFields(p.fields),
   };
+}
+
+/** Field rows, tolerant of a missing or garbage list: a connector whose form
+ *  cannot be read renders as having none rather than throwing the page away. */
+function normalizeFields(v: unknown): ConnectorField[] {
+  if (!Array.isArray(v)) return [];
+  const out: ConnectorField[] = [];
+  for (const raw of v) {
+    const f = obj(raw);
+    if (!f) continue;
+    const name = str(f.name);
+    if (!name) continue; // could not be submitted under any key
+    out.push({
+      name,
+      label: str(f.label) || name,
+      secret: bool(f.secret),
+      required: bool(f.required),
+    });
+  }
+  return out;
 }
 
 /** Pull the provider array out of any of the envelope shapes cloud/console use.
@@ -167,13 +225,22 @@ export async function fetchConnectors(): Promise<Provider[]> {
       headers: { Accept: 'application/json', ...orgHeader() },
     });
     if (!res.ok) return [];
-    const body = await res.json();
-    return providerRows(body)
-      .map(normalizeProvider)
-      .filter((p): p is Provider => p !== null);
+    return normalizeProviders(await res.json());
   } catch {
     return [];
   }
+}
+
+/**
+ * Read a catalog response into provider cards. Pure, so it is testable without
+ * a network — and EXPORTED for that reason, the way console exports its twin.
+ * These two normalizers are the pair this file's header says mirror each other;
+ * that is only checkable if both can be called.
+ */
+export function normalizeProviders(body: unknown): Provider[] {
+  return providerRows(body)
+    .map(normalizeProvider)
+    .filter((p): p is Provider => p !== null);
 }
 
 /**
@@ -185,15 +252,29 @@ export async function fetchConnectors(): Promise<Provider[]> {
  * seals the token to KMS and lands the user back on the shared connectors surface
  * with `?connected=<id>`. Never throws: a failure resolves to `{ error }`.
  */
-export async function connectProvider(id: string): Promise<ConnectResult> {
+export async function connectProvider(
+  id: string,
+  values?: Record<string, string>,
+): Promise<ConnectResult> {
   try {
     const res = await fetch(`${BASE}/${encodeURIComponent(id)}/connect`, {
       method: 'POST',
       credentials: 'include',
-      headers: { Accept: 'application/json', ...orgHeader() },
+      headers: {
+        Accept: 'application/json',
+        ...(values ? { 'Content-Type': 'application/json' } : {}),
+        ...orgHeader(),
+      },
+      // A credential connect sends the pasted fields; an oauth connect sends
+      // nothing. ONE route, one method — what differs is the body.
+      ...(values ? { body: JSON.stringify(values) } : {}),
     });
     if (!res.ok) return { error: await readError(res) };
     const b = (await res.json()) as Raw;
+    // A credential connect is already DONE when it replies: it verified the
+    // credentials against the provider and sealed them, so there is no URL to
+    // follow and `connected` is the answer.
+    if (bool(b.connected)) return { connected: true, account: str(b.account) };
     // Tolerate authorizeUrl / authorize_url / url (console normalizes the same).
     const url = str(b.authorizeUrl ?? b.authorize_url ?? b.url);
     return url ? { authorizeUrl: url } : { error: 'This connector is not available to connect yet.' };

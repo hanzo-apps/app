@@ -136,12 +136,27 @@ function ConnectorsInner() {
     void load();
   }, [load]);
 
-  const onConnect = async (p: Provider) => {
+  /**
+   * Connect. ONE handler for both kinds, because it is one route — what differs
+   * is whether there is a body and whether the answer is a place to go.
+   *
+   * `values` present means a CREDENTIAL connector: cloud verifies the pasted
+   * fields against the provider and seals them inside that one request, so the
+   * reply is final and the list reloads in place. Absent means OAuth, and the
+   * reply is a consent URL to leave for.
+   */
+  const onConnect = async (p: Provider, values?: Record<string, string>) => {
     setBusyId(p.id);
-    const r = await connectProvider(p.id);
+    const r = await connectProvider(p.id, values);
     if (r.authorizeUrl) {
       // Top-level navigate to the provider's consent screen (leaves the app).
       window.location.href = r.authorizeUrl;
+      return;
+    }
+    if (r.connected) {
+      toast.success(`Connected ${p.name}${r.account ? ` · ${r.account}` : ""}`);
+      setBusyId(null);
+      void load();
       return;
     }
     toast.error(r.error || `Could not start connecting ${p.name}. Try again in a moment.`);
@@ -302,7 +317,7 @@ function Section({
   title: string;
   rows: Provider[];
   busyId: string | null;
-  onConnect: (p: Provider) => void;
+  onConnect: (p: Provider, values?: Record<string, string>) => void;
   onDisconnect: (p: Provider) => void;
   muted?: boolean;
 }) {
@@ -340,15 +355,22 @@ function ConnectorRow({
   p: Provider;
   busy: boolean;
   disabled: boolean;
-  onConnect: (p: Provider) => void;
+  onConnect: (p: Provider, values?: Record<string, string>) => void;
   onDisconnect: (p: Provider) => void;
   muted?: boolean;
 }) {
   const Icon = iconFor(p.id);
+  // A credential connector has no consent screen to leave for, so the row opens
+  // its own form instead of a button that would have nowhere to send anyone.
+  const [open, setOpen] = useState(false);
+  const [values, setValues] = useState<Record<string, string>>({});
+  const missing = p.fields.some((f) => f.required && !(values[f.name] ?? "").trim());
+  const credential = !p.connected && p.kind === "credential";
   const since = p.connection ? sinceLabel(p.connection.connectedAt) : "";
   return (
+    <YStack borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" {...{ opacity: muted ? 0.6 : undefined }}>
     <XStack
-      alignItems="center" gap="$4" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3.5" {...{ opacity: muted ? 0.6 : undefined }}
+      alignItems="center" gap="$4" paddingHorizontal="$4" paddingVertical="$3.5"
     >
       <XStack width="$7" height="$7" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
         <Icon size={20} />
@@ -394,7 +416,7 @@ function ConnectorRow({
             size="sm"
             gap="$1.5"
             disabled={busy || disabled}
-            onClick={() => onConnect(p)}
+            onClick={() => (credential ? setOpen((v) => !v) : onConnect(p))}
           >
             {busy ? <Spinner size={14} /> : <LinkIcon size={14} />}
             Connect
@@ -404,5 +426,42 @@ function ConnectorRow({
         )}
       </YStack>
     </XStack>
+
+    {/* The form is rendered from the CATALOG — cloud publishes each field's
+        name, label and whether it is secret — so a connector added on the
+        backend appears here with no change to this file. A secret field is a
+        password input: it is the org's real credential and it travels one way
+        only. */}
+    {credential && open ? (
+      <YStack gap="$2" paddingHorizontal="$4" paddingBottom="$3.5">
+        {p.fields.map((f) => (
+          <YStack key={f.name} gap="$1">
+            <SizableText fontSize="$1" color="$color11">
+              {f.label}
+              {f.required ? " *" : ""}
+            </SizableText>
+            <Input
+              size="$3"
+              secureTextEntry={f.secret}
+              value={values[f.name] ?? ""}
+              onChangeText={(v: string) => setValues((prev) => ({ ...prev, [f.name]: v }))}
+            />
+          </YStack>
+        ))}
+        <XStack gap="$2" alignItems="center">
+          <Button variant="default" size="sm" disabled={busy || missing} onClick={() => onConnect(p, values)}>
+            {busy ? <Spinner size={14} /> : null}
+            Save
+          </Button>
+          {/* Say what happens, because it is not a redirect: the credentials are
+              checked with the provider before anything is stored, so a wrong
+              paste is refused here rather than on the first real send. */}
+          <SizableText fontSize="$1" color="$color11">
+            Checked with {p.name} before they are saved.
+          </SizableText>
+        </XStack>
+      </YStack>
+    ) : null}
+    </YStack>
   );
 }
