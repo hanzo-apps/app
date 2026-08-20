@@ -115,7 +115,12 @@ test.describe('a generated page is styled by one stylesheet', () => {
     });
 
     expect(seen.ground).toBe('rgb(10, 10, 10)'); // --background
-    expect(seen.ink).toBe('rgb(250, 250, 250)'); // --foreground
+    // #e5e5e5, not #fafafa. The foreground was softened deliberately -- pure
+    // white ink on a near-black ground is the harsh default this design system
+    // moved off. The value lives in @hanzo/design and reaches an app through a
+    // @hanzo/ui release, so this assertion follows the token rather than
+    // pinning the old one.
+    expect(seen.ink).toBe('rgb(229, 229, 229)'); // --foreground
     expect(seen.geist).toBe('loaded');
     expect(parseFloat(seen.h1)).toBeGreaterThan(30);
     expect(seen.cardRadius).not.toBe('0px');
