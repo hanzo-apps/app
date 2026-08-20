@@ -134,6 +134,23 @@ export default function AgentsPage() {
     load();
   }, [load]);
 
+  // What an ACTION does when the session is gone.
+  //
+  // Every other way createAgent and runAgent can fail says so. This one did
+  // not: it swapped the page state and returned, leaving the create dialog
+  // open on top of the view that would have explained it. So the button
+  // stopped, nothing moved, and nothing was said — which is indistinguishable
+  // from a dead button, and is what it got reported as.
+  //
+  // load() keeps its plain setState and does not call this. There the state
+  // change IS the feedback — the whole page becomes the signed-out view — and
+  // a toast on arrival would announce something the page already says.
+  const sessionEnded = useCallback(() => {
+    setState({ kind: "unauthenticated" });
+    setCreating(false);
+    toast.error("Your session ended. Sign in and try again.");
+  }, []);
+
   const runAgent = useCallback(
     async (name: string) => {
       const input = (inputs[name] || "").trim();
@@ -145,7 +162,7 @@ export default function AgentsPage() {
           body: JSON.stringify({ input }),
         });
         if (res.status === 401) {
-          setState({ kind: "unauthenticated" });
+          sessionEnded();
           return;
         }
         const run = (await res.json().catch(() => null)) as RunResult | null;
@@ -169,7 +186,7 @@ export default function AgentsPage() {
         setRunning((r) => ({ ...r, [name]: false }));
       }
     },
-    [inputs]
+    [inputs, sessionEnded]
   );
 
   const createAgent = useCallback(async () => {
@@ -187,7 +204,7 @@ export default function AgentsPage() {
         body: JSON.stringify({ name, model, instructions: form.instructions }),
       });
       if (res.status === 401) {
-        setState({ kind: "unauthenticated" });
+        sessionEnded();
         return;
       }
       const data = await res.json().catch(() => null);
@@ -204,7 +221,7 @@ export default function AgentsPage() {
     } finally {
       setSubmitting(false);
     }
-  }, [form, load]);
+  }, [form, load, sessionEnded]);
 
   const agents = state.kind === "ready" ? state.agents : [];
   const filtered = agents.filter((a) => {
