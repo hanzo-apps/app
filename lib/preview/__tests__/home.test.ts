@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { home } from '../home';
 import type { Route } from '../types';
 
