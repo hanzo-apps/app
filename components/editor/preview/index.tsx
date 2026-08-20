@@ -137,54 +137,6 @@ export const Preview = ({
   // a message from the injected bridge, addressed by CSS selector rather than by
   // node, and the flag is gone: both buffers below run `allow-scripts
   // allow-forms`, so generated HTML cannot reach the IAM tokens in localStorage.
-  useEffect(() => {
-    const onMessage = (event: MessageEvent) => {
-      // The shell's own two signals arrive from EITHER buffer, so they are
-      // matched by source window rather than against the front frame.
-      const which =
-        event.source === iframeA.current?.contentWindow
-          ? "a"
-          : event.source === iframeB.current?.contentWindow
-            ? "b"
-            : null;
-      if (which && event.data?.type === "preview:shell") {
-        handleShellReady(which);
-        return;
-      }
-      if (which && event.data?.type === "preview:painted") {
-        handleFramePainted(which);
-        return;
-      }
-
-      const frame = iframeRef?.current ?? null;
-      if (!isFrameEvent(event, frame)) return;
-      const msg = event.data;
-
-      if (msg.type === "preview:hover") {
-        setHoveredElement(
-          msg.selector && msg.rect && msg.tagName
-            ? { selector: msg.selector, tagName: msg.tagName, rect: msg.rect }
-            : null,
-        );
-        return;
-      }
-
-      if (msg.type === "preview:select") {
-        onClickElement?.(msg.info);
-        return;
-      }
-
-      if (msg.type === "preview:navigate") {
-        // Same rule as before: only a page this build actually has. An unknown
-        // href is ignored rather than navigating the pane somewhere blank.
-        const href = msg.path.split(".html")[0] + ".html";
-        if (pages.some((page) => page.path === href)) setCurrentPage(href);
-      }
-    };
-
-    window.addEventListener("message", onMessage);
-    return () => window.removeEventListener("message", onMessage);
-  }, [iframeRef, onClickElement, pages, setCurrentPage]);
 
   // Editable mode is a command now, not a set of listeners we attach and detach.
   // Both frames are told: the double buffer means the one being written to is
@@ -249,18 +201,6 @@ export const Preview = ({
     else setSrcA(streamHtml);
   }, [streamHtml, isAiWorking]);
 
-  // Each buffer's document goes in by message. `withBridge` still wraps it, so
-  // the bridge that carries hover, select, navigate and the editable commands is
-  // inside the document exactly as before -- only the delivery changed.
-  useEffect(() => {
-    post("a", withBridge(srcA, siteUrl));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [srcA, siteUrl]);
-  useEffect(() => {
-    post("b", withBridge(srcB, siteUrl));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [srcB, siteUrl]);
-
   // Follow the stream to the bottom while the model writes, settle at the top
   // when it stops. A command now: `contentWindow.document` is exactly what an
   // opaque origin denies. The anchor wiring that used to live here is gone —
@@ -294,6 +234,18 @@ export const Preview = ({
     el?.contentWindow?.postMessage({ type: "preview:doc", html: doc }, "*");
   };
 
+  // Each buffer's document goes in by message. `withBridge` still wraps it, so
+  // the bridge that carries hover, select, navigate and the editable commands is
+  // inside the document exactly as before -- only the delivery changed.
+  useEffect(() => {
+    post("a", withBridge(srcA, siteUrl));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [srcA, siteUrl]);
+  useEffect(() => {
+    post("b", withBridge(srcB, siteUrl));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [srcB, siteUrl]);
+
   const handleShellReady = (which: "a" | "b") => {
     shellReady.current[which] = true;
     const held = pending.current[which];
@@ -323,6 +275,58 @@ export const Preview = ({
       setFrontA(frontRef.current);
     }
   };
+
+  // Mounted AFTER the handlers it calls. This effect runs once and closes over
+  // them, and they are const arrow functions -- declared below, they sit in the
+  // temporal dead zone at the moment this listener is built.
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      // The shell's own two signals arrive from EITHER buffer, so they are
+      // matched by source window rather than against the front frame.
+      const which =
+        event.source === iframeA.current?.contentWindow
+          ? "a"
+          : event.source === iframeB.current?.contentWindow
+            ? "b"
+            : null;
+      if (which && event.data?.type === "preview:shell") {
+        handleShellReady(which);
+        return;
+      }
+      if (which && event.data?.type === "preview:painted") {
+        handleFramePainted(which);
+        return;
+      }
+
+      const frame = iframeRef?.current ?? null;
+      if (!isFrameEvent(event, frame)) return;
+      const msg = event.data;
+
+      if (msg.type === "preview:hover") {
+        setHoveredElement(
+          msg.selector && msg.rect && msg.tagName
+            ? { selector: msg.selector, tagName: msg.tagName, rect: msg.rect }
+            : null,
+        );
+        return;
+      }
+
+      if (msg.type === "preview:select") {
+        onClickElement?.(msg.info);
+        return;
+      }
+
+      if (msg.type === "preview:navigate") {
+        // Same rule as before: only a page this build actually has. An unknown
+        // href is ignored rather than navigating the pane somewhere blank.
+        const href = msg.path.split(".html")[0] + ".html";
+        if (pages.some((page) => page.path === href)) setCurrentPage(href);
+      }
+    };
+
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [iframeRef, onClickElement, pages, setCurrentPage]);
 
   // Idle default vs real generated content — drives the themed overlay so the
   // preview is never a flat black rect (the default iframe is dark by design).
