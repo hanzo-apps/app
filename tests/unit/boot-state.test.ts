@@ -1,6 +1,8 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 
+import { stripComments } from "../source";
+
 const root = join(__dirname, "../..");
 const editor = readFileSync(join(root, "components/editor/index.tsx"), "utf8");
 const header = readFileSync(join(root, "components/editor/header/index.tsx"), "utf8");
@@ -47,7 +49,7 @@ describe("boot: conversation first", () => {
     // the splitter was transparent at rest AND under the pointer — the one
     // affordance between the panes did not exist, and nothing errored.
     // Comment-stripped, so the note above cannot satisfy its own check.
-    const code = editor.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+    const code = stripComments(editor);
     expect(code).not.toMatch(/className="group\//);
     expect(code).toMatch(/\$group-hover=\{\{ backgroundColor: "\$color06" \}\}/);
   });

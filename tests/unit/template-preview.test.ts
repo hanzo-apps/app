@@ -1,25 +1,15 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { stripComments } from '../source';
+
 const root = join(__dirname, '..', '..');
 
-/**
- * The file with its comments removed. The rule is about what the code DOES, and
- * the comments below the fix necessarily NAME the host it stopped using — read
- * whole, every file would convict itself of its own explanation.
- *
- * LINE comments first, and the order is not a preference. A `//` comment can
- * contain `/*` — `components/landing/*` in template-gallery's header does — and
- * stripping blocks first opens a comment there that runs to the next `*​/` 2000
- * characters later, taking the `TemplateThumb` import with it. That is a false
- * POSITIVE, which fails loudly; the inverse would pass silently.
- *
- * The line strip spares `://`, so a URL in code survives to be caught.
- */
-const code = (p: string) =>
-  readFileSync(join(root, p), 'utf8')
-    .replace(/(^|[^:])\/\/.*$/gm, '$1')
-    .replace(/\/\*[\s\S]*?\*\//g, '');
+/** A file with its comments removed. The rule is about what the code DOES, and
+ *  the comment explaining a fix necessarily NAMES the thing it stopped using —
+ *  read whole, every file convicts itself of its own explanation. The ordering
+ *  law this discovered now lives with the function. */
+const code = (p: string) => stripComments(readFileSync(join(root, p), 'utf8'));
 
 /** Every surface that draws a picture of a template. */
 const SURFACES = [

@@ -13,6 +13,8 @@ import { join } from "node:path";
 
 import { UNAVAILABLE, outcome, refusal } from "@/lib/gateway";
 
+import { stripComments } from "../source";
+
 describe("what a refusal envelope means to the builder", () => {
   it("raises the credit modal, carrying the gateway's own sentence", () => {
     // The whole envelope, exactly as the route writes it into the body.
@@ -58,9 +60,7 @@ describe("what a refusal envelope means to the builder", () => {
 describe("every stream reads it the same way", () => {
   // Comment-stripped: the prose above a fix must not be able to satisfy the
   // check that guards it.
-  const code = readFileSync(join(process.cwd(), "hooks/useCallAi.ts"), "utf8")
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/^\s*\/\/.*$/gm, "");
+  const code = stripComments(readFileSync(join(process.cwd(), "hooks/useCallAi.ts"), "utf8"));
 
   it("no stream hand-rolls its own ladder", () => {
     const handlers = [...code.matchAll(/jsonResponse && !jsonResponse\.ok\)\s*\{[\s\S]*?\n(\s*)\}/g)];

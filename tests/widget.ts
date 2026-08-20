@@ -19,6 +19,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { stripComments } from "./source";
+
 export const WIDGET_PATH = path.join(
   process.cwd(),
   'node_modules/@hanzo/control/src/control.js',
@@ -32,6 +34,4 @@ export const widget = (): string => fs.readFileSync(WIDGET_PATH, 'utf8');
  * and a scan that reads its own rationale as the violation fails on the fix.
  */
 export const widgetCode = (): string =>
-  widget()
-    .replace(/\/\*[\s\S]*?\*\//g, '')
-    .replace(/(^|[^:])\/\/[^\n]*/g, '$1');
+  stripComments(widget());

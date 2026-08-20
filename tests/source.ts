@@ -1,4 +1,24 @@
 /**
+ * Reading source in a test: where a tag ends, and how to ignore prose.
+ *
+ * ONE home, because sixteen suites here had each written their own. `tagEnd` was
+ * three copies; the comment strippers were thirteen, in FIVE behaviours —
+ * block-first, line-first, line-start-only, JSX-braces-too, and blocks-only — so
+ * a rule that held in one suite was evadable in another by writing the comment
+ * differently.
+ *
+ * A prose example cannot be written literally here, and that is the joke this
+ * file is entitled to: a block comment quoting a line-comment-then-star pattern
+ * CLOSES ITSELF on the star-slash inside the quote. Writing this header is what
+ * broke the typecheck once already.
+ *
+ * TWO functions and not one, because the languages differ: `//` is a comment in
+ * TS and not in CSS, and a stylesheet's `https://` must survive. Reaching for
+ * the wrong one is the bug this file exists to make hard, so they are named for
+ * what they read.
+ */
+
+/**
  * Where a JSX opening tag ends: the index of its `>`, or -1.
  *
  * Three suites walked this by hand — `card-not-button`, `control-scale` and
@@ -21,7 +41,7 @@
  * `'none'` is what exposed it.
  */
 /**
- * Source with its comments removed.
+ * TS/TSX/JS with its comments removed.
  *
  * A rule is about what the code DOES, and the comment explaining a rule
  * necessarily QUOTES it — so a scanner that reads a file whole convicts every
@@ -32,12 +52,36 @@
  * contain the characters that open a block — `components/landing/*` does — and
  * stripping blocks first opens one there that runs to the next close 2000
  * characters later, taking real code with it. That is a false POSITIVE, which
- * fails loudly; the inverse would pass silently.
+ * fails loudly; the inverse would pass silently. Two suites had it backwards.
  *
- * The line strip spares `://`, so a URL in code survives to be caught.
+ * The line rule runs to end-of-line, not line-start-only, which two more suites
+ * had: a rule a TRAILING comment can evade is a rule with a hole in it.
+ *
+ * The line strip spares a preceding colon, so a URL in code survives to be
+ * caught rather than being read as a comment.
+ *
+ * The JSX spelling — a block comment inside braces — goes as a UNIT, before the
+ * bare block rule can eat the middle and leave the braces behind. Three suites
+ * wrote that rule and three did not, which is the argument for one function.
  */
 export const stripComments = (src: string): string =>
-  src.replace(/(^|[^:])\/\/.*$/gm, '$1').replace(/\/\*[\s\S]*?\*\//g, '');
+  src
+    // The inner content may not CROSS a comment close. Written `[\s\S]*?` the
+    // brace is free to be an interface's or a block's, and the match runs on to
+    // whatever later comment happens to sit before a `}` — measured, it ate the
+    // whole body of `UsageLimitApi` and the rule that reads it went quiet.
+    .replace(/\{\s*\/\*(?:(?!\*\/)[\s\S])*\*\/\s*\}/g, '')
+    .replace(/(^|[^:])\/\/.*$/gm, '$1')
+    .replace(/\/\*[\s\S]*?\*\//g, '');
+
+/**
+ * A stylesheet with its comments removed.
+ *
+ * Blocks ONLY. `//` is not a CSS comment, and a sheet is full of `url(https://…)`
+ * and `@import url(//…)` — running the TS stripper over CSS would delete from the
+ * `//` to the end of the line, which is a declaration, not prose.
+ */
+export const stripCss = (css: string): string => css.replace(/\/\*[\s\S]*?\*\//g, '');
 
 export function tagEnd(src: string, from: number): number {
   let depth = 0;

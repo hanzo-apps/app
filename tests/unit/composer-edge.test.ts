@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { tagEnd } from '../jsx';
+import { tagEnd } from '../source';
 
 // ONE LIT EDGE around the thing you type into.
 //
@@ -29,19 +29,26 @@ describe('the composer wears one edge', () => {
     expect(m && Number(m[1]) * 16).toBe(HOST);
   });
 
-  it('nests the panel exactly one band inside the host', () => {
-    // A `$` rung would be a different number that happens to look close: `$8`
-    // is 12px, SMALLER than the 14 the panel used to ask for, which is how the
-    // panel's corner came to cross OUTSIDE the ring.
-    const src = read('components/editor/ask-ai/index.tsx');
+  // BOTH composers, because one spelling per surface is how the drift started:
+  // the builder said $8/14 and `/new` said 28/26.5 while the variable said 24,
+  // so three numbers described one corner and the halo agreed with none of them.
+  it.each([
+    'components/editor/ask-ai/index.tsx',
+    'components/build-composer/index.tsx',
+  ])('%s nests the panel exactly one band inside the host', (file) => {
+    // A `$` rung is a different number that happens to look close: `$8` is
+    // 12px, SMALLER than the 14 the builder's panel used to ask for, which is
+    // how a panel corner came to cross OUTSIDE the ring.
+    const src = read(file);
     const at = src.indexOf('className="hz-composer"');
     expect(at).toBeGreaterThan(-1);
     const open = src.lastIndexOf('<YStack', at);
     const host = src.slice(open, tagEnd(src, open) + 1);
     const panelOpen = src.indexOf('<YStack', tagEnd(src, open));
     const panel = src.slice(panelOpen, tagEnd(src, panelOpen) + 1);
-    expect({ host: /borderRadius=\{(\d+(?:\.\d+)?)\}/.exec(host)?.[1], panel: /borderRadius=\{(\d+(?:\.\d+)?)\}/.exec(panel)?.[1] })
-      .toEqual({ host: String(HOST), panel: String(HOST - BAND) });
+    const radius = (tag: string) => /borderRadius=\{(\d+(?:\.\d+)?)\}/.exec(tag)?.[1];
+    expect({ file, host: radius(host), panel: radius(panel) })
+      .toEqual({ file, host: String(HOST), panel: String(HOST - BAND) });
   });
 
   it('zeroes the panel’s own lit edge', () => {

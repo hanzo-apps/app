@@ -16,6 +16,8 @@ import { join } from "node:path";
 import { edit } from "@/lib/pages/report";
 import type { Page } from "@/types";
 
+import { stripComments } from "../source";
+
 const page = (path: string, html: string): Page => ({ path, html });
 const before = [page("index.html", "<html><body>Notes</body></html>")];
 
@@ -49,9 +51,9 @@ describe("what an edit turn did", () => {
 describe("the thread says which of the three happened", () => {
   // Comment-stripped: the prose explaining a fix must not satisfy the check
   // that guards it.
-  const code = readFileSync(join(process.cwd(), "components/editor/ask-ai/index.tsx"), "utf8")
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/^\s*\/\/.*$/gm, "");
+  const code = stripComments(
+    readFileSync(join(process.cwd(), "components/editor/ask-ai/index.tsx"), "utf8"),
+  );
 
   it("never decides the sentence from the range count alone", () => {
     assert.doesNotMatch(code, /n === 0\s*\n?\s*\?\s*`No changes applied/);

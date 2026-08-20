@@ -22,15 +22,15 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { stripComments } from "../source";
+
 // Comment-stripped: the prose above the fix must not be able to satisfy the
 // check that guards it.
 const src = readFileSync(
   join(process.cwd(), "components/project-thumb/index.tsx"),
   "utf8",
 )
-  .replace(/\{\/\*[\s\S]*?\*\/\}/g, "")
-  .replace(/\/\*[\s\S]*?\*\//g, "")
-  .replace(/^\s*\/\/.*$/gm, "");
+
 
 describe("the framed site lays out at a desktop viewport", () => {
   it("declares a logical width the box does not decide", () => {

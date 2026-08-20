@@ -439,8 +439,14 @@ export function BuildComposer({
           showed nothing. So the ring sits just outside, where the panel cannot
           reach it. It only appears mid-drag, so the bubble is never seen to
           grow; at rest the gradient rim is still the outermost edge. */}
+      {/* 24 is `--hz-composer-radius`, the ONE number, and the panel is one band
+          (1px) inside it. This said 28/26.5 — a second spelling of the same
+          thing, and the halo does not read it: `::after` derives its corner
+          from the VARIABLE (radius + 5), so a host at 28 wore a halo curved for
+          24 and sat 4px off concentric. Invisible under a 14px blur here and
+          plainly wrong in the builder, which is where it was found. */}
       <YStack
-        borderRadius={28}
+        borderRadius={24}
         elevation={6}
         className="hz-composer"
         outlineWidth={over ? 2 : 0}
@@ -450,7 +456,7 @@ export function BuildComposer({
         {...dragging}
       >
         <YStack
-          borderRadius={26.5}
+          borderRadius={23}
           backgroundColor="$background"
         >
           <Textarea

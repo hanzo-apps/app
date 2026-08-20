@@ -1,6 +1,8 @@
 import { readFileSync, readdirSync, statSync } from "fs";
 import { join } from "path";
 
+import { stripComments } from "../source";
+
 /**
  * `$sm` / `$md` / `$lg` are MIN-width — "at this width AND UP".
  *
@@ -81,11 +83,8 @@ describe("media queries are MIN-width, so a phone value is the base", () => {
     const offenders: string[] = [];
 
     for (const file of FILES) {
-      const src = readFileSync(file, "utf8");
-      // Strip comments so a documented example cannot trip its own rule.
-      const code = src
-        .replace(/\/\*[\s\S]*?\*\//g, "")
-        .replace(/^\s*\/\/.*$/gm, "");
+      // Comments stripped so a documented example cannot trip its own rule.
+      const code = stripComments(readFileSync(file, "utf8"));
 
       for (const prop of SIZE_PROPS) {
         // base:  prop="$5"  or  prop={22}

@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { stripCss } from "../source";
+
 /**
  * ONE font token chain, pinned.
  *
@@ -21,10 +23,9 @@ import { join } from "node:path";
 const globals = readFileSync(join(process.cwd(), "assets/globals.css"), "utf8");
 const layout = readFileSync(join(process.cwd(), "app/layout.tsx"), "utf8");
 
-const stripComments = (css: string) => css.replace(/\/\*[\s\S]*?\*\//g, "");
 
 describe("font tokens", () => {
-  const css = stripComments(globals);
+  const css = stripCss(globals);
 
   it("points --f-family at next/font's family, anchored above the upstream :root", () => {
     const rule = css.match(

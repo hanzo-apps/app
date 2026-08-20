@@ -1,6 +1,8 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 
+import { stripComments } from "../source";
+
 const ROOT = join(__dirname, "..", "..");
 const landing = readFileSync(join(ROOT, "app/page.tsx"), "utf8");
 const frame = readFileSync(join(ROOT, "components/landing/hero-preview.tsx"), "utf8");
@@ -111,14 +113,14 @@ describe("the hero is a sentence beside the product", () => {
     // Measured against the code that RENDERS, with comments stripped: the rule
     // is written down a few lines above the data it governs, and a check that
     // reads prose fails on its own explanation.
-    const code = frame.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+    const code = stripComments(frame);
     expect(code).not.toContain("hanzo.app");
     expect(code).not.toContain("your-app");
     expect(code).toContain("{story.name}");
   });
 
   it("cycles several examples through ONE renderer", () => {
-    const code = frame.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+    const code = stripComments(frame);
 
     // A storyline is DATA. Adding a sixth example must be an entry in STORIES
     // and nothing else — the hand-authored demo app it replaced was a component

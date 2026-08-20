@@ -10,6 +10,8 @@
  */
 import { widget } from '../widget';
 
+import { stripComments } from '../source';
+
 const script = widget();
 
 /**
@@ -20,7 +22,7 @@ const script = widget();
  * reason. Code-shaped assertions read the whole file; only the "no copy" test
  * needs the stripped one.
  */
-const code = script.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/[^\n]*/g, '$1');
+const code = stripComments(script);
 
 describe('the widget imports the preference transform', () => {
   it('fetches it rather than restating it', () => {

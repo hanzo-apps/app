@@ -16,6 +16,8 @@ import { cause } from "@/components/usage/UsageLimitDialog";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { stripComments } from "../source";
+
 const body = (o: unknown, status = 402) =>
   new Response(JSON.stringify(o), { status });
 
@@ -53,9 +55,7 @@ describe("no 402 site fabricates a message", () => {
   // Comment-stripped: the prose above a fix must not be able to satisfy the
   // check that guards it. (This repo has shipped that mistake.)
   const source = (rel: string) =>
-    readFileSync(join(process.cwd(), rel), "utf8")
-      .replace(/\/\*[\s\S]*?\*\//g, "")
-      .replace(/^\s*\/\/.*$/gm, "");
+    stripComments(readFileSync(join(process.cwd(), rel), "utf8"));
 
   it("useCallAi reads the body at every one of them", () => {
     const code = source("hooks/useCallAi.ts");

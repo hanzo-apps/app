@@ -15,7 +15,7 @@
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 
-import { tagEnd } from '../jsx';
+import { tagEnd } from '../source';
 
 const root = join(__dirname, '..', '..');
 

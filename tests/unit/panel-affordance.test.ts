@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { stripComments, stripCss } from "../source";
+
 /**
  * The left-panel affordance, pinned — one glyph and one hint style, both of
  * them the fleet's rather than this app's.
@@ -21,7 +23,6 @@ import { join } from "node:path";
  */
 
 const read = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
-const stripComments = (src: string) => src.replace(/\/\*[\s\S]*?\*\//g, "");
 
 // Every surface that shows or hides a column on the reader's left.
 const TOGGLES = [
@@ -58,7 +59,7 @@ describe("the left panel has ONE glyph", () => {
 
 describe("a shortcut hint is a hint, not a keycap", () => {
   // `kbd { … }`, the element rule — not `.hs-kbd`, which only gates visibility.
-  const rule = stripComments(read("assets/globals.css")).match(
+  const rule = stripCss(read("assets/globals.css")).match(
     /(?:^|\n)kbd\s*\{([^}]*)\}/,
   );
 

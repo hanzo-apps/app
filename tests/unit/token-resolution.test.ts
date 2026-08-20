@@ -2,6 +2,8 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { createRequire } from "node:module";
 
+import { stripCss } from "../source";
+
 /**
  * Every token this surface names must resolve.
  *
@@ -65,7 +67,6 @@ const themeSheet = (): string => {
   return join(dirname(pkg), rel);
 };
 
-const stripComments = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "");
 
 /** Every custom property DECLARED in a stylesheet the browser loads. */
 const declared = (): Set<string> => {
@@ -102,7 +103,7 @@ const declared = (): Set<string> => {
   ];
   const set = new Set<string>();
   for (const sheet of sheets) {
-    for (const m of stripComments(sheet).matchAll(
+    for (const m of stripCss(sheet).matchAll(
       /(--[a-zA-Z0-9_-]+)\s*:/g,
     )) {
       set.add(m[1]);
@@ -116,7 +117,7 @@ const referenced = (): Map<string, string[]> => {
   const map = new Map<string, string[]>();
   for (const dir of SURFACE) {
     for (const file of walk(join(ROOT, dir))) {
-      const src = stripComments(readFileSync(file, "utf8"));
+      const src = stripCss(readFileSync(file, "utf8"));
       for (const m of src.matchAll(/var\(\s*(--[a-zA-Z0-9_-]+)/g)) {
         const at = map.get(m[1]) ?? [];
         if (!at.includes(file)) at.push(file);
@@ -165,7 +166,7 @@ describe("token resolution", () => {
   });
 
   it("inverts --tint with the ground so a lift reads in both themes", () => {
-    const css = stripComments(
+    const css = stripCss(
       readFileSync(join(ROOT, "assets/globals.css"), "utf8"),
     );
     const decls = [...css.matchAll(/--tint:\s*([^;]+);/g)].map((m) =>
@@ -192,7 +193,7 @@ describe("token resolution", () => {
       "utf8",
     );
     const tokens = new Set(
-      [...stripComments(sheet).matchAll(/(--[a-zA-Z0-9_-]+)\s*:/g)].map((m) => m[1]),
+      [...stripCss(sheet).matchAll(/(--[a-zA-Z0-9_-]+)\s*:/g)].map((m) => m[1]),
     );
     expect(tokens.size).toBeGreaterThan(100); // or everything below is vacuous
 
@@ -204,7 +205,7 @@ describe("token resolution", () => {
     ];
     const missing: string[] = [];
     for (const file of PIPELINE) {
-      const src = stripComments(readFileSync(join(ROOT, file), "utf8"));
+      const src = stripCss(readFileSync(join(ROOT, file), "utf8"));
       for (const m of src.matchAll(/var\(\s*(--[a-zA-Z0-9_-]+)/g)) {
         if (!tokens.has(m[1])) missing.push(`${m[1]}  ←  ${file}`);
       }
@@ -213,7 +214,7 @@ describe("token resolution", () => {
   });
 
   it("routes the accent through @hanzo/brand, never a literal", () => {
-    const css = stripComments(
+    const css = stripCss(
       readFileSync(join(ROOT, "assets/globals.css"), "utf8"),
     );
     // --brand-accent reads the host brand's accent and only falls back to a

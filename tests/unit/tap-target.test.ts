@@ -15,6 +15,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { stripCss } from "../source";
+
 const ROOT = join(__dirname, "..", "..");
 const css = readFileSync(join(ROOT, "assets/globals.css"), "utf8");
 
@@ -29,7 +31,7 @@ const ruleBody = (selector: string): string => {
   const i = css.indexOf(`\n${selector} {`) + 1;
   if (i < 1) throw new Error(`${selector} is not declared in globals.css`);
   const body = css.slice(i, css.indexOf("}", i));
-  return body.replace(/\/\*[\s\S]*?\*\//g, "");
+  return stripCss(body);
 };
 
 const pxOf = (body: string, prop: string): number => {

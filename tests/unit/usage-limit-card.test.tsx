@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { stripComments } from "../source";
+
 /**
  * A card that wraps OWNS its height.
  *
@@ -33,10 +35,7 @@ describe("the usage-limit options", () => {
     // satisfied by its own documentation. Match the thing, never the word for
     // the thing — the same way the deploy gate had to stop matching a bare
     // `SITES_S3_` that a comment could legitimately contain.
-    const code = src
-      .replace(/\{\/\*[\s\S]*?\*\/\}/g, "")
-      .replace(/\/\*[\s\S]*?\*\//g, "")
-      .replace(/^\s*\/\/.*$/gm, "");
+    const code = stripComments(src);
     expect(code).not.toMatch(/flex=\{1\}/);
     expect(code).toMatch(/flexGrow=\{1\}\s+flexBasis="auto"/);
   });

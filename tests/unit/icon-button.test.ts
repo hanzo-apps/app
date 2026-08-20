@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { tagEnd as jsxTagEnd } from '../jsx'
+import { tagEnd as jsxTagEnd } from '../source'
 
 /**
  * An icon-only Button must say `size="icon"`.

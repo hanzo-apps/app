@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-import { tagEnd } from "../jsx";
+import { tagEnd } from "../source";
 
 /**
  * A palette row's mark stretches into TWENTY pixels, so it has no margin.
