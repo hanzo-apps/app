@@ -200,13 +200,33 @@ test.describe('Homepage', () => {
     expect(heroTime).toBeLessThan(5000);
   });
 
+  /**
+   * Every image carries an `alt` — empty is fine, absent is not.
+   *
+   * The distinction is the whole point: `alt=""` tells a screen reader the image
+   * is decorative and to skip it, while a MISSING alt makes it read the filename
+   * out loud. 22 of the 47 images here are deliberately empty.
+   *
+   * This asserted `expect(await img.getAttribute('alt')).toBeDefined()`, which
+   * cannot fail: `getAttribute` returns `string | null`, and `null` is defined.
+   * The only thing it ever caught was its own method — `locator('img').all()`
+   * snapshots handles, and the sections of this page are still mounting, so a
+   * handle would go stale and `getAttribute` would throw on a detached element.
+   * A test that asserts nothing and fails one run in three is worse than no test.
+   *
+   * One pass inside the page instead: nothing to go stale, and the failure names
+   * the images rather than reporting that something was undefined.
+   */
   test('images have alt text', async ({ page }) => {
-    const images = await page.locator('img').all();
+    await expect
+      .poll(async () => (await page.locator('img').count()) > 0)
+      .toBe(true);
 
-    for (const img of images) {
-      const alt = await img.getAttribute('alt');
-      // Images should have alt text (can be empty for decorative images)
-      expect(alt).toBeDefined();
-    }
+    const missing = await page
+      .locator('img')
+      .evaluateAll((els) =>
+        els.filter((el) => !el.hasAttribute('alt')).map((el) => el.getAttribute('src') || '(no src)'),
+      );
+    expect(missing).toEqual([]);
   });
 });
