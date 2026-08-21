@@ -891,6 +891,38 @@ The icon library needs no decision: both surfaces are already lucide (this app
 `@hanzogui/lucide-icons-2`), so parity here is a matter of picking the same
 NAMES, never of adding a dependency.
 
+### `e2e.yml` is a THIRD lane, and it was red for five days
+
+`cicd.yml` (every push and PR), `release.yml` (the image), and **`e2e.yml`** —
+Playwright against the DEPLOYED `hanzo.app`, on pushes touching `tests/e2e/**`,
+plus nightly. It gates nothing, which is exactly why it rotted: twelve
+consecutive runs failed and main kept shipping. A test added to that lane while
+it is red guards nothing, so check its colour before trusting it.
+
+Both failures were in `homepage.spec.ts` and neither was a defect:
+
+- **An `<a>` in a nav need not navigate.** "Learn" is a disclosure —
+  `aria-haspopup="dialog"`, six pages inside — and carries an `href` only so the
+  row is a real link before hydration. Clicking it opens the panel and leaves the
+  URL alone, which a test demanding `url).toContain(href)` reads as a broken
+  link. `/learn` answers 200. Branch on the popup attribute and assert
+  `aria-expanded` for one, the URL for the other.
+- **The hero's mock frame is a second outline.** `.idm`
+  (`components/landing/hero-preview.tsx`) is a drawn miniature of the builder
+  running somebody else's app, and it renders a real `H3`. Interleaved with this
+  page's own headings that is an `h1 → h3` jump, and it is also a live a11y
+  nit in its own right: a screen reader announces "Open shifts this week" as a
+  level-3 heading OF hanzo.app. The test excludes the frame; the frame still
+  wants its heading to stop being one, and the thing to measure when swapping the
+  tag is the font family (`H3` is `font_heading`, `SizableText` is `font_body`).
+
+**A heading read straight after `goto` is a read mid-render.** `goto` resolves on
+load and the sections mount after it, so the outline briefly holds an `h3` whose
+`h2` has not arrived. Poll until the shape stops changing. And collect the
+offenders into one `toEqual([])` rather than asserting inside the loop — the
+failure then names the heading that jumped instead of reporting that some number
+was 2, which is what turned this from a mystery into a two-line diagnosis.
+
 ### The release lane: three things that stop an image existing
 
 `.hanzo/workflows/release.yml` builds **`Dockerfile.production`** (not the root
