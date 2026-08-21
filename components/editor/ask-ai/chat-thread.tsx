@@ -13,6 +13,7 @@ import { useAnalytics } from "@hanzo/event/react";
 import { EVENTS } from "@hanzo/event";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { fold, sheet } from "@/lib/chrome";
+import { composer } from "./composer";
 import { useThinking } from "@/lib/thinking";
 
 // ONE conversation turn as rendered in the builder chat thread. The thread is a
@@ -85,16 +86,30 @@ export function ChatThread({
 }
 
 /**
- * What you asked for — the SAME card `components/chat-panel` gives a user turn:
- * `$color3` ground, `$5` corner, a `$borderColor` hairline.
+ * What you asked for, drawn as THE BOX YOU ASKED IT IN.
  *
- * It was a borderless pill here, on the argument that the assistant's cards are
- * the only rectangles in the column and a prompt needs no box. That argument
- * held while the assistant answered in cards. It answers in bare prose on the
- * page's own ground now, so a fill at `$color3` — one rung off `$background` —
- * was the only thing separating the two voices, and on black it is nearly
- * nothing. The hairline is what makes your turn findable when you scroll back
- * through a long build, which is the whole job of marking it at all.
+ * Every earlier answer here was a shade: a borderless pill, then `$color3` with
+ * a hairline at a `$5` corner. Each was picked against the assistant's turn — a
+ * fill one rung off `$background`, which on black is nearly nothing — and none
+ * of them was picked against the composer sitting four inches below, which is
+ * where the words came from and the only large lit object in the column. Beside
+ * it a 12px chip reads as a system label, not as the sentence you just typed.
+ *
+ * So it takes the composer's own corner, gutter and material (`./composer` plus
+ * `.glass`, the same class the composer's panel wears): the same object in two
+ * states, one you are typing into and one you have sent. The numbers arrive by
+ * import, so the two cannot drift.
+ *
+ * The hairline is the one thing the composer does NOT hand over, and it has to
+ * be said here: over there the conic ring IS the edge, which is why the panel
+ * inside it draws none (see `.hz-composer .glass` in assets/globals.css). No
+ * ring in a transcript — a glowing prompt box per turn is a stack of things all
+ * claiming to be live — so the edge comes back as the hairline every other
+ * glass surface in the app carries.
+ *
+ * The assistant is untouched. It answers in bare prose on the page's own
+ * ground, and that contrast is now what separates the two voices — a shape
+ * against no shape, rather than two greys a rung apart.
  *
  * Right-aligned at 85% is the builder's own rhythm and stays: the transcript
  * alternates you and the agent and nothing else, so the side already says who
@@ -123,7 +138,7 @@ function UserBubble({ text, images }: { text: string; images?: string[] }) {
       )}
       {text ? (
         <XStack justifyContent="flex-end" width="100%">
-          <YStack maxWidth="85%" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor">
+          <YStack maxWidth="85%" className="glass" padding={composer.gutter} borderRadius={composer.corner - 1} borderWidth={1} borderColor="$borderColor">
             <SizableText whiteSpace="pre-wrap" fontSize="$2" lineHeight="1.45" color="$color">
               {text}
             </SizableText>

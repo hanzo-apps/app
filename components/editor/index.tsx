@@ -664,13 +664,19 @@ export const AppEditor = ({
               value. It used to carry a hairline as well — a surface a step above
               its neighbour AND a box drawn round it, which is the wireframe look
               the ladder exists to end. Raise it or outline it, never both. */}
-          {/* `className` is a PROP, so writing one after the spread replaces the
-              recipe's — and the recipe's is where the rung lives. Measured: the
-              stage took the paper tint and drew no shadow at all, because
-              `.preview-stage` had quietly overwritten `elevation-1`. Merge, or
-              the ladder is silently absent on exactly the surfaces that also
-              need a class of their own. */}
-          <YStack position="relative" height="100%" width="100%" overflow="hidden" borderRadius="$5" {...stage} className={`preview-stage ${stage.className}`}>
+          {/* The stage carried a `preview-stage` class of its own here, and it
+              ruled the whole surface as graph paper — behind a finished site,
+              around a phone frame, under the Code editor. The grid belongs to
+              the EMPTY state and now lives there (components/editor/preview),
+              so the stage is the rung and nothing else.
+
+              What the class cost while it lasted is worth keeping: `className`
+              is a PROP, so writing one after the spread REPLACES the recipe's,
+              and the recipe's is where the rung lives. Measured then: the stage
+              took the paper tint and drew no shadow at all, because
+              `.preview-stage` had quietly overwritten `elevation-1`. Anything
+              added back here merges — it never replaces. */}
+          <YStack position="relative" height="100%" width="100%" overflow="hidden" borderRadius="$5" {...stage}>
             <Preview
               html={currentPageData?.html}
               isResizing={isResizing}

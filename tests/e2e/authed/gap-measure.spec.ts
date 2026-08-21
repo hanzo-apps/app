@@ -21,7 +21,11 @@ test('measure the chat→preview gap', async ({ page }) => {
   const out = await page.evaluate(() => {
     // The COMPOSER's glass, not a chip's: the one that contains the textarea.
     const glass = Array.from(document.querySelectorAll('.glass')).find((el) => el.querySelector('textarea')) ?? null;
-    const stage = document.querySelector('.preview-stage');
+    // The preview frame, which is inset 0 of the stage and so shares its left
+    // edge. The stage used to be found by a decorative class (`.preview-stage`,
+    // the old grid); that class is gone, and reaching for the pane through the
+    // thing it exists to show is the sturdier handle anyway.
+    const stage = document.querySelector('iframe.preview-frame');
     const sep = document.querySelector('[aria-label="Resize chat and preview panes"]');
     const r = (el: Element | null) => el?.getBoundingClientRect() ?? null;
     return {

@@ -452,3 +452,54 @@ and both carried `marginVertical="$1.5"` on it: 6px a side off a 20px line leave
 a 2x8 tick. Measured in Chromium — 8 with the margins, 20 without — and nothing
 in the source hints at it, because `alignSelf` was doing its job the whole time.
 `tests/unit/rail.test.ts` pins it for both files.
+
+### The sent message is the composer, and the grid is the empty state
+
+Two marks in the builder were saying the wrong thing, and both for the same
+reason: a value had been re-decided at each place it was needed.
+
+**Your own turn wore a shade, chosen against the wrong thing.** `UserBubble` had
+been a borderless pill, then `$color3` at a `$5` corner — each picked against the
+ASSISTANT's turn, and on black a fill one rung off `$background` is nearly
+nothing. Nobody picked it against the composer four inches below, which is the
+only large lit object in the column and the place the words came from. Beside it
+a 12px chip reads as a system label. It now takes the composer's own corner,
+gutter and material (`.glass`), so the pair is one object in two states.
+
+`components/editor/ask-ai/composer.ts` is where those numbers live, and it exists
+because `chat-thread` cannot read them off `index` — `index` imports it. The
+corner is `--hz-composer-radius`; the PANEL is `corner - 1`, written as that
+arithmetic and never as a second number, which is how the ring and the panel came
+to peel apart the last time. The hairline is the one thing the composer does not
+hand over: over there the conic ring IS the edge (`.hz-composer .glass` zeroes
+`--edge-highlight`), and a transcript of glowing prompt boxes would be a stack of
+things all claiming to be live. `tests/unit/composer-edge.test.ts` ties the value
+back to the stylesheet the halo reads.
+
+Measured in Chromium against the composer's own panel and field: bubble and panel
+both `23px` and both `oklab(0.144787 … / 0.72)`; bubble and field both `16px` on
+four sides. **A two-character message comes out a circle** — 46px tall with a
+23px corner is a stadium, which is the browser clamping the radius honestly. Any
+real sentence reads as the composer. Width is the only lever that would change
+it, and width was not part of the brief.
+
+**The grid was wallpaper.** Graph paper means "nothing here yet", so a grid that
+survives the thing it announces stops meaning anything — and this one was drawn
+TWICE, by two mechanisms, through every state the pane has. `GridPattern` hung
+off the pane itself and a `.preview-stage` CSS twin off the stage, so the ruled
+paper painted behind a finished site, around a phone frame and under the Code
+editor. Measured before: in the open pane with a real page loaded, the grid was
+visible at the pane's full 1028x834.
+
+One grid now, and it hangs off the empty-state overlay's invite branch — the
+overlay IS the empty state, so the rule is expressed by where it lives rather
+than by a condition. The svg survived because it is masked and reads `--border`;
+the CSS twin was two hardcoded `linear-gradient`s and is deleted. Measured after:
+present and 1028x834 in open+empty, **absent from the DOM** once the preview has
+content, and 0x0 (`display: none` ancestor) while the pane is closed. `body`
+stays `rgb(10, 10, 10)` in all three.
+
+**`.preview-stage` is gone as a name too**, which is worth knowing before
+reaching for it: `tests/e2e/authed/gap-measure.spec.ts` had been finding the
+preview pane by that decorative class and now finds it through
+`iframe.preview-frame`, which is inset 0 of the stage and shares its left edge.

@@ -2,6 +2,7 @@
 
 
 import { read, tagEnd } from '../source';
+import { composer } from '@/components/editor/ask-ai/composer';
 
 // ONE LIT EDGE around the thing you type into.
 //
@@ -28,6 +29,14 @@ describe('the composer wears one edge', () => {
     expect(m && Number(m[1]) * 16).toBe(HOST);
   });
 
+  // The corner is now a VALUE, and a third thing reads it: your own message in
+  // the thread is cut to the composer it was typed in. So the number has to be
+  // reachable from TypeScript, and this is the rung that ties it back to the
+  // stylesheet the halo reads.
+  it('the shared value is that same number', () => {
+    expect(composer.corner).toBe(HOST);
+  });
+
   // BOTH composers, because one spelling per surface is how the drift started:
   // the builder said $8/14 and `/new` said 28/26.5 while the variable said 24,
   // so three numbers described one corner and the halo agreed with none of them.
@@ -45,7 +54,16 @@ describe('the composer wears one edge', () => {
     const host = src.slice(open, tagEnd(src, open) + 1);
     const panelOpen = src.indexOf('<YStack', tagEnd(src, open));
     const panel = src.slice(panelOpen, tagEnd(src, panelOpen) + 1);
-    const radius = (tag: string) => /borderRadius=\{(\d+(?:\.\d+)?)\}/.exec(tag)?.[1];
+    // Either spelling counts, and one of them is strictly better: the builder
+    // reads both corners off `composer.corner` (components/editor/ask-ai), so
+    // its two can no longer disagree even in principle. `/new` still writes the
+    // numbers, and until it does not, this reads both.
+    const radius = (tag: string) => {
+      const raw = /borderRadius=\{([^}]+)\}/.exec(tag)?.[1]?.trim();
+      if (raw === 'composer.corner') return String(composer.corner);
+      if (raw === 'composer.corner - 1') return String(composer.corner - BAND);
+      return raw;
+    };
     expect({ file, host: radius(host), panel: radius(panel) })
       .toEqual({ file, host: String(HOST), panel: String(HOST - BAND) });
   });

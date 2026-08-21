@@ -21,12 +21,21 @@ import { Page } from "@/types";
 /**
  * The idle/building overlay — the preview is NEVER a flat black rect. It covers
  * the (theme-agnostic) idle iframe with a THEME-AWARE canvas: while building, a
- * skeleton → wireframe pulse; when idle, the empty-state invite + a blinking
- * cursor. Both sit on the subtle `.preview-stage` grid, correct in light + dark.
+ * skeleton → wireframe pulse; when idle, the empty-state invite over the grid.
+ *
+ * THIS IS THE ONLY PLACE THE GRID IS DRAWN, and it took two mechanisms to get
+ * there. The svg (`GridPattern`) hung off the pane itself and the CSS twin
+ * (`.preview-stage`, since deleted) off the stage, so both painted through
+ * every state the pane has — behind a finished site, around a phone frame,
+ * under the Code editor — and each was a second opinion about what the ruled
+ * paper is made of. Graph paper means "nothing here yet"; under a built page it
+ * is wallpaper, and a mark that survives the thing it announces stops meaning
+ * anything. The overlay is exactly the empty state, so hanging the grid on the
+ * invite branch is the whole rule, expressed by where it lives.
  */
 function PreviewOverlay({ building }: { building: boolean }) {
   return (
-    <XStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} zIndex={5} alignItems="center" justifyContent="center" backgroundColor="$background" className="preview-stage">
+    <XStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} zIndex={5} alignItems="center" justifyContent="center" backgroundColor="$background">
       {building ? (
         <YStack width="100%" maxWidth={672} paddingHorizontal="$6">
           <YStack alignSelf="center" gap="$3">
@@ -45,6 +54,11 @@ function PreviewOverlay({ building }: { building: boolean }) {
           </Paragraph>
         </YStack>
       ) : (
+        <>
+        {/* Behind the invite, not behind the app: `.grid-pattern` is inset-0 at
+            z-index -1, so it fills this overlay and paints over its own ground
+            while staying under the words. */}
+        <GridPattern x={-1} y={-1} strokeDasharray="4 2" className="preview-grid" />
         <YStack maxWidth={384} paddingHorizontal="$6">
           <Paragraph fontSize="$4" fontWeight="600" color="$color">Describe your idea.</Paragraph>
           <Paragraph marginTop="$1.5" fontSize="$2" color="$color11">
@@ -52,6 +66,7 @@ function PreviewOverlay({ building }: { building: boolean }) {
             <SizableText marginLeft="$0.5" height="$4" width={2} y={3} backgroundColor="$color" verticalAlign="middle" />
           </Paragraph>
         </YStack>
+        </>
       )}
     </XStack>
   );
@@ -397,12 +412,6 @@ export const Preview = ({
           )}
         </SizableText>
       </Button>
-      <GridPattern
-        x={-1}
-        y={-1}
-        strokeDasharray={"4 2"}
-        className="preview-grid"
-  />
       {!isAiWorking && hoveredElement && selectedElement && (
         <YStack
           cursor="pointer" position="absolute" backgroundColor="$color01" borderWidth={1} borderColor="$color" borderStyle="dashed" borderTopRightRadius="$5" borderBottomRightRadius="$5" borderBottomLeftRadius="$5" padding="$3" zIndex={10} pointerEvents="none"

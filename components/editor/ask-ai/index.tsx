@@ -44,6 +44,7 @@ import { SelectedFiles } from "./selected-files";
 import { Uploader } from "./uploader";
 import { sentence } from "./sentence";
 import { ChatThread, type ThreadMessage } from "./chat-thread";
+import { composer } from "./composer";
 import { UNTITLED, loadTranscript, saveTranscript } from "@/lib/dev/workspace";
 import { codeTurn } from "./code-turn";
 import type { Runtime } from "@/lib/agent/sandbox";
@@ -1448,16 +1449,16 @@ export function AskAI({
           rule zeroes it for the same reason). Measured at x8 the corner carried
           two separate arcs; at 24/23 with the highlight off it carries one.
 
-          24 is `--hz-composer-radius`, which the halo (::after) already reads
-          as radius + halo — so stating it here is the SAME number, not a second
-          one, and host, ring and halo are concentric by construction. The panel
-          is one band (1px) inside it. build-composer still says 28/26.5; it
-          reads clean only because its panel is opaque `$background` and has no
-          lit edge to disagree with. */}
-      <YStack borderRadius={24} elevation={6} zIndex={10} width="100%" className="hz-composer">
+          `composer.corner` is `--hz-composer-radius`, which the halo (::after)
+          already reads as radius + halo — so it is the SAME number, not a
+          second one, and host, ring and halo are concentric by construction.
+          The panel is one band (1px) inside it. build-composer still says
+          28/26.5; it reads clean only because its panel is opaque `$background`
+          and has no lit edge to disagree with. */}
+      <YStack borderRadius={composer.corner} elevation={6} zIndex={10} width="100%" className="hz-composer">
       <YStack
         className="glass"
-        position="relative" borderRadius={23} width="100%" group
+        position="relative" borderRadius={composer.corner - 1} width="100%" group
         onDragOver={handleDragOver}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
@@ -1547,7 +1548,7 @@ export function AskAI({
             // resize:none kills the native corner — its diagonal notches sat in
             // the bubble's rounded corner; the top-edge grip is the ONE resize.
             style={{ height: composerH, maxHeight: "40dvh", resize: "none" }}
-            width="100%" backgroundColor="transparent" fontSize="$3" borderWidth={0} outlineWidth={0} color="$color" placeholderTextColor="$color11" padding="$4" overflow="scroll" {...{ paddingTop: selectedElement && !isAiWorking ? "$2.5" : undefined }}
+            width="100%" backgroundColor="transparent" fontSize="$3" borderWidth={0} outlineWidth={0} color="$color" placeholderTextColor="$color11" padding={composer.gutter} overflow="scroll" {...{ paddingTop: selectedElement && !isAiWorking ? "$2.5" : undefined }}
             placeholder={
               isAiWorking
                 ? // Live while it works: the composer is never dead time. Type to
@@ -1577,7 +1578,7 @@ export function AskAI({
             }}
   />
         </XStack>
-        <XStack alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$4" paddingBottom="$3" marginTop="$2">
+        <XStack alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal={composer.gutter} paddingBottom="$3" marginTop="$2">
           <XStack minWidth={0} flex={1} alignItems="center" justifyContent="flex-start" gap="$1.5" overflow="scroll" className="no-scrollbar">
             <Uploader
               pages={pages}

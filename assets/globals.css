@@ -1181,24 +1181,13 @@ a:hover .thumb-frame { filter: brightness(0.75); }
   flex-direction: column;
 }
 
-/* Preview stage — a subtle grid so the canvas feels alive (v2), never an empty
-   black rect. The generated app's iframe paints opaquely on top, so this shows
-   around a device-framed (mobile) preview and while the stage is still empty. */
-.preview-stage {
-  /* The GRID only. The stage's fill is its RUNG — `sheet(1)` at the call site
-     (components/editor/index.tsx), which is a tint and the light on it in one
-     value. A background-color here as well would be a second opinion about how
-     high the stage stands, settled by load order rather than by the ladder. */
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-html:not(.dark) .preview-stage {
-  background-image:
-    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
-}
+/* The preview stage's own grid used to live here — two `linear-gradient`s at a
+   hardcoded white/black alpha, on the stage element, in every state the pane
+   has. `GridPattern` (components/magic-ui) drew the same ruled paper at the
+   same time from the same pane, so the canvas carried two of them: one masked
+   and tokenised, one not. The svg is the survivor and it now hangs off the
+   empty-state overlay alone — see `.preview-grid` below and
+   components/editor/preview. */
 
 /* The compact control spec used to be re-imposed here, in ~40 lines of
    `!important`, on the signature classes @hanzo/ui's Input / SelectTrigger / Textarea
@@ -1398,7 +1387,7 @@ button:not([data-slot]):not([class*="rounded-xl"]):not([class*="rounded-2xl"]):n
   stroke: var(--border);
 }
 
-/* The preview stage's dotted grid fades out radially so it reads as a floor,
+/* The empty preview's dotted grid fades out radially so it reads as a floor,
    not wallpaper. Mask on the GridPattern svg. */
 .preview-grid {
   -webkit-mask-image: radial-gradient(900px circle at center, white, transparent);
