@@ -85,7 +85,7 @@ export function DeployButton({
           open={open}
           onClose={() => setOpen(false)}
           pages={pages}
-          title="Log In to publish your Project"
+          title="Sign in to publish your project"
           description="Log in with your Hanzo account to publish your project and increase your monthly free limit."
         />
       </XStack>

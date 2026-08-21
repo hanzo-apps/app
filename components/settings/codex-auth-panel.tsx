@@ -164,7 +164,7 @@ export function CodexAuthPanel({ onAuthChange }: CodexAuthPanelProps) {
       <YStack padding="$3" borderWidth={1} borderRadius="$3" backgroundColor="$color3" rowGap="$3">
         <XStack alignItems="center" gap="$2">
           <Terminal size={16} />
-          <SizableText fontSize="$3" fontWeight="500">Setup Instructions</SizableText>
+          <SizableText fontSize="$3" fontWeight="500">How to connect</SizableText>
         </XStack>
 
         <YStack rowGap="$2">
