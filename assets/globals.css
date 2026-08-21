@@ -272,7 +272,24 @@ a {
      that cannot parse the descendant selector drops the exemption rather than
      the floor, and it carries no specificity, so these selectors weigh exactly
      what they weighed before. */
-  button:not(:where(.hz-dense *)),
+  /* A SEPARATOR IS NOT A BUTTON, and this floor would eat what it divides.
+     Four resizers in this app are `<button role="separator">` — the composer's
+     top-edge grip, the chat/preview splitter, the console dock, the hero
+     preview — and a thumb-sized square is the one shape a divider must not
+     have. The composer's is the sharp case: it is 14px tall at `top: -7`,
+     deliberately, and its own comment says why (`a 30px strip swallowed clicks
+     meant for the text`). That 14 is written INLINE, and the `!important` two
+     paragraphs up beats an inline declaration — which this file already states
+     as the reason the rule works at all. So on every phone and tablet the grip
+     inflated to 44 and sat as an invisible strip across the field's first line,
+     taking the taps meant for the text.
+
+     Excluded rather than exempted per call site: `role="separator"` is the
+     whole answer, it is what these elements already say they are, and it holds
+     for the next resizer without anyone remembering this. A drag handle is a
+     pointer gesture; the composer grows on its own and the keyboard path
+     (Arrow Up / Down) is untouched, so nothing is lost on a touch device. */
+  button:not(:where(.hz-dense *)):not([role='separator']),
   [role='button']:not(:where(.hz-dense *)),
   a[href],
   .hz-tap {

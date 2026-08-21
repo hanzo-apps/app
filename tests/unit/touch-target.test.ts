@@ -1,5 +1,5 @@
 
-import { read } from "../source";
+import { read, rel, sources, stripComments } from "../source";
 
 /**
  * A tap target is a BOX, and both sides carry the 44px floor.
@@ -53,13 +53,48 @@ describe("the coarse-pointer touch floor", () => {
     expect(coarse).toMatch(/min-width:\s*44px\s*!important/);
   });
 
+  it("spares a separator, which the floor would otherwise eat", () => {
+    // A resizer is `<button role="separator">` in four places here, and the
+    // composer's is 14px tall at `top: -7` on purpose — a taller strip takes
+    // the taps meant for the field's first line, which its own comment records
+    // having measured at 30px. The 14 is written INLINE, and the `!important`
+    // above beats an inline declaration by design, so without this clause every
+    // phone got a 44px invisible bar across the top of the composer.
+    expect(coarse).toMatch(/button[^,{]*:not\(\[role='separator'\]\)/);
+  });
+
+  it("and every resizer really does say separator", () => {
+    // The exclusion is worth nothing if a handle stops claiming the role. Read
+    // the call sites rather than trusting the selector: any file that hangs a
+    // pointer-resize cursor on a Button has to name itself a separator to be
+    // spared, and one that does not is back to a 44px square.
+    // ANY resize cursor. Written `(ns|ew)-resize` first, which matched one file
+    // of four — the other three say `row-resize` and `col-resize` — so the
+    // assertion read as a sweep and was checking the single handle that already
+    // passed. CSS has six of these spellings and a guard may not prefer two.
+    const handles = sources(["components/editor", "components/landing"]).filter((f) =>
+      /cursor="[a-z-]*resize"/.test(stripComments(read(rel(f)))),
+    );
+    expect(handles.map(rel).sort()).toHaveLength(4);
+    for (const f of handles) {
+      expect({ file: rel(f), separator: /role="separator"/.test(read(rel(f))) }).toEqual({
+        file: rel(f),
+        separator: true,
+      });
+    }
+  });
+
   it("covers the same controls the deploy gate measures", () => {
-    // The gate's predicate is button / [role=button] / a[href], prose excluded.
+    // The gate's predicate is button / [role=button] / a[href], prose excluded,
+    // and it excludes a separator for the same reason this rule does — the two
+    // selectors are one decision written in two repos (the gate lives in
+    // universe, charts/app/templates/e2e-gate.yaml). A gate that MEASURES what
+    // the stylesheet declines to SIZE reds the deploy for a shape nobody wants.
     // A rule that governs fewer elements than the check does fails in CI rather
     // than on a phone, which is the wrong end to find it. The two button-shaped
     // selectors carry the dense-row exemption below; the others do not.
     for (const sel of [
-      "button:not\\(:where\\(\\.hz-dense \\*\\)\\)",
+      "button:not\\(:where\\(\\.hz-dense \\*\\)\\):not\\(\\[role='separator'\\]\\)",
       "\\[role='button'\\]:not\\(:where\\(\\.hz-dense \\*\\)\\)",
       "a\\[href\\]",
     ]) {
