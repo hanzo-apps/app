@@ -12,8 +12,8 @@
  *
  * ONE name, end to end: this route, cloud's endpoint, cloud's package and the KMS
  * namespace a token is sealed under all say `connectors`. There is no
- * `/v1/integrations` anywhere in the path any more — see CLOUD_PREFIX below for
- * why the fallback that used to be here was never doing what it claimed.
+ * ONE name per layer: this app serves /v1/connectors and forwards to cloud's
+ * /v1/integrations. See CLOUD_PREFIX below.
  *
  * Surface (proxied verbatim to cloud `/v1/connectors`):
  *   GET  /v1/connectors                       list catalog + org status
@@ -84,16 +84,24 @@ async function subpathOf(req: NextRequest, ctx: Ctx): Promise<string | null> {
   return base + qs;
 }
 
-/** The cloud prefix. ONE name, end to end: cloud's package, its endpoint, its KMS
- *  namespace and this app's route all say `connectors`.
+/**
+ * The cloud prefix, and it is `/v1/integrations` because that is the route cloud
+ * SERVES — verified against the deployed API and against the source
+ * (apps/integrations registers /v1/integrations/:provider and nothing else).
  *
- *  This was a LIST — the canonical prefix and a legacy `/v1/integrations` alias,
- *  tried in order — written to stay green while cloud "completed the same rename
- *  in parallel". Cloud had not started it: main carried neither prefix, so both
- *  legs 404'd and the fallback only doubled the latency of failing. Cloud serves
- *  /v1/connectors now, so the second name is gone rather than left as a thing to
- *  keep working. */
-const CLOUD_PREFIX = '/v1/connectors';
+ * This said `/v1/connectors` for a while and answered 404 for every call. The
+ * mistake was reading the PUBLIC hanzoai/cloud repo, finding no connector plane
+ * there, and concluding none existed; the deployed service is the private
+ * hanzo-inc/cloud, where the plane has been live all along under this name.
+ *
+ * PRODUCT NAME vs ROUTE NAME. The product is Connectors — this app's page, its
+ * sidebar entry, this BFF's own path. The upstream route is /v1/integrations.
+ * Those differ, and that is fine: they are different layers, and the rule this
+ * repo cares about is one name PER layer, not one name across all of them. What
+ * is not fine is two names for the same layer, which is what the fallback that
+ * used to live here was.
+ */
+const CLOUD_PREFIX = '/v1/integrations';
 
 /**
  * Forward to the org-scoped cloud connectors surface as the user.
