@@ -19,19 +19,12 @@
  * Nothing else catches it. The build is green, no type is wrong, the iframe
  * loads, and the picture is sharp — it is simply of the mobile site.
  */
-import { readFileSync } from "node:fs";
-
-
-
 import { read, stripComments } from "../source";
 
 // Comment-stripped: the prose above the fix must not be able to satisfy the
-// check that guards it.
-const src = readFileSync(
-  "components/project-thumb/index.tsx",
-  "utf8",
-)
-
+// check that guards it. Through `read`, which resolves from the repo root —
+// a bare relative path here only ever worked because jest is launched from it.
+const src = stripComments(read("components/project-thumb/index.tsx"));
 
 describe("the framed site lays out at a desktop viewport", () => {
   it("declares a logical width the box does not decide", () => {
@@ -45,7 +38,15 @@ describe("the framed site lays out at a desktop viewport", () => {
 
   it("keeps signed-in Hanzo pages out of public thumbnails", () => {
     expect(src).toContain('"console.hanzo.ai", "hanzo.id"');
-    expect(src).toMatch(/const showLive = canPreview\(liveUrl\) && !failed/);
+    // BOTH conditions, and nothing about what else may precede them. This read
+    // `const showLive = canPreview(liveUrl) && !failed` exactly, so adding a
+    // higher-priority branch in front — the self-hosted shot now takes
+    // precedence over the live frame — failed a guard whose subject was
+    // untouched. Pin the property: a live frame is shown only for a URL
+    // `canPreview` allows, and never after one has failed to load.
+    const decides = /const showLive =[^;]*;/.exec(src)?.[0] ?? "";
+    expect(decides).toContain("canPreview(liveUrl)");
+    expect(decides).toContain("!failed");
   });
 
   it("scales to the box rather than resizing the viewport", () => {
