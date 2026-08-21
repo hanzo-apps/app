@@ -10,6 +10,7 @@ import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMe
 import { Pencil, Trash2, MoreVertical, ExternalLink, Globe, Settings } from 'lucide-react';
 import { builderLink, configLink, liveUrlOf, type Project } from '@/lib/api/projects';
 import { statusOf } from '@/lib/project-status';
+import { TemplateSchematic } from '@/components/template-schematic';
 
 interface ProjectCardProps {
   project: Project;
@@ -30,7 +31,40 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
   const visitUrl = liveUrlOf(project);
 
   return (
-    <YStack group borderWidth={1} borderColor="$borderColor" borderRadius="$5" backgroundColor="$background" hoverStyle={{ elevation: 4, borderColor: "$color06" }}>
+    <YStack group borderWidth={1} borderColor="$borderColor" borderRadius="$5" backgroundColor="$background" overflow="hidden" hoverStyle={{ elevation: 4, borderColor: "$color06" }}>
+      {/*
+        A project is a SITE, so the card leads with a picture of one.
+        16:10 because that is the shape of a browser window; anything squarer
+        reads as an avatar, and these cards were a column of identical text
+        blocks distinguished only by a name you had to read.
+
+        It is DRAWN, not a grey rectangle. `TemplateSchematic` tints a canvas
+        and lays out rectangles from the slug, which is the answer this app
+        already gives for a template with no photograph — so two projects have
+        to collide in hue AND layout to look alike, and the card is a picture of
+        an app rather than a hole where one goes. One mechanism for "we have no
+        shot of this", used in both places.
+
+        It is the SLOT, too: cloud sends no thumbnail for an org project today
+        (`Project` in lib/api/projects has no image field). When it does, the
+        real capture goes here on top of this and nothing else about the card
+        moves — the same image-first, drawn-fallback shape `TemplateThumb` uses.
+
+        `aria-hidden`, and the card carries no alt text: the heading right below
+        already names the project, so announcing the picture would read the name
+        twice. It is decoration that happens to be useful to the eye.
+      */}
+      <YStack
+        aria-hidden
+        width="100%"
+        aspectRatio={16 / 10}
+        borderBottomWidth={1}
+        borderColor="$borderColor"
+        overflow="hidden"
+      >
+        <TemplateSchematic slug={project.slug || project.id} category={project.framework} />
+      </YStack>
+
       <YStack padding="$4" paddingBottom="$3">
         <XStack alignItems="flex-start" justifyContent="space-between" gap="$2">
           <XStack alignItems="center" gap="$2" minWidth={0} flex={1}>

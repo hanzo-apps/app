@@ -3,7 +3,9 @@
 import { H2, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { useState, useEffect, useCallback } from 'react';
 import { Button, Input } from '@hanzo/ui';
-import { Plus, Search, FolderOpen } from 'lucide-react';
+import { Plus, Search, FolderOpen, Star, User, Users } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import type { LucideIcon } from 'lucide-react';
 import {
   fetchProjects,
   deleteProject as apiDeleteProject,
@@ -13,6 +15,94 @@ import { ProjectCard } from './ProjectCard';
 import { CreateProject } from './CreateProject';
 import { OrgSwitcher } from '@/components/org-switcher';
 import { useOrg } from '@/lib/org/client';
+
+/**
+ * ONE empty state, for every reason a list can be empty.
+ *
+ * There were going to be five of these — no projects, no search match, and one
+ * per sidebar filter — and five hand-written centred columns is how five
+ * different paddings and four different tones of voice get into one product.
+ * A state is DATA here: an icon, a heading, a line of explanation, and whether
+ * the create button belongs on it.
+ *
+ * The copy is the part that has to be honest. Three of these are filters the
+ * data cannot express yet, and each says so in its own words rather than the
+ * generic "nothing here yet" — which reads as "you have none of these" and is a
+ * different claim entirely.
+ */
+export interface EmptyState {
+  icon: LucideIcon;
+  title: string;
+  body: string;
+  /** Offer to create — only where creating is what the reader is missing. */
+  create?: boolean;
+  /** This filter cannot be computed, so the list is empty by construction. */
+  none?: boolean;
+}
+
+export const NO_PROJECTS: EmptyState = {
+  icon: FolderOpen,
+  title: 'No projects yet',
+  body: 'Projects in this organization show up here. Create one and it gets its own files, database and URL.',
+  create: true,
+};
+
+export const SEARCH_EMPTY: EmptyState = {
+  icon: Search,
+  title: 'Nothing matches that search',
+  body: 'No project here has that name, description or framework.',
+};
+
+/**
+ * What the sidebar's three filters answer with.
+ *
+ * `none: true` on all of them is not a placeholder — it is the current truth.
+ * A project carries no star, no creator and no sharing (see `Project` in
+ * lib/api/projects), so there is no field to select on. Each says what would
+ * have to exist for it to fill, so a reader learns the feature is absent rather
+ * than concluding they have none.
+ */
+export const FILTERS: Record<string, EmptyState> = {
+  starred: {
+    icon: Star,
+    title: 'Starring is not here yet',
+    body: 'Projects cannot be starred at the moment, so this list has nothing to hold. Every project you have is under All projects.',
+    none: true,
+  },
+  mine: {
+    icon: User,
+    title: 'Projects do not record who made them yet',
+    body: 'This view needs an author on each project, and there is not one. Until then, All projects is the same list.',
+    none: true,
+  },
+  shared: {
+    icon: Users,
+    title: 'Sharing is not here yet',
+    body: 'Projects belong to an organization rather than being shared person to person, so nothing arrives here. Everyone in this org sees the same All projects.',
+    none: true,
+  },
+};
+
+function Empty({ state, onCreate }: { state: EmptyState; onCreate: () => void }) {
+  const Icon = state.icon;
+  return (
+    <YStack alignItems="center" paddingVertical="$10">
+      <Icon size={48} />
+      <H2 fontSize="$7" fontWeight="500" marginBottom="$2" textAlign="center">
+        {state.title}
+      </H2>
+      <Paragraph color="$color11" marginBottom="$5" textAlign="center" maxWidth={460}>
+        {state.body}
+      </Paragraph>
+      {state.create === true && (
+        <Button onClick={onCreate}>
+          <Plus size={16} />
+          Create a project
+        </Button>
+      )}
+    </YStack>
+  );
+}
 
 /**
  * The org-scoped projects list — reads the ONE shared `/v1/projects` store
@@ -26,6 +116,8 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
+  /** Which sidebar destination the reader came in through — see FILTERS. */
+  const filter = useSearchParams()?.get('filter') ?? '';
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -57,7 +149,22 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
     setProjects((prev) => [project, ...prev]);
   };
 
+  /**
+   * The sidebar links to `/projects?filter=starred|mine|shared`, and this list
+   * did not read that param at all — so all three showed the FULL list. That is
+   * worse than showing nothing: "Starred" answering with every project you have
+   * is a wrong answer delivered confidently.
+   *
+   * None of the three can be computed today. `Project` (lib/api/projects) has no
+   * star flag, no creator and no sharing — cloud does not send them, so there is
+   * nothing here to filter on. The honest answer is an empty result with copy
+   * that says WHY, which is what EMPTY below carries. It deliberately does not
+   * say "no starred projects yet": that would imply you could star one.
+   */
+  const view = FILTERS[filter] ?? null;
+
   const filtered = projects.filter((p) => {
+    if (view?.none) return false;
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     return (
@@ -127,25 +234,32 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
       )}
 
       {filtered.length === 0 ? (
-        <YStack alignItems="center" paddingVertical="$10">
-          <FolderOpen size={48} />
-          <H2 fontSize="$7" fontWeight="500" marginBottom="$2" textAlign="center">
-            {searchQuery ? 'Nothing matches that search' : 'No projects yet'}
-          </H2>
-          <Paragraph color="$color11" marginBottom="$5" textAlign="center">
-            {searchQuery
-              ? 'No project here has that name, description or framework.'
-              : 'Projects in this organization show up here. Create one and it gets its own files, database and URL.'}
-          </Paragraph>
-          {!searchQuery && (
-            <Button onClick={() => setCreateOpen(true)}>
-              <Plus size={16} />
-              Create a project
-            </Button>
-          )}
-        </YStack>
+        <Empty
+          state={searchQuery ? SEARCH_EMPTY : (view ?? NO_PROJECTS)}
+          onCreate={() => setCreateOpen(true)}
+        />
       ) : (
-        <YStack gap="$4">
+        /*
+          A GRID, because the cards now lead with a picture of the site.
+          Stacked full-width, a 16:10 thumbnail is most of a screen per project
+          and the list stops being a list. Cards want to be card-sized.
+
+          `auto-fill` + a 280px floor rather than counted breakpoints: the column
+          count follows the space there actually is, so it is right inside the
+          app shell, inside a narrowed window, and on a phone (where 280 exceeds
+          the width and it falls to one column) without three separate rules
+          agreeing with each other. Geometry rides the `style` prop, the way
+          TemplateSchematic's does — this app loads no Tailwind, so a utility
+          class here would be inert.
+        */
+        <YStack
+          gap="$4"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            alignItems: 'start',
+          }}
+        >
           {filtered.map((project) => (
             <ProjectCard key={project.id} project={project} onDelete={handleDelete} />
           ))}
