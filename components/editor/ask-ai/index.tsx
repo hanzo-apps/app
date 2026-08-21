@@ -1228,7 +1228,7 @@ export function AskAI({
                 }}
               >
                 <XStack alignItems="flex-start" justifyContent="space-between" gap="$2">
-                  <Paragraph fontSize="$3" color="$color11" flex={1}>{msg.message}</Paragraph>
+                  <Paragraph fontSize={composer.type} color="$color11" flex={1}>{msg.message}</Paragraph>
                   <Button
                     size="icon-sm"
                     variant="ghost"
@@ -1548,7 +1548,7 @@ export function AskAI({
             // resize:none kills the native corner — its diagonal notches sat in
             // the bubble's rounded corner; the top-edge grip is the ONE resize.
             style={{ height: composerH, maxHeight: "40dvh", resize: "none" }}
-            width="100%" backgroundColor="transparent" fontSize="$3" borderWidth={0} outlineWidth={0} color="$color" placeholderTextColor="$color11" padding={composer.gutter} overflow="scroll" {...{ paddingTop: selectedElement && !isAiWorking ? "$2.5" : undefined }}
+            width="100%" backgroundColor="transparent" fontSize={composer.type} borderWidth={0} outlineWidth={0} color="$color" placeholderTextColor="$color11" padding={composer.gutter} overflow="scroll" {...{ paddingTop: selectedElement && !isAiWorking ? "$2.5" : undefined }}
             placeholder={
               isAiWorking
                 ? // Live while it works: the composer is never dead time. Type to

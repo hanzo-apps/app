@@ -20,5 +20,18 @@
  * panel peeled apart the last time.
  *
  * `gutter` is the side inset the field and its action row share.
+ *
+ * `type` is the rung YOUR OWN WORDS are set in, and it is here for the reason
+ * the other two are. A sentence you type passes through three boxes — the field,
+ * the queue row while it waits its turn, the sent message above — and the field
+ * alone was a rung larger, so a line shrank the moment you pressed Enter. It was
+ * also the only thing in the panel at that rung: the assistant's prose, the
+ * plan, the disclosure rows and the chips all read at `$2` and the field
+ * answered at `$3`.
+ *
+ * Down rather than up, because one site disagreed with a dozen, and because the
+ * smaller of the two is the rung the rest of the transcript already speaks in.
+ * `$2` is `--text-sm`, so it bends with the Appearance text-size and contrast
+ * knobs like every other rung — which a raw number could not.
  */
-export const composer = { corner: 24, gutter: "$4" } as const;
+export const composer = { corner: 24, gutter: "$4", type: "$2" } as const;

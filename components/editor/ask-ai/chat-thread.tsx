@@ -139,7 +139,7 @@ function UserBubble({ text, images }: { text: string; images?: string[] }) {
       {text ? (
         <XStack justifyContent="flex-end" width="100%">
           <YStack maxWidth="85%" className="glass" padding={composer.gutter} borderRadius={composer.corner - 1} borderWidth={1} borderColor="$borderColor">
-            <SizableText whiteSpace="pre-wrap" fontSize="$2" lineHeight="1.45" color="$color">
+            <SizableText whiteSpace="pre-wrap" fontSize={composer.type} lineHeight="1.45" color="$color">
               {text}
             </SizableText>
           </YStack>

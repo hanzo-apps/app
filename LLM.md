@@ -503,19 +503,60 @@ through, and every one of them this rung — the hero's own eyebrow among them,
 every template card label, and the preview's "Build <app> →". hanzo.chat and
 hanzo.id have none. Raised to 12 in the `html:root` block in `assets/globals.css` — an
 anchor, not a preference, because theme.css loads AFTER globals.css and a bare
-`:root` would lose the tie. It keeps `* var(--type-scale, 1)`: drop the
-multiplier and this becomes the one rung the Appearance text-size control cannot
-move. The right home is @hanzo/design, where the rung is written; until it moves
-there, hanzo.app and design disagree by one rung and this paragraph is the
-record of it.
+`:root` would lose the tie. The right home is @hanzo/design, where the rung is
+written; until it moves there, hanzo.app and design disagree by one rung and
+this paragraph is the record of it.
+
+**Retune the VALUE, keep the SHAPE.** Appearance turns three knobs and each is a
+multiplier a token has to carry: `--type-scale` (text size), `--type-ratio` (the
+ladder's CONTRAST — how far each rung sits from the 0.875rem body), and
+`--density` on `--space-*`. Every rung design publishes is
+`clamp(--text-floor, calc((0.875rem ± Nrem * ratio) * scale), --text-ceiling)`.
+This retune was `calc(0.75rem * scale)` — the size knob only, no ratio term and
+no bounds — so it was the one rung that did not bend when the ladder's contrast
+changed, and rungs cross when one of them ignores an axis. It is
+`0.875rem - 0.125rem * ratio` now: the same 12px at the defaults, both knobs,
+both bounds. Measured in Chromium at ratio 1.6 — every rung moved, this one
+included.
+
+**A RAW NUMBER IS FROZEN, and that is the whole class.** `font-size: 13px`
+compiles to 13px forever and no Appearance knob can reach it, so being ON the
+ramp is not enough — a size has to be a TOKEN. `.md.md-compact` (the assistant's
+prose: the largest reading surface in the builder chat and in the console
+assistant) was written entirely in frozen px, and at scale 1.25 every rung
+around it grew while every line of the reply held still. Sizes are `--text-*`
+and rhythm is `--space-*` there now, identical pixels at the defaults; the
+margins moved off `0.625rem`/`0.375rem` onto the 4px grid in the same pass,
+because those two sat between its steps — the block ran 12/10/8/6/4 and only
+three of those were on it. Re-measured after: 0 frozen, 0 off-grid, 7 of 8
+elements re-spaced by the density knob.
+
+**The guard reads the ramp; it does not remember it.**
+`tests/unit/type-ramp.test.ts` carried a hand-copied `RAMP` set, which is a
+second source of truth: it said `--text-lg 1rem = 16` and `--text-xl 1.125rem =
+18` while the installed theme.css publishes **15** and **17**, so it would have
+failed a call site using a real rung and passed two that are not. It derives
+from `@hanzo/ui/theme.css` now — and three separate traps each passed green
+first: enumerating rung NAMES silently omitted `lg`; reading a term's sign from
+the surrounding text lands on the previous term's `rem` (the match starts AT the
+`-`), so every rung came out additive and xs read 17, sm 15; and
+`--text-control` is a flat `1rem` ALIAS rather than a step off the body, which
+admitted 16. A rung is recognised structurally now — its expression contains
+`0.875rem` — and the derived set must straddle 14, because all-additive is
+exactly what a broken ± parse looks like and is silent otherwise. **None of the
+three was visible from the suite**: `components/editor` holds zero raw numbers,
+so the table is never consulted, and a ramp nothing is compared against cannot
+be observed to be wrong. Print the derived set when you touch that parser.
 
 Below that rung there is nothing left on the landing but the drawn frame's own
 model of a composer — a 16px pill carrying a 9px label, roughly 44% scale. The
 line the numbers draw: the demo app INSIDE the frame is not a miniature (its
 pane is 330px at a 390px viewport, 85% of the phone's own width) and reads at
 the ramp floor; the frame's model of our chrome is a picture and keeps its raw
-numbers. `tests/unit/type-ramp.test.ts` ratchets `components/editor` only —
-`components/landing` has never been under it.
+numbers. `tests/unit/type-ramp.test.ts` ratchets `components/editor` and
+`components/markdown-renderer` — the latter because it IS the chat's prose, so
+its type is chat type wherever the directory sits. `components/landing` has
+never been under it.
 
 `html.dark { --background: … !important }` is gone with it. It existed because
 gui's generated theme declares `--background` at bare `:root`, ties design on
