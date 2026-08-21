@@ -426,10 +426,12 @@ test.describe('chat mode', () => {
       box.evaluate((t) => ({
         top: Math.round(t.scrollTop),
         gap: Math.round(t.scrollHeight - t.clientHeight - t.scrollTop),
+        range: Math.round(t.scrollHeight - t.clientHeight),
       }));
 
-    // Wait until there is genuinely something to scroll.
-    await expect.poll(async () => (await read()).gap + (await read()).top).toBeGreaterThan(250);
+    // Wait until there is genuinely something to scroll. One read, because two
+    // reads of a growing thread are two different moments.
+    await expect.poll(async () => (await read()).range).toBeGreaterThan(250);
 
     // Untouched, it is at the end: the answer arrives in view.
     expect((await read()).gap).toBeLessThanOrEqual(AT_END);
