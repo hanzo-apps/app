@@ -124,9 +124,17 @@ logged-in projects logic in `page.tsx`; elevate design only.
   measured: at 520 the headline's second line broke again and left "it." alone
   on a third.
 - **`logo-wall.tsx`** — REAL partners only (Techstars '17 + NVIDIA/AWS/Microsoft/
-  Google/DigitalOcean/Nebius/Lux/Zoo), mono-tinted white via
+  Google/DigitalOcean/Nebius), mono-tinted white via
   `[filter:brightness(0)_invert(1)]`. Labeled "Backed by Techstars · Built on
   world-class infrastructure" — never "trusted by <fake customers>".
+
+  **A brand wears its OWN marks.** This wall is served on Hanzo hosts, so it
+  carries no Lux and no Zoo mark; a Lux surface carries neither Hanzo's nor
+  Zoo's, and a Zoo surface neither Hanzo's nor Lux's. The list is a claim about
+  who backs Hanzo and what it runs on, and a sibling org is neither. The two
+  assets are DELETED rather than unlisted: an unreferenced mark is still served
+  by filename from this origin, which is the same claim one URL further away.
+  `tests/unit/marks-are-ours.test.ts` pins both halves.
 - **`cloud-integration.tsx`** — the differentiator: 6 capabilities each mapping
   to a LIVE Hanzo product (Cloud/Base/IAM/AI/KMS·S3/Functions), linked
   to `hanzo.ai/<product>`. No invented features/metrics.

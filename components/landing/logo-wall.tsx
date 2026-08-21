@@ -20,8 +20,6 @@ const partners = [
   { src: "/logos/partners/google.svg", alt: "Google" },
   { src: "/logos/partners/digitalocean.svg", alt: "DigitalOcean" },
   { src: "/logos/partners/nebius.svg", alt: "Nebius" },
-  { src: "/logos/partners/lux-network.svg", alt: "Lux Network" },
-  { src: "/logos/partners/zoo-labs-foundation.svg", alt: "Zoo Labs Foundation" },
 ];
 
 // One copy of the set. Rendered twice inside the track: the marquee scrolls by
