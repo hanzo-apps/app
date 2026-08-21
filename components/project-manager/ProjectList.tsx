@@ -3,12 +3,13 @@
 import { H2, Paragraph, SizableText, Spinner, XStack, YStack } from '@hanzo/ui';
 import { useState, useEffect, useCallback } from 'react';
 import { Button, Input } from '@hanzo/ui';
-import { Plus, Search, FolderOpen, Star, User, Users } from 'lucide-react';
+import { Plus, Search, FolderOpen, Star } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import type { LucideIcon } from 'lucide-react';
 import {
   fetchProjects,
   deleteProject as apiDeleteProject,
+  setStarred,
   type Project,
 } from '@/lib/api/projects';
 import { ProjectCard } from './ProjectCard';
@@ -36,8 +37,6 @@ export interface EmptyState {
   body: string;
   /** Offer to create — only where creating is what the reader is missing. */
   create?: boolean;
-  /** This filter cannot be computed, so the list is empty by construction. */
-  none?: boolean;
 }
 
 export const NO_PROJECTS: EmptyState = {
@@ -63,23 +62,13 @@ export const SEARCH_EMPTY: EmptyState = {
  * than concluding they have none.
  */
 export const FILTERS: Record<string, EmptyState> = {
+  // Starred is REAL: cloud stores a per-person star and sends it on each
+  // project, so this filter selects rather than explaining itself away. It is
+  // empty only when the reader has starred nothing, which is a true "not yet".
   starred: {
     icon: Star,
-    title: 'Starring is not here yet',
-    body: 'Projects cannot be starred at the moment, so this list has nothing to hold. Every project you have is under All projects.',
-    none: true,
-  },
-  mine: {
-    icon: User,
-    title: 'Projects do not record who made them yet',
-    body: 'This view needs an author on each project, and there is not one. Until then, All projects is the same list.',
-    none: true,
-  },
-  shared: {
-    icon: Users,
-    title: 'Sharing is not here yet',
-    body: 'Projects belong to an organization rather than being shared person to person, so nothing arrives here. Everyone in this org sees the same All projects.',
-    none: true,
+    title: 'Nothing starred yet',
+    body: 'Star a project and it shows up here — your own shortlist, separate from everyone else in the organization.',
   },
 };
 
@@ -145,6 +134,21 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
     }
   };
 
+  /**
+   * Star, optimistically. The row flips at once and is put back if cloud
+   * refuses — a star is a preference, and making somebody wait on a round trip
+   * to see their own click land is the wrong trade for one.
+   */
+  const handleToggleStar = useCallback(async (project: Project) => {
+    const next = !project.starred;
+    setProjects((prev) => prev.map((p) => (p.id === project.id ? { ...p, starred: next } : p)));
+    try {
+      await setStarred(project.slug, next);
+    } catch {
+      setProjects((prev) => prev.map((p) => (p.id === project.id ? { ...p, starred: !next } : p)));
+    }
+  }, []);
+
   const handleCreated = (project: Project) => {
     setProjects((prev) => [project, ...prev]);
   };
@@ -164,7 +168,7 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
   const view = FILTERS[filter] ?? null;
 
   const filtered = projects.filter((p) => {
-    if (view?.none) return false;
+    if (filter === 'starred' && !p.starred) return false;
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     return (
@@ -261,7 +265,12 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
           }}
         >
           {filtered.map((project) => (
-            <ProjectCard key={project.id} project={project} onDelete={handleDelete} />
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onDelete={handleDelete}
+              onToggleStar={handleToggleStar}
+            />
           ))}
         </YStack>
       )}

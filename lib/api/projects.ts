@@ -47,6 +47,17 @@ export interface Project {
   currentDeploymentId?: string;
   createdAt: number; // unix seconds
   updatedAt: number;
+  /**
+   * THIS reader's star, not a property of the project: two people in the same
+   * org see different values for the same row, which is the whole point of it.
+   * Cloud resolves it per request from the validated user.
+   *
+   * It is the ONE of the three sidebar filters that turned out to be a feature.
+   * "Created by me" and "shared with me" are the org boundary seen at the wrong
+   * grain — a project belongs to an org, everyone in that org sees the same
+   * list, and the store deliberately does not record a per-person author.
+   */
+  starred: boolean;
 }
 
 /**
@@ -157,6 +168,19 @@ export async function fetchProjects(): Promise<Project[]> {
 
 export async function fetchProject(slug: string): Promise<Project> {
   return req<Project>(`/${encodeURIComponent(slug)}`);
+}
+
+/**
+ * Star or unstar a project for the signed-in reader.
+ *
+ * PUT/DELETE because starring is a STATE, not an event: saying it twice means
+ * what saying it once meant. Cloud is idempotent on both, so a double-click and
+ * a retried request land on the state the caller asked for.
+ */
+export async function setStarred(slug: string, starred: boolean): Promise<void> {
+  await req<{ starred: boolean }>(`/${encodeURIComponent(slug)}/star`, {
+    method: starred ? 'PUT' : 'DELETE',
+  });
 }
 
 export async function createProject(payload: CreateProjectPayload): Promise<Project> {

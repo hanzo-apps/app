@@ -53,6 +53,10 @@ function vfsToProject(p: { id: string; name: string; updatedAt: Date; createdAt?
     slug: p.id,
     name: p.name,
     repo: {},
+    // A LOCAL project has no star, and cannot: a star is per-person state cloud
+    // holds for a project it knows about, and this one exists only in this
+    // browser's VFS. False is the honest answer, not a placeholder.
+    starred: false,
     framework: 'static',
     status: 'draft',
     createdAt: created,

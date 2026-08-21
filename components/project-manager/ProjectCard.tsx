@@ -7,7 +7,7 @@ import { YStack, XStack, SizableText, H3, Paragraph } from '@hanzo/ui';
 import { Anchor } from '@hanzo/gui';
 import { useRouter } from 'next/navigation';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@hanzo/ui';
-import { Pencil, Trash2, MoreVertical, ExternalLink, Globe, Settings } from 'lucide-react';
+import { Pencil, Trash2, MoreVertical, ExternalLink, Globe, Settings, Star } from 'lucide-react';
 import { builderLink, configLink, liveUrlOf, type Project } from '@/lib/api/projects';
 import { statusOf } from '@/lib/project-status';
 import { TemplateSchematic } from '@/components/template-schematic';
@@ -15,6 +15,7 @@ import { TemplateSchematic } from '@/components/template-schematic';
 interface ProjectCardProps {
   project: Project;
   onDelete: (project: Project) => void;
+  onToggleStar: (project: Project) => void;
 }
 
 function timeAgo(unixSeconds: number): string {
@@ -23,7 +24,7 @@ function timeAgo(unixSeconds: number): string {
   return d.toLocaleDateString();
 }
 
-export function ProjectCard({ project, onDelete }: ProjectCardProps) {
+export function ProjectCard({ project, onDelete, onToggleStar }: ProjectCardProps) {
   const router = useRouter();
   const status = statusOf(project.status);
   // The SERVABLE public URL — normalizes any legacy two-label liveUrl to the
@@ -70,6 +71,10 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
           <XStack alignItems="center" gap="$2" minWidth={0} flex={1}>
             <SizableText height="$2.5" width="$2.5" borderRadius="$10" flexShrink={0} backgroundColor={status.dot} />
             <H3 fontWeight="500" fontSize="$4" numberOfLines={1}>{project.name}</H3>
+            {/* A star has to be visible on the card, or the only way to know a
+                project is starred is to open its menu — and the filter would
+                look broken to anyone who had not. */}
+            {project.starred && <Star size={14} fill="currentColor" aria-label="Starred" />}
           </XStack>
 
           <DropdownMenu>
@@ -93,6 +98,10 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
                   Visit site
                 </DropdownMenuItem>
               )}
+                <DropdownMenuItem onClick={() => onToggleStar(project)}>
+                <Star size={16} />
+                {project.starred ? 'Remove star' : 'Star'}
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem variant="destructive" onClick={() => onDelete(project)}>
                 <Trash2 size={16} />

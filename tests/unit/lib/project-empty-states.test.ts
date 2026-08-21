@@ -1,57 +1,47 @@
 /**
  * What the projects list says when it has nothing to show.
  *
- * The sidebar links to `/projects?filter=starred|mine|shared` and the list did
- * not read that param at all, so every one of them rendered the FULL list — a
- * wrong answer delivered confidently, which is worse than an empty one. These
- * pin both halves: the filters resolve, and the copy tells the truth about why
- * they are empty.
+ * The sidebar once offered three filters — Starred, Created by me, Shared with
+ * me — all linking to `?filter=…` that the list never read, so every one of them
+ * rendered the FULL list: a wrong answer delivered confidently.
+ *
+ * Only ONE of the three was a feature. A project belongs to an ORG, so there is
+ * nobody to share it to, and the store deliberately records no per-person
+ * author. A star is different in kind: one person's shortlist, which two people
+ * in the same org may disagree about without either being wrong. So starring was
+ * built and the other two destinations were removed — a link that cannot mean
+ * anything is worse than an absent one.
  */
 import { FILTERS, NO_PROJECTS, SEARCH_EMPTY } from '@/components/project-manager/ProjectList';
 
 describe('project list empty states', () => {
-  it('answers every filter the sidebar links to', () => {
-    // These ids are the sidebar's (components/sidebar PROJECT_ITEMS). A filter
-    // with no entry here falls back to the generic empty state, which would say
-    // "No projects yet" to someone who has plenty.
-    for (const id of ['starred', 'mine', 'shared']) {
-      expect(FILTERS[id]).toBeDefined();
-    }
+  it('offers exactly the filters that can actually select something', () => {
+    // `mine` and `shared` are gone on purpose. If either comes back here, it
+    // needs a field on the project to select on — otherwise it is the org
+    // boundary seen at the wrong grain, which is what made it lie before.
+    expect(Object.keys(FILTERS)).toEqual(['starred']);
   });
 
-  it('marks the filters as unfillable, which is what makes the list empty', () => {
-    // Not a placeholder: a project carries no star, no creator and no sharing,
-    // so there is no field to select on. `none` is the current truth.
-    for (const state of Object.values(FILTERS)) {
-      expect(state.none).toBe(true);
-    }
+  it('reads starred as a real "not yet", because it can be filled', () => {
+    // This is the one empty state in the file that is genuinely about the
+    // reader having done nothing yet, so it is allowed to say so.
+    expect(FILTERS.starred.title).toMatch(/nothing starred/i);
+    expect(FILTERS.starred.body).toMatch(/star a project/i);
   });
 
-  it('never implies the reader simply has none of these', () => {
-    // "No starred projects yet" would say starring exists and you have not used
-    // it. Neither half is true, and the second is the one that wastes someone's
-    // afternoon looking for the star button.
-    for (const [id, state] of Object.entries(FILTERS)) {
-      expect(state.title.toLowerCase()).not.toMatch(/^no /);
-      expect(`${id}: ${state.body}`).toMatch(/not|cannot|does not|belong/i);
-    }
-  });
-
-  it('offers Create on the only state where creating is what is missing', () => {
+  it('offers Create only where creating is the thing missing', () => {
     expect(NO_PROJECTS.create).toBe(true);
     expect(SEARCH_EMPTY.create).toBeUndefined();
-    // A create button under "Starring is not here yet" answers a question
-    // nobody asked — the reader has projects, they wanted this list.
-    for (const state of Object.values(FILTERS)) {
-      expect(state.create).toBeUndefined();
-    }
+    // A create button under "Nothing starred yet" answers a question nobody
+    // asked — the reader has projects, they wanted their shortlist.
+    expect(FILTERS.starred.create).toBeUndefined();
   });
 
-  it('gives every state an icon, a heading and a sentence', () => {
+  it('gives every state an icon, a heading and a real sentence', () => {
     for (const state of [NO_PROJECTS, SEARCH_EMPTY, ...Object.values(FILTERS)]) {
       expect(state.icon).toBeTruthy();
       expect(state.title.length).toBeGreaterThan(0);
-      // One real sentence, not a fragment — this is the only text on the screen.
+      // One real sentence, not a fragment — this is the only text on screen.
       expect(state.body.length).toBeGreaterThan(40);
       expect(state.body.trim()).toMatch(/\.$/);
     }

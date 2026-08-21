@@ -87,8 +87,18 @@ const PRIMARY_ITEMS: SidebarItem[] = [
 const PROJECT_ITEMS: SidebarItem[] = [
   { id: 'all-projects', label: 'All projects', icon: FolderOpen, route: '/projects' },
   { id: 'starred', label: 'Starred', icon: Star, route: '/projects?filter=starred' },
-  { id: 'created-by-me', label: 'Created by me', icon: User, route: '/projects?filter=mine' },
-  { id: 'shared', label: 'Shared with me', icon: Users, route: '/projects?filter=shared' },
+  // "Created by me" and "Shared with me" used to sit here and could never work.
+  // A project belongs to an ORG: everyone in the org sees the same list, so
+  // there is nobody to share it to, and the store deliberately does not record a
+  // per-person author (see the Visibility note in cloud apps/projects/store.go —
+  // a second field restating the org boundary could only ever disagree with it,
+  // and once did). Both linked to ?filter=… that nothing read, so both answered
+  // with every project you have. A destination that cannot mean anything is
+  // worse than an absent one.
+  //
+  // Starred stays because it is the one of the three that is not the org
+  // boundary at the wrong grain: it is one person's shortlist, and two people in
+  // the same org may disagree about it without either being wrong.
 ];
 
 // ── Secondary group (kept reachable — reorganized, not deleted) ─────────────
