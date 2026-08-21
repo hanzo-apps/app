@@ -102,11 +102,35 @@ export default function Comparison() {
             >
               <YStack padding="$4.5">
                 <XStack alignItems="center" justifyContent="space-between" gap="$3">
-                  <YStack minWidth={0}>
-                    <H3 fontSize="$6" fontWeight="500" letterSpacing={-0.3} color="$color">
+                  {/* `flex={1}`, not `minWidth={0}` alone.
+                      Yoga defaults flexShrink to 0 — the opposite of web CSS —
+                      so this column never yielded and took the full width of its
+                      longest line ("Prompt to production", in mono, the widest
+                      of the four). The badge beside it is flexShrink={0} too, so
+                      it was pushed past the card's right edge and clipped by the
+                      card's own `overflow="hidden"`.
+                      Measured on the live site before the fix: at 1024 the badge
+                      ended 27px outside the card, at 1100 8px outside; it fit
+                      again at 1180 and above, which is why it looked fine on the
+                      screen it was designed at. `minWidth={0}` is the other half
+                      of the pair and was already here doing nothing on its own. */}
+                  <YStack flex={1} minWidth={0}>
+                    <H3
+                      numberOfLines={1}
+                      fontSize="$6"
+                      fontWeight="500"
+                      letterSpacing={-0.3}
+                      color="$color"
+                    >
                       {choice.name}
                     </H3>
-                    <SizableText marginTop="$0.5" fontFamily="$mono" fontSize="$1" color="$color11">
+                    <SizableText
+                      numberOfLines={1}
+                      marginTop="$0.5"
+                      fontFamily="$mono"
+                      fontSize="$1"
+                      color="$color11"
+                    >
                       {choice.note}
                     </SizableText>
                   </YStack>

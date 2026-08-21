@@ -292,7 +292,7 @@ function ProjectGrid({
             {/* Real thumbnail: the live site itself (inert); monogram otherwise.
                 The open affordance rides the top-right corner, revealed on hover. */}
             <YStack position="relative">
-              <ProjectThumb name={p.name} liveUrl={p.liveUrl} />
+              <ProjectThumb name={p.name} slug={p.slug} liveUrl={p.liveUrl} />
               <XStack position="absolute" top="$2" right="$2" width={22} height={22} borderRadius={999} alignItems="center" justifyContent="center" backgroundColor="$background" borderWidth={1} borderColor="$borderColor" opacity={0} $group-hover={{ opacity: 1 }}>
                 <ArrowUpRight size={13} />
               </XStack>

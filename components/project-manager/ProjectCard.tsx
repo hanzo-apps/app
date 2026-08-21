@@ -10,7 +10,7 @@ import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMe
 import { Pencil, Trash2, MoreVertical, ExternalLink, Globe, Settings, Star } from 'lucide-react';
 import { builderLink, configLink, liveUrlOf, type Project } from '@/lib/api/projects';
 import { statusOf } from '@/lib/project-status';
-import { useState } from 'react';
+import { ProjectThumb } from '@/components/project-thumb';
 
 interface ProjectCardProps {
   project: Project;
@@ -30,52 +30,21 @@ export function ProjectCard({ project, onDelete, onToggleStar }: ProjectCardProp
   // The SERVABLE public URL — normalizes any legacy two-label liveUrl to the
   // bare <slug>.hanzo.app host that actually resolves.
   const visitUrl = liveUrlOf(project);
-  // No capture yet, or none possible — the frame stays empty rather than
-  // inventing something to fill it.
-  const [broken, setBroken] = useState(false);
 
   return (
     <YStack group borderWidth={1} borderColor="$borderColor" borderRadius="$5" backgroundColor="$background" overflow="hidden" hoverStyle={{ elevation: 4, borderColor: "$color06" }}>
-      {/*
-        A project is a SITE, so the card shows a PICTURE OF THE SITE — captured
-        from the live URL by Hanzo Crawl (cloud GET /v1/projects/:slug/shot),
-        the same headless Chromium the rest of the fleet already runs.
+      {/* ONE picture component for every surface that shows a project: the home
+          strip, the dashboard, the ⌘K palette and this grid all render
+          `ProjectThumb`. It tries the real capture first
+          (cloud GET /v1/projects/:slug/shot, Hanzo Crawl), falls back to a live
+          frame for sites that permit framing, and shows a monogram when neither
+          can say anything true — never an invented mockup.
 
-        It used to draw a tinted arrangement of rectangles derived from the slug.
-        That is a placeholder that looks like a design and is not one, so the grid
-        read as a wall of mockups somebody had invented — which is exactly what it
-        was. A drawing that varies by slug is still a drawing.
-
-        NOTHING IS INVENTED WHEN THERE IS NO PICTURE. A project that never
-        deployed, a capture that failed, a crawl service that is down: all of them
-        404, `broken` flips, and the frame renders EMPTY. An empty frame says
-        "there is nothing to show yet", which is true. A generated one says "this
-        is what it looks like", which is not.
-
-        16:10 is the shape of a browser window and the capture is taken at
-        1280x800 — the same ratio, so it lands without distortion. `top` because a
-        site's identity is in its header; centring a tall page shows whatever
-        happens to be in the middle of it.
-      */}
-      <YStack
-        aria-hidden
-        width="100%"
-        aspectRatio={16 / 10}
-        borderBottomWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color2"
-        overflow="hidden"
-      >
-        {!broken && (
-          <img
-            src={`/v1/projects/${encodeURIComponent(project.slug)}/shot`}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            onError={() => setBroken(true)}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
-          />
-        )}
+          This card used to draw a tinted arrangement of rectangles derived from
+          the slug, and then briefly its own <img> of the same capture. Both were
+          a second answer to a question that already had one. */}
+      <YStack borderBottomWidth={1} borderColor="$borderColor" overflow="hidden">
+        <ProjectThumb name={project.name} slug={project.slug} liveUrl={visitUrl} aspect={16 / 10} />
       </YStack>
 
       <YStack padding="$4" paddingBottom="$3">

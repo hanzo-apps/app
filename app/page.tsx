@@ -529,7 +529,7 @@ export default function LandingPage() {
                         right third empty. Give it the width and let the ratio
                         set the height. */}
                     <YStack position="relative" overflow="hidden" width="100%" backgroundColor="$color002">
-                      <ProjectThumb name={project.name} liveUrl={project.liveUrl} />
+                      <ProjectThumb name={project.name} slug={project.slug} liveUrl={project.liveUrl} />
                     </YStack>
                     <YStack paddingHorizontal="$3" paddingVertical="$2.5">
                       <H3 numberOfLines={1} fontSize="$3" fontWeight="500" color="$color" lineHeight="1.15">

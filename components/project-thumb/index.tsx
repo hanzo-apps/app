@@ -42,12 +42,30 @@ export function canPreview(value?: string | null): boolean {
 
 export function ProjectThumb({
   name,
+  slug,
   liveUrl,
   fallback,
   aspect = 16 / 9,
   className = '',
 }: {
   name: string;
+  /**
+   * The project, for its CAPTURE: cloud screenshots the live site
+   * (GET /v1/projects/:slug/shot, Hanzo Crawl) and that picture is tried first.
+   *
+   * It is tried first because it is the only one that works for every site. A
+   * framed preview dies on any host that sends `X-Frame-Options: DENY` or
+   * `frame-ancestors 'none'` — console.hanzo.ai and sensei.group both do,
+   * measured — and that refusal is UNDETECTABLE from the embedder: the browser
+   * blocks it at the network layer, `onError` never fires, `onLoad` fires for
+   * the error document, so `loaded` flips and the iframe's own white background
+   * is revealed. That is the grey box with a torn-image glyph, and it stays
+   * forever because nothing here can learn it happened.
+   *
+   * A capture is taken by a browser VISITING the page, so no framing policy
+   * applies to it.
+   */
+  slug?: string | null;
   liveUrl?: string | null;
   /** Rendered when there is no live URL (or the frame fails). */
   fallback?: ReactNode;
@@ -67,6 +85,8 @@ export function ProjectThumb({
 }) {
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  /** No capture for this project (never deployed, or cloud has none yet). */
+  const [noShot, setNoShot] = useState(false);
   const hostRef = useRef<GuiElement>(null);
   const [box, setBox] = useState({ scale: 0.25, h: 720 });
 
@@ -83,7 +103,13 @@ export function ProjectThumb({
     return () => ro.disconnect();
   }, []);
 
-  const showLive = canPreview(liveUrl) && !failed;
+  // A real capture if there is one; the live frame only for sites that permit
+  // framing and only while no capture exists; the monogram when neither can say
+  // anything true. The frame is the leg that goes away once every project has a
+  // capture — it is here so a site that DOES frame keeps its picture in the
+  // meantime, not as a second answer to the same question.
+  const showShot = Boolean(slug) && !noShot;
+  const showLive = !showShot && canPreview(liveUrl) && !failed;
 
   // The monogram tile: the honest no-preview state, AND the cover that hides the
   // iframe's white background until it paints — a dark product must never flash a
@@ -101,7 +127,36 @@ export function ProjectThumb({
       ref={hostRef}
       position="relative" height="100%" width="100%" aspectRatio={aspect} overflow="hidden" backgroundColor="$color2" className={className}
     >
-      {showLive ? (
+      {showShot ? (
+        <>
+          <img
+            src={`/v1/projects/${encodeURIComponent(slug!)}/shot`}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            onLoad={() => setLoaded(true)}
+            onError={() => setNoShot(true)}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              maxWidth: 'none',
+              objectFit: 'cover',
+              // A site's identity is in its header; centring a tall page shows
+              // whatever happens to be in the middle of it.
+              objectPosition: 'top',
+              opacity: loaded ? 1 : 0,
+              transition: 'opacity 240ms ease',
+            }}
+          />
+          {!loaded && (
+            <YStack position="absolute" top={0} right={0} bottom={0} left={0}>
+              {placeholder}
+            </YStack>
+          )}
+        </>
+      ) : showLive ? (
         <>
         <iframe
           src={liveUrl!}

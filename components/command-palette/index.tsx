@@ -315,7 +315,7 @@ function PreviewPanel({ project, authorName }: { project: PaletteProject | null;
       {/* Thumbnail — the REAL live site (inert, sandboxed) for a published
           project; an honest monogram tile otherwise. */}
       <YStack position="relative" marginBottom="$3" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor">
-        <ProjectThumb name={project.name} liveUrl={project.liveUrl} />
+        <ProjectThumb name={project.name} slug={project.slug} liveUrl={project.liveUrl} />
         <SizableText position="absolute" bottom="$2" left="$2" numberOfLines={1} borderRadius="$2" backgroundColor="black" paddingHorizontal="$1.5" paddingVertical="$0.5" fontFamily="$mono" fontSize="$1" color="white" backdropFilter="blur(4px)">
           {project.slug}
         </SizableText>
