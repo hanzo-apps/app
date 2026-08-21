@@ -88,7 +88,7 @@ describe("the product speaks with one voice", () => {
     // pass said 158 from a narrower regex that missed the naming props; a
     // baseline below reality fails the build for strings nobody converted,
     // which is how a ratchet gets raised back instead of lowered.
-    const BASELINE = 184;
+    const BASELINE = 175;
     if (titled.length > BASELINE) {
       const fresh = titled.slice(BASELINE).map((c) => `  ${c.file}: ${c.text}`);
       throw new Error(

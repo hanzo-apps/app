@@ -146,7 +146,7 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
           <CollapsibleTrigger alignItems="center" justifyContent="space-between" width="100%" padding="$3" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}>
             <XStack alignItems="center" gap="$2">
               <Palette size={16} />
-              <H4 fontWeight="500" fontSize="$3">Application Settings</H4>
+              <H4 fontWeight="500" fontSize="$3">Application settings</H4>
             </XStack>
             <ChevronDown
               size={16}
@@ -176,7 +176,7 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
               {/* Telemetry */}
               <XStack alignItems="center" justifyContent="space-between">
                 <YStack flex={1} paddingRight="$3">
-                  <Label htmlFor="telemetry">Anonymous Usage Analytics</Label>
+                  <Label htmlFor="telemetry">Anonymous usage analytics</Label>
                   <Paragraph fontSize="$1" color="$color11" marginTop="$0.5">
                     Help improve Hanzo App by sharing anonymous usage data
                   </Paragraph>
@@ -204,7 +204,7 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
           <CollapsibleTrigger alignItems="center" justifyContent="space-between" width="100%" padding="$3" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}>
             <XStack alignItems="center" gap="$2">
               <DollarSign size={16} />
-              <H4 fontWeight="500" fontSize="$3">Cost Tracking</H4>
+              <H4 fontWeight="500" fontSize="$3">Cost tracking</H4>
             </XStack>
             <ChevronDown
               size={16}
@@ -227,7 +227,7 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                   onto; the lifetime total below is the real, wired figure. */}
               <XStack alignItems="center" justifyContent="space-between">
                 <YStack flex={1} paddingRight="$3">
-                  <Label htmlFor="show-costs">Display Costs</Label>
+                  <Label htmlFor="show-costs">Display costs</Label>
                   <Paragraph fontSize="$1" color="$color11" marginTop="$0.5">
                     Show cost information in messages
                   </Paragraph>
@@ -247,7 +247,7 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
               {/* Lifetime Costs */}
               <XStack alignItems="center" justifyContent="space-between" backgroundColor="$color3" borderWidth={1} borderRadius="$5" padding="$3">
                 <YStack>
-                  <SizableText fontSize="$1" color="$color11" fontWeight="500">Lifetime Total</SizableText>
+                  <SizableText fontSize="$1" color="$color11" fontWeight="500">Lifetime total</SizableText>
                   <SizableText marginTop="$0.5" fontSize="$6" fontWeight="700" fontFamily="$mono" letterSpacing={-0.4}>
                     {CostCalculator.formatCost(configManager.getLifetimeCosts().total)}
                   </SizableText>
@@ -277,7 +277,7 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
           <CollapsibleTrigger alignItems="center" justifyContent="space-between" width="100%" padding="$3" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}>
             <XStack alignItems="center" gap="$2">
               <Database size={16} />
-              <H4 fontWeight="500" fontSize="$3">Data Management</H4>
+              <H4 fontWeight="500" fontSize="$3">Data management</H4>
             </XStack>
             <ChevronDown
               size={16}
@@ -293,7 +293,7 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
               <XStack alignItems="center" gap="$3" padding="$3" borderRadius="$5" borderWidth={1}>
                 <Download size={16} />
                 <YStack flex={1} minWidth={0}>
-                  <YStack><SizableText fontSize="$3" fontWeight="500">Export All Data</SizableText></YStack>
+                  <YStack><SizableText fontSize="$3" fontWeight="500">Export all data</SizableText></YStack>
                   <YStack>
                     <SizableText fontSize="$1" color="$color11">
                       Download a backup of all projects and data
@@ -314,7 +314,7 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
               <XStack alignItems="center" gap="$3" padding="$3" borderRadius="$5" borderWidth={1}>
                 <Upload size={16} />
                 <YStack flex={1} minWidth={0}>
-                  <YStack><SizableText fontSize="$3" fontWeight="500">Import Data</SizableText></YStack>
+                  <YStack><SizableText fontSize="$3" fontWeight="500">Import data</SizableText></YStack>
                   <YStack>
                     <SizableText fontSize="$1" color="$color11">
                       Restore from a Hanzo backup file
@@ -359,7 +359,7 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
           size="sm"
           onClick={clearSettings}
         >
-          <SizableText color="$red9">Clear All Settings</SizableText>
+          <SizableText color="$red9">Clear all settings</SizableText>
         </Button>
         <Button
           variant="ghost"
