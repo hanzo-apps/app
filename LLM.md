@@ -232,12 +232,23 @@ Four things cost a wrong answer each, and all four will recur:
   stylesheet at runtime, so the sheet is genuinely absent until React runs. That
   reads exactly like a component that cannot scroll. It scrolls.
 
-One live rough edge, upstream: the chat shell leaks an `onLayout` handler to the
-DOM, so React logs `Unknown event handler property onLayout` once per `/chat`
-load and `Thread`'s layout measurement never runs. Harmless today — `onScroll`
-carries all three numbers `pinned()` needs — and a trap if anything ever asks
-`pinned()` outside a scroll event. Four `ScrollArea`s on `/templates` warn zero
-times, so it is the chat module's and not the primitive's.
+Two live rough edges, both upstream, both `@hanzo/ui`'s to close:
+
+- **The composer does not grow with a WRAPPED draft, only with newlines.**
+  `Textarea` sets `rows` from `value.split("\n").length`, so a long paragraph is
+  one row however far it wraps. Measured at 1440: a ~700-character draft is a
+  64px box holding 120px of text — it scrolls inside itself while you type. The
+  effect this page deleted measured `scrollHeight` and grew to 200, so a long
+  prompt used to be visible. This is the one thing the swap made worse, and it
+  cannot be repaired from here: `ComposerProps` is ten props with no field ref
+  and no `className`, so there is nothing to measure and nothing to style. It
+  wants fixing where the growth is decided.
+- **The shell leaks an `onLayout` handler to the DOM**, so React logs
+  `Unknown event handler property onLayout` once per `/chat` load and `Thread`'s
+  layout measurement never runs. Harmless today — `onScroll` carries all three
+  numbers `pinned()` needs — and a trap if anything ever asks `pinned()` outside
+  a scroll event. Four `ScrollArea`s on `/templates` warn zero times, so it is
+  the chat module's and not the primitive's.
 
 ### `build-composer` is not a chat composer, and keeping it is the answer
 
