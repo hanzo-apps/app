@@ -65,9 +65,11 @@ export default function Header() {
   const surface = resolveSurface("app");
   const nav = useMemo(
     () => [
-      // The landing page IS what this row means, so it points at the root rather
-      // than a second page repeating it. Opening hanzo.app already shows it.
-      { id: "about", label: "About", href: "/" },
+      // No row for the landing page. It pointed at the root, so on the root the
+      // shell correctly marked it current and drew it as the lit pill — a
+      // highlighted row naming the page you are already reading, next to the
+      // brand mark that already links home and already says `aria-current`
+      // there. The shared registry's `app` nav has never carried one either.
       { id: "features", label: "Features", href: "/features" },
       // Learn carries what Resources used to hold, so a reader who hovers still
       // finds every one of these pages and the top row stays four words. It keeps
