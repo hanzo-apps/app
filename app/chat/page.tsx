@@ -17,17 +17,17 @@
  * renders them).
  */
 import { XStack, YStack, Paragraph, SizableText, H1 } from '@hanzo/ui';
-import { sends } from '@hanzo/ui/chat';
-import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  ArrowUp,
-  MessageCircle,
-  PanelLeft,
-  Plus,
-  RefreshCw,
-  Search,
-  Square,
-} from 'lucide-react';
+  Composer,
+  Message,
+  Sidebar,
+  SidebarItem,
+  SidebarNewChat,
+  SidebarScroll,
+  Thread,
+} from '@hanzo/ui/chat';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { MessageCircle, PanelLeft, RefreshCw, Search } from 'lucide-react';
 
 import {
   FREE_MODEL,
@@ -51,13 +51,11 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
-  ScrollArea,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Textarea,
 } from '@hanzo/ui';
 import { AppShell } from '@/components/app-shell';
 import { accent } from '@/lib/chrome';
@@ -73,7 +71,11 @@ interface Conversation {
   messageCount: number;
 }
 
-interface Message {
+/**
+ * One turn in the log. Named for what it is, so it cannot be confused with
+ * `Message`, the shell component that PRESENTS it.
+ */
+interface Turn {
   role: 'user' | 'assistant' | 'system';
   content: string;
   model?: string;
@@ -98,6 +100,15 @@ const houseOnly = (models: { value: string; label: string }[]) =>
 // literal here is how this page came to name a model nothing serves.
 const CHAT_DEFAULT = DEFAULT_MODEL;
 
+/**
+ * Conversation rail width. ONE number: the drawer wrapper opens to it and the
+ * `Sidebar` inside is pinned to it, so the column cannot reflow while the
+ * wrapper animates over it. Written here rather than left to the shell's own
+ * default, because the wrapper has to know it too and two defaults is how the
+ * two came to disagree.
+ */
+const RAIL = 264;
+
 async function api<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, {
     credentials: 'same-origin',
@@ -114,7 +125,7 @@ export default function ChatPage() {
   const [model, setModel] = useState(CHAT_DEFAULT);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Turn[]>([]);
   const [input, setInput] = useState('');
   const [search, setSearch] = useState('');
   const [streaming, setStreaming] = useState(false);
@@ -133,10 +144,8 @@ export default function ChatPage() {
     if (window.matchMedia('(min-width:1024px)').matches) setRailOpen(true);
   }, []);
   const abortRef = useRef<AbortController | null>(null);
-  const endRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   // The turn the paid route refused, held so Free can replay it verbatim.
-  const pendingRef = useRef<{ history: Message[]; convId: string | null } | null>(null);
+  const pendingRef = useRef<{ history: Turn[]; convId: string | null } | null>(null);
 
   // The model this page serves on. /v1/models names it: that route reads the
   // caller's balance and answers with a model they can actually run, so a page
@@ -174,23 +183,18 @@ export default function ChatPage() {
       });
   }, []);
 
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  useEffect(() => {
-    const el = textareaRef.current;
-    if (el) {
-      el.style.height = 'auto';
-      el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
-    }
-  }, [input]);
+  // Following the answer down is `Thread`'s, and it is the reason this page
+  // stopped doing it itself: the effect that used to live here scrolled to the
+  // end on every change to `messages`, and a streaming turn rewrites that array
+  // on every delta — so a reader who scrolled up to re-read something was
+  // dragged back to the bottom by the next token. `Thread` asks `pinned()`
+  // instead, and follows only while the reader is already at the end.
 
   const openConversation = useCallback((id: string) => {
     setActiveId(id);
     setNotice(null);
     setOffer(null);
-    api<{ messages: Message[] }>(`/v1/chat/conversations/${encodeURIComponent(id)}`)
+    api<{ messages: Turn[] }>(`/v1/chat/conversations/${encodeURIComponent(id)}`)
       .then((b) => setMessages(b.messages))
       .catch(() => setNotice('That conversation would not load. Pick it again, or start a new chat.'));
     if (typeof window !== 'undefined' && !window.matchMedia('(min-width:1024px)').matches) {
@@ -207,7 +211,7 @@ export default function ChatPage() {
   }, []);
 
   /** Persist one turn to the cloud log; history failures never break the stream. */
-  const persist = useCallback((id: string, m: Message) => {
+  const persist = useCallback((id: string, m: Turn) => {
     fetch(`/v1/chat/conversations/${encodeURIComponent(id)}/messages`, {
       method: 'POST',
       credentials: 'same-origin',
@@ -222,7 +226,7 @@ export default function ChatPage() {
    * next turn immediately instead of waiting a render for the state to land.
    */
   const complete = useCallback(
-    async (history: Message[], convId: string | null, id: string = model) => {
+    async (history: Turn[], convId: string | null, id: string = model) => {
       setStreaming(true);
       setNotice(null);
       setOffer(null);
@@ -337,7 +341,7 @@ export default function ChatPage() {
       }
     }
 
-    const userMsg: Message = { role: 'user', content };
+    const userMsg: Turn = { role: 'user', content };
     if (convId) persist(convId, userMsg);
     await complete([...messages, userMsg], convId);
   }, [input, streaming, activeId, signedOut, messages, complete, persist]);
@@ -369,53 +373,44 @@ export default function ChatPage() {
   return (
     <AppShell currentView="chat">
       <XStack position="relative" flex={1} minHeight={0}>
-        {/* Conversation rail — in flow at lg+, overlay drawer below. */}
+        {/* Conversation rail — in flow at lg+, overlay drawer below. The
+            drawer is this wrapper's job (position, and the open/shut width);
+            everything inside it is the shell's. Both take `RAIL`, so the
+            column keeps its width while the wrapper closes over it instead of
+            reflowing on the way.
+
+            The filter field sits between the parts because that is what parts
+            are for: the shell's own header offers `onSearch`, a callback for
+            surfaces that open search somewhere else, and this one filters in
+            place. */}
         <YStack
-          position="absolute" top="$0" bottom="$0" left="$0" zIndex={30} backgroundColor="$background" borderRightWidth={1} borderColor="$borderColor" $lg={{ position: "relative", zIndex: 0 }} {...{ width: railOpen ? 256 : 0, overflow: railOpen ? undefined : "hidden" }}
+          position="absolute" top="$0" bottom="$0" left="$0" zIndex={30} $lg={{ position: "relative", zIndex: 0 }} {...{ width: railOpen ? RAIL : 0, overflow: railOpen ? undefined : "hidden" }}
           data-testid="chat-rail"
         >
-          <YStack padding="$3" borderBottomWidth={1} borderColor="$borderColor">
-            <Button
-              onClick={newChat}
-              variant="outline"
-              width="100%" justifyContent="flex-start" gap="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ backgroundColor: "$color3" }}
-              data-testid="new-chat"
-            >
-              <Plus size={16} />
-              New chat
-            </Button>
-          </YStack>
-
-          <YStack padding="$3">
+          <Sidebar width={RAIL}>
+            <SidebarNewChat onPress={newChat} />
             <Input
               placeholder="Search chats"
               value={search}
               onChangeText={(v: string) => setSearch(v)}
               startAdornment={<Search size={16} />} backgroundColor="$background" borderColor="$borderColor" color="$color" placeholderTextColor="$color11"
   />
-          </YStack>
-
-          <ScrollArea flex={1}>
-            <YStack padding="$2" rowGap="$1" data-testid="conversation-list">
+            <SidebarScroll>
               {filtered.map((c) => (
-                <Button
+                <SidebarItem
                   key={c.id}
-                  onClick={() => openConversation(c.id)}
-                  variant="ghost"
-                  group
-                  width="100%" justifyContent="flex-start" alignItems="flex-start" gap="$2" padding="$2.5" borderRadius="$5"
-                  backgroundColor={activeId === c.id ? "$color3" : undefined}
-                  hoverStyle={{ backgroundColor: "$color3" }}
+                  active={activeId === c.id}
+                  onPress={() => openConversation(c.id)}
+                  icon={<MessageCircle size={16} />}
                 >
-                  <MessageCircle size={16} />
-                  <SizableText flex={1} minWidth={0} fontSize="$3" numberOfLines={1} color={activeId === c.id ? "$color" : "$color11"} $group-hover={{ color: "$color" }}>{c.title}</SizableText>
-                </Button>
+                  {c.title}
+                </SidebarItem>
               ))}
               {!filtered.length && !signedOut && (
                 <Paragraph paddingHorizontal="$3" paddingVertical="$2" fontSize="$1" color="$color11">No conversations yet. Every chat you start is saved here.</Paragraph>
               )}
-            </YStack>
-          </ScrollArea>
+            </SidebarScroll>
+          </Sidebar>
         </YStack>
 
         {/* Thread */}
@@ -456,91 +451,87 @@ export default function ChatPage() {
             </Select>
           </XStack>
 
-          <ScrollArea flex={1}>
-            <YStack width="100%" maxWidth={768} alignSelf="center" padding="$4" $md={{ padding: "$6" }}>
-              {signedOut && (
-                <YStack
-                  marginBottom="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4"
-                  data-testid="signin-notice"
-                >
-                  <Paragraph fontSize="$3" color="$color">Sign in to chat</Paragraph>
-                  <Paragraph marginTop="$1" fontSize="$3" color="$color11">
-                    Answers are metered to your own account, so chatting needs a session.
+          {/* `Thread` is the scroller AND the reading measure — it caps its
+              column at 768 and centres it, which is what the YStack that used
+              to be here did by hand. Its children are spaced by the thread, so
+              nothing below states a margin of its own. */}
+          <Thread>
+            {signedOut && (
+              <YStack
+                marginBottom="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4"
+                data-testid="signin-notice"
+              >
+                <Paragraph fontSize="$3" color="$color">Sign in to chat</Paragraph>
+                <Paragraph marginTop="$1" fontSize="$3" color="$color11">
+                  Answers are metered to your own account, so chatting needs a session.
+                </Paragraph>
+                <a href="/login?next=/chat">
+                  <Button variant="outline" size="sm" marginTop="$3">Sign in</Button>
+                </a>
+              </YStack>
+            )}
+            {notice && (
+              <YStack
+                marginBottom="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$3"
+                data-testid="chat-notice"
+              >
+                <Paragraph fontSize="$3" color="$color11">{notice}</Paragraph>
+              </YStack>
+            )}
+            {offer && (
+              <YStack
+                marginBottom="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4"
+                data-testid="free-offer"
+              >
+                {offer === 'switch' ? (
+                  <>
+                    <Paragraph fontSize="$3" color="$color">{freeCopy.paidTitle}</Paragraph>
+                    <Paragraph marginTop="$1" fontSize="$3" color="$color11">{freeCopy.paidBody}</Paragraph>
+                  </>
+                ) : (
+                  <Paragraph fontSize="$3" color="$color11">{freeCopy.fallbackBody}</Paragraph>
+                )}
+                <XStack marginTop="$3" gap="$2">
+                  {/* Staying on Free is the reader's call, never automatic —
+                      it is data-shared, and nobody can opt in for them. */}
+                  <Button {...accent} size="sm" onClick={switchFree} data-testid="free-switch">
+                    {offer === 'switch' ? freeCopy.switchCta : freeCopy.keepCta}
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setOffer(null)} data-testid="free-dismiss">
+                    {freeCopy.dismissCta}
+                  </Button>
+                </XStack>
+              </YStack>
+            )}
+            {!messages.length && !signedOut && (
+              <YStack alignItems="center" justifyContent="center" paddingVertical={96}>
+                <H1 fontSize="$8" fontWeight="500" color="$color" textAlign="center">What can I help with?</H1>
+                <Paragraph marginTop="$2" maxWidth={384} fontSize="$3" color="$color11" textAlign="center">
+                  Answers stream in as they are written, and every chat is kept
+                  in your account so you can come back to it.
+                </Paragraph>
+              </YStack>
+            )}
+            {/* The bubble, the measure and the role's whole presentation are
+                `Message`'s. What stays here is CONTENT, which the shell
+                deliberately does not take: the markdown pipeline, the caret
+                that says a turn is still arriving, and who answered.
+                The `group` wrapper is app's own: `Message` sets no group, so
+                a hover-revealed action row needs one around it. */}
+            {messages.map((m, i) =>
+              m.role === 'user' ? (
+                <Message key={i} role="user">
+                  <Paragraph whiteSpace="pre-wrap" fontSize="$3" color="$color">
+                    {m.content}
                   </Paragraph>
-                  <a href="/login?next=/chat">
-                    <Button variant="outline" size="sm" marginTop="$3">Sign in</Button>
-                  </a>
-                </YStack>
-              )}
-              {notice && (
-                <YStack
-                  marginBottom="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$3"
-                  data-testid="chat-notice"
-                >
-                  <Paragraph fontSize="$3" color="$color11">{notice}</Paragraph>
-                </YStack>
-              )}
-              {offer && (
-                <YStack
-                  marginBottom="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4"
-                  data-testid="free-offer"
-                >
-                  {offer === 'switch' ? (
-                    <>
-                      <Paragraph fontSize="$3" color="$color">{freeCopy.paidTitle}</Paragraph>
-                      <Paragraph marginTop="$1" fontSize="$3" color="$color11">{freeCopy.paidBody}</Paragraph>
-                    </>
-                  ) : (
-                    <Paragraph fontSize="$3" color="$color11">{freeCopy.fallbackBody}</Paragraph>
-                  )}
-                  <XStack marginTop="$3" gap="$2">
-                    {/* Staying on Free is the reader's call, never automatic —
-                        it is data-shared, and nobody can opt in for them. */}
-                    <Button {...accent} size="sm" onClick={switchFree} data-testid="free-switch">
-                      {offer === 'switch' ? freeCopy.switchCta : freeCopy.keepCta}
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => setOffer(null)} data-testid="free-dismiss">
-                      {freeCopy.dismissCta}
-                    </Button>
-                  </XStack>
-                </YStack>
-              )}
-              {!messages.length && !signedOut && (
-                <YStack alignItems="center" justifyContent="center" paddingVertical={96}>
-                  <H1 fontSize="$8" fontWeight="500" color="$color" textAlign="center">What can I help with?</H1>
-                  <Paragraph marginTop="$2" maxWidth={384} fontSize="$3" color="$color11" textAlign="center">
-                    Answers stream in as they are written, and every chat is kept
-                    in your account so you can come back to it.
-                  </Paragraph>
-                </YStack>
-              )}
-              <YStack rowGap="$5">
-                {messages.map((m, i) =>
-                  m.role === 'user' ? (
-                    <XStack key={i} justifyContent="flex-end" data-testid="message-user">
-                      <Paragraph maxWidth="85%" whiteSpace="pre-wrap" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4" paddingVertical="$2.5" fontSize="$3" color="$color">
-                        {m.content}
-                      </Paragraph>
-                    </XStack>
-                  ) : (
-                    <YStack key={i} group data-testid="message-assistant">
-                      <XStack alignItems="center" gap="$2" paddingBottom="$1">
-                        <SizableText fontSize="$3" fontWeight="500" color="$color">Hanzo</SizableText>
-                        {m.model && (
-                          <SizableText fontSize="$1" color="$color11">
-                            {isFree(m.model) ? FREE_MODEL_LABEL : m.model}
-                          </SizableText>
-                        )}
-                      </XStack>
-                      <MarkdownRenderer content={m.content} compact />
-                      {m.streaming && (
-                        <SizableText
-                          width={8} height={16} marginLeft="$0.5" backgroundColor="$color"
-                          data-testid="streaming-cursor"
-                        />
-                      )}
-                      {!m.streaming && i === messages.length - 1 && (
-                        <XStack marginTop="$2" opacity={0} $group-hover={{ opacity: 1 }}>
+                </Message>
+              ) : (
+                <YStack key={i} group>
+                  <Message
+                    role="assistant"
+                    actions={
+                      !m.streaming && i === messages.length - 1 ? (
+                        <XStack opacity={0} $group-hover={{ opacity: 1 }}>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -552,60 +543,47 @@ export default function ChatPage() {
                             <SizableText fontSize="$2" color="$color11">Regenerate</SizableText>
                           </Button>
                         </XStack>
+                      ) : undefined
+                    }
+                  >
+                    <XStack alignItems="center" gap="$2">
+                      <SizableText fontSize="$3" fontWeight="500" color="$color">Hanzo</SizableText>
+                      {m.model && (
+                        <SizableText fontSize="$1" color="$color11">
+                          {isFree(m.model) ? FREE_MODEL_LABEL : m.model}
+                        </SizableText>
                       )}
-                    </YStack>
-                  ),
-                )}
-              </YStack>
-              <div ref={endRef} />
-            </YStack>
-          </ScrollArea>
+                    </XStack>
+                    <MarkdownRenderer content={m.content} compact />
+                    {m.streaming && (
+                      <SizableText
+                        width={8} height={16} marginLeft="$0.5" backgroundColor="$color"
+                        data-testid="streaming-cursor"
+                      />
+                    )}
+                  </Message>
+                </YStack>
+              ),
+            )}
+          </Thread>
 
-          {/* Composer */}
+          {/* One control does both: it submits, and while a turn is in flight
+              it stops. The pair of absolutely-positioned buttons this replaces
+              is the arrangement each surface got subtly different — and with
+              them goes the last hand-rolled Enter handler on this page, since
+              the key rule lives inside the component now rather than beside
+              it. `hint` carries the line that used to sit under the box. */}
           <YStack borderTopWidth={1} borderColor="$borderColor" padding="$3" $md={{ padding: "$4" }}>
             <YStack width="100%" maxWidth={768} alignSelf="center">
-              <YStack position="relative">
-                <Textarea
-                  ref={textareaRef}
-                  value={input}
-                  onChangeText={(t) => setInput(t)}
-                  onKeyDown={(e: React.KeyboardEvent) => {
-                    if (sends(e.key, e.nativeEvent)) {
-                      e.preventDefault();
-                      void send();
-                    }
-                  }}
-                  placeholder="Message Hanzo…"
-                  rows={1}
-                  minHeight={48} maxHeight={200} paddingRight="$8" backgroundColor="$background" borderColor="$borderColor" color="$color" placeholderTextColor="$color11"
-                  data-testid="composer"
-  />
-                {streaming ? (
-                  <Button size="icon"
-                    {...accent}
-                    onClick={stop}
-                    aria-label="Stop generating"
-                    position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0"
-                    data-testid="stop"
-                  >
-                    <Square size={14} />
-                  </Button>
-                ) : (
-                  <Button size="icon"
-                    {...accent}
-                    onClick={() => void send()}
-                    disabled={!input.trim()}
-                    aria-label="Send"
-                    position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0" disabledStyle={{ opacity: 0.5 }}
-                    data-testid="send"
-                  >
-                    <ArrowUp size={16} />
-                  </Button>
-                )}
-              </YStack>
-              <Paragraph marginTop="$2" fontSize="$1" color="$color11">
-                {streaming ? 'Generating…' : 'Enter to send, Shift+Enter for a new line'}
-              </Paragraph>
+              <Composer
+                value={input}
+                onChange={setInput}
+                onSend={() => void send()}
+                onStop={stop}
+                busy={streaming}
+                placeholder="Message Hanzo…"
+                hint={streaming ? 'Generating…' : 'Enter to send, Shift+Enter for a new line'}
+              />
             </YStack>
           </YStack>
         </YStack>

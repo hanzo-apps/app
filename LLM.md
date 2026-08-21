@@ -156,11 +156,11 @@ That last rule has teeth: `@types/hanzo-ui.d.ts` used to declare every export as
 `any`. "Zero type errors" then meant no types existed to check. Deleting it
 surfaced 79 real errors, one of which was the dead-handler bug above.
 
-### Five composers, ONE Enter rule
+### Four composers ask the Enter rule; `/chat` no longer asks anything
 
 `components/editor/ask-ai` (the builder), `components/build-composer`,
-`components/chat-panel`, `app/chat` and `app/new` all ask `sends()` from
-`@hanzo/ui/chat`. Do not write a sixth copy.
+`components/chat-panel` and `app/new` ask `sends()` from `@hanzo/ui/chat`. Do
+not write a fifth copy.
 
 They each hand-rolled it once, and disagreed, and **none checked
 `e.isComposing`** — so an open IME candidate committed a half-typed word for
@@ -174,9 +174,85 @@ there, so it reads `sends()` and then requires Ctrl/Cmd on top. The IME question
 has one home; the send rule stays the surface's own. Narrowing the shared
 predicate is the sanctioned move — re-deriving it is not.
 
+`app/chat` dropped off that list by taking the whole `Composer`, which owns the
+keystroke internally — the shell's point being that a surface should not have to
+remember to ask.
+
 The `key === "Enter" || key === " "` handlers in `build-composer` and `app/new`
 are a different question — keyboard activation on an element that is not a
 button — and are correctly local.
+
+**`sends` is not a chat rule here, it is the app's commit-on-Enter rule.** Of
+the fifteen files importing it, ten are not chat: a repo-URL field
+(`import-git-panel`), two project renames (`project-manager/project-card`), the
+SQL editor, the file explorer, the SEO tab, the workspace menu, the console
+prompt, an uploader and the command palette. That is the correct instinct — the
+IME question is the same wherever Enter commits a field — but it means the one
+module every surface in this app needs sits behind a chat-shaped import.
+
+### `/chat` is the shell — `@hanzo/ui/chat`, not a copy of it
+
+`Thread`, `Message`, `Composer`, `Sidebar`/`SidebarNewChat`/`SidebarScroll`/
+`SidebarItem`. What stays local is what the shell deliberately does not take:
+the markdown pipeline, the model picker (it ships at `@hanzo/ui/models`), the
+Free-route offer and its consent dialog, and the streaming caret.
+
+**The reason this was worth doing is one effect that is gone.** The page used to
+scroll to the end on every change to `messages`, and a streaming turn rewrites
+that array on every delta — so a reader who scrolled up to re-read something was
+dragged back down several times a second. Nothing errors, nothing warns, and no
+unit test can see it: it only exists while a stream is in flight and only if you
+scroll. `Thread` asks `pinned()` — a distance from the end — so following is a
+position rather than a reflex. Measured at 1280x520 over ~12 deltas: parked at
+offset 0, still 0, and following again the moment the reader returns to the end.
+`tests/e2e/chat-mode.spec.ts` pins both directions, because a Thread that never
+followed would pass a test that only checked it does not yank.
+
+Four things cost a wrong answer each, and all four will recur:
+
+- **A shell component takes no `data-testid`.** Its props are closed, so nothing
+  extra reaches the DOM. Select the `data-slot` the package publishes —
+  `composer-field`, `message` + `data-role`, `thread` — which is the handle it
+  states its own tests use. Ours moved with it.
+- **A draft typed before hydration reaches the DOM and not React**, so the field
+  shows the text and the send control correctly stays refused. Over a second on
+  the dev server. A `fill` is not proof a draft landed; the send control
+  agreeing is. `open()`/`ask()` in the spec are that wait, and without them the
+  failure reads as a broken button.
+- **The page-wide "contribute" widget is fixed bottom-right at the top of the
+  stacking order** (`z-index: 2147483000`, `pointer-events: auto`), and between
+  roughly 1024 and 1280 wide its bubble lands ON the composer's send control —
+  `elementFromPoint` at the control's own centre answers with the widget. 1440
+  and 390 are clear. It is not the shell's doing (any bottom-right control on
+  any page is exposed to it) and it is not fixed here, but a test that clicks
+  send at those widths will fail for a reason nothing on screen explains.
+- **Measure the page AFTER it hydrates, or measure a fiction.** Read before
+  hydration, the thread's scroll container reports `overflow: visible` and
+  carries class names with no rules behind them — react-native-web injects its
+  stylesheet at runtime, so the sheet is genuinely absent until React runs. That
+  reads exactly like a component that cannot scroll. It scrolls.
+
+One live rough edge, upstream: the chat shell leaks an `onLayout` handler to the
+DOM, so React logs `Unknown event handler property onLayout` once per `/chat`
+load and `Thread`'s layout measurement never runs. Harmless today — `onScroll`
+carries all three numbers `pinned()` needs — and a trap if anything ever asks
+`pinned()` outside a scroll event. Four `ScrollArea`s on `/templates` warn zero
+times, so it is the chat module's and not the primitive's.
+
+### `build-composer` is not a chat composer, and keeping it is the answer
+
+It shares a field and a send button with the shell's `Composer` and nothing
+else. It is the build-intent surface: an idle typewriter placeholder that types
+and erases twelve phrases, a Build/Plan mode whose LABEL alternates while its
+VALUE does not, drag-and-drop attachments with a drag-depth counter, a starter
+crawl, and a submit that seeds `localStorage` and navigates rather than sending
+a turn. `ComposerProps` cannot express any of it — no field ref (the `ask()`
+handle focuses it), no `onFocus`/`onBlur` (the typewriter needs to know someone
+is here), no `className` (the `.hz-ask` height floor rides it), no drop handlers
+on the host, and no `aria-label` distinct from the placeholder (the shell sets
+the label FROM the placeholder, which here is a sentence that changes on a
+timer). Migrating it would mean widening the shell until it is this component.
+The eight `tests/unit/composer-*` files are that judgement written down.
 
 ### ONE next config
 
