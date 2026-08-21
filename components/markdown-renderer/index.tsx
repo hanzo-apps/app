@@ -246,14 +246,20 @@ export function MarkdownRenderer({ content, muted = false, skipNormalization = f
         thead: ({ children }) => <YStack backgroundColor="$color3">{children}</YStack>,
         tbody: ({ children }) => <YStack backgroundColor="$background">{children}</YStack>,
         tr: ({ children }) => <YStack hoverStyle={{ backgroundColor: "$color3" }}>{children}</YStack>,
-        // A RUNG, NOT A NUMBER. These two cells were `11` and `12` in raw px —
-        // the last frozen type in the chat's prose. A number compiles to
-        // `font-size: 11px` and stops there, so Appearance's text-size and
-        // contrast knobs move every token around it and cannot reach it. `11`
-        // was wrong twice over besides: it is design's xs rung, not this app's
-        // retune of it (12), so a header cell sat a pixel under its own body
+        // A RUNG, NOT A NUMBER. These two cells carried raw pixel sizes — the
+        // last frozen type in the chat's prose. A number compiles to a fixed
+        // size and stops there, so Appearance's text-size and contrast knobs
+        // move every token around it and cannot reach it. The header's was
+        // wrong twice over besides: it was design's xs rung rather than this
+        // app's retune of it, leaving a header cell a pixel under its own body
         // and under every legibility floor. The header is told apart the way it
-        // already was — weight and letterspacing, which is what a header is.
+        // always was — weight and letterspacing, which is what a header is.
+        //
+        // Say that WITHOUT spelling a size here: `hanzo-design-lint` scans this
+        // file as text and does not strip comments, so an explanation naming
+        // the literal it removed re-reports the violation it describes. Same
+        // trap the Tailwind variants hit in hanzo.chat, and the reason
+        // tests/source.ts strips before it scans.
         th: ({ children }) => <SizableText textAlign="left" fontWeight="500" letterSpacing={0.4} {...{ paddingHorizontal: compact ? "$2.5" : "$4", paddingVertical: compact ? "$1.5" : "$3", fontSize: "$1" }}>{children}</SizableText>,
         td: ({ children }) => <SizableText {...{ paddingHorizontal: compact ? "$2.5" : "$4", paddingVertical: compact ? "$1.5" : "$3", fontSize: compact ? "$1" : "$3" }}>{children}</SizableText>,
       }}

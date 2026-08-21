@@ -4,8 +4,22 @@ AI-driven web app builder: Next.js 16 / React 19 / TypeScript, with the
 generated preview at `/dev`. Stack, scripts and layout are in `package.json`
 and the tree — this file carries only what those cannot tell you.
 
-Typecheck is `pnpm typecheck` → plain `tsc --noEmit`, and CI runs the same
-two gates (`tsc --noEmit`, `pnpm test`) — an earlier `tsgo` experiment is gone
+Typecheck is `pnpm typecheck` → plain `tsc --noEmit`, and CI runs those
+two gates (`tsc --noEmit`, `pnpm test`) — **plus a THIRD that only `release.yml`
+carries and that this line used to omit: `pnpm lint:design`.** It is a ratchet
+over `components` and `app` (`hanzo-design.allow.json`, allowances may only
+shrink), and `raw-font-size` is one of the rules whose allowance is ZERO — so a
+single raw pixel size fails the release with tsc and jest both green.
+
+**It scans the file as TEXT and does not strip comments**, which makes it the
+one gate a correct fix can fail: a comment explaining which literal you removed
+re-reports that literal. It cost a release here — the sentence describing a
+`font-size` removal contained the size, so `raw-font-size` read 1 NEW against 0
+allowed. Write the reason without naming the value (the same rule hanzo.chat
+follows for Tailwind variants, and why `tests/source.ts` strips before it
+scans). Fixing it properly is a change in @hanzo/design's `scripts/lint.mjs`.
+
+**Run all three before pushing.** `pnpm lint:design` is ~2s — an earlier `tsgo` experiment is gone
 from the scripts; if a doc or agent still says tsgo, the scripts are the truth.
 It is not a build gate: `typescript.ignoreBuildErrors` is on. Lint runs eslint
 9 (`pnpm lint`, exit 1 = findings, exit 2 = crashed) — eslint 10 is
