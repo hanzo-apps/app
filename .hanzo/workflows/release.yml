@@ -101,20 +101,37 @@ jobs:
           v="${{ steps.ver.outputs.version_v }}"; v="${v#v}"
           sed -i.bak -E "s/(\"version\"[[:space:]]*:[[:space:]]*\")[^\"]+(\")/\1${v}\2/" package.json && rm -f package.json.bak
           echo "package.json -> $(grep -m1 '\"version\"' package.json)"
+      # `buildx create`, the command the action wraps. Every action in a lane is
+      # fetched from github.com at run time, and that hop is what killed six
+      # chat builds in a row -- first `dial tcp …:443: i/o timeout` cloning an
+      # action, then ghcr.io timing out. A wrapper around one command the runner
+      # already has is not worth a network dependency.
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker-container
-          driver-opts: network=host
+        run: |
+          set -uo pipefail
+          docker buildx create --name hanzo --driver docker-container \
+            --driver-opt network=host --use 2>/dev/null || docker buildx use hanzo
+          docker buildx inspect --bootstrap >/dev/null
       # ghcr auth: same as hanzoai/cloud — GH_PAT (a PAT with write:packages, user
       # hanzo-dev). The repo's old GHCR_TOKEN (Mar 2026) is stale/insufficient →
       # "denied". Add GH_PAT to the repo secrets (mirror cloud) and this ships.
+      # Retried, because the action this replaces retries and the runner's egress
+      # is not reliable: a single attempt met `Get "https://ghcr.io/v2/": context
+      # deadline exceeded` on the chat lane and failed a build on a blip. Names
+      # the attempt, so a flake reads as a flake and not as a wrong credential.
       - name: Log in to ghcr.io (GH_PAT, write:packages — mirrors cloud)
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: hanzo-dev
-          password: ${{ secrets.GH_PAT }}
+        run: |
+          set -uo pipefail
+          for i in 1 2 3 4 5; do
+            if printf '%s' "${{ secrets.GH_PAT }}" \
+                 | docker login ghcr.io -u hanzo-dev --password-stdin; then
+              exit 0
+            fi
+            echo "registry sign-in attempt $i failed; retrying"
+            sleep $((i * 5))
+          done
+          echo "::error::could not sign in to ghcr.io after 5 attempts"
+          exit 1
       # The publishable ingest key, from KMS — the only store secrets come from.
       # It used to read `secrets.PUBLISHABLE_KEY`, a repo secret, which put the
       # same credential in a second place with its own rotation story.
@@ -174,29 +191,34 @@ jobs:
           echo "key=$V" >> "$GITHUB_OUTPUT"
           echo "ingest key resolved (${#V} chars)"
 
+      # `buildx build --push`, retried for the same reason the sign-in above is:
+      # the push crosses the same link, and the action this replaces rides out a
+      # blip that a bare command fails on. Measured on the chat lane, where both
+      # steps failed once and recovered on the first run after the retry landed.
       - name: Build + push ghcr.io/hanzoai/app
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile.production
-          platforms: linux/amd64
-          push: true
-          tags: ghcr.io/hanzoai/app:${{ steps.ver.outputs.version_v }}
-          provenance: false
-          # Without this the bundle ships unkeyed and EVERY beacon is refused:
-          # measured against the live door as a hard 401 `ingest_key_required`,
-          # with and without a browser Origin, for pageviews and exceptions alike.
-          # There is no anonymous lane admitting pageview+error — that lane is
-          # described in several comments across this estate and is not implemented
-          # in the deployed cloud, which is why "we still get errors, just not
-          # events" was believed for so long. Nothing arrives.
-          #
-          # The name must stay PUBLISHABLE_KEY end to end: it is the name in KMS
-          # and the ARG the Dockerfile declares. It did NOT used to be — the
-          # Dockerfile declared NEXT_PUBLIC_PUBLISHABLE_KEY, so this value was
-          # handed to a build that had nowhere to put it.
-          build-args: |
-            PUBLISHABLE_KEY=${{ steps.ingest.outputs.key }}
+        run: |
+          set -uo pipefail
+          build() { docker buildx build . \
+            --file ./Dockerfile.production \
+            --platform linux/amd64 \
+            --provenance=false \
+            --build-arg PUBLISHABLE_KEY="${{ steps.ingest.outputs.key }}" \
+            --tag ghcr.io/hanzoai/app:${{ steps.ver.outputs.version_v }} \
+            --push; }
+          for i in 1 2 3; do
+            build && exit 0
+            echo "build/push attempt $i failed; retrying"
+            sleep $((i * 10))
+          done
+          echo "::error::build and push failed after 3 attempts"
+          exit 1
+      # PUBLISHABLE_KEY above is not optional: without it the bundle ships unkeyed
+      # and EVERY beacon is refused — measured against the live door as a hard 401
+      # `ingest_key_required`, with and without a browser Origin, for pageviews and
+      # exceptions alike. There is no anonymous lane admitting pageview+error.
+      #
+      # The name stays PUBLISHABLE_KEY end to end: it is the name in KMS and the
+      # ARG the Dockerfile declares.
       - name: Verify the pushed image is pullable (guard the image ⇔ tag invariant)
         # build-push-action can exit 0 while the manifest isn't yet resolvable at the
         # registry (or a partial push). If we tag git anyway, the CR bump lands on a
