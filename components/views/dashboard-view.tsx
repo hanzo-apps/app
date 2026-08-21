@@ -540,7 +540,7 @@ function RecentProjectsCard({
       <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
         <XStack alignItems="center" gap="$2">
           <FolderOpen size={16} />
-          <H3 fontSize="$3" fontWeight="500" color="$color11">Recent web projects</H3>
+          <H3 fontSize="$3" fontWeight="500" color="$color11">Recent Projects</H3>
         </XStack>
         <Link
           href={viewAllHref}

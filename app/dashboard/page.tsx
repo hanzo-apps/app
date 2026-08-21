@@ -197,7 +197,7 @@ export default function DashboardPage() {
                     <EmptyState
                       icon={Recent}
                       title="Nothing opened yet"
-                      description="Web projects you open show up here, most recent first. Open one from All web projects and it moves to the top of this list."
+                      description="Projects you open show up here, most recent first. Open one from All projects and it moves to the top of this list."
                     />
                   ) : (
                     <ProjectGrid projects={recentlyViewed} onOpen={openProject} />
