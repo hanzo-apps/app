@@ -10,7 +10,7 @@ import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMe
 import { Pencil, Trash2, MoreVertical, ExternalLink, Globe, Settings, Star } from 'lucide-react';
 import { builderLink, configLink, liveUrlOf, type Project } from '@/lib/api/projects';
 import { statusOf } from '@/lib/project-status';
-import { TemplateSchematic } from '@/components/template-schematic';
+import { useState } from 'react';
 
 interface ProjectCardProps {
   project: Project;
@@ -30,30 +30,32 @@ export function ProjectCard({ project, onDelete, onToggleStar }: ProjectCardProp
   // The SERVABLE public URL — normalizes any legacy two-label liveUrl to the
   // bare <slug>.hanzo.app host that actually resolves.
   const visitUrl = liveUrlOf(project);
+  // No capture yet, or none possible — the frame stays empty rather than
+  // inventing something to fill it.
+  const [broken, setBroken] = useState(false);
 
   return (
     <YStack group borderWidth={1} borderColor="$borderColor" borderRadius="$5" backgroundColor="$background" overflow="hidden" hoverStyle={{ elevation: 4, borderColor: "$color06" }}>
       {/*
-        A project is a SITE, so the card leads with a picture of one.
-        16:10 because that is the shape of a browser window; anything squarer
-        reads as an avatar, and these cards were a column of identical text
-        blocks distinguished only by a name you had to read.
+        A project is a SITE, so the card shows a PICTURE OF THE SITE — captured
+        from the live URL by Hanzo Crawl (cloud GET /v1/projects/:slug/shot),
+        the same headless Chromium the rest of the fleet already runs.
 
-        It is DRAWN, not a grey rectangle. `TemplateSchematic` tints a canvas
-        and lays out rectangles from the slug, which is the answer this app
-        already gives for a template with no photograph — so two projects have
-        to collide in hue AND layout to look alike, and the card is a picture of
-        an app rather than a hole where one goes. One mechanism for "we have no
-        shot of this", used in both places.
+        It used to draw a tinted arrangement of rectangles derived from the slug.
+        That is a placeholder that looks like a design and is not one, so the grid
+        read as a wall of mockups somebody had invented — which is exactly what it
+        was. A drawing that varies by slug is still a drawing.
 
-        It is the SLOT, too: cloud sends no thumbnail for an org project today
-        (`Project` in lib/api/projects has no image field). When it does, the
-        real capture goes here on top of this and nothing else about the card
-        moves — the same image-first, drawn-fallback shape `TemplateThumb` uses.
+        NOTHING IS INVENTED WHEN THERE IS NO PICTURE. A project that never
+        deployed, a capture that failed, a crawl service that is down: all of them
+        404, `broken` flips, and the frame renders EMPTY. An empty frame says
+        "there is nothing to show yet", which is true. A generated one says "this
+        is what it looks like", which is not.
 
-        `aria-hidden`, and the card carries no alt text: the heading right below
-        already names the project, so announcing the picture would read the name
-        twice. It is decoration that happens to be useful to the eye.
+        16:10 is the shape of a browser window and the capture is taken at
+        1280x800 — the same ratio, so it lands without distortion. `top` because a
+        site's identity is in its header; centring a tall page shows whatever
+        happens to be in the middle of it.
       */}
       <YStack
         aria-hidden
@@ -61,9 +63,19 @@ export function ProjectCard({ project, onDelete, onToggleStar }: ProjectCardProp
         aspectRatio={16 / 10}
         borderBottomWidth={1}
         borderColor="$borderColor"
+        backgroundColor="$color2"
         overflow="hidden"
       >
-        <TemplateSchematic slug={project.slug || project.id} category={project.framework} />
+        {!broken && (
+          <img
+            src={`/v1/projects/${encodeURIComponent(project.slug)}/shot`}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            onError={() => setBroken(true)}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
+          />
+        )}
       </YStack>
 
       <YStack padding="$4" paddingBottom="$3">
