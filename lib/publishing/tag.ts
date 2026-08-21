@@ -1,8 +1,8 @@
 /**
  * The hosted tag, injected at publish — the ONE telemetry wire.
  *
- * Cloud serves the whole browser tag at /v1/event.js: pageviews, the site's
- * connected pixels (GA/Meta/TikTok/X via /v1/tags), and attribution — all
+ * Cloud serves the whole browser tag at /v1/event/tag.js: pageviews, the site's
+ * connected pixels (GA/Meta/TikTok/X via /v1/projects/tags), and attribution — all
  * resolved server-side from the project's publishable ingest key, which is
  * minted WITH the project and rides `?key=` (the sendBeacon carrier). So a
  * published site needs exactly ONE line, and this is the one place that
@@ -19,7 +19,10 @@
  * tag is left alone so republishing is idempotent.
  */
 
-const TAG_SRC = "https://api.hanzo.ai/v1/event.js";
+// The tag is a child of the door it posts to. ".js" is part of a segment rather
+// than a child of one, so the old sibling "/v1/event.js" could not live under the
+// ingest prefix and 404s; there is no alias, so this constant is the address.
+const TAG_SRC = "https://api.hanzo.ai/v1/event/tag.js";
 
 export function withTag(html: string, key: string): string {
   if (!key || typeof html !== "string" || html.length === 0) return html;

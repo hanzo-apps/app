@@ -11,22 +11,28 @@ describe("withTag", () => {
 
   it("injects before </head>, deferred, with the key encoded", () => {
     const out = withTag("<html><head><title>x</title></head><body></body></html>", KEY);
-    expect(out).toContain('src="https://api.hanzo.ai/v1/event.js?key=pk-abc_123"');
+    expect(out).toContain('src="https://api.hanzo.ai/v1/event/tag.js?key=pk-abc_123"');
     expect(out).toContain("defer");
-    expect(out.indexOf("event.js")).toBeLessThan(out.indexOf("</head>"));
+    expect(out.indexOf("event/tag.js")).toBeLessThan(out.indexOf("</head>"));
   });
 
   it("falls back to </body>, then to appending — every page leaves tagged", () => {
     const noHead = withTag("<body><p>hi</p></body>", KEY);
-    expect(noHead.indexOf("event.js")).toBeLessThan(noHead.indexOf("</body>"));
+    expect(noHead.indexOf("event/tag.js")).toBeLessThan(noHead.indexOf("</body>"));
     const fragment = withTag("<p>hi</p>", KEY);
-    expect(fragment).toMatch(/event\.js/);
+    expect(fragment).toMatch(/event\/tag\.js/);
   });
 
   it("is idempotent — republishing never doubles the tag", () => {
     const once = withTag("<html><head></head></html>", KEY);
     const twice = withTag(once, KEY);
-    expect(twice.match(/event\.js/g)?.length).toBe(1);
+    expect(twice.match(/event\/tag\.js/g)?.length).toBe(1);
+  });
+
+  it("never emits the retired sibling address, which 404s", () => {
+    // Every customer site published while this read "/v1/event.js" carries a
+    // script tag the door does not answer. The tag is a child of the door now.
+    expect(withTag("<html><head></head></html>", KEY)).not.toContain("/v1/event.js");
   });
 
   it("no key → the page passes through byte-identical", () => {
