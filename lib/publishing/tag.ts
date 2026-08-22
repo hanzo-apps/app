@@ -24,10 +24,22 @@
 // ingest prefix and 404s; there is no alias, so this constant is the address.
 const TAG_SRC = "https://api.hanzo.ai/v1/event/tag.js";
 
+/** Any hosted tag this function has ever written — the current one and the ones
+ *  it replaced. Matched by address so a key or attribute order cannot hide one. */
+const SUPERSEDED =
+  /<script[^>]*\bsrc="https:\/\/api\.hanzo\.ai\/v1\/event(?:\.js|\/tag\.js)[^"]*"[^>]*><\/script>\n?/gi;
+
 export function withTag(html: string, key: string): string {
   if (!key || typeof html !== "string" || html.length === 0) return html;
-  if (html.includes(TAG_SRC)) return html;
   const tag = `<script src="${TAG_SRC}?key=${encodeURIComponent(key)}" defer></script>`;
+  if (html.includes(tag)) return html;
+  // A page leaves with EXACTLY ONE Hanzo tag, at the address cloud serves today.
+  // The tag has moved once — /v1/event.js was a SIBLING of the /v1/event prefix
+  // rather than a child, so the plugin fleet routed it nowhere and it 404s — and
+  // pages published before the move carry that dead address in their HTML.
+  // Matching only the current one would republish them with two script tags, one
+  // dead and one live, so any tag of ours is replaced rather than joined.
+  html = html.replace(SUPERSEDED, "");
   // Before </head> so the tag is parsed early; defer keeps it off the parse
   // path. A page without a head gets it before </body>; a fragment with
   // neither gets it appended — every page leaves with the tag.

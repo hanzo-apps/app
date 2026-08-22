@@ -16,6 +16,19 @@ describe("withTag", () => {
     expect(out.indexOf("event/tag.js")).toBeLessThan(out.indexOf("</head>"));
   });
 
+  // The tag moved from /v1/event.js (a sibling of the /v1/event prefix, which the
+  // fleet routed nowhere) to /v1/event/tag.js. A page published before the move
+  // carries the dead address, and republishing must leave ONE working tag — never
+  // the dead one beside a live one.
+  it("replaces a superseded tag rather than adding a second", () => {
+    const stale =
+      '<html><head><script src="https://api.hanzo.ai/v1/event.js?key=pk-old" defer></script></head><body></body></html>';
+    const out = withTag(stale, KEY);
+    expect(out).not.toContain("/v1/event.js?");
+    expect(out.match(/api\.hanzo\.ai/g)).toHaveLength(1);
+    expect(out).toContain('src="https://api.hanzo.ai/v1/event/tag.js?key=pk-abc_123"');
+  });
+
   it("falls back to </body>, then to appending — every page leaves tagged", () => {
     const noHead = withTag("<body><p>hi</p></body>", KEY);
     expect(noHead.indexOf("event/tag.js")).toBeLessThan(noHead.indexOf("</body>"));
